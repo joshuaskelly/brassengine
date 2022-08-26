@@ -1,0 +1,10 @@
+# Build artifacts
+bin/
+build/
+
+# OS artifacts
+.DS_Store
+
+# IDE artifacts
+.idea
+.vscode
