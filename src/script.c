@@ -3,15 +3,19 @@
 #include <lua/lualib.h>
 
 #include "event.h"
+#include "graphics.h"
 #include "log.h"
 #include "script.h"
 
 static lua_State* L = NULL;
 
 static bool buttons[2];
+static int mouse_position[2];
 
 int api_print(lua_State* L);
 int api_button(lua_State* L);
+int api_mouse_position(lua_State* L);
+int api_draw_pixel(lua_State* L);
 
 void script_init(void) {
     log_info("script init\n");
@@ -31,6 +35,12 @@ void script_init(void) {
 
     lua_pushcfunction(L, api_button);
     lua_setglobal(L, "button");
+
+    lua_pushcfunction(L, api_mouse_position);
+    lua_setglobal(L, "mouse_position");
+
+    lua_pushcfunction(L, api_draw_pixel);
+    lua_setglobal(L, "draw_pixel");
 
     // Execute lua script
     luaL_dofile(L, "./assets/script.lua");
@@ -67,6 +77,11 @@ bool script_handle_event(event_t* event) {
                 return true;
             }
 
+            break;
+
+        case EVENT_MOUSEMOTION:
+            mouse_position[0] = event->motion.x;
+            mouse_position[1] = event->motion.y;
             break;
 
         case EVENT_QUIT:
@@ -121,4 +136,25 @@ int api_button(lua_State* L) {
     }
 
     return 1;
+}
+
+int api_mouse_position(lua_State* L) {
+    lua_pushnumber(L, mouse_position[0]);
+    lua_pushnumber(L, mouse_position[1]);
+    return 2;
+}
+
+int api_draw_pixel(lua_State* L) {
+    int x = (int)lua_tonumber(L, -3);
+    int y = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1);
+    lua_pop(L, -1);
+    lua_pop(L, -1);
+
+    texture_t* render_texture = graphics_get_render_texture();
+    texture_set_pixel(render_texture, x, y, color);
+
+    return 0;
 }

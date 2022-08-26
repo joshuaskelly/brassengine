@@ -10,7 +10,7 @@ end
 
 -- Called once per frame
 function _draw()
-    --print("lua draw")
+   test_draw()
 end
 
 function test_input()
@@ -19,4 +19,9 @@ function test_input()
     elseif button(1) then
         print("right")
     end
+end
+
+function test_draw()
+    local x, y = mouse_position()
+    draw_pixel(x, y, 1)
 end

@@ -122,6 +122,13 @@ void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 
+    int width = 0;
+    int height = 0;
+    SDL_GetWindowSize(window, &width, &height);
+
+    float aspect_width = RENDER_BUFFER_WIDTH / (float)width;
+    float aspect_height = RENDER_BUFFER_HEIGHT / (float)height;
+
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
             case SDL_QUIT:
@@ -142,6 +149,17 @@ void sdl_handle_events(void) {
                 event.key.type = EVENT_KEYUP;
                 event.key.code = (key_code_t)sdl_event.key.keysym.scancode;
                 event.key.symbol = (key_symbol_t)sdl_event.key.keysym.sym;
+                event_post(&event);
+                break;
+
+            case SDL_MOUSEMOTION:
+                event.type = EVENT_MOUSEMOTION;
+                event.motion.type = EVENT_MOUSEMOTION;
+                event.motion.x = sdl_event.motion.x * aspect_width;
+                event.motion.y = sdl_event.motion.y * aspect_height;
+                event.motion.rel_x = sdl_event.motion.xrel * aspect_width;
+                event.motion.rel_y = sdl_event.motion.yrel * aspect_height;
+
                 event_post(&event);
                 break;
         }

@@ -10,6 +10,7 @@ typedef enum {
     EVENT_QUIT = 1,
     EVENT_KEYDOWN = 2,
     EVENT_KEYUP = 3,
+    EVENT_MOUSEMOTION,
 } event_type_t;
 
 typedef struct {
@@ -140,10 +141,19 @@ typedef struct {
     key_symbol_t symbol;
 } key_event_t;
 
+typedef struct {
+    event_type_t type;
+    int x;
+    int y;
+    int rel_x;
+    int rel_y;
+} mousemotion_event_t;
+
 typedef union {
     event_type_t type;
     common_event_t common;
     key_event_t key;
+    mousemotion_event_t motion;
 } event_t;
 
 /**
