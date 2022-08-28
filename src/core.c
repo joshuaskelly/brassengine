@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 #include "core.h"
-#include "backend.h"
+#include "platform.h"
 #include "event.h"
 #include "graphics.h"
 #include "log.h"
@@ -17,7 +17,7 @@ void handle_events(void);
 void core_init(void) {
     log_info("engine init\n");
 
-    backend_init();
+    platform_init();
     graphics_init();
     script_init();
 
@@ -28,16 +28,16 @@ void core_init(void) {
 void core_destroy(void) {
     script_destroy();
     graphics_destroy();
-    backend_destroy();
+    platform_destroy();
 }
 
 void core_run(void) {
     while (is_running) {
-        backend_update();
+        platform_update();
         handle_events();
         current_state.update();
         current_state.draw();
-        backend_draw();
+        platform_draw();
     }
 }
 

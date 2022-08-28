@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 
-#include "backend.h"
+#include "platform.h"
 #include "core.h"
 #include "event.h"
 #include "graphics.h"
@@ -18,7 +18,7 @@ static int ticks_last_frame;
 void sdl_handle_events(void);
 void sdl_fix_frame_rate(void);
 
-int backend_main(int argc, char* argv[]) {
+int platform_main(int argc, char* argv[]) {
     core_init();
     core_run();
     core_destroy();
@@ -26,7 +26,7 @@ int backend_main(int argc, char* argv[]) {
     return 0;
 }
 
-void backend_init(void) {
+void platform_init(void) {
     log_info("sdl backend init\n");
 
     const int window_width = RENDER_BUFFER_WIDTH * 3;
@@ -77,19 +77,19 @@ void backend_init(void) {
     }
 }
 
-void backend_destroy(void) {
+void platform_destroy(void) {
     SDL_DestroyTexture(render_buffer_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-void backend_update(void) {
+void platform_update(void) {
     sdl_handle_events();
     sdl_fix_frame_rate();
 }
 
-void backend_draw(void) {
+void platform_draw(void) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 

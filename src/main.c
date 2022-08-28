@@ -1,5 +1,5 @@
-#include "backend.h"
+#include "platform.h"
 
 int main(int argc, char* argv[]) {
-    return backend_main(argc, argv);
+    return platform_main(argc, argv);
 }
