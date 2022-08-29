@@ -32,7 +32,7 @@ void platform_init(void) {
     const int window_width = RENDER_BUFFER_WIDTH * 3;
     const int window_height = RENDER_BUFFER_HEIGHT * 3;
 
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         log_fatal("Error initializing SDL.\n");
     }
 
