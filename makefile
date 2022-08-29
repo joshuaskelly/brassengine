@@ -12,7 +12,8 @@ SRCS:=$(wildcard $(SRC_DIR)/*.c)
 OBJS:= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 INC:=-Ilibs
 
-LIBLUA:=libs/lua/liblua.a
+LUA_DIR:=libs/lua
+LIBLUA:=$(LUA_DIR)/liblua.a
 
 CFLAGS:=-Wall -std=c99 -O3
 DFLAGS:=-Wall -std=c99 -DDEBUG -g
@@ -36,7 +37,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(LIBLUA):
-	cd libs/lua && make a CC=$(CC) $(LFLAGS)
+	cd $(LUA_DIR) && make a CC=$(CC) $(LFLAGS)
 
 run:
 	./$(BIN)
@@ -46,4 +47,4 @@ serve:
 
 clean:
 	rm -f $(BIN_DIR)/* $(OBJ_DIR)/* $(WEB_DIR)/*
-	cd libs/lua && make clean
+	cd $(LUA_DIR) && make clean
