@@ -25,22 +25,26 @@ DFLAGS=-Wall -std=c99 -DDEBUG -g
 LFLAGS=
 LDLIBS=$(LIBLUA) -lSDL2
 
-none:
-	@echo "Please do 'make PLATFORM' where PLATFORM is one of these:"
-	@echo "   $(PLATFORMS)"
+default:help
 
 all:$(BIN)
+
+desktop:all ## Build desktop platform
 
 debug:CFLAGS=$(DFLAGS)
 debug:all
 
-desktop:all
+desktop-run: ## Run desktop build
+	./$(BIN)
 
 web:CC=emcc -s USE_SDL=2
 web:LFLAGS=AR='emar rcu' RANLIB=emranlib
-web: $(OBJS) | $(BIN_DIR) $(LIBLUA)
+web: $(OBJS) | $(BIN_DIR) $(LIBLUA) ## Build web platform
 	@echo "SRCS = $(SRCS)"
 	$(CC) $^ $(LIBLUA) -o $(WEB_DIR)/main.html --embed-file assets
+
+web-run: ## Run web build
+	emrun $(WEB_DIR)/main.html
 
 $(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
@@ -51,15 +55,16 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 $(LIBLUA):
 	cd $(LUA_DIR) && make a CC=$(CC) $(LFLAGS)
 
-run:
-	./$(BIN)
-
-serve:
-	emrun $(WEB_DIR)/main.html
-
-mostlyclean:
+mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 
-clean:
+clean: ## Deletes all auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 	cd $(LUA_DIR) && make clean
+
+help: ## Show help prompt
+	@echo "usage:"
+	@echo "  make \033[32m<target>\033[0m"
+	@echo ""
+	@echo "targets:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%-30s\033[0m %s\n", $$1, $$2}'
