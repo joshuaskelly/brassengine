@@ -18,9 +18,14 @@ void core_init(void);
 void core_destroy(void);
 
 /**
- * @brief Engine main loop
+ * @brief Run engine
  */
 void core_run(void);
+
+/**
+ * @brief Engine main loop
+ */
+void core_main_loop(void);
 
 /**
  * @brief Set and initialize state

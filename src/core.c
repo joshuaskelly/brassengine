@@ -33,12 +33,16 @@ void core_destroy(void) {
 
 void core_run(void) {
     while (is_running) {
-        platform_update();
-        handle_events();
-        current_state.update();
-        current_state.draw();
-        platform_draw();
+        core_main_loop();
     }
+}
+
+void core_main_loop(void) {
+    platform_update();
+    handle_events();
+    current_state.update();
+    current_state.draw();
+    platform_draw();
 }
 
 void core_set_state(state_t* state) {

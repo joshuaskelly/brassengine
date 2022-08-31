@@ -1,33 +1,28 @@
 #include <SDL2/SDL.h>
+#include <emscripten.h>
 
-#include "platform.h"
-#include "core.h"
-#include "event.h"
-#include "graphics.h"
-#include "log.h"
-
-#define FPS 60
-#define FRAME_TIME_LENGTH (1000 / FPS)
+#include "../platform.h"
+#include "../core.h"
+#include "../event.h"
+#include "../graphics.h"
+#include "../log.h"
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t render_buffer[RENDER_BUFFER_WIDTH * RENDER_BUFFER_HEIGHT];
-static int ticks_last_frame;
 
 void sdl_handle_events(void);
-void sdl_fix_frame_rate(void);
 
 int platform_main(int argc, char* argv[]) {
     core_init();
-    core_run();
-    core_destroy();
+    emscripten_set_main_loop(core_main_loop, 0, 1);
 
     return 0;
 }
 
 void platform_init(void) {
-    log_info("sdl backend init\n");
+    log_info("platform (emscripten sdl2) init\n");
 
     const int window_width = RENDER_BUFFER_WIDTH * 3;
     const int window_height = RENDER_BUFFER_HEIGHT * 3;
@@ -86,7 +81,6 @@ void platform_destroy(void) {
 
 void platform_update(void) {
     sdl_handle_events();
-    sdl_fix_frame_rate();
 }
 
 void platform_draw(void) {
@@ -164,13 +158,4 @@ void sdl_handle_events(void) {
                 break;
         }
     }
-}
-
-void sdl_fix_frame_rate(void) {
-    int time_to_wait = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks_last_frame);
-    if (0 < time_to_wait && time_to_wait < FRAME_TIME_LENGTH) {
-        SDL_Delay(time_to_wait);
-    }
-
-    ticks_last_frame = SDL_GetTicks();
 }
