@@ -1,6 +1,7 @@
 -- Called once at startup
 function _init()
     print("lua init")
+    brush_color = 1
 end
 
 -- Called once per frame
@@ -15,13 +16,15 @@ end
 
 function test_input()
     if button(0) then
-        print("left")
+        clear(0)
+        brush_color = 1
     elseif button(1) then
-        print("right")
+        clear(1)
+        brush_color = 0
     end
 end
 
 function test_draw()
     local x, y = mouse_position()
-    draw_pixel(x, y, 1)
+    draw_pixel(x, y, brush_color)
 end

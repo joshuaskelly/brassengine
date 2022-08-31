@@ -16,6 +16,7 @@ int api_print(lua_State* L);
 int api_button(lua_State* L);
 int api_mouse_position(lua_State* L);
 int api_draw_pixel(lua_State* L);
+int api_clear_screen(lua_State* L);
 
 void script_init(void) {
     log_info("script init\n");
@@ -41,6 +42,9 @@ void script_init(void) {
 
     lua_pushcfunction(L, api_draw_pixel);
     lua_setglobal(L, "draw_pixel");
+
+    lua_pushcfunction(L, api_clear_screen);
+    lua_setglobal(L, "clear");
 
     // Execute lua script
     luaL_dofile(L, "./assets/script.lua");
@@ -155,6 +159,16 @@ int api_draw_pixel(lua_State* L) {
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_set_pixel(render_texture, x, y, color);
+
+    return 0;
+}
+
+int api_clear_screen(lua_State* L) {
+    int color = (int)lua_tonumber(L, -1);
+    lua_pop(L, -1);
+
+    texture_t* render_texture = graphics_get_render_texture();
+    texture_clear(render_texture, color);
 
     return 0;
 }

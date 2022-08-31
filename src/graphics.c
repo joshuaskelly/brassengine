@@ -7,9 +7,14 @@
 
 texture_t* texture_new(int width, int height, color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
+
+    if (!texture) {
+        log_error("failed to create texture");
+        return NULL;
+    }
+
     texture->width = width;
     texture->height = height;
-
     texture->pixels = (color_t*)calloc(width * height, sizeof(color_t));
 
     if (pixels) {
@@ -20,20 +25,14 @@ texture_t* texture_new(int width, int height, color_t* pixels) {
     return texture;
 }
 
-texture_t* texture_load(char* path) {
-    // TODO
-    return NULL;
-}
-
 void texture_free(texture_t* texture) {
     free(texture->pixels);
     free(texture);
 }
 
 void texture_clear(texture_t* texture, color_t color) {
-    for (int i = 0; i < texture->width * texture->height; i++) {
-        texture->pixels[i] = color;
-    }
+    size_t number_of_bytes = texture->width * texture->height;
+    memset(texture->pixels, color, number_of_bytes);
 }
 
 void texture_set_pixel(texture_t* texture, int x, int y, color_t color) {
