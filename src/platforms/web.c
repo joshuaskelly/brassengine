@@ -84,9 +84,6 @@ void platform_update(void) {
 }
 
 void platform_draw(void) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
     texture_t* render_texture = graphics_get_render_texture();
     uint32_t* palette = graphics_get_palette();
 
