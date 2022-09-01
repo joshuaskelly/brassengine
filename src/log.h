@@ -6,20 +6,20 @@
  *
  * @param message string to be displayed
  */
-void log_info(char* message);
+void log_info(const char* message);
 
 /**
  * @brief Logs a message to stderr.
  *
  * @param message string to be displayed
  */
-void log_error(char* message);
+void log_error(const char* message);
 
 /**
  * @brief Logs a message to stderr and immediately terminates program.
  *
  * @param message string to be displayed
  */
-void log_fatal(char* message);
+void log_fatal(const char* message);
 
 #endif

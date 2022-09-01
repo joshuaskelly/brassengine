@@ -22,13 +22,13 @@ int platform_main(int argc, char* argv[]) {
 }
 
 void platform_init(void) {
-    log_info("platform (emscripten sdl2) init\n");
+    log_info("platform (emscripten sdl2) init");
 
     const int window_width = RENDER_BUFFER_WIDTH * 3;
     const int window_height = RENDER_BUFFER_HEIGHT * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        log_fatal("Error initializing SDL.\n");
+        log_fatal("Error initializing SDL");
     }
 
     window = SDL_CreateWindow(
@@ -41,7 +41,7 @@ void platform_init(void) {
     );
 
     if (!window) {
-        log_fatal("Error creating SDL window.\n");
+        log_fatal("Error creating SDL window");
     }
 
     renderer = SDL_CreateRenderer(
@@ -51,7 +51,7 @@ void platform_init(void) {
     );
 
     if (!renderer) {
-        log_fatal("Error creating SDL renderer.\n");
+        log_fatal("Error creating SDL renderer");
     }
 
     SDL_SetRenderDrawBlendMode(
@@ -68,7 +68,7 @@ void platform_init(void) {
     );
 
     if (!render_buffer_texture) {
-        log_fatal("Error creating SDL frame buffer texture.\n");
+        log_fatal("Error creating SDL frame buffer texture");
     }
 }
 

@@ -18,36 +18,47 @@ int api_mouse_position(lua_State* L);
 int api_draw_pixel(lua_State* L);
 int api_clear_screen(lua_State* L);
 
+/**
+ * @brief Add a global function to Lua VM
+ *
+ * @param L Lua VM
+ * @param function C function pointer to push
+ * @param function_name Name to give pushed global function
+ */
+void add_global_function(lua_State* L, lua_CFunction function, const char* function_name) {
+    lua_pushcfunction(L, function);
+    lua_setglobal(L, function_name);
+}
+
 void script_init(void) {
-    log_info("script init\n");
+    log_info("script init");
 
     // Create Lua VM
     L = luaL_newstate();
 
     if (!L) {
-        log_fatal("Error creating Lua VM.\n");
+        log_fatal("Error creating Lua VM");
     }
 
     luaL_openlibs(L);
 
     // Set globals
-    lua_pushcfunction(L, api_print);
-    lua_setglobal(L, "print");
+    add_global_function(L, api_print, "print");
+    add_global_function(L, api_button, "button");
+    add_global_function(L, api_mouse_position, "mouse_position");
+    add_global_function(L, api_draw_pixel, "draw_pixel");
+    add_global_function(L, api_clear_screen, "clear");
 
-    lua_pushcfunction(L, api_button);
-    lua_setglobal(L, "button");
+    // Execute Lua script
+    int result = luaL_dofile(L, "./assets/script.lua");
 
-    lua_pushcfunction(L, api_mouse_position);
-    lua_setglobal(L, "mouse_position");
+    if (result != LUA_OK) {
+        const char* error_message = lua_tostring(L, -1);
+        log_error(error_message);
 
-    lua_pushcfunction(L, api_draw_pixel);
-    lua_setglobal(L, "draw_pixel");
-
-    lua_pushcfunction(L, api_clear_screen);
-    lua_setglobal(L, "clear");
-
-    // Execute lua script
-    luaL_dofile(L, "./assets/script.lua");
+        // Remove error message from stack
+        lua_pop(L, -1);
+    }
 
     buttons[0] = false;
     buttons[1] = false;
@@ -97,28 +108,36 @@ bool script_handle_event(event_t* event) {
     return false;
 }
 
-void script_update(void) {
-    // Invoke global _update function
-    lua_getglobal(L, "_update");
+/**
+ * @brief Call a globally defined Lua function. The function
+ * must take no arguments and return no values.
+ *
+ * @param L Lua VM
+ * @param function_name Name of the function to call
+ */
+void call_global_lua_function(lua_State* L, const char* function_name) {
+    // Attempt to find the global object
+    lua_getglobal(L, function_name);
+
     if (lua_isfunction(L, -1)) {
         lua_pcall(L, 0, 0, 0);
     }
+    else {
+        // Clean up stack if we don't get the function
+        lua_pop(L, -1);
+    }
+}
+
+void script_update(void) {
+    call_global_lua_function(L, "_update");
 }
 
 void script_setup(void) {
-    // Invoke global _init function
-    lua_getglobal(L, "_init");
-    if (lua_isfunction(L, -1)) {
-        lua_pcall(L, 0, 0, 0);
-    }
+    call_global_lua_function(L, "_init");
 }
 
 void script_draw(void) {
-    // Invoke global _draw function
-    lua_getglobal(L, "_draw");
-    if (lua_isfunction(L, -1)) {
-        lua_pcall(L, 0, 0, 0);
-    }
+    call_global_lua_function(L, "_draw");
 }
 
 int api_print(lua_State* L) {

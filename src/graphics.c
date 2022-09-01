@@ -9,7 +9,7 @@ texture_t* texture_new(int width, int height, color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
 
     if (!texture) {
-        log_error("failed to create texture");
+        log_error("Failed to create texture");
         return NULL;
     }
 
@@ -57,13 +57,13 @@ void graphics_init(void) {
     );
 
     if (!render_texture) {
-        log_fatal("Failed to create frame buffer.\n");
+        log_fatal("Failed to create frame buffer");
     }
 
     palette = (uint32_t*)calloc(256, sizeof(uint32_t));
 
     if (!palette) {
-        log_fatal("Failed to create palette.\n");
+        log_fatal("Failed to create palette");
     }
 
     palette[0] = 0xFF0000FF;
