@@ -9,7 +9,7 @@
 
 static lua_State* L = NULL;
 
-static bool buttons[2];
+static bool buttons[6];
 static int mouse_position[2];
 
 int api_print(lua_State* L);
@@ -71,24 +71,56 @@ void script_destroy(void) {
 bool script_handle_event(event_t* event) {
     switch (event->type) {
         case EVENT_KEYDOWN:
-            if (event->key.symbol == KEYSYMBOL_a) {
-                buttons[0] = true;
+            if (event->key.code == KEYCODE_LEFT) {
+                buttons[SCRIPT_BUTTON_LEFT] = true;
                 return true;
             }
-            else if (event->key.symbol == KEYSYMBOL_s) {
-                buttons[1] = true;
+            else if (event->key.code == KEYCODE_RIGHT) {
+                buttons[SCRIPT_BUTTON_RIGHT] = true;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_UP) {
+                buttons[SCRIPT_BUTTON_UP] = true;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_DOWN) {
+                buttons[SCRIPT_BUTTON_DOWN] = true;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_Z) {
+                buttons[SCRIPT_BUTTON_A] = true;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_X) {
+                buttons[SCRIPT_BUTTON_B] = true;
                 return true;
             }
 
             break;
 
         case EVENT_KEYUP:
-            if (event->key.symbol == KEYSYMBOL_a) {
-                buttons[0] = false;
+            if (event->key.code == KEYCODE_LEFT) {
+                buttons[SCRIPT_BUTTON_LEFT] = false;
                 return true;
             }
-            else if (event->key.symbol == KEYSYMBOL_s) {
-                buttons[1] = false;
+            else if (event->key.code == KEYCODE_RIGHT) {
+                buttons[SCRIPT_BUTTON_RIGHT] = false;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_UP) {
+                buttons[SCRIPT_BUTTON_UP] = false;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_DOWN) {
+                buttons[SCRIPT_BUTTON_DOWN] = false;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_Z) {
+                buttons[SCRIPT_BUTTON_A] = false;
+                return true;
+            }
+            else if (event->key.code == KEYCODE_X) {
+                buttons[SCRIPT_BUTTON_B] = false;
                 return true;
             }
 

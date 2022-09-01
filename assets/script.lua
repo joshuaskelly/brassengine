@@ -22,6 +22,12 @@ function test_input()
         clear(1)
         brush_color = 0
     end
+
+    if button(4) then
+        print("Button A")
+    elseif button(5) then
+        print("Button B")
+    end
 end
 
 function test_draw()
