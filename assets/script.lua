@@ -14,18 +14,25 @@ function _draw()
    test_draw()
 end
 
+BUTTON_LEFT = 0
+BUTTON_RIGHT = 1
+BUTTON_UP = 2
+BUTTON_DOWN = 3
+BUTTON_A = 4
+BUTTON_B = 5
+
 function test_input()
-    if button(0) then
+    if button(BUTTON_LEFT) then
         clear(0)
         brush_color = 1
-    elseif button(1) then
+    elseif button(BUTTON_RIGHT) then
         clear(1)
         brush_color = 0
     end
 
-    if button(4) then
+    if button(BUTTON_A) then
         print("Button A")
-    elseif button(5) then
+    elseif button(BUTTON_B) then
         print("Button B")
     end
 end
