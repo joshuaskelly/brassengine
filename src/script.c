@@ -140,6 +140,11 @@ void script_draw(void) {
     call_global_lua_function(L, "_draw");
 }
 
+/**
+ * @brief Prints given object to console.
+ *
+ * @param arg Object to print to console
+ */
 int api_print(lua_State* L) {
     const char* message = lua_tostring(L, -1);
     printf("%s\n", message);
@@ -148,6 +153,12 @@ int api_print(lua_State* L) {
     return 0;
 }
 
+/**
+ * @brief Get button state for given button id.
+ *
+ * @param id Button id to check
+ * @return True if button is pressed, false otherwise
+ */
 int api_button(lua_State* L) {
     if (lua_isnumber(L, -1)) {
         int buttonId = (int)lua_tonumber(L, -1);
@@ -161,12 +172,24 @@ int api_button(lua_State* L) {
     return 1;
 }
 
+/**
+ * @brief Get current mouse position.
+ *
+ * @return Mouse coords as x, y
+ */
 int api_mouse_position(lua_State* L) {
     lua_pushnumber(L, mouse_position[0]);
     lua_pushnumber(L, mouse_position[1]);
     return 2;
 }
 
+/**
+ * @brief Draw a pixel at given position and color.
+ *
+ * @param x Pixel x-coordinate
+ * @param y Pixel y-coordinate
+ * @param color Pixel color
+ */
 int api_draw_pixel(lua_State* L) {
     int x = (int)lua_tonumber(L, -3);
     int y = (int)lua_tonumber(L, -2);
@@ -182,6 +205,11 @@ int api_draw_pixel(lua_State* L) {
     return 0;
 }
 
+/**
+ * @brief Clear screen to given color.
+ *
+ * @param color Color to clear screen
+ */
 int api_clear_screen(lua_State* L) {
     int color = (int)lua_tonumber(L, -1);
     lua_pop(L, -1);
