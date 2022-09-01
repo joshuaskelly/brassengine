@@ -50,6 +50,8 @@ static texture_t* render_texture = NULL;
 static uint32_t* palette = NULL;
 
 void graphics_init(void) {
+    log_info("graphics init");
+
     render_texture = texture_new(
         RENDER_BUFFER_WIDTH,
         RENDER_BUFFER_HEIGHT,
