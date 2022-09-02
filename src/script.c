@@ -51,9 +51,10 @@ int open_draw_module(lua_State* L) {
     return 1;
 }
 
-void script_init(void) {
-    log_info("script init");
-
+/**
+ * @brief Create and configure Lua VM.
+ */
+void init_lua_vm(void) {
     // Create Lua VM
     L = luaL_newstate();
 
@@ -81,13 +82,23 @@ void script_init(void) {
 
         lua_pop(L, -1); // Error message
     }
+}
 
-    buttons[0] = false;
-    buttons[1] = false;
+void script_init(void) {
+    log_info("script init");
+    init_lua_vm();
 }
 
 void script_destroy(void) {
     lua_close(L);
+}
+
+/**
+ * @brief Reload Lua VM
+ */
+void reload_lua_vm(void) {
+    log_info("script reload");
+    init_lua_vm();
 }
 
 bool script_handle_event(event_t* event) {
@@ -121,7 +132,11 @@ bool script_handle_event(event_t* event) {
             break;
 
         case EVENT_KEYUP:
-            if (event->key.code == KEYCODE_LEFT) {
+            if (event->key.code == KEYCODE_F5) {
+                reload_lua_vm();
+                return true;
+            }
+            else if (event->key.code == KEYCODE_LEFT) {
                 buttons[SCRIPT_BUTTON_LEFT] = false;
                 return true;
             }
