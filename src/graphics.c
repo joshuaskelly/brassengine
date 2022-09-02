@@ -37,8 +37,8 @@ void texture_clear(texture_t* texture, color_t color) {
 }
 
 void texture_set_pixel(texture_t* texture, int x, int y, color_t color) {
-    if (x < 0 || x > texture->width) return;
-    if (y < 0 || y > texture->height) return;
+    if (x < 0 || x >= texture->width) return;
+    if (y < 0 || y >= texture->height) return;
 
     texture->pixels[y * texture->width + x] = color;
 }
