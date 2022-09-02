@@ -156,8 +156,7 @@ void call_global_lua_function(lua_State* L, const char* function_name) {
         lua_pcall(L, 0, 0, 0);
     }
     else {
-        // Clean up stack if we don't get the function
-        lua_pop(L, -1);
+        lua_pop(L, -1); // nil or some other type
     }
 }
 
