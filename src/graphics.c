@@ -6,6 +6,16 @@
 #include "graphics.h"
 #include "log.h"
 
+static texture_t* render_texture = NULL;
+static uint32_t* palette = NULL;
+
+static struct {
+    int x;
+    int y;
+    int width;
+    int height;
+} clip_rect;
+
 texture_t* texture_new(int width, int height, color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
 
@@ -47,9 +57,6 @@ color_t texture_get_pixel(texture_t* texture, int x, int y) {
     return texture->pixels[y * texture->width + x];
 }
 
-static texture_t* render_texture = NULL;
-static uint32_t* palette = NULL;
-
 void graphics_init(void) {
     log_info("graphics init");
 
@@ -71,6 +78,11 @@ void graphics_init(void) {
 
     palette[0] = 0xFF0000FF;
     palette[1] = 0xFFFFFFFF;
+
+    clip_rect.x = 0;
+    clip_rect.y = 0;
+    clip_rect.width = RENDER_BUFFER_WIDTH;
+    clip_rect.height = RENDER_BUFFER_HEIGHT;
 }
 
 void graphics_destroy(void) {
@@ -84,4 +96,18 @@ texture_t* graphics_get_render_texture(void) {
 
 uint32_t* graphics_get_palette(void) {
     return palette;
+}
+
+void graphics_set_pixel(int x, int y, color_t color) {
+    if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
+    if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
+
+    texture_set_pixel(render_texture, x, y, color);
+}
+
+void graphics_set_clipping_rectangle(int x, int y, int width, int height) {
+    clip_rect.x = x;
+    clip_rect.y = y;
+    clip_rect.width = width;
+    clip_rect.height = height;
 }

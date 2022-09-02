@@ -18,7 +18,7 @@ typedef struct {
  * @brief Create a new texture.
  *
  * @param width Width of texture in pixels
- * @param height Heigh of texture in pixels
+ * @param height Height of texture in pixels
  * @param pixels Pixel data to copy or NULL
  * @return New texture if successful, NULL on failure
  */
@@ -83,7 +83,23 @@ texture_t* graphics_get_render_texture(void);
  */
 uint32_t* graphics_get_palette(void);
 
+/**
+ * @brief Set pixel color.
+ *
+ * @param x Pixel x-coordinate
+ * @param y Pixel y-coordinate
+ * @param color Pixel color
+ */
+void graphics_set_pixel(int x, int y, color_t color);
 
-void graphics_draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color);
+/**
+ * @brief Sets clipping rectangle which defines drawable area.
+ *
+ * @param x Rect top left x-coordinate
+ * @param y Rect top left y-coordinate
+ * @param width Rect width
+ * @param height Rect height
+ */
+void graphics_set_clipping_rectangle(int x, int y, int width, int height);
 
 #endif

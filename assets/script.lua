@@ -14,9 +14,11 @@ function _init()
     BUTTON_B = 5
 
     brush_color = pink
+    fill_color = black
     last_x, last_y = mouse_position()
 
-    draw.clear(black)
+
+    draw_frame()
 end
 
 -- Called once per frame
@@ -31,11 +33,13 @@ end
 
 function test_input()
     if button(BUTTON_LEFT) then
-        draw.clear(black)
         brush_color = pink
+        fill_color = black
+        draw_frame()
     elseif button(BUTTON_RIGHT) then
-        draw.clear(pink)
         brush_color = black
+        fill_color = pink
+        draw_frame()
     end
 
     if button(BUTTON_A) then
@@ -86,4 +90,12 @@ function setup_palette()
     palette(indigo, 131, 118, 156)
     palette(pink, 255, 119, 168)
     palette(peach, 255, 204, 170)
+end
+
+function draw_frame()
+    draw.clear(brush_color)
+    clip(0, 0, 320, 200)
+    draw.filled_rectangle(48, 48, 224, 104, white)
+    draw.filled_rectangle(50, 50, 220, 100, fill_color)
+    clip(50, 50, 220, 100)
 end

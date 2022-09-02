@@ -24,6 +24,7 @@ int api_draw_rectangle(lua_State* L);
 int api_draw_filled_rectangle(lua_State* L);
 int api_clear_screen(lua_State* L);
 int api_set_palette_color(lua_State* L);
+int api_set_clipping_rectangle(lua_State* L);
 
 /**
  * @brief Add a global function to Lua VM
@@ -69,6 +70,7 @@ void init_lua_vm(void) {
     add_global_function(L, api_button, "button");
     add_global_function(L, api_mouse_position, "mouse_position");
     add_global_function(L, api_set_palette_color, "palette");
+    add_global_function(L, api_set_clipping_rectangle, "clip");
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
@@ -296,8 +298,7 @@ int api_draw_line(lua_State* L) {
     lua_pop(L, -1); // y0
     lua_pop(L, -1); // x0
 
-    texture_t* render_texture = graphics_get_render_texture();
-    draw_line(render_texture, x0, y0, x1, y1, color);
+    draw_line(x0, y0, x1, y1, color);
 
     return 0;
 }
@@ -315,8 +316,7 @@ int api_draw_rectangle(lua_State* L) {
     lua_pop(L, -1); // y
     lua_pop(L, -1); // x
 
-    texture_t* render_texture = graphics_get_render_texture();
-    draw_rectangle(render_texture, x, y, width, height, color);
+    draw_rectangle(x, y, width, height, color);
 
     return 0;
 }
@@ -334,8 +334,7 @@ int api_draw_filled_rectangle(lua_State* L) {
     lua_pop(L, -1); // y
     lua_pop(L, -1); // x
 
-    texture_t* render_texture = graphics_get_render_texture();
-    draw_filled_rectangle(render_texture, x, y, width, height, color);
+    draw_filled_rectangle(x, y, width, height, color);
 
     return 0;
 }
@@ -375,3 +374,19 @@ int api_set_palette_color(lua_State* L) {
 
     return 0;
 }
+
+int api_set_clipping_rectangle(lua_State* L) {{
+    int x = (int)lua_tonumber(L, -4);
+    int y = (int)lua_tonumber(L, -3);
+    int width = (int)lua_tonumber(L, -2);
+    int height = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // height
+    lua_pop(L, -1); // width
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
+
+    graphics_set_clipping_rectangle(x, y, width, height);
+
+    return 0;
+}}
