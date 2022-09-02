@@ -38,6 +38,7 @@ function test_input()
         print("Button A")
     elseif button(BUTTON_B) then
         print("Button B")
+        draw.filled_rectangle(last_x - 4, last_y - 4, 8, 8, 1)
     end
 end
 

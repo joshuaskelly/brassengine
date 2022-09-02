@@ -23,3 +23,26 @@ void draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color
         current_y += y_inc;
     }
 }
+
+void draw_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color) {
+    int x0 = x;
+    int y0 = y;
+    int x1 = x + width;
+    int y1 = y + height;
+
+    draw_line(texture, x0, y0, x1, y0, color);
+    draw_line(texture, x1, y0, x1, y1, color);
+    draw_line(texture, x1, y1, x0, y1, color);
+    draw_line(texture, x0, y1, x0, y0, color);
+}
+
+void draw_filled_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color) {
+    int x0 = x;
+    int x1 = x + width;
+    int y0 = y;
+
+    for (int i = 0; i < height; i++) {
+        y0 = y + i;
+        draw_line(texture, x0, y0, x1, y0, color);
+    }
+}

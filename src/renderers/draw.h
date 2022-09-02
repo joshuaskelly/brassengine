@@ -15,4 +15,8 @@
  */
 void draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color);
 
+void draw_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color);
+
+void draw_filled_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color);
+
 #endif

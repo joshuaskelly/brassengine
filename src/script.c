@@ -18,6 +18,8 @@ int api_button(lua_State* L);
 int api_mouse_position(lua_State* L);
 int api_draw_pixel(lua_State* L);
 int api_draw_line(lua_State* L);
+int api_draw_rectangle(lua_State* L);
+int api_draw_filled_rectangle(lua_State* L);
 int api_clear_screen(lua_State* L);
 
 /**
@@ -35,6 +37,8 @@ void add_global_function(lua_State* L, lua_CFunction function, const char* funct
 static const struct luaL_Reg draw_module_functions[] = {
     {"pixel", api_draw_pixel},
     {"line", api_draw_line},
+    {"rectangle", api_draw_rectangle},
+    {"filled_rectangle", api_draw_filled_rectangle},
     {"clear", api_clear_screen},
     {NULL, NULL}
 };
@@ -274,6 +278,44 @@ int api_draw_line(lua_State* L) {
 
     texture_t* render_texture = graphics_get_render_texture();
     draw_line(render_texture, x0, y0, x1, y1, color);
+
+    return 0;
+}
+
+int api_draw_rectangle(lua_State* L) {
+    int x = (int)lua_tonumber(L, -5);
+    int y = (int)lua_tonumber(L, -4);
+    int width = (int)lua_tonumber(L, -3);
+    int height = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // height
+    lua_pop(L, -1); // width
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
+
+    texture_t* render_texture = graphics_get_render_texture();
+    draw_rectangle(render_texture, x, y, width, height, color);
+
+    return 0;
+}
+
+int api_draw_filled_rectangle(lua_State* L) {
+    int x = (int)lua_tonumber(L, -5);
+    int y = (int)lua_tonumber(L, -4);
+    int width = (int)lua_tonumber(L, -3);
+    int height = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // height
+    lua_pop(L, -1); // width
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
+
+    texture_t* render_texture = graphics_get_render_texture();
+    draw_filled_rectangle(render_texture, x, y, width, height, color);
 
     return 0;
 }
