@@ -6,6 +6,7 @@
 #include "graphics.h"
 #include "log.h"
 #include "script.h"
+#include "renderers/draw.h"
 
 static lua_State* L = NULL;
 
@@ -272,7 +273,7 @@ int api_draw_line(lua_State* L) {
     lua_pop(L, -1); // x0
 
     texture_t* render_texture = graphics_get_render_texture();
-    graphics_draw_line(render_texture, x0, y0, x1, y1, color);
+    draw_line(render_texture, x0, y0, x1, y1, color);
 
     return 0;
 }

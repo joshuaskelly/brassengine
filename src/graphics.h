@@ -83,16 +83,7 @@ texture_t* graphics_get_render_texture(void);
  */
 uint32_t* graphics_get_palette(void);
 
-/**
- * @brief Draw line from x0, y0 to x1, y1
- *
- * @param texture Texture to draw line on
- * @param x0 Start x-coordinate
- * @param y0 Start y-coordinate
- * @param x1 End x-coordinate
- * @param y1 End y-coordinate
- * @param color Line color
- */
+
 void graphics_draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color);
 
 #endif
