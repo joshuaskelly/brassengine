@@ -7,3 +7,4 @@
 ## References
 - [DOOM source code](https://github.com/id-Software/DOOM)
 - [Lua Style Guide](https://github.com/luarocks/lua-style-guide)
+- [Voxel Space Engine GitHub](https://github.com/s-macke/VoxelSpace)

@@ -34,25 +34,25 @@ void texture_free(texture_t* texture);
 /**
  * @brief Fill entire texture with color.
  *
- * @param texture The texture to fill
- * @param color The fill color
+ * @param texture Texture to fill
+ * @param color Fill color
  */
 void texture_clear(texture_t* texture, color_t color);
 
 /**
  * @brief Set pixel color.
  *
- * @param texture The texture to set pixel
+ * @param texture Texture to set pixel
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
- * @param color Color to set pixel
+ * @param color Pixel color
  */
 void texture_set_pixel(texture_t* texture, int x, int y, color_t color);
 
 /**
  * @brief Get pixel color.
  *
- * @param texture The texture to get pixel
+ * @param texture Texture to get pixel
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  * @return Color at given coordinates
@@ -82,5 +82,17 @@ texture_t* graphics_get_render_texture(void);
  * @return Palette as a 256 color array.
  */
 uint32_t* graphics_get_palette(void);
+
+/**
+ * @brief Draw line from x0, y0 to x1, y1
+ *
+ * @param texture Texture to draw line on
+ * @param x0 Start x-coordinate
+ * @param y0 Start y-coordinate
+ * @param x1 End x-coordinate
+ * @param y1 End y-coordinate
+ * @param color Line color
+ */
+void graphics_draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color);
 
 #endif

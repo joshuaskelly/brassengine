@@ -16,6 +16,7 @@ int api_print(lua_State* L);
 int api_button(lua_State* L);
 int api_mouse_position(lua_State* L);
 int api_draw_pixel(lua_State* L);
+int api_draw_line(lua_State* L);
 int api_clear_screen(lua_State* L);
 
 /**
@@ -47,6 +48,7 @@ void script_init(void) {
     add_global_function(L, api_button, "button");
     add_global_function(L, api_mouse_position, "mouse_position");
     add_global_function(L, api_draw_pixel, "draw_pixel");
+    add_global_function(L, api_draw_line, "draw_line");
     add_global_function(L, api_clear_screen, "clear");
 
     // Execute Lua script
@@ -193,9 +195,9 @@ int api_print(lua_State* L) {
  */
 int api_button(lua_State* L) {
     if (lua_isnumber(L, -1)) {
-        int buttonId = (int)lua_tonumber(L, -1);
-        lua_pop(L, -1);
-        lua_pushboolean(L, buttons[buttonId]);
+        int button_id = (int)lua_tonumber(L, -1);
+        lua_pop(L, -1); // button id
+        lua_pushboolean(L, buttons[button_id]);
     }
     else {
         lua_pushboolean(L, false);
@@ -227,12 +229,31 @@ int api_draw_pixel(lua_State* L) {
     int y = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1);
-    lua_pop(L, -1);
-    lua_pop(L, -1);
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_set_pixel(render_texture, x, y, color);
+
+    return 0;
+}
+
+int api_draw_line(lua_State* L) {
+    int x0 = (int)lua_tonumber(L, -5);
+    int y0 = (int)lua_tonumber(L, -4);
+    int x1 = (int)lua_tonumber(L, -3);
+    int y1 = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // y1
+    lua_pop(L, -1); // x1
+    lua_pop(L, -1); // y0
+    lua_pop(L, -1); // x0
+
+    texture_t* render_texture = graphics_get_render_texture();
+    graphics_draw_line(render_texture, x0, y0, x1, y1, color);
 
     return 0;
 }
@@ -244,7 +265,7 @@ int api_draw_pixel(lua_State* L) {
  */
 int api_clear_screen(lua_State* L) {
     int color = (int)lua_tonumber(L, -1);
-    lua_pop(L, -1);
+    lua_pop(L, -1); // color
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_clear(render_texture, color);

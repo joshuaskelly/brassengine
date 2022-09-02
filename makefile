@@ -23,7 +23,7 @@ LIBLUA=$(LUA_DIR)/liblua.a
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
 LFLAGS=
-LDLIBS=$(LIBLUA) -lSDL2
+LDLIBS=$(LIBLUA) -lSDL2 -lm
 
 default:help
 

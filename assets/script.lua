@@ -1,7 +1,9 @@
 -- Called once at startup
 function _init()
     print("lua init")
+
     brush_color = 1
+    last_x, last_y = mouse_position()
 end
 
 -- Called once per frame
@@ -39,5 +41,6 @@ end
 
 function test_draw()
     local x, y = mouse_position()
-    draw_pixel(x, y, brush_color)
+    draw_line(last_x, last_y, x, y, brush_color)
+    last_x, last_y = x, y
 end
