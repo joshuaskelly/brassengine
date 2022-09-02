@@ -239,6 +239,15 @@ int api_draw_pixel(lua_State* L) {
     return 0;
 }
 
+/**
+ * @brief Draw a line between given position and color.
+ *
+ * @param x0 Start x-coordinate
+ * @param y0 Start y-coordinate
+ * @param x1 End x-coordinate
+ * @param y1 End y-coordinate
+ * @param color Line color
+ */
 int api_draw_line(lua_State* L) {
     int x0 = (int)lua_tonumber(L, -5);
     int y0 = (int)lua_tonumber(L, -4);
