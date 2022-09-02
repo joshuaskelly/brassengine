@@ -15,6 +15,8 @@ function _init()
 
     brush_color = pink
     last_x, last_y = mouse_position()
+
+    draw.clear(black)
 end
 
 -- Called once per frame
