@@ -84,6 +84,25 @@ void init_lua_vm(void) {
     }
 }
 
+/**
+ * @brief Call a globally defined Lua function. The function
+ * must take no arguments and return no values.
+ *
+ * @param L Lua VM
+ * @param function_name Name of the function to call
+ */
+void call_global_lua_function(lua_State* L, const char* function_name) {
+    // Attempt to find the global object
+    lua_getglobal(L, function_name);
+
+    if (lua_isfunction(L, -1)) {
+        lua_pcall(L, 0, 0, 0);
+    }
+    else {
+        lua_pop(L, -1); // nil or some other type
+    }
+}
+
 void script_init(void) {
     log_info("script init");
     init_lua_vm();
@@ -99,6 +118,7 @@ void script_destroy(void) {
 void reload_lua_vm(void) {
     log_info("script reload");
     init_lua_vm();
+    call_global_lua_function(L, "_init");
 }
 
 bool script_handle_event(event_t* event) {
@@ -175,25 +195,6 @@ bool script_handle_event(event_t* event) {
     }
 
     return false;
-}
-
-/**
- * @brief Call a globally defined Lua function. The function
- * must take no arguments and return no values.
- *
- * @param L Lua VM
- * @param function_name Name of the function to call
- */
-void call_global_lua_function(lua_State* L, const char* function_name) {
-    // Attempt to find the global object
-    lua_getglobal(L, function_name);
-
-    if (lua_isfunction(L, -1)) {
-        lua_pcall(L, 0, 0, 0);
-    }
-    else {
-        lua_pop(L, -1); // nil or some other type
-    }
 }
 
 void script_update(void) {
