@@ -31,6 +31,18 @@ void add_global_function(lua_State* L, lua_CFunction function, const char* funct
     lua_setglobal(L, function_name);
 }
 
+static const struct luaL_Reg draw_module_functions[] = {
+    {"pixel", api_draw_pixel},
+    {"line", api_draw_line},
+    {"clear", api_clear_screen},
+    {NULL, NULL}
+};
+
+int open_draw_module(lua_State* L) {
+    luaL_newlib(L, draw_module_functions);
+    return 1;
+}
+
 void script_init(void) {
     log_info("script init");
 
@@ -47,9 +59,9 @@ void script_init(void) {
     add_global_function(L, api_print, "print");
     add_global_function(L, api_button, "button");
     add_global_function(L, api_mouse_position, "mouse_position");
-    add_global_function(L, api_draw_pixel, "draw_pixel");
-    add_global_function(L, api_draw_line, "draw_line");
-    add_global_function(L, api_clear_screen, "clear");
+
+    // Set modules
+    luaL_requiref(L, "draw", open_draw_module, 0);
 
     // Execute Lua script
     int result = luaL_dofile(L, "./assets/script.lua");

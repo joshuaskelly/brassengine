@@ -1,3 +1,5 @@
+local draw = require("draw")
+
 -- Called once at startup
 function _init()
     print("lua init")
@@ -25,10 +27,10 @@ BUTTON_B = 5
 
 function test_input()
     if button(BUTTON_LEFT) then
-        clear(0)
+        draw.clear(0)
         brush_color = 1
     elseif button(BUTTON_RIGHT) then
-        clear(1)
+        draw.clear(1)
         brush_color = 0
     end
 
@@ -41,6 +43,6 @@ end
 
 function test_draw()
     local x, y = mouse_position()
-    draw_line(last_x, last_y, x, y, brush_color)
+    draw.line(last_x, last_y, x, y, brush_color)
     last_x, last_y = x, y
 end
