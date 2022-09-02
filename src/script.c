@@ -58,8 +58,7 @@ void script_init(void) {
         const char* error_message = lua_tostring(L, -1);
         log_error(error_message);
 
-        // Remove error message from stack
-        lua_pop(L, -1);
+        lua_pop(L, -1); // Error message
     }
 
     buttons[0] = false;
