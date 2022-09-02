@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -21,6 +23,7 @@ int api_draw_line(lua_State* L);
 int api_draw_rectangle(lua_State* L);
 int api_draw_filled_rectangle(lua_State* L);
 int api_clear_screen(lua_State* L);
+int api_set_palette_color(lua_State* L);
 
 /**
  * @brief Add a global function to Lua VM
@@ -64,6 +67,7 @@ void script_init(void) {
     add_global_function(L, api_print, "print");
     add_global_function(L, api_button, "button");
     add_global_function(L, api_mouse_position, "mouse_position");
+    add_global_function(L, api_set_palette_color, "palette");
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
@@ -331,6 +335,27 @@ int api_clear_screen(lua_State* L) {
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_clear(render_texture, color);
+
+    return 0;
+}
+
+int api_set_palette_color(lua_State* L) {
+    int index = (int)lua_tonumber(L, -4);
+    int r = (int)lua_tonumber(L, -3) & 0xFF;
+    int g = (int)lua_tonumber(L, -2) & 0xFF;
+    int b = (int)lua_tonumber(L, -1) & 0xFF;
+    int a = 0xFF;
+
+    lua_pop(L, -1); // b
+    lua_pop(L, -1); // g
+    lua_pop(L, -1); // r
+    lua_pop(L, -1); // index
+
+    uint32_t color = a << 24 | b << 16 | g << 8 | r;
+
+    uint32_t* palette = NULL;
+    palette = graphics_get_palette();
+    palette[index] = color;
 
     return 0;
 }

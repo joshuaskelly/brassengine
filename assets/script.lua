@@ -4,6 +4,24 @@ local draw = require("draw")
 function _init()
     print("lua init")
 
+    -- pico-8 palette
+    palette( 0, 0, 0, 0)       -- black
+    palette( 1, 29, 43, 83)    -- dark-blue
+    palette( 2, 126, 37, 83)   -- dark-purple
+    palette( 3, 0, 135, 81)    -- dark-green
+    palette( 4, 171, 82, 54)   -- brown
+    palette( 5, 95, 87, 79)    -- dark-gray
+    palette( 6, 194, 195, 199) -- light-gray
+    palette( 7, 255, 241, 232) -- white
+    palette( 8, 255, 0, 77)    -- red
+    palette( 9, 255, 163, 0)   -- orange
+    palette(10, 255, 236, 39)  -- yellow
+    palette(11, 0, 228, 54)    -- green
+    palette(12, 41, 173, 255)  -- blue
+    palette(13, 131, 118, 156) -- indigo
+    palette(14, 255, 119, 168) -- pink
+    palette(15, 255, 204, 170) -- peach
+
     brush_color = 1
     last_x, last_y = mouse_position()
 end
@@ -36,9 +54,10 @@ function test_input()
 
     if button(BUTTON_A) then
         print("Button A")
+        draw.filled_rectangle(last_x - 4, last_y - 4, 8, 8, 3)
     elseif button(BUTTON_B) then
         print("Button B")
-        draw.filled_rectangle(last_x - 4, last_y - 4, 8, 8, 1)
+        draw.filled_rectangle(last_x - 4, last_y - 4, 8, 8, 2)
     end
 end
 
