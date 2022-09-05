@@ -12,7 +12,7 @@ PLATFORMS=desktop web
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
-SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
+SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(wildcard $(SRC_DIR)/bindings/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 INC=-Ilibs

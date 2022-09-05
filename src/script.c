@@ -9,6 +9,7 @@
 #include "log.h"
 #include "script.h"
 #include "renderers/draw.h"
+#include "bindings/pico.h"
 
 static lua_State* L = NULL;
 
@@ -78,6 +79,7 @@ void init_lua_vm(void) {
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
+    luaL_requiref(L, "pico", open_pico_module, 0);
 
     // Execute Lua script
     int result = luaL_dofile(L, "./assets/script.lua");
@@ -223,6 +225,7 @@ void script_draw(void) {
 int api_print(lua_State* L) {
     const char* message = lua_tostring(L, -1);
     printf("%s\n", message);
+
     lua_pop(L, -1);
 
     return 0;
@@ -255,6 +258,7 @@ int api_button(lua_State* L) {
 int api_mouse_position(lua_State* L) {
     lua_pushnumber(L, mouse_position[0]);
     lua_pushnumber(L, mouse_position[1]);
+
     return 2;
 }
 
@@ -270,9 +274,7 @@ int api_draw_pixel(lua_State* L) {
     int y = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_set_pixel(render_texture, x, y, color);
@@ -296,11 +298,7 @@ int api_draw_line(lua_State* L) {
     int y1 = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // y1
-    lua_pop(L, -1); // x1
-    lua_pop(L, -1); // y0
-    lua_pop(L, -1); // x0
+    lua_pop(L, -1);
 
     draw_line(x0, y0, x1, y1, color);
 
@@ -314,11 +312,7 @@ int api_draw_rectangle(lua_State* L) {
     int height = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // height
-    lua_pop(L, -1); // width
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     draw_rectangle(x, y, width, height, color);
 
@@ -332,11 +326,7 @@ int api_draw_filled_rectangle(lua_State* L) {
     int height = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // height
-    lua_pop(L, -1); // width
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     draw_filled_rectangle(x, y, width, height, color);
 
@@ -349,10 +339,7 @@ int api_draw_circle(lua_State* L) {
     int radius = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // radius
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     draw_circle(x, y, radius, color);
 
@@ -365,10 +352,7 @@ int api_draw_filled_circle(lua_State* L) {
     int radius = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // color
-    lua_pop(L, -1); // radius
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     draw_filled_circle(x, y, radius, color);
 
@@ -382,7 +366,8 @@ int api_draw_filled_circle(lua_State* L) {
  */
 int api_clear_screen(lua_State* L) {
     int color = (int)lua_tonumber(L, -1);
-    lua_pop(L, -1); // color
+
+    lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
     texture_clear(render_texture, color);
@@ -397,10 +382,7 @@ int api_set_palette_color(lua_State* L) {
     int b = (int)lua_tonumber(L, -1) & 0xFF;
     int a = 0xFF;
 
-    lua_pop(L, -1); // b
-    lua_pop(L, -1); // g
-    lua_pop(L, -1); // r
-    lua_pop(L, -1); // index
+    lua_pop(L, -1);
 
     uint32_t color = a << 24 | b << 16 | g << 8 | r;
 
@@ -411,18 +393,15 @@ int api_set_palette_color(lua_State* L) {
     return 0;
 }
 
-int api_set_clipping_rectangle(lua_State* L) {{
+int api_set_clipping_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
     int width = (int)lua_tonumber(L, -2);
     int height = (int)lua_tonumber(L, -1);
 
-    lua_pop(L, -1); // height
-    lua_pop(L, -1); // width
-    lua_pop(L, -1); // y
-    lua_pop(L, -1); // x
+    lua_pop(L, -1);
 
     graphics_set_clipping_rectangle(x, y, width, height);
 
     return 0;
-}}
+}

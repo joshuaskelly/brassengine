@@ -1,4 +1,5 @@
 local draw = require("draw")
+local pico = require("pico")
 
 -- Called once at startup
 function _init()
@@ -15,6 +16,7 @@ function _init()
 
     brush_color = pink
     fill_color = black
+    circle_color = 0
     last_x, last_y = mouse_position()
 
     --draw_frame()
@@ -28,7 +30,8 @@ end
 -- Called once per frame
 function _draw()
     --test_draw()
-    test_circle()
+    --test_circle()
+    test_pico()
 end
 
 function test_input()
@@ -101,8 +104,23 @@ function draw_frame()
 end
 
 function test_circle()
-    draw.clear(black)
+    draw.clear(white)
     local x, y = mouse_position()
-    draw.circle(x, y, math.min(x, y), white)
-    draw.filled_circle(x, y, 16, pink)
+    --draw.circle(x, y, math.min(x, y), white)
+    pico.color(circle_color)
+    pico.circ(x, y, math.min(x, y), circle_color)
+    pico.circfill(x, y, x / 20)
+
+    circle_color = (circle_color + 1) % 16
+end
+
+function test_pico()
+    --pico.cls(black)
+    pico.clip(50, 50, 220, 100)
+    local x, y = mouse_position()
+    --pico.circ(x, y, 16, pink)
+
+    pico.rectfill(x - 4, y - 4, 8, 8, circle_color)
+
+    circle_color = (circle_color + 1) % 16
 end
