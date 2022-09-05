@@ -79,7 +79,7 @@ void init_lua_vm(void) {
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
-    luaL_requiref(L, "pico", open_pico_module, 0);
+    luaL_requiref(L, "apis/pico", open_pico_module, 0);
 
     // Execute Lua script
     int result = luaL_dofile(L, "./assets/script.lua");
@@ -88,7 +88,7 @@ void init_lua_vm(void) {
         const char* error_message = lua_tostring(L, -1);
         log_error(error_message);
 
-        lua_pop(L, -1); // Error message
+        lua_pop(L, -1);
     }
 }
 

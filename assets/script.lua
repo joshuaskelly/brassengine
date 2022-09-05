@@ -1,5 +1,5 @@
 local draw = require("draw")
-local pico = require("pico")
+local pico = require("apis/pico")
 
 -- Called once at startup
 function _init()
