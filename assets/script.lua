@@ -121,6 +121,7 @@ function test_pico()
     --pico.circ(x, y, 16, pink)
 
     pico.rectfill(x - 4, y - 4, 8, 8, circle_color)
+    --p.draw()
 
     circle_color = (circle_color + 1) % 16
 end

@@ -12,6 +12,7 @@
 #include "bindings/pico.h"
 
 static lua_State* L = NULL;
+static bool is_in_error_state = false;
 
 static bool buttons[6];
 static int mouse_position[2];
@@ -63,6 +64,7 @@ int open_draw_module(lua_State* L) {
 void init_lua_vm(void) {
     // Create Lua VM
     L = luaL_newstate();
+    is_in_error_state = false;
 
     if (!L) {
         log_fatal("Error creating Lua VM");
@@ -87,9 +89,35 @@ void init_lua_vm(void) {
     if (result != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
         log_error(error_message);
+        is_in_error_state = true;
 
         lua_pop(L, -1);
     }
+}
+
+/**
+ * @brief Error message handler.
+ *
+ * @param L Lua VM
+ * @return int 1. A traceback or message will be pushed to the stack.
+ */
+static int message_handler (lua_State *L) {
+    const char *msg = lua_tostring(L, 1);
+
+    if (msg == NULL) {
+        // Does it have a metamethod that can produce a string?
+        if (luaL_callmeta(L, 1, "__tostring") && lua_type(L, -1) == LUA_TSTRING) {
+            return 1;
+        }
+        else {
+            msg = lua_pushfstring(L, "(error object is a %s value)", luaL_typename(L, 1));
+        }
+    }
+
+    // Append a standard traceback.
+    luaL_traceback(L, L, msg, 1);
+
+    return 1;
 }
 
 /**
@@ -100,15 +128,32 @@ void init_lua_vm(void) {
  * @param function_name Name of the function to call
  */
 void call_global_lua_function(lua_State* L, const char* function_name) {
+    if (is_in_error_state) return;
+
+    int base = lua_gettop(L);
+    // Set message handler
+    lua_pushcfunction(L, message_handler);
+    // Move message handler under function and args
+    lua_insert(L, base);
+
     // Attempt to find the global object
     lua_getglobal(L, function_name);
 
+    // Invoke function
     if (lua_isfunction(L, -1)) {
-        lua_pcall(L, 0, 0, 0);
+        if (lua_pcall(L, 0, 0, base)) {
+            // Handle traceback if we get one.
+            const char* message = lua_tostring(L, -1);
+            log_error(message);
+            is_in_error_state = true;
+        }
     }
     else {
         lua_pop(L, -1); // nil or some other type
     }
+
+    // Remove message handler
+    lua_remove(L, base);
 }
 
 void script_init(void) {
