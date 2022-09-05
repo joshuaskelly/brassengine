@@ -21,7 +21,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color);
  * @param y Rect top left y-coordinate
  * @param width Rect width
  * @param height Rect height
- * @param color Rect color
+ * @param color Line color
  */
 void draw_rectangle(int x, int y, int width, int height, color_t color);
 
@@ -32,8 +32,28 @@ void draw_rectangle(int x, int y, int width, int height, color_t color);
  * @param y Rect top left y-coordinate
  * @param width Rect width
  * @param height Rect height
- * @param color Rect color
+ * @param color Fill color
  */
 void draw_filled_rectangle(int x, int y, int width, int height, color_t color);
+
+/**
+ * @brief Draw circle.
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Line color
+ */
+void draw_circle(int x, int y, int radius, color_t color);
+
+/**
+ * @brief Draw filled circle.
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Fill color
+ */
+void draw_filled_circle(int x, int y, int radius, color_t color);
 
 #endif

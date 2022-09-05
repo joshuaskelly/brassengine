@@ -6,7 +6,6 @@
 
 void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     // DDA based line drawing algorithm
-
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
     int longest_side = fmax(abs(delta_x), abs(delta_y));
@@ -44,5 +43,87 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
     for (int i = 0; i < height; i++) {
         y0 = y + i;
         draw_line(x0, y0, x1, y0, color);
+    }
+}
+
+/**
+ * @brief Plot 8 pixels of the circle at a time using octave symmetry.
+ *
+ * @param x Current x-coordinate on perimeter of circle
+ * @param y Current y-coordinate on perimeter of circle
+ * @param offset_x X-coordinate offset
+ * @param offset_y Y-coordinate offset
+ * @param color Line color
+ */
+void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
+    graphics_set_pixel( x + offset_x,  y + offset_y, color);
+    graphics_set_pixel( y + offset_x,  x + offset_y, color);
+    graphics_set_pixel(-x + offset_x,  y + offset_y, color);
+    graphics_set_pixel(-y + offset_x,  x + offset_y, color);
+    graphics_set_pixel( x + offset_x, -y + offset_y, color);
+    graphics_set_pixel( y + offset_x, -x + offset_y, color);
+    graphics_set_pixel(-x + offset_x, -y + offset_y, color);
+    graphics_set_pixel(-y + offset_x, -x + offset_y, color);
+}
+
+/**
+ * @brief Draw four horizontal lines at time using octave symmetry.
+ *
+ * @param x Current x-coordinate on perimeter of circle
+ * @param y Current y-coordinate on perimeter of circle
+ * @param offset_x X-coordinate offset
+ * @param offset_y Y-coordinate offset
+ * @param color Fill color
+ */
+void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
+    draw_line( x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, color);
+    draw_line( y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, color);
+    draw_line( x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, color);
+    draw_line( y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, color);
+}
+
+void draw_circle(int x, int y, int radius, color_t color) {
+    // Bresenham's circle algorithm
+    int _x = 0;
+    int _y = radius;
+    int midpoint_criteria = 1 - radius;
+
+    draw_pixel_octave_symmetry(_x, _y, x, y, color);
+
+    while (_x < _y) {
+        // Mid-point on or inside radius
+        if (midpoint_criteria <= 0) {
+            midpoint_criteria += (_x << 1) + 3;
+        }
+        // Outside radius
+        else {
+            midpoint_criteria += ((_x - _y) << 1) + 5;
+            _y -= 1;
+        }
+        _x++;
+        draw_pixel_octave_symmetry(_x, _y, x, y, color);
+    }
+}
+
+void draw_filled_circle(int x, int y, int radius, color_t color) {
+    // Bresenham's circle algorithm
+    int _x = 0;
+    int _y = radius;
+    int midpoint_criteria = 1 - radius;
+
+    fill_pixel_octave_symmetry(_x, _y, x, y, color);
+
+    while (_x < _y) {
+        // Mid-point on or inside radius
+        if (midpoint_criteria <= 0) {
+            midpoint_criteria += (_x << 1) + 3;
+        }
+        // Outside radius
+        else {
+            midpoint_criteria += ((_x - _y) << 1) + 5;
+            _y -= 1;
+        }
+        _x++;
+        fill_pixel_octave_symmetry(_x, _y, x, y, color);
     }
 }

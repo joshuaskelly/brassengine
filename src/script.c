@@ -22,6 +22,8 @@ int api_draw_pixel(lua_State* L);
 int api_draw_line(lua_State* L);
 int api_draw_rectangle(lua_State* L);
 int api_draw_filled_rectangle(lua_State* L);
+int api_draw_circle(lua_State* L);
+int api_draw_filled_circle(lua_State* L);
 int api_clear_screen(lua_State* L);
 int api_set_palette_color(lua_State* L);
 int api_set_clipping_rectangle(lua_State* L);
@@ -43,6 +45,8 @@ static const struct luaL_Reg draw_module_functions[] = {
     {"line", api_draw_line},
     {"rectangle", api_draw_rectangle},
     {"filled_rectangle", api_draw_filled_rectangle},
+    {"circle", api_draw_circle},
+    {"filled_circle", api_draw_filled_circle},
     {"clear", api_clear_screen},
     {NULL, NULL}
 };
@@ -335,6 +339,38 @@ int api_draw_filled_rectangle(lua_State* L) {
     lua_pop(L, -1); // x
 
     draw_filled_rectangle(x, y, width, height, color);
+
+    return 0;
+}
+
+int api_draw_circle(lua_State* L) {
+    int x = (int)lua_tonumber(L, -4);
+    int y = (int)lua_tonumber(L, -3);
+    int radius = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // radius
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
+
+    draw_circle(x, y, radius, color);
+
+    return 0;
+}
+
+int api_draw_filled_circle(lua_State* L) {
+    int x = (int)lua_tonumber(L, -4);
+    int y = (int)lua_tonumber(L, -3);
+    int radius = (int)lua_tonumber(L, -2);
+    int color = (int)lua_tonumber(L, -1);
+
+    lua_pop(L, -1); // color
+    lua_pop(L, -1); // radius
+    lua_pop(L, -1); // y
+    lua_pop(L, -1); // x
+
+    draw_filled_circle(x, y, radius, color);
 
     return 0;
 }

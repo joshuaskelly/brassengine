@@ -17,18 +17,18 @@ function _init()
     fill_color = black
     last_x, last_y = mouse_position()
 
-
-    draw_frame()
+    --draw_frame()
 end
 
 -- Called once per frame
 function _update()
-    test_input()
+    --test_input()
 end
 
 -- Called once per frame
 function _draw()
-    test_draw()
+    --test_draw()
+    test_circle()
 end
 
 function test_input()
@@ -98,4 +98,11 @@ function draw_frame()
     draw.filled_rectangle(48, 48, 224, 104, white)
     draw.filled_rectangle(50, 50, 220, 100, fill_color)
     clip(50, 50, 220, 100)
+end
+
+function test_circle()
+    draw.clear(black)
+    local x, y = mouse_position()
+    draw.circle(x, y, math.min(x, y), white)
+    draw.filled_circle(x, y, 16, pink)
 end
