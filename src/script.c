@@ -131,29 +131,27 @@ void call_global_lua_function(lua_State* L, const char* function_name) {
     if (is_in_error_state) return;
 
     int base = lua_gettop(L);
-    // Set message handler
-    lua_pushcfunction(L, message_handler);
-    // Move message handler under function and args
-    lua_insert(L, base);
 
     // Attempt to find the global object
     lua_getglobal(L, function_name);
 
     // Invoke function
     if (lua_isfunction(L, -1)) {
+        // Set message handler
+        lua_pushcfunction(L, message_handler);
+        // Move message handler under function and args
+        lua_insert(L, base);
+
         if (lua_pcall(L, 0, 0, base)) {
             // Handle traceback if we get one.
             const char* message = lua_tostring(L, -1);
             log_error(message);
             is_in_error_state = true;
         }
-    }
-    else {
-        lua_pop(L, -1); // nil or some other type
-    }
 
-    // Remove message handler
-    lua_remove(L, base);
+        // Remove message handler
+        lua_remove(L, base);
+    }
 }
 
 void script_init(void) {
