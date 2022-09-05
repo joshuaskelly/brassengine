@@ -95,7 +95,7 @@ void draw_circle(int x, int y, int radius, color_t color) {
         if (midpoint_criteria <= 0) {
             midpoint_criteria += (_x << 1) + 3;
         }
-        // Outside radius
+        // Mid-point outside radius
         else {
             midpoint_criteria += ((_x - _y) << 1) + 5;
             _y -= 1;
@@ -118,7 +118,7 @@ void draw_filled_circle(int x, int y, int radius, color_t color) {
         if (midpoint_criteria <= 0) {
             midpoint_criteria += (_x << 1) + 3;
         }
-        // Outside radius
+        // Mid-point outside radius
         else {
             midpoint_criteria += ((_x - _y) << 1) + 5;
             _y -= 1;
