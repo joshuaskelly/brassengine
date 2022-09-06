@@ -155,7 +155,7 @@ void call_global_lua_function(lua_State* L, const char* function_name) {
 }
 
 void script_init(void) {
-    log_info("script init");
+    log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
 }
 

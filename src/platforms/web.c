@@ -22,7 +22,19 @@ int platform_main(int argc, char* argv[]) {
 }
 
 void platform_init(void) {
-    log_info("platform (emscripten sdl2) init");
+    // Get platform version info
+    SDL_version version;
+    SDL_GetVersion(&version);
+    char buffer[64];
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i)",
+        __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__,
+        version.major, version.minor, version.patch
+    );
+
+    log_info(buffer);
 
     const int window_width = RENDER_BUFFER_WIDTH * 3;
     const int window_height = RENDER_BUFFER_HEIGHT * 3;
