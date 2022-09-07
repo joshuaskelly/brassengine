@@ -74,6 +74,7 @@ void texture_blit(texture_t* source_texture, texture_t* destination_texture, rec
     float sx = source_rect->x;
     float sy = source_rect->y;
 
+    // TODO: Add checks for destination boundaries.
     for (int dy = destination_rect->y; dy < destination_rect->y + destination_rect->height; dy++) {
         sx = source_rect->x;
 

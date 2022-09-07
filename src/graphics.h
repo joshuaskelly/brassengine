@@ -66,7 +66,15 @@ void texture_set_pixel(texture_t* texture, int x, int y, color_t color);
  */
 color_t texture_get_pixel(texture_t* texture, int x, int y);
 
-void texture_blit(texture_t* source, texture_t* destination, rect_t* source_rect, rect_t* destination_rect);
+/**
+ * @brief Copy a portion of one texture to another.
+ *
+ * @param source_texture Texture to copy from
+ * @param destination_texture Texture to copy to
+ * @param source_rect Sub region of source texture. NULL for entire source texture
+ * @param destination_rect Destination region. NULL for entire destination texture, texture will be stretched.
+ */
+void texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect);
 
 /**
  * @brief Initialize graphics system.
