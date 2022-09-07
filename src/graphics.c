@@ -57,6 +57,36 @@ color_t texture_get_pixel(texture_t* texture, int x, int y) {
     return texture->pixels[y * texture->width + x];
 }
 
+void texture_blit(texture_t* source, texture_t* destination, rect_t* source_rect, rect_t* destination_rect) {
+    rect_t s;
+    s.x = source_rect ? source_rect->x : 0;
+    s.y = source_rect ? source_rect->y : 0;
+    s.width = source_rect ? source_rect->width : source->width;
+    s.height = source_rect ? source_rect->height : source->height;
+
+    rect_t d;
+    d.x = destination_rect ? destination_rect->x : 0;
+    d.y = destination_rect ? destination_rect->y : 0;
+    d.width = destination_rect ? destination_rect->width : destination->width;
+    d.height = destination_rect ? destination_rect->height : destination->height;
+
+    int horizontal_bound = fmin(destination->width, d.x + d.width);
+    int vertical_bound = fmin(destination->height, d.y + d.height);
+
+    for (int y = d.y; y < vertical_bound; y++) {
+        float ry = (y - d.y) / (float)d.height;
+        float iy = ry * s.height + s.y;
+
+        for (int x = d.x; x < horizontal_bound; x++) {
+            float rx = (x - d.x) / (float)d.width;
+            float ix = rx * s.width + s.x;
+
+            color_t pixel = texture_get_pixel(source, round(ix), round(iy));
+            texture_set_pixel(destination, x, y, pixel);
+        }
+    }
+}
+
 void graphics_init(void) {
     log_info("graphics init");
 

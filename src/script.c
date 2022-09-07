@@ -11,8 +11,12 @@
 #include "renderers/draw.h"
 #include "bindings/pico.h"
 
+#include "testdata.h"
+
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
+
+static texture_t* test_texture;
 
 static bool buttons[6];
 static int mouse_position[2];
@@ -29,6 +33,7 @@ int api_draw_filled_circle(lua_State* L);
 int api_clear_screen(lua_State* L);
 int api_set_palette_color(lua_State* L);
 int api_set_clipping_rectangle(lua_State* L);
+int api_test_blit(lua_State* L);
 
 /**
  * @brief Add a global function to Lua VM
@@ -50,6 +55,7 @@ static const struct luaL_Reg draw_module_functions[] = {
     {"circle", api_draw_circle},
     {"filled_circle", api_draw_filled_circle},
     {"clear", api_clear_screen},
+    {"test_blit", api_test_blit},
     {NULL, NULL}
 };
 
@@ -157,10 +163,14 @@ void call_global_lua_function(lua_State* L, const char* function_name) {
 void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
+
+    test_texture = texture_new(256, 256, mrmo_adventures);
 }
 
 void script_destroy(void) {
     lua_close(L);
+
+    texture_free(test_texture);
 }
 
 /**
@@ -446,5 +456,24 @@ int api_set_clipping_rectangle(lua_State* L) {
 
     graphics_set_clipping_rectangle(x, y, width, height);
 
+    return 0;
+}
+
+int api_test_blit(lua_State* L) {
+    int sx = (int)lua_tonumber(L, 1);
+    int sy = (int)lua_tonumber(L, 2);
+    int sw = (int)lua_tonumber(L, 3);
+    int sh = (int)lua_tonumber(L, 4);
+    int dx = (int)lua_tonumber(L, 5);
+    int dy = (int)lua_tonumber(L, 6);
+    int dw = (int)lua_tonumber(L, 7);
+    int dh = (int)lua_tonumber(L, 8);
+
+    lua_pop(L, -1);
+
+    rect_t source_rect = {sx, sy, sw, sh};
+    rect_t dest_rect = {dx, dy, dw, dh};
+    texture_t* render_texture = graphics_get_render_texture();
+    texture_blit(test_texture, render_texture, &source_rect, &dest_rect);
     return 0;
 }

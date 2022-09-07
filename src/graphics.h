@@ -6,6 +6,13 @@
 #define RENDER_BUFFER_WIDTH 320
 #define RENDER_BUFFER_HEIGHT 200
 
+typedef struct {
+    int x;
+    int y;
+    int width;
+    int height;
+} rect_t;
+
 typedef uint8_t color_t;
 
 typedef struct {
@@ -58,6 +65,8 @@ void texture_set_pixel(texture_t* texture, int x, int y, color_t color);
  * @return Color at given coordinates
  */
 color_t texture_get_pixel(texture_t* texture, int x, int y);
+
+void texture_blit(texture_t* source, texture_t* destination, rect_t* source_rect, rect_t* destination_rect);
 
 /**
  * @brief Initialize graphics system.
