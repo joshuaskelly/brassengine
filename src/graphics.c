@@ -71,20 +71,20 @@ void texture_blit(texture_t* source_texture, texture_t* destination_texture, rec
     float x_step = source_rect->width / (float)destination_rect->width;
     float y_step = source_rect->height / (float)destination_rect->height;
 
-    float source_x = source_rect->x;
-    float source_y = source_rect->y;
+    float sx = source_rect->x;
+    float sy = source_rect->y;
 
-    for (int y = destination_rect->y; y < destination_rect->y + destination_rect->height; y++) {
-        source_x = source_rect->x;
+    for (int dy = destination_rect->y; dy < destination_rect->y + destination_rect->height; dy++) {
+        sx = source_rect->x;
 
-        for (int x = destination_rect->x; x < destination_rect->x + destination_rect->width; x++) {
-            color_t pixel = texture_get_pixel(source_texture, source_x, source_y);
-            texture_set_pixel(destination_texture, x, y, pixel);
+        for (int dx = destination_rect->x; dx < destination_rect->x + destination_rect->width; dx++) {
+            color_t pixel = texture_get_pixel(source_texture, sx, sy);
+            texture_set_pixel(destination_texture, dx, dy, pixel);
 
-            source_x += x_step;
+            sx += x_step;
         }
 
-        source_y += y_step;
+        sy += y_step;
     }
 }
 
