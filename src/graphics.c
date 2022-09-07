@@ -58,14 +58,14 @@ color_t texture_get_pixel(texture_t* texture, int x, int y) {
 }
 
 void texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect) {
-    rect_t s = {0, 0, source_texture->width, source_texture->height};
+    rect_t default_source_rect = {0, 0, source_texture->width, source_texture->height};
     if (!source_rect) {
-        source_rect = &s;
+        source_rect = &default_source_rect;
     }
 
-    rect_t d = {0, 0, destination_texture->width, destination_texture->height};
+    rect_t default_destination_rect = {0, 0, destination_texture->width, destination_texture->height};
     if (!destination_rect) {
-        destination_rect = &d;
+        destination_rect = &default_destination_rect;
     }
 
     float x_step = source_rect->width / (float)destination_rect->width;
