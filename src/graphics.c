@@ -73,13 +73,22 @@ void texture_blit(texture_t* source, texture_t* destination, rect_t* source_rect
     int horizontal_bound = fmin(destination->width, d.x + d.width);
     int vertical_bound = fmin(destination->height, d.y + d.height);
 
+    float vertical_ratio = s.height / (float)d.height;
+    float vertical_increment = (1 - d.y) * vertical_ratio;
+    float horizontal_ratio = s.width / (float)d.width;
+    float horizontal_increment = (1 - d.x) * horizontal_ratio;
+
+    float v = d.y;
+
     for (int y = d.y; y < vertical_bound; y++) {
-        float ry = (y - d.y) / (float)d.height;
-        float iy = ry * s.height + s.y;
+        v += vertical_increment;
+        float iy = v + s.y;
+
+        float u = d.x;
 
         for (int x = d.x; x < horizontal_bound; x++) {
-            float rx = (x - d.x) / (float)d.width;
-            float ix = rx * s.width + s.x;
+            u += horizontal_increment;
+            float ix = u + s.x;
 
             color_t pixel = texture_get_pixel(source, round(ix), round(iy));
             texture_set_pixel(destination, x, y, pixel);
