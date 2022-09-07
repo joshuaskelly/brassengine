@@ -59,25 +59,25 @@ color_t texture_get_pixel(texture_t* texture, int x, int y) {
 
 void texture_blit(texture_t* source, texture_t* destination, rect_t* source_rect, rect_t* destination_rect) {
     rect_t s = {0, 0, source->width, source->height};
-    if (source_rect) {
-        s = (rect_t){source_rect->x, source_rect->y, source_rect->width, source_rect->height};
+    if (!source_rect) {
+        source_rect = &s;
     }
 
     rect_t d = {0, 0, destination->width, destination->height};
-    if (destination_rect) {
-        d = (rect_t){destination_rect->x, destination_rect->y, destination_rect->width, destination_rect->height};
+    if (!destination_rect) {
+        destination_rect = &d;
     }
 
-    float x_step = s.width / (float)d.width;
-    float y_step = s.height / (float)d.height;
+    float x_step = source_rect->width / (float)destination_rect->width;
+    float y_step = source_rect->height / (float)destination_rect->height;
 
-    float source_x = s.x;
-    float source_y = s.y;
+    float source_x = source_rect->x;
+    float source_y = source_rect->y;
 
-    for (int y = d.y; y < d.y + d.height; y++) {
-        source_x = s.x;
+    for (int y = destination_rect->y; y < destination_rect->y + destination_rect->height; y++) {
+        source_x = source_rect->x;
 
-        for (int x = d.x; x < d.x + d.width; x++) {
+        for (int x = destination_rect->x; x < destination_rect->x + destination_rect->width; x++) {
             color_t pixel = texture_get_pixel(source, source_x, source_y);
             texture_set_pixel(destination, x, y, pixel);
 
