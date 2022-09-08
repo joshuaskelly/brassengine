@@ -71,21 +71,22 @@ void texture_blit(texture_t* source_texture, texture_t* destination_texture, rec
     float x_step = source_rect->width / (float)destination_rect->width;
     float y_step = source_rect->height / (float)destination_rect->height;
 
+    int left = destination_rect->x;
+    int right = destination_rect->x + destination_rect->width;
+    int top = destination_rect->y;
+    int bottom = destination_rect->y + destination_rect->height;
+
+    int dy = top;
+    int dx = left;
     float sx = source_rect->x;
     float sy = source_rect->y;
 
     // TODO: Add checks for destination boundaries.
-    for (int dy = destination_rect->y; dy < destination_rect->y + destination_rect->height; dy++) {
-        sx = source_rect->x;
-
-        for (int dx = destination_rect->x; dx < destination_rect->x + destination_rect->width; dx++) {
+    for (dy = top, sy = source_rect->y; dy < bottom; dy++, sy += y_step) {
+        for (dx = left, sx = source_rect->x; dx < right; dx++, sx += x_step) {
             color_t pixel = texture_get_pixel(source_texture, sx, sy);
             texture_set_pixel(destination_texture, dx, dy, pixel);
-
-            sx += x_step;
         }
-
-        sy += y_step;
     }
 }
 
