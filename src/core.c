@@ -1,10 +1,11 @@
 #include <stdbool.h>
 
+#include "assets.h"
 #include "core.h"
-#include "platform.h"
 #include "event.h"
 #include "graphics.h"
 #include "log.h"
+#include "platform.h"
 #include "script.h"
 #include "state.h"
 #include "teststate.h"
@@ -19,6 +20,7 @@ void core_init(void) {
 
     platform_init();
     graphics_init();
+    assets_init();
     script_init();
 
     // Set initial state
@@ -27,6 +29,7 @@ void core_init(void) {
 
 void core_destroy(void) {
     script_destroy();
+    assets_destroy();
     graphics_destroy();
     platform_destroy();
 }

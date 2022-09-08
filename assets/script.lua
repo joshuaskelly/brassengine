@@ -23,7 +23,7 @@ function _draw()
     draw.clear(0)
     local x, y = mouse_position()
     draw.test_blit(0, 0, x, y, 0, 0, x, y)
-    local coords = string.format("%i, %i", x, y)
+    local coords = string.format("%i,%i", x, y)
 
     local w = #coords * 8
     if x > (320 - w) then

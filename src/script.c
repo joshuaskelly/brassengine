@@ -4,14 +4,13 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "assets.h"
 #include "event.h"
 #include "graphics.h"
 #include "log.h"
 #include "script.h"
 #include "renderers/draw.h"
 #include "bindings/pico.h"
-
-#include "testdata.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
@@ -90,7 +89,7 @@ void init_lua_vm(void) {
     luaL_requiref(L, "apis/pico", open_pico_module, 0);
 
     // Execute Lua script
-    int result = luaL_dofile(L, "./assets/script.lua");
+    int result = luaL_dostring(L, assets_get_script());
 
     if (result != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
@@ -164,7 +163,7 @@ void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
 
-    test_texture = texture_new(256, 256, mrmo_adventures);
+    test_texture = assets_get_texture(0);
 }
 
 void script_destroy(void) {
@@ -178,6 +177,9 @@ void script_destroy(void) {
  */
 void reload_lua_vm(void) {
     log_info("script reload");
+    assets_load_archive("assets/test.toy");
+    test_texture = assets_get_texture(0);
+
     init_lua_vm();
     call_global_lua_function(L, "_init");
 }
