@@ -76,7 +76,8 @@ void read_script(FILE* fp, archive_t* archive) {
 
     fseek(fp, position, SEEK_SET);
 
-    char* script = (char*)malloc(sizeof(char) * string_size + 1);
+    char* script = (char*)malloc(sizeof(char) * (string_size + 1));
+    script[0] = '\0';
 
     long char_left = string_size;
 
