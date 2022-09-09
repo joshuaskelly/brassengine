@@ -36,4 +36,6 @@ uint32_t* assets_get_palette(void);
 
 texture_t* assets_get_texture(int index);
 
+bool assets_is_archive_file(const char* filename);
+
 #endif

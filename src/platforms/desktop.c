@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include <SDL2/SDL.h>
 
 #include "../assets.h"
@@ -180,8 +178,7 @@ void sdl_handle_events(void) {
             case SDL_DROPFILE:
                 filename = sdl_event.drop.file;
 
-                const char* dot = strrchr(filename, '.');
-                if (dot && strcmp(dot, ".toy") == 0) {
+                if (assets_is_archive_file(filename)) {
                     assets_load(filename);
                     script_reload();
                 }

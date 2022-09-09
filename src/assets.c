@@ -193,10 +193,15 @@ void set_archive_filename(const char* filename) {
 }
 
 bool assets_load(const char* filename) {
+    if (!assets_is_archive_file(filename)) {
+        log_error("%s is not a valid archive file.");
+        return false;
+    }
+
     FILE* fp = fopen(filename, "r");
 
     if (!fp) {
-        log_error("Failed to open:  %s", filename);
+        log_error("Failed to open: %s", filename);
         fclose(fp);
         return false;
     }
@@ -264,4 +269,9 @@ texture_t* assets_get_texture(int index) {
 
     texture_t* texture = archive.textures[index];
     return texture;
+}
+
+bool assets_is_archive_file(const char* filename) {
+    const char* dot = strrchr(filename, '.');
+    return dot && strcmp(dot, ".toy") == 0;
 }
