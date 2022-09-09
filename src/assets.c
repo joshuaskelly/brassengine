@@ -76,7 +76,7 @@ void read_script(FILE* fp, archive_t* archive) {
 
     fseek(fp, position, SEEK_SET);
 
-    char* script = (char*)malloc(sizeof(char) * string_size);
+    char* script = (char*)malloc(sizeof(char) * string_size + 1);
 
     long char_left = string_size;
 
@@ -88,6 +88,8 @@ void read_script(FILE* fp, archive_t* archive) {
         char_left -= length;
         strcat(script, line);
     }
+
+    script[string_size] = '\0';
 
     archive->script = script;
 }
