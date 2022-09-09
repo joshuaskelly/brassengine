@@ -3,24 +3,34 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "arguments.h"
 #include "assets.h"
 #include "log.h"
 
 static archive_t archive;
+static char* archive_filename;
 
 void assets_init(void) {
+    log_info("assets init");
+
     archive.version = -1;
     archive.script = NULL;
     archive.textures = NULL;
     archive.texture_count = 0;
 
-    if (!assets_load_archive("assets/test.toy")) {
+    int argc = arguments_count();
+    char* filename = "assets/default.toy";
+    if (argc > 1) {
+        filename = arguments_vector()[argc - 1];
+    }
+
+    if (!assets_load(filename)) {
         log_fatal("Failed to load archive.");
     }
 }
 
 void assets_destroy(void) {
-
+    assets_unload();
 }
 
 void read_header(FILE* fp, archive_t* archive) {
@@ -175,34 +185,20 @@ void read_textures(FILE* fp, archive_t* archive) {
     archive->textures = textures;
 }
 
-void assets_unload_archive(void) {
-    if (archive.version == -1) return;
-
-    archive.version = -1;
-    free(archive.script);
-    archive.script = NULL;
-
-    for (int i = 0; i < archive.texture_count; i++) {
-        texture_t* texture = archive.textures[i];
-        texture_free(texture);
-        texture = NULL;
-    }
-
-    free(archive.textures);
-    archive.textures = NULL;
-
-    archive.texture_count = 0;
-}
-
-bool assets_load_archive(char* filename) {
+bool assets_load(char* filename) {
     FILE* fp = fopen(filename, "r");
 
     if (!fp) {
+        log_error("Failed to open:  %s", filename);
         fclose(fp);
         return false;
     }
 
-    assets_unload_archive();
+    log_info("loaded file: %s", filename);
+
+    archive_filename = filename;
+
+    assets_unload();
 
     char line[1024];
     while (fgets(line, 1024, fp)) {
@@ -225,6 +221,29 @@ bool assets_load_archive(char* filename) {
     return true;
 }
 
+void assets_unload(void) {
+    if (archive.version == -1) return;
+
+    archive.version = -1;
+    free(archive.script);
+    archive.script = NULL;
+
+    for (int i = 0; i < archive.texture_count; i++) {
+        texture_t* texture = archive.textures[i];
+        texture_free(texture);
+        texture = NULL;
+    }
+
+    free(archive.textures);
+    archive.textures = NULL;
+
+    archive.texture_count = 0;
+}
+
+void assets_reload(void)  {
+    assets_load(archive_filename);
+}
+
 char* assets_get_script(void) {
     return archive.script;
 }
@@ -234,6 +253,8 @@ uint32_t* assets_get_palette(void) {
 }
 
 texture_t* assets_get_texture(int index) {
+    if (archive.textures == NULL) return NULL;
+
     texture_t* texture = archive.textures[index];
     return texture;
 }

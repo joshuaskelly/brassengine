@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include "graphics.h"
 #include "log.h"
@@ -116,9 +114,6 @@ void graphics_init(void) {
     if (!palette) {
         log_fatal("Failed to create palette");
     }
-
-    palette[0] = 0xFF0000FF;
-    palette[1] = 0xFFFFFFFF;
 
     clip_rect.x = 0;
     clip_rect.y = 0;

@@ -15,8 +15,6 @@
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
 
-static texture_t* test_texture;
-
 static bool buttons[6];
 static int mouse_position[2];
 
@@ -162,14 +160,10 @@ void call_global_lua_function(lua_State* L, const char* function_name) {
 void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
-
-    test_texture = assets_get_texture(0);
 }
 
 void script_destroy(void) {
     lua_close(L);
-
-    texture_free(test_texture);
 }
 
 /**
@@ -177,8 +171,7 @@ void script_destroy(void) {
  */
 void reload_lua_vm(void) {
     log_info("script reload");
-    assets_load_archive("assets/test.toy");
-    test_texture = assets_get_texture(0);
+    assets_reload();
 
     init_lua_vm();
     call_global_lua_function(L, "_init");
@@ -476,6 +469,13 @@ int api_test_blit(lua_State* L) {
     rect_t source_rect = {sx, sy, sw, sh};
     rect_t dest_rect = {dx, dy, dw, dh};
     texture_t* render_texture = graphics_get_render_texture();
-    texture_blit(test_texture, render_texture, &source_rect, &dest_rect);
+
+    // TODO: Fix this hard coding of texture 0
+    texture_t* source_texture = assets_get_texture(0);
+
+    if (source_texture) {
+        texture_blit(source_texture, render_texture, &source_rect, &dest_rect);
+    }
+
     return 0;
 }

@@ -24,9 +24,11 @@ void assets_init(void);
  */
 void assets_destroy(void);
 
-bool assets_load_archive(char* filename);
+bool assets_load(char* filename);
 
-void assets_unload_archive(void);
+void assets_unload(void);
+
+void assets_reload(void);
 
 char* assets_get_script(void);
 
