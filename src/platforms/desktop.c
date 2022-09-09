@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <SDL2/SDL.h>
 
 #include "../assets.h"
@@ -177,9 +179,15 @@ void sdl_handle_events(void) {
 
             case SDL_DROPFILE:
                 filename = sdl_event.drop.file;
-                assets_load(filename);
-                script_reload();
+
+                const char* dot = strrchr(filename, '.');
+                if (dot && strcmp(dot, ".toy") == 0) {
+                    assets_load(filename);
+                    script_reload();
+                }
+
                 SDL_free(filename);
+
                 break;
         }
     }
