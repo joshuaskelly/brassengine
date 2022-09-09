@@ -135,8 +135,14 @@ texture_t* graphics_get_render_texture(void) {
     return render_texture;
 }
 
-uint32_t* graphics_get_palette(void) {
+uint32_t* graphics_palette_get(void) {
     return palette;
+}
+
+void graphics_palette_clear(void) {
+    for (int i = 0; i < 256; i++) {
+        palette[i] = 0;
+    }
 }
 
 void graphics_set_pixel(int x, int y, color_t color) {

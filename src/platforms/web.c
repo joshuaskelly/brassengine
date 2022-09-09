@@ -97,7 +97,7 @@ void platform_update(void) {
 
 void platform_draw(void) {
     texture_t* render_texture = graphics_get_render_texture();
-    uint32_t* palette = graphics_get_palette();
+    uint32_t* palette = graphics_palette_get();
 
     // Convert core render buffer from indexed to rgba
     for (int i = 0; i < render_texture->width * render_texture->height; i++) {

@@ -41,13 +41,13 @@ void read_palette(FILE* fp, archive_t* archive) {
     int a = 0xFF;
 
     char line[1024];
-    int i = 0;
+    int palette_color_count = 0;
     long position = ftell(fp);
 
     while (fgets(line, 1024, fp)) {
         if (sscanf(line, "%i %i %i", &r, &g, &b)) {
             uint32_t color = a << 24 | b << 16 | g << 8 | r;
-            archive->palette[i++] = color;
+            archive->palette[palette_color_count++] = color;
             position = ftell(fp);
         }
         else {
@@ -56,6 +56,13 @@ void read_palette(FILE* fp, archive_t* archive) {
     }
 
     fseek(fp, position, SEEK_SET);
+
+    graphics_palette_clear();
+    uint32_t* palette = graphics_palette_get();
+
+    for (int i = 0; i < palette_color_count; i++) {
+        palette[i] = archive->palette[i];
+    }
 }
 
 const char* tag_pattern = "__%[abcdefghijklmnopqrstuvwxyz]__";

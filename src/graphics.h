@@ -98,7 +98,9 @@ texture_t* graphics_get_render_texture(void);
  *
  * @return Palette as a 256 color array.
  */
-uint32_t* graphics_get_palette(void);
+uint32_t* graphics_palette_get(void);
+
+void graphics_palette_clear(void);
 
 /**
  * @brief Set pixel color.

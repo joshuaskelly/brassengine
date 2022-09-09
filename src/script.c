@@ -442,7 +442,7 @@ int api_set_palette_color(lua_State* L) {
     uint32_t color = a << 24 | b << 16 | g << 8 | r;
 
     uint32_t* palette = NULL;
-    palette = graphics_get_palette();
+    palette = graphics_palette_get();
     palette[index] = color;
 
     return 0;
