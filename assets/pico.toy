@@ -18,6 +18,10 @@ __palette__
 255 119 168
 255 204 170
 __script__
+-- port of @lexaloffle's
+-- 3d dot party tutorial
+-- https://twitter.com/lexaloffle/status/1004070743284408320
+
 local pico = require("apis/pico")
 
 frame = 0
