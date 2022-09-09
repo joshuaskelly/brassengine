@@ -24,7 +24,7 @@ void assets_init(void);
  */
 void assets_destroy(void);
 
-bool assets_load(char* filename);
+bool assets_load(const char* filename);
 
 void assets_unload(void);
 

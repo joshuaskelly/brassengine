@@ -166,10 +166,7 @@ void script_destroy(void) {
     lua_close(L);
 }
 
-/**
- * @brief Reload Lua VM
- */
-void reload_lua_vm(void) {
+void script_reload(void) {
     log_info("script reload");
     assets_reload();
 
@@ -209,7 +206,7 @@ bool script_handle_event(event_t* event) {
 
         case EVENT_KEYUP:
             if (event->key.code == KEYCODE_F5) {
-                reload_lua_vm();
+                script_reload();
                 return true;
             }
             else if (event->key.code == KEYCODE_LEFT) {

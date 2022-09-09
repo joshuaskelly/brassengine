@@ -1,10 +1,12 @@
 #include <SDL2/SDL.h>
 
-#include "../platform.h"
+#include "../assets.h"
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../platform.h"
+#include "../script.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
@@ -137,6 +139,8 @@ void sdl_handle_events(void) {
     float aspect_width = RENDER_BUFFER_WIDTH / (float)width;
     float aspect_height = RENDER_BUFFER_HEIGHT / (float)height;
 
+    char* filename;
+
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
             case SDL_QUIT:
@@ -169,6 +173,13 @@ void sdl_handle_events(void) {
                 event.motion.rel_y = sdl_event.motion.yrel * aspect_height;
 
                 event_post(&event);
+                break;
+
+            case SDL_DROPFILE:
+                filename = sdl_event.drop.file;
+                assets_load(filename);
+                script_reload();
+                SDL_free(filename);
                 break;
         }
     }

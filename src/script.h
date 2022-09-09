@@ -26,5 +26,6 @@ bool script_handle_event(event_t* event);
 void script_update(void);
 void script_setup(void);
 void script_draw(void);
+void script_reload(void);
 
 #endif

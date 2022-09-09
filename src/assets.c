@@ -185,7 +185,14 @@ void read_textures(FILE* fp, archive_t* archive) {
     archive->textures = textures;
 }
 
-bool assets_load(char* filename) {
+void set_archive_filename(const char* filename) {
+    char* old_filename = archive_filename;
+    archive_filename = (char*)calloc(strlen(filename) + 1, sizeof(char));
+    strcpy(archive_filename, filename);
+    free(old_filename);
+}
+
+bool assets_load(const char* filename) {
     FILE* fp = fopen(filename, "r");
 
     if (!fp) {
@@ -196,7 +203,7 @@ bool assets_load(char* filename) {
 
     log_info("loaded file: %s", filename);
 
-    archive_filename = filename;
+    set_archive_filename(filename);
 
     assets_unload();
 
