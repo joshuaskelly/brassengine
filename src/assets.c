@@ -78,6 +78,10 @@ void read_script(FILE* fp, archive_t* archive) {
 
     char* script = (char*)calloc(string_size + 1, sizeof(char));
 
+    if (script == NULL) {
+        log_fatal("Unable to allocate memory for script.");
+    }
+
     long char_left = string_size;
 
     while (fgets(line, char_left, fp)) {
@@ -148,6 +152,10 @@ void read_textures(FILE* fp, archive_t* archive) {
     fseek(fp, position, SEEK_SET);
 
     texture_t** textures = (texture_t**)malloc(sizeof(texture_t) * archive->texture_count);
+
+    if (textures == NULL) {
+        log_fatal("Unable to allocate memory for texture array.");
+    }
 
     for (int i = 0; i <  archive->texture_count; i++) {
         texture_t* texture = read_texture(fp);
