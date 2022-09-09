@@ -10,6 +10,8 @@
 static archive_t archive;
 static char* archive_filename;
 
+void set_archive_filename(const char* filename);
+
 void assets_init(void) {
     log_info("assets init");
 
@@ -19,12 +21,14 @@ void assets_init(void) {
     archive.texture_count = 0;
 
     int argc = arguments_count();
-    char* filename = "assets/default.toy";
     if (argc > 1) {
-        filename = arguments_vector()[argc - 1];
+        set_archive_filename(arguments_vector()[argc - 1]);
+    }
+    else {
+        set_archive_filename("assets/default.toy");
     }
 
-    if (!assets_load(filename)) {
+    if (!assets_load(archive_filename)) {
         log_fatal("Failed to load archive.");
     }
 }

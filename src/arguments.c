@@ -14,7 +14,7 @@ int arguments_count(void) {
     return argc;
 }
 
-char** arguments_vector(void) {
+const char** arguments_vector(void) {
     return argv;
 }
 
