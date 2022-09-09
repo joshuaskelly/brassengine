@@ -20,7 +20,7 @@ char** arguments_vector(void) {
 
 int arguments_check(char* arg) {
     for (int i = 0; i < argc; i++) {
-        if (!strcasecmp(arg, argv[i])) {
+        if (!strcmp(arg, argv[i])) {
             return i;
         }
     }
