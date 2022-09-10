@@ -1,3 +1,8 @@
+/**
+ * @file graphics.h
+ * @brief Graphics module. Responsible for manipulating pixels.
+ */
+
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
@@ -100,6 +105,9 @@ texture_t* graphics_get_render_texture(void);
  */
 uint32_t* graphics_palette_get(void);
 
+/**
+ * @brief Reset all palette values.
+ */
 void graphics_palette_clear(void);
 
 /**

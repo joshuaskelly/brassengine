@@ -1,3 +1,8 @@
+/**
+ * @file event.h
+ * @brief Event handling module.
+ */
+
 #ifndef EVENT_H
 #define EVENT_H
 

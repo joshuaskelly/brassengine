@@ -1,7 +1,9 @@
 /**
  * @file core.h
- * @brief Core engine functionality.
+ * @brief Core engine module. Responsible for managing all engine subsytems and
+ * the application lifecycle.
  */
+
 #ifndef CORE_H
 #define CORE_H
 

@@ -1,6 +1,10 @@
 /**
  * @file platform.h
- * @brief Platform specific implementation.
+ * @brief Platform specific interface. A platform implementation must implement
+ * all these methods.
+ *
+ * @see src/platforms/desktop.c
+ * @see src/platforms/web.c
  */
 
 #ifndef PLATFORM_H
@@ -15,24 +19,22 @@
 int platform_main(int argc, char* argv[]);
 
 /**
- * @brief Initialize backend system.
+ * @brief Initialize system. Called once during application start.
  */
 void platform_init(void);
 
 /**
- * @brief Destroy backend system.
+ * @brief Destroy system. Called once during application shutdown.
  */
 void platform_destroy(void);
 
 /**
- * @brief Update system. Called at the beginning of an engine
- * update cycle.
+ * @brief Update system. Called at the beginning of an engine update cycle.
  */
 void platform_update(void);
 
 /**
- * @brief Draw system. Called at the end of an engine update
- * cycle.
+ * @brief Draw system. Called at the end of an engine update cycle.
  */
 void platform_draw(void);
 

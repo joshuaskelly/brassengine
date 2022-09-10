@@ -1,3 +1,9 @@
+/**
+ * @file log.h
+ * @brief Logging module. Provides convenience functions for sending output to
+ * the console.
+ */
+
 #ifndef LOG_H
 #define LOG_H
 
