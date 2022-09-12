@@ -33,6 +33,19 @@ void assets_init(void) {
     if (!assets_load(archive_filename)) {
         log_fatal("Failed to load archive.");
     }
+
+    // Load palette
+    gif_t* palette = assets_gif_load("assets/palette.gif");
+    graphics_palette_set(palette->palette);
+    assets_gif_free(palette);
+
+    // BAD
+    gif_t* textures = assets_gif_load("assets/textures.gif");
+    free(archive.textures[0]);
+    archive.textures[0] = textures->frames[0];
+
+    // DO SOMETHING
+    //assets_gif_free(gif);
 }
 
 void assets_destroy(void) {
