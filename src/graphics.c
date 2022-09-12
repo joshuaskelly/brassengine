@@ -130,6 +130,11 @@ uint32_t* graphics_palette_get(void) {
     return palette;
 }
 
+void graphics_palette_set(uint32_t* new_palette) {
+    size_t size = 256 * sizeof(uint32_t);
+    memmove(palette, new_palette, size);
+}
+
 void graphics_palette_clear(void) {
     for (int i = 0; i < 256; i++) {
         palette[i] = 0;

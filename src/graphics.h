@@ -106,6 +106,12 @@ texture_t* graphics_get_render_texture(void);
 uint32_t* graphics_palette_get(void);
 
 /**
+ * @brief Set palette.
+ * @param palette 256 color array.
+ */
+void graphics_palette_set(uint32_t* palette);
+
+/**
  * @brief Reset all palette values.
  */
 void graphics_palette_clear(void);
