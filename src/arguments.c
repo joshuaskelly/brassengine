@@ -15,7 +15,7 @@ int arguments_count(void) {
 }
 
 const char** arguments_vector(void) {
-    return argv;
+    return (const char**)argv;
 }
 
 int arguments_check(const char* arg) {
