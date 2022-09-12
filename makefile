@@ -20,10 +20,13 @@ INC=-Ilibs
 LUA_DIR=libs/lua
 LIBLUA=$(LUA_DIR)/liblua.a
 
+GIFLIB_DIR=libs/giflib
+LIBGIF=$(GIFLIB_DIR)/libgif.a
+
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
 LFLAGS=
-LDLIBS=$(LIBLUA) -lSDL2 -lm
+LDLIBS=$(LIBLUA) $(LIBGIF) -lSDL2 -lm
 
 default:help
 
@@ -37,7 +40,7 @@ debug:all
 desktop-run: ## Run desktop build
 	./$(BIN)
 
-web:CC=emcc -s USE_SDL=2
+web:CC=emcc -s USE_SDL=2 -s USE_GIFLIB=1
 web:LFLAGS=AR='emar rcu' RANLIB=emranlib
 web: $(OBJS) | $(BIN_DIR) $(LIBLUA) ## Build web platform
 	@echo "SRCS = $(SRCS)"
@@ -46,7 +49,7 @@ web: $(OBJS) | $(BIN_DIR) $(LIBLUA) ## Build web platform
 web-run: ## Run web build
 	emrun $(WEB_DIR)/main.html
 
-$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA)
+$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -55,12 +58,16 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 $(LIBLUA):
 	cd $(LUA_DIR) && make a CC=$(CC) $(LFLAGS)
 
+$(LIBGIF):
+	cd $(GIFLIB_DIR) && make libgif.a CC=$(CC) $(LFLAGS)
+
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 
 clean: ## Deletes all auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 	cd $(LUA_DIR) && make clean
+	cd $(GIFLIB_DIR) && make clean
 
 help: ## Show help prompt
 	@echo "usage:"

@@ -1,3 +1,6 @@
 [submodule "libs/lua"]
 	path = libs/lua
 	url = https://github.com/lua/lua.git
+[submodule "libs/giflib"]
+	path = libs/giflib
+	url = git://git.code.sf.net/p/giflib/code
