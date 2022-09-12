@@ -43,6 +43,10 @@ void texture_free(texture_t* texture) {
     free(texture);
 }
 
+texture_t* texture_copy(texture_t* texture) {
+    return texture_new(texture->width, texture->height, texture->pixels);
+}
+
 void texture_clear(texture_t* texture, color_t color) {
     size_t number_of_bytes = texture->width * texture->height;
     memset(texture->pixels, color, number_of_bytes);

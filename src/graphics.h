@@ -32,7 +32,7 @@ typedef struct {
  * @param width Width of texture in pixels
  * @param height Height of texture in pixels
  * @param pixels Pixel data to copy or NULL
- * @return New texture if successful, NULL on failure
+ * @return New texture if successful, NULL otherwise
  */
 texture_t* texture_new(int width, int height, color_t* pixels);
 
@@ -42,6 +42,14 @@ texture_t* texture_new(int width, int height, color_t* pixels);
  * @param texture Texture to free
  */
 void texture_free(texture_t* texture);
+
+/**
+ * @brief Copy given texture
+ *
+ * @param texture Texture to copy
+ * @return texture_t* New texture if successful, NULL otherwise
+ */
+texture_t* texture_copy(texture_t* texture);
 
 /**
  * @brief Fill entire texture with color.
