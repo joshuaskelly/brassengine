@@ -31,6 +31,6 @@ const char** arguments_vector(void);
  * @param arg Arg to check.
  * @return Index of given arg if present, zero otherwise.
  */
-int arguments_check(char* arg);
+int arguments_check(const char* arg);
 
 #endif

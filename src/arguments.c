@@ -18,7 +18,7 @@ const char** arguments_vector(void) {
     return argv;
 }
 
-int arguments_check(char* arg) {
+int arguments_check(const char* arg) {
     for (int i = 0; i < argc; i++) {
         if (!strcmp(arg, argv[i])) {
             return i;
