@@ -348,20 +348,19 @@ gif_t* assets_gif_load(const char* filename) {
         textures[i] = t;
     }
 
+    DGifCloseFile(gif_file, &error);
+
     // Create gif_t
     gif_t* gif = (gif_t*)malloc(sizeof(gif_t));
 
     if (!gif) {
         log_error("Failed to create GIF");
-        DGifCloseFile(gif_file, &error);
         return NULL;
     }
 
-    gif->palette = palette;
     gif->frame_count = frame_count;
     gif->frames = textures;
-
-    DGifCloseFile(gif_file, &error);
+    gif->palette = palette;
 
     return gif;
 }
