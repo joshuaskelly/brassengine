@@ -38,4 +38,14 @@ texture_t* assets_get_texture(int index);
 
 bool assets_is_archive_file(const char* filename);
 
+typedef struct {
+    int frame_count;
+    texture_t** frames;
+    uint32_t* palette;
+} gif_t;
+
+gif_t* assets_gif_load(const char* filename);
+
+void assets_gif_free(gif_t* gif);
+
 #endif
