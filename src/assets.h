@@ -6,14 +6,6 @@
 
 #include "graphics.h"
 
-typedef struct {
-    int version;
-    char* script;
-    uint32_t palette[256];
-    texture_t** textures;
-    int texture_count;
-} archive_t;
-
 /**
  * @brief Initialize assets system.
  */
@@ -24,19 +16,13 @@ void assets_init(void);
  */
 void assets_destroy(void);
 
-bool assets_load(const char* filename);
+bool assets_load(void);
 
 void assets_unload(void);
 
 void assets_reload(void);
 
-char* assets_get_script(void);
-
-uint32_t* assets_get_palette(void);
-
 texture_t* assets_get_texture(int index);
-
-bool assets_is_archive_file(const char* filename);
 
 typedef struct {
     int frame_count;

@@ -178,10 +178,7 @@ void sdl_handle_events(void) {
             case SDL_DROPFILE:
                 filename = sdl_event.drop.file;
 
-                if (assets_is_archive_file(filename)) {
-                    assets_load(filename);
-                    script_reload();
-                }
+                // TODO: Handle drag and drop
 
                 SDL_free(filename);
 

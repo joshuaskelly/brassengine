@@ -87,7 +87,7 @@ void init_lua_vm(void) {
     luaL_requiref(L, "apis/pico", open_pico_module, 0);
 
     // Execute Lua script
-    int result = luaL_dostring(L, assets_get_script());
+    int result = luaL_dofile(L, "assets/main.lua");
 
     if (result != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
