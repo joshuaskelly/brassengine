@@ -17,10 +17,6 @@ static struct {
 texture_t* texture_new(int width, int height, color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
 
-    if (texture == NULL) {
-        log_fatal("Unable to allocate memory for texture.");
-    }
-
     if (!texture) {
         log_error("Failed to create texture");
         return NULL;
