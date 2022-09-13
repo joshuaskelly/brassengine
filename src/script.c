@@ -33,7 +33,7 @@ int api_set_clipping_rectangle(lua_State* L);
 int api_test_blit(lua_State* L);
 
 /**
- * @brief Add a global function to Lua VM
+ * Add a global function to Lua VM
  *
  * @param L Lua VM
  * @param function C function pointer to push
@@ -62,7 +62,7 @@ int open_draw_module(lua_State* L) {
 }
 
 /**
- * @brief Create and configure Lua VM.
+ * Create and configure Lua VM.
  */
 void init_lua_vm(void) {
     // Create Lua VM
@@ -99,7 +99,7 @@ void init_lua_vm(void) {
 }
 
 /**
- * @brief Error message handler.
+ * Error message handler.
  *
  * @param L Lua VM
  * @return int 1. A traceback or message will be pushed to the stack.
@@ -124,7 +124,7 @@ static int message_handler (lua_State *L) {
 }
 
 /**
- * @brief Call a globally defined Lua function. The function
+ * Call a globally defined Lua function. The function
  * must take no arguments and return no values.
  *
  * @param L Lua VM
@@ -263,7 +263,7 @@ void script_draw(void) {
 }
 
 /**
- * @brief Prints given object to console.
+ * Prints given object to console.
  *
  * @param arg Object to print to console
  */
@@ -277,7 +277,7 @@ int api_print(lua_State* L) {
 }
 
 /**
- * @brief Get button state for given button id.
+ * Get button state for given button id.
  *
  * @param id Button id to check
  * @return True if button is pressed, false otherwise
@@ -296,7 +296,7 @@ int api_button(lua_State* L) {
 }
 
 /**
- * @brief Get current mouse position.
+ * Get current mouse position.
  *
  * @return Mouse coords as x, y
  */
@@ -308,7 +308,7 @@ int api_mouse_position(lua_State* L) {
 }
 
 /**
- * @brief Draw a pixel at given position and color.
+ * Draw a pixel at given position and color.
  *
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
@@ -328,7 +328,7 @@ int api_draw_pixel(lua_State* L) {
 }
 
 /**
- * @brief Draw a line between given position and color.
+ * Draw a line between given position and color.
  *
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
@@ -405,7 +405,7 @@ int api_draw_filled_circle(lua_State* L) {
 }
 
 /**
- * @brief Clear screen to given color.
+ * Clear screen to given color.
  *
  * @param color Color to clear screen
  */

@@ -47,7 +47,7 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
 }
 
 /**
- * @brief Plot 8 pixels of the circle at a time using octave symmetry.
+ * Plot 8 pixels of the circle at a time using octave symmetry.
  *
  * @param x Current x-coordinate on perimeter of circle
  * @param y Current y-coordinate on perimeter of circle
@@ -67,7 +67,7 @@ void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_
 }
 
 /**
- * @brief Draw four horizontal lines at time using octave symmetry.
+ * Draw four horizontal lines at time using octave symmetry.
  *
  * @param x Current x-coordinate on perimeter of circle
  * @param y Current y-coordinate on perimeter of circle

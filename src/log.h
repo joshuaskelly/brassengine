@@ -1,6 +1,6 @@
 /**
  * @file log.h
- * @brief Logging module. Provides convenience functions for sending output to
+ * Logging module. Provides convenience functions for sending output to
  * the console.
  */
 
@@ -8,7 +8,7 @@
 #define LOG_H
 
 /**
- * @brief Logs a message to stdout.
+ * Logs a message to stdout.
  *
  * @param message string to be displayed
  * @param ... Optional format specifiers
@@ -16,7 +16,7 @@
 void log_info(const char* message, ...);
 
 /**
- * @brief Logs a message to stderr.
+ * Logs a message to stderr.
  *
  * @param message string to be displayed
  * @param ... Optional format specifiers
@@ -24,7 +24,7 @@ void log_info(const char* message, ...);
 void log_error(const char* message, ...);
 
 /**
- * @brief Logs a message to stderr and immediately terminates program.
+ * Logs a message to stderr and immediately terminates program.
  *
  * @param message string to be displayed
  * @param ... Optional format specifiers

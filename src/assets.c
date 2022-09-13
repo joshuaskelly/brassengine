@@ -46,7 +46,7 @@ void assets_destroy(void) {
 }
 
 /**
- * @brief Load assets from zip file.
+ * Load assets from zip file.
  *
  * @return true if successful, false otherwise.
  */
@@ -112,7 +112,7 @@ bool load_from_zip(void) {
 }
 
 /**
- * @brief Load assets from assets directory.
+ * Load assets from assets directory.
  *
  * @return true If successful, false otherwise.
  */
@@ -209,7 +209,7 @@ void assets_reload(void)  {
 }
 
 /**
- * @brief Get asset for given name.
+ * Get asset for given name.
  *
  * @param assets Array of asset_entry_t
  * @param count Count of asset_entry_t array
@@ -236,7 +236,7 @@ const char* assets_get_script(const char* filename) {
 }
 
 /**
- * @brief Processes GifFileType* into a gif_t*
+ * Processes GifFileType* into a gif_t*
  *
  * @param gif_file GifFileType* to process
  * @return gif_t* new gif_t if successful, NULL otherwise
@@ -333,7 +333,7 @@ typedef struct {
 } gif_read_buffer_t;
 
 /**
- * @brief Callback function for DGifOpen(). Copies bytes from one buffer to
+ * Callback function for DGifOpen(). Copies bytes from one buffer to
  * another.
  *
  * @param gif GIF being constructed.
@@ -374,7 +374,7 @@ int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_to_read
 }
 
 /**
- * @brief Load a GIF from a buffer of bytes.
+ * Load a GIF from a buffer of bytes.
  *
  * @param buffer byte buffer
  * @param buffer_size buffer size
@@ -398,7 +398,7 @@ gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size) {
 }
 
 /**
- * @brief Load a GIF from a file.
+ * Load a GIF from a file.
  *
  * @param filename GIF file path.
  * @return gif_t* new gif_t if successful, NULL otherwise.
@@ -418,7 +418,7 @@ gif_t* gif_load(const char* filename) {
 }
 
 /**
- * @brief Frees a gif_t.
+ * Frees a gif_t.
  *
  * @param gif gif_t to free
  */

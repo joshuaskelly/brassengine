@@ -1,6 +1,6 @@
 /**
  * @file core.h
- * @brief Core engine module. Responsible for managing all engine subsytems and
+ * Core engine module. Responsible for managing all engine subsytems and
  * the application lifecycle.
  */
 
@@ -10,27 +10,27 @@
 #include "state.h"
 
 /**
- * @brief Initialize all engine systems
+ * Initialize all engine systems
  */
 void core_init(void);
 
 /**
- * @brief Destroy all engine systems
+ * Destroy all engine systems
  */
 void core_destroy(void);
 
 /**
- * @brief Run engine
+ * Run engine
  */
 void core_run(void);
 
 /**
- * @brief Engine main loop
+ * Engine main loop
  */
 void core_main_loop(void);
 
 /**
- * @brief Set and initialize state
+ * Set and initialize state
  *
  * @param state New state to set as current
  */

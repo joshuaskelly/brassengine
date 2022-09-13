@@ -4,7 +4,7 @@
 #include "../graphics.h"
 
 /**
- * @brief Draw line from x0, y0 to x1, y1.
+ * Draw line from x0, y0 to x1, y1.
  *
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
@@ -15,7 +15,7 @@
 void draw_line(int x0, int y0, int x1, int y1, color_t color);
 
 /**
- * @brief Draw rectangle.
+ * Draw rectangle.
  *
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
@@ -26,7 +26,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color);
 void draw_rectangle(int x, int y, int width, int height, color_t color);
 
 /**
- * @brief Draw filled rectangle.
+ * Draw filled rectangle.
  *
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
@@ -37,7 +37,7 @@ void draw_rectangle(int x, int y, int width, int height, color_t color);
 void draw_filled_rectangle(int x, int y, int width, int height, color_t color);
 
 /**
- * @brief Draw circle.
+ * Draw circle.
  *
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
@@ -47,7 +47,7 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color);
 void draw_circle(int x, int y, int radius, color_t color);
 
 /**
- * @brief Draw filled circle.
+ * Draw filled circle.
  *
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate

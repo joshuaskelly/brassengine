@@ -1,6 +1,6 @@
 /**
  * @file event.h
- * @brief Event handling module.
+ * Event handling module.
  */
 
 #ifndef EVENT_H
@@ -217,14 +217,14 @@ typedef union {
 } event_t;
 
 /**
- * @brief Push an event into the event queue.
+ * Push an event into the event queue.
  *
  * @param event An event_t structure to be copied into the queue.
  */
 void event_post(event_t*  event);
 
 /**
- * @brief Poll for pending events.
+ * Poll for pending events.
  *
  * @param event An event_t structure to be set from the next event
  * in the queue.

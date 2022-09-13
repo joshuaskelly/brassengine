@@ -54,7 +54,7 @@ void core_set_state(state_t* state) {
 }
 
 /**
- * @brief Process all events in the event queue.
+ * Process all events in the event queue.
  */
 void handle_events() {
     event_t event;
