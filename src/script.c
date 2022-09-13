@@ -87,7 +87,7 @@ void init_lua_vm(void) {
     luaL_requiref(L, "apis/pico", open_pico_module, 0);
 
     // Execute Lua script
-    int result = luaL_dostring(L, assets_get_script());
+    int result = luaL_dostring(L, assets_get_script("main.lua"));
 
     if (result != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
@@ -467,8 +467,8 @@ int api_test_blit(lua_State* L) {
     rect_t dest_rect = {dx, dy, dw, dh};
     texture_t* render_texture = graphics_get_render_texture();
 
-    // TODO: Fix this hard coding of texture 0
-    texture_t* source_texture = assets_get_texture(0);
+    // TODO: Fix this hard coding of main texture
+    texture_t* source_texture = assets_get_texture("textures.gif");
 
     if (source_texture) {
         texture_blit(source_texture, render_texture, &source_rect, &dest_rect);
