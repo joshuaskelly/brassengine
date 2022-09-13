@@ -34,14 +34,14 @@ typedef struct {
  * @param pixels Pixel data to copy or NULL
  * @return New texture if successful, NULL otherwise
  */
-texture_t* texture_new(int width, int height, color_t* pixels);
+texture_t* graphics_texture_new(int width, int height, color_t* pixels);
 
 /**
  * Frees a texture.
  *
  * @param texture Texture to free
  */
-void texture_free(texture_t* texture);
+void graphics_texture_free(texture_t* texture);
 
 /**
  * Copy given texture
@@ -49,7 +49,7 @@ void texture_free(texture_t* texture);
  * @param texture Texture to copy
  * @return texture_t* New texture if successful, NULL otherwise
  */
-texture_t* texture_copy(texture_t* texture);
+texture_t* graphics_texture_copy(texture_t* texture);
 
 /**
  * Fill entire texture with color.
@@ -57,7 +57,7 @@ texture_t* texture_copy(texture_t* texture);
  * @param texture Texture to fill
  * @param color Fill color
  */
-void texture_clear(texture_t* texture, color_t color);
+void graphics_texture_clear(texture_t* texture, color_t color);
 
 /**
  * Set pixel color.
@@ -67,7 +67,7 @@ void texture_clear(texture_t* texture, color_t color);
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-void texture_set_pixel(texture_t* texture, int x, int y, color_t color);
+void graphics_texture_set_pixel(texture_t* texture, int x, int y, color_t color);
 
 /**
  * Get pixel color.
@@ -77,7 +77,7 @@ void texture_set_pixel(texture_t* texture, int x, int y, color_t color);
  * @param y Pixel y-coordinate
  * @return Color at given coordinates
  */
-color_t texture_get_pixel(texture_t* texture, int x, int y);
+color_t graphics_texture_get_pixel(texture_t* texture, int x, int y);
 
 /**
  * Copy a portion of one texture to another.
@@ -87,7 +87,8 @@ color_t texture_get_pixel(texture_t* texture, int x, int y);
  * @param source_rect Sub region of source texture. NULL for entire source texture
  * @param destination_rect Destination region. NULL for entire destination texture, texture will be stretched.
  */
-void texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect);
+void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect);
+
 
 /**
  * Initialize graphics system.

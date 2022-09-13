@@ -61,7 +61,7 @@ int pico_cls(lua_State* L) {
     lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
-    texture_clear(render_texture, color);
+    graphics_texture_clear(render_texture, color);
 
     return 0;
 }
@@ -95,7 +95,7 @@ int pico_pget(lua_State* L) {
     lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
-    color_t pixel = texture_get_pixel(render_texture, x, y);
+    color_t pixel = graphics_texture_get_pixel(render_texture, x, y);
 
     lua_pushinteger(L, pixel);
 

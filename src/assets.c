@@ -8,6 +8,7 @@
 
 #include "arguments.h"
 #include "assets.h"
+#include "graphics.h"
 #include "log.h"
 
 typedef struct {
@@ -81,7 +82,7 @@ bool load_from_zip(void) {
     zip_entry_read(zip, &buffer, &buffer_size);
     zip_entry_close(zip);
     gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
-    texture = texture_copy(textures->frames[0]);
+    texture = graphics_texture_copy(textures->frames[0]);
     gif_free(textures);
     free(buffer);
     buffer = NULL;
@@ -138,7 +139,7 @@ bool load_from_assets_directory(void) {
         return false;
     }
 
-    texture = texture_copy(textures->frames[0]);
+    texture = graphics_texture_copy(textures->frames[0]);
 
     // Create texture asset entries
     texture_asset_count = 1;
@@ -193,7 +194,7 @@ bool assets_load(void) {
 }
 
 void assets_unload(void) {
-    texture_free(texture);
+    graphics_texture_free(texture);
     texture = NULL;
     free(script);
     script = NULL;
@@ -305,7 +306,7 @@ gif_t* load_gif_internal(GifFileType* gif_file) {
         SavedImage saved_image = gif_file->SavedImages[i];
         GifImageDesc image_desc = saved_image.ImageDesc;
 
-        texture_t* t = texture_new(image_desc.Width, image_desc.Height, saved_image.RasterBits);
+        texture_t* t = graphics_texture_new(image_desc.Width, image_desc.Height, saved_image.RasterBits);
         textures[i] = t;
     }
 

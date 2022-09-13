@@ -322,7 +322,7 @@ int api_draw_pixel(lua_State* L) {
     lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
-    texture_set_pixel(render_texture, x, y, color);
+    graphics_texture_set_pixel(render_texture, x, y, color);
 
     return 0;
 }
@@ -415,7 +415,7 @@ int api_clear_screen(lua_State* L) {
     lua_pop(L, -1);
 
     texture_t* render_texture = graphics_get_render_texture();
-    texture_clear(render_texture, color);
+    graphics_texture_clear(render_texture, color);
 
     return 0;
 }
@@ -471,7 +471,7 @@ int api_test_blit(lua_State* L) {
     texture_t* source_texture = assets_get_texture("textures.gif");
 
     if (source_texture) {
-        texture_blit(source_texture, render_texture, &source_rect, &dest_rect);
+        graphics_texture_blit(source_texture, render_texture, &source_rect, &dest_rect);
     }
 
     return 0;
