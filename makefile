@@ -1,4 +1,5 @@
 CC=gcc
+AR=ar rcs
 BIN=toy
 
 SRC_DIR=src
@@ -64,6 +65,9 @@ $(LIBLUA):
 $(LIBGIF):
 	cd $(GIFLIB_DIR) && make libgif.a CC=$(CC) $(LFLAGS)
 
+$(LIBZIP):
+	cd $(ZIP_DIR)/src $(CC) -c zip.c && $(AR) zip.a zip.o && cp zip.a .. && cp zip.h ..
+
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 
@@ -71,6 +75,7 @@ clean: ## Deletes all auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 	cd $(LUA_DIR) && make clean
 	cd $(GIFLIB_DIR) && make clean
+	cd $(ZIP_DIR) && git clean -xdf
 
 help: ## Show help prompt
 	@echo "usage:"
