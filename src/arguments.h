@@ -26,6 +26,11 @@ int arguments_count(void);
 const char** arguments_vector(void);
 
 /**
+ * @brief Returns last argument given from user.
+ */
+const char* arguments_last(void);
+
+/**
  * @brief Checks if arg was given by user.
  *
  * @param arg Arg to check.

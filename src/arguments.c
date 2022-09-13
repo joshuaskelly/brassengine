@@ -18,6 +18,10 @@ const char** arguments_vector(void) {
     return (const char**)argv;
 }
 
+const char* arguments_last(void) {
+    return (const char*)argv[argc - 1];
+}
+
 int arguments_check(const char* arg) {
     for (int i = 0; i < argc; i++) {
         if (!strcmp(arg, argv[i])) {

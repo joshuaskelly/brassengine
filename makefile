@@ -23,10 +23,13 @@ LIBLUA=$(LUA_DIR)/liblua.a
 GIFLIB_DIR=libs/giflib
 LIBGIF=$(GIFLIB_DIR)/libgif.a
 
+ZIP_DIR=libs/zip
+LIBZIP=$(ZIP_DIR)/zip.a
+
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
 LFLAGS=
-LDLIBS=$(LIBLUA) $(LIBGIF) -lSDL2 -lm
+LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) -lSDL2 -lm
 
 default:help
 
@@ -44,7 +47,7 @@ web:CC=emcc -s USE_SDL=2 -s USE_GIFLIB=1
 web:LFLAGS=AR='emar rcu' RANLIB=emranlib
 web: $(OBJS) | $(BIN_DIR) $(LIBLUA) ## Build web platform
 	@echo "SRCS = $(SRCS)"
-	$(CC) $^ $(LIBLUA) -o $(WEB_DIR)/main.html --embed-file assets
+	$(CC) $^ $(LIBLUA) $(LIBZIP) -o $(WEB_DIR)/main.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/main.html
