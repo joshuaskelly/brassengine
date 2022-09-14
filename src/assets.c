@@ -12,17 +12,29 @@
 #include "log.h"
 
 typedef struct {
-    char* name;
+    const char* name;
     void* asset;
 } asset_entry_t;
+
+/**
+ * Create a new asset entry
+ *
+ * @param name Name of asset
+ * @param asset Asset data
+ * @return asset_entry_t
+ */
+asset_entry_t assets_entry_new(const char* name, void* asset) {
+    int n = strlen(name);
+    char* asset_name = (char*)calloc(n + 1, sizeof(char));
+    strncpy(asset_name, name, n);
+
+    return (asset_entry_t) {asset_name, asset};
+}
 
 static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
 static asset_entry_t* script_assets = NULL;
 static int script_asset_count = 0;
-
-static texture_t* texture = NULL;
-static char* script = NULL;
 
 typedef struct {
     int frame_count;
@@ -44,6 +56,25 @@ void assets_init(void) {
 
 void assets_destroy(void) {
     assets_unload();
+}
+
+/**
+ * Check filename extension.
+ *
+ * @param filename Filename to check
+ * @param ext Extension to look for
+ * @return true if match, false otherwise
+ */
+bool check_extension(const char* filename, const char* ext) {
+    if (filename == NULL || ext == NULL) return false;
+
+    const char* dot = strrchr(filename, '.');
+
+    if (!dot) return false;
+
+    int n = strlen(ext);
+
+    return strncmp(dot + 1, ext, n) == 0;
 }
 
 /**
@@ -76,36 +107,94 @@ bool load_from_zip(void) {
     free(buffer);
     buffer = NULL;
 
+    int total_zip_entries = zip_entries_total(zip);
+
     // Load textures
-    zip_entry_open(zip, "textures.gif");
-    buffer_size = zip_entry_size(zip);
-    zip_entry_read(zip, &buffer, &buffer_size);
-    zip_entry_close(zip);
-    gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
-    texture = graphics_texture_copy(textures->frames[0]);
-    gif_free(textures);
-    free(buffer);
-    buffer = NULL;
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
 
-    // Create texture asset entries
-    texture_asset_count = 1;
+        if (zip_entry_isdir(zip)) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        const char* name = zip_entry_name(zip);
+
+        if (check_extension(name, "gif")) texture_asset_count++;
+
+        zip_entry_close(zip);
+    }
+
     texture_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * texture_asset_count);
-    texture_assets[0] = (asset_entry_t) {"textures.gif", texture};
+    int j = 0;
 
-    // Load script
-    zip_entry_open(zip, "main.lua");
-    buffer_size = zip_entry_size(zip);
-    zip_entry_read(zip, &buffer, &buffer_size);
-    zip_entry_close(zip);
-    script = calloc(buffer_size + 1, sizeof(char));
-    memcpy(script, buffer, buffer_size);
-    free(buffer);
-    buffer = NULL;
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
 
-    // Create script asset entries
-    script_asset_count = 1;
+        if (zip_entry_isdir(zip)) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        const char* name = zip_entry_name(zip);
+
+        if (check_extension(name, "gif")) {
+            buffer_size = zip_entry_size(zip);
+            zip_entry_read(zip, &buffer, &buffer_size);
+            gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
+            texture_t* texture = graphics_texture_copy(textures->frames[0]);
+            texture_assets[j++] = assets_entry_new(name, texture);
+            zip_entry_close(zip);
+            gif_free(textures);
+            free(buffer);
+            buffer = NULL;
+        }
+
+        zip_entry_close(zip);
+    }
+
+    // Load scripts
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
+
+        if (zip_entry_isdir(zip)) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        const char* name = zip_entry_name(zip);
+
+        if (check_extension(name, "lua")) script_asset_count++;
+
+        zip_entry_close(zip);
+    }
+
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    script_assets[0] = (asset_entry_t){"main.lua", script};
+    j = 0;
+
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
+
+        if (zip_entry_isdir(zip)) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        const char* name = zip_entry_name(zip);
+
+        if (check_extension(name, "lua")) {
+            buffer_size = zip_entry_size(zip);
+            zip_entry_read(zip, &buffer, &buffer_size);
+            char* script = calloc(buffer_size + 1, sizeof(char));
+            memcpy(script, buffer, buffer_size);
+            script_assets[j++] = assets_entry_new(name, script);
+            zip_entry_close(zip);
+            free(buffer);
+            buffer = NULL;
+        }
+
+        zip_entry_close(zip);
+    }
 
     zip_close(zip);
 
@@ -139,12 +228,12 @@ bool load_from_assets_directory(void) {
         return false;
     }
 
-    texture = graphics_texture_copy(textures->frames[0]);
+    texture_t* texture = graphics_texture_copy(textures->frames[0]);
 
     // Create texture asset entries
     texture_asset_count = 1;
     texture_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * texture_asset_count);
-    texture_assets[0] = (asset_entry_t) {"textures.gif", texture};
+    texture_assets[0] = assets_entry_new("textures.gif", texture);
 
     gif_free(textures);
 
@@ -159,7 +248,7 @@ bool load_from_assets_directory(void) {
     size_t size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    script = calloc(size + 1, sizeof(char));
+    char* script = calloc(size + 1, sizeof(char));
 
     if (!script) {
         log_error("Failed to allocate memory for script.");
@@ -178,7 +267,7 @@ bool load_from_assets_directory(void) {
     // Create script asset entries
     script_asset_count = 1;
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    script_assets[0] = (asset_entry_t){"main.lua", script};
+    script_assets[0] = assets_entry_new("main.lua", script);
 
     fclose(fp);
 
@@ -194,14 +283,26 @@ bool assets_load(void) {
 }
 
 void assets_unload(void) {
-    graphics_texture_free(texture);
-    texture = NULL;
-    free(script);
-    script = NULL;
+    // Free textures
+    for (int i = 0; i < texture_asset_count; i++) {
+        graphics_texture_free(texture_assets[i].asset);
+        free((char*)texture_assets[i].name);
+        texture_assets[i].name = NULL;
+    }
     free(texture_assets);
     texture_assets = NULL;
+    texture_asset_count = 0;
+
+    // Free scripts
+    for (int i = 0; i < script_asset_count; i++) {
+        free((char *)script_assets[i].asset);
+        script_assets[i].asset = NULL;
+        free((char *)script_assets[i].name);
+        script_assets[i].name = NULL;
+    }
     free(script_assets);
     script_assets = NULL;
+    script_asset_count = 0;
 }
 
 void assets_reload(void)  {
@@ -219,7 +320,7 @@ void assets_reload(void)  {
  */
 void* asset_get(asset_entry_t* assets, int count, const char* name) {
     for (int i = 0; i < count; i++) {
-        char* asset_name = assets[i].name;
+        const char* asset_name = assets[i].name;
         if (strcmp(name, asset_name) == 0) {
             return assets[i].asset;
         }
