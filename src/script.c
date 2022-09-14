@@ -32,18 +32,6 @@ int api_set_palette_color(lua_State* L);
 int api_set_clipping_rectangle(lua_State* L);
 int api_test_blit(lua_State* L);
 
-/**
- * Add a global function to Lua VM
- *
- * @param L Lua VM
- * @param function C function pointer to push
- * @param function_name Name to give pushed global function
- */
-void add_global_function(lua_State* L, lua_CFunction function, const char* function_name) {
-    lua_pushcfunction(L, function);
-    lua_setglobal(L, function_name);
-}
-
 static const struct luaL_Reg draw_module_functions[] = {
     {"pixel", api_draw_pixel},
     {"line", api_draw_line},
@@ -76,11 +64,11 @@ void init_lua_vm(void) {
     luaL_openlibs(L);
 
     // Set globals
-    add_global_function(L, api_print, "print");
-    add_global_function(L, api_button, "button");
-    add_global_function(L, api_mouse_position, "mouse_position");
-    add_global_function(L, api_set_palette_color, "palette");
-    add_global_function(L, api_set_clipping_rectangle, "clip");
+    lua_register(L, "print", api_print);
+    lua_register(L, "button", api_button);
+    lua_register(L, "mouse_position", api_mouse_position);
+    lua_register(L, "palette", api_set_palette_color);
+    lua_register(L, "clip", api_set_clipping_rectangle);
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
