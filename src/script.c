@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
@@ -31,6 +33,7 @@ int api_clear_screen(lua_State* L);
 int api_set_palette_color(lua_State* L);
 int api_set_clipping_rectangle(lua_State* L);
 int api_test_blit(lua_State* L);
+int lua_package_searcher(lua_State* L);
 
 static const struct luaL_Reg draw_module_functions[] = {
     {"pixel", api_draw_pixel},
@@ -62,6 +65,10 @@ void init_lua_vm(void) {
     }
 
     luaL_openlibs(L);
+
+    // Add package searcher
+    lua_register(L, "_lua_package_searcher", lua_package_searcher);
+    luaL_dostring(L, "table.insert(package.searchers, 2, _lua_package_searcher)");
 
     // Set globals
     lua_register(L, "print", api_print);
@@ -463,4 +470,28 @@ int api_test_blit(lua_State* L) {
     }
 
     return 0;
+}
+
+/**
+ * @brief Module searcher function that loads scripts from assets module.
+ *
+ * @param name Module name to search for
+ */
+int lua_package_searcher(lua_State* L) {
+    const char* module_name = luaL_checkstring(L, 1);
+    char* filename = (char*)calloc(strlen(module_name) + 5, sizeof(char));
+    strcat(filename, module_name);
+    strcat(filename, ".lua");
+    const char* script = assets_get_script(filename);
+    free(filename);
+
+    if (script) {
+        int result = luaL_loadbuffer(L, script, strlen(script), module_name);
+
+        if (result != LUA_OK) {
+            message_handler(L);
+        }
+    }
+
+    return 1;
 }
