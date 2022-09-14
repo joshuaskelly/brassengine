@@ -1,4 +1,5 @@
 local draw = require("draw")
+local pico = require("test")
 
 function _init()
     black = 0
@@ -22,6 +23,8 @@ function _init()
 
     color = 0
     size = 0
+
+    pico.test()
 end
 
 function _draw()
