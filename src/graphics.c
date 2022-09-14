@@ -40,7 +40,9 @@ texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
 
 void graphics_texture_free(texture_t* texture) {
     free(texture->pixels);
+    texture->pixels = NULL;
     free(texture);
+    texture = NULL;
 }
 
 texture_t* graphics_texture_copy(texture_t* texture) {
