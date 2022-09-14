@@ -89,7 +89,6 @@ color_t graphics_texture_get_pixel(texture_t* texture, int x, int y);
  */
 void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect);
 
-
 /**
  * Initialize graphics system.
  */
