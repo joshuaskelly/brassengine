@@ -52,16 +52,19 @@ gif_t* gif_load(const char* filename);
 void gif_free(gif_t* gif);
 gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size);;
 
+bool load_assets(void);
+void unload_assets(void);
+
 void assets_init(void) {
     log_info("assets init");
 
-    if (!assets_load()) {
+    if (!load_assets()) {
         log_fatal("assets init failed");
     }
 }
 
 void assets_destroy(void) {
-    assets_unload();
+    unload_assets();
 }
 
 /**
@@ -364,7 +367,12 @@ bool load_from_assets_directory(void) {
     return true;
 }
 
-bool assets_load(void) {
+/**
+ * Load all assets.
+ *
+ * @return true if successful, false otherwise
+ */
+bool load_assets(void) {
     if (arguments_count() > 1) {
         return load_from_zip();
     }
@@ -372,7 +380,10 @@ bool assets_load(void) {
     return load_from_assets_directory();
 }
 
-void assets_unload(void) {
+/**
+ * Unload all assets.
+ */
+void unload_assets(void) {
     // Free textures
     for (int i = 0; i < texture_asset_count; i++) {
         graphics_texture_free(texture_assets[i].asset);
@@ -396,8 +407,8 @@ void assets_unload(void) {
 }
 
 void assets_reload(void)  {
-    assets_unload();
-    assets_load();
+    unload_assets();
+    load_assets();
 }
 
 /**

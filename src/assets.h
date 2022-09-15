@@ -22,18 +22,6 @@ void assets_init(void);
 void assets_destroy(void);
 
 /**
- * Load all assets.
- *
- * @return true if successful, false otherwise
- */
-bool assets_load(void);
-
-/**
- * Unload all assets.
- */
-void assets_unload(void);
-
-/**
  * Reload all assets.
  */
 void assets_reload(void);
