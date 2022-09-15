@@ -74,6 +74,19 @@ end
 
 -- Table API
 
-function add(t, i)
-    table.insert(t, i)
+--- add v to t
+function add(t, v)
+    table.insert(t, v)
+end
+
+-- used in 'for v in all(t)' loops
+function all(t)
+    local i = 0
+    local n = #t
+    return function()
+        i = i + 1
+        if i <=n then
+            return t[i]
+        end
+    end
 end
