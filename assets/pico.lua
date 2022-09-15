@@ -90,3 +90,112 @@ function all(t)
         end
     end
 end
+
+-- Math API
+
+local function nil_as_zero(x)
+    if x == nil then
+        return 0
+    end
+
+    return x
+end
+
+--- x absolute value
+function abs(x)
+    x = nil_as_zero(x)
+
+    return math.abs(x)
+end
+
+--- coordinate to angle; range [0..1]
+function atan2(x, y)
+    x = nil_as_zero(x)
+    y = nil_as_zero(y)
+
+    return math.atan(x, y)
+end
+
+--- cosine; range [0..1]
+function cos(x)
+    x = nil_as_zero(x)
+
+    return math.cos(x)
+end
+
+--- round down
+function flr(x)
+    x = nil_as_zero(x)
+
+    return math.floor(x)
+end
+
+--- x/y maximum
+function max(x, y)
+    x = nil_as_zero(x)
+    y = nil_as_zero(y)
+
+    return math.max(x, y)
+end
+
+--- x/y/z middle value
+function mid(x, y, z)
+    x = nil_as_zero(x)
+    y = nil_as_zero(y)
+    z = nil_as_zero(z)
+
+    if x > y and x < z then
+        return x
+    elseif y > x and y < z then
+        return y
+    end
+
+    return z
+end
+
+--- x/y minimum
+function min(x, y)
+    x = nil_as_zero(x)
+    y = nil_as_zero(y)
+
+    return math.min(x, y)
+end
+
+--- random; 0 <= n < x
+function rnd(x)
+    if x == nil then
+        x = 1
+    end
+
+    return math.random() * x
+end
+
+--- returns argument sign: -1 or 1; sgn(0) = 1
+function sgn(x)
+    if x >= 0 then
+        return 1
+    end
+
+    return -1
+end
+
+--- x sine, [0..1]; inverted
+function sin(x)
+    x = nil_as_zero(x)
+
+    return math.sin(x)
+end
+
+--- x square root
+function sqrt(x)
+    x = nil_as_zero(x)
+
+    return math.sqrt(x)
+end
+
+--- set random seed
+function srand(x)
+    x = nil_as_zero(x)
+
+    math.randomseed(x)
+end
