@@ -406,7 +406,7 @@ bool load_assets(void) {
         }
 
         // Otherwise set the asset directory and fall through
-        assets_directory = (char *)zip_or_directory;
+        assets_directory = (char*)zip_or_directory;
     }
 
     return load_from_assets_directory();
@@ -428,9 +428,9 @@ void unload_assets(void) {
 
     // Free scripts
     for (int i = 0; i < script_asset_count; i++) {
-        free((char *)script_assets[i].asset);
+        free((char*)script_assets[i].asset);
         script_assets[i].asset = NULL;
-        free((char *)script_assets[i].name);
+        free((char*)script_assets[i].name);
         script_assets[i].name = NULL;
     }
     free(script_assets);
