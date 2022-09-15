@@ -1,28 +1,7 @@
-__header__
-version 0
-__palette__
-0 0 0
-29 43 83
-126 37 83
-0 135 81
-171 82 54
-95 87 79
-194 195 199
-255 241 232
-255 0 77
-255 163 0
-255 236 39
-0 228 54
-41 173 255
-131 118 156
-255 119 168
-255 204 170
-__script__
 -- port of @lexaloffle's
 -- 3d dot party tutorial
 -- https://twitter.com/lexaloffle/status/1004070743284408320
-
-local pico = require("apis/pico")
+require("pico")
 
 frame = 0
 
@@ -40,10 +19,6 @@ function all(arr)
             return arr[i]
         end
     end
-end
-
-function add(t, i)
-    table.insert(t, i)
 end
 
 function _init()
@@ -73,7 +48,7 @@ function rot(x, y, a)
 end
 
 function _draw()
-    pico.cls()
+    cls()
     for p in all(pt) do
         -->camera space
         p.cx, p.cz = rot(p.x, p.z, t() / 8)
@@ -111,8 +86,8 @@ function _draw()
         rad = rad1 / p.cz
 
         if (p.cz > 0.1) then -- clip
-            pico.circfill(sx, sy, rad, p.col)
-            pico.circfill(sx + rad / 3, sy - rad / 3,
+            circfill(sx, sy, rad, p.col)
+            circfill(sx + rad / 3, sy - rad / 3,
             rad / 3, 7)
         end
     end
