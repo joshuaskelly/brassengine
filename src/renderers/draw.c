@@ -16,7 +16,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float current_x = x0;
     float current_y = y0;
 
-    for (int i = 0; i < longest_side; i++) {
+    for (int i = 0; i <= longest_side; i++) {
         graphics_set_pixel(current_x, current_y, color);
         current_x += x_inc;
         current_y += y_inc;
