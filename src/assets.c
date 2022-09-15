@@ -245,6 +245,30 @@ void walk_directory(char* directory, void(callback)(const char*)) {
 }
 
 /**
+ * Get filepath relative to asset directory.
+ *
+ * @param filename Filename
+ * @return char* Filename with asset directory removed
+ */
+char* normalize_filename(const char* filename) {
+    char* name = (char*)filename;
+
+    // Get asset directory with trailing slash
+    const int size = strlen(assets_directory) + 2;
+    char asset_root_directory[size];
+    memset(asset_root_directory, 0, size);
+    strcat(asset_root_directory, assets_directory);
+    strcat(asset_root_directory, "/\0");
+
+    // Check if name starts with asset directory
+    if (strncmp(name, asset_root_directory, size - 1) == 0) {
+        name += size - 1;
+    }
+
+    return name;
+}
+
+/**
  * Callback function to count texture assets.
  */
 void count_textures(const char* filename) {
@@ -272,10 +296,7 @@ void add_textures(const char* filename) {
     texture_t* texture = graphics_texture_copy(gif->frames[0]);
 
     // Normalize filename
-    char* asset_name = (char*)filename;
-    if (strncmp(asset_name, "assets/", 7) == 0) {
-        asset_name += 7;
-    }
+    char* asset_name = normalize_filename(filename);
 
     // Add texture asset
     texture_assets[asset_count++] = assets_entry_new(asset_name, texture);
@@ -322,10 +343,7 @@ void add_scripts(const char* filename) {
     fread(script, 1, size, fp);
 
     // Normalize filename
-    char* asset_name = (char*)filename;
-    if (strncmp(asset_name, "assets/", 7) == 0) {
-        asset_name += 7;
-    }
+    char* asset_name = normalize_filename(filename);
 
     // Add script asset
     script_assets[asset_count++] = assets_entry_new(asset_name, script);
@@ -339,10 +357,15 @@ void add_scripts(const char* filename) {
  * @return true If successful, false otherwise.
  */
 bool load_from_assets_directory(void) {
-    log_info("loading directory: %s", "assets");
+    log_info("loading directory: %s", assets_directory);
 
     // Load palette
-    gif_t* palette = gif_load("assets/palette.gif");
+    char palette_path[strlen(assets_directory) + 13];
+    memset(palette_path, 0, strlen(assets_directory) + 13);
+    strcat(palette_path, assets_directory);
+    strcat(palette_path, "/palette.gif");
+
+    gif_t* palette = gif_load(palette_path);
 
     if (!palette) {
         log_error("Failed to load palette file.");
@@ -373,8 +396,17 @@ bool load_from_assets_directory(void) {
  * @return true if successful, false otherwise
  */
 bool load_assets(void) {
+    // Check if user gave us a zip file or asset directory
     if (arguments_count() > 1) {
-        return load_from_zip();
+        const char* zip_or_directory = arguments_last();
+
+        // If we are given a zip file, load it
+        if (check_extension(zip_or_directory, "zip")) {
+            return load_from_zip();
+        }
+
+        // Otherwise set the asset directory and fall through
+        assets_directory = (char *)zip_or_directory;
     }
 
     return load_from_assets_directory();
