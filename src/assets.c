@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <string.h>
 
+// TODO: These are POSIX libraries.
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include <giflib/gif_lib.h>
 #include <zip/zip.h>
 
@@ -35,6 +39,8 @@ static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
 static asset_entry_t* script_assets = NULL;
 static int script_asset_count = 0;
+
+static char* assets_directory = "assets";
 
 typedef struct {
     int frame_count;
@@ -202,6 +208,129 @@ bool load_from_zip(void) {
 }
 
 /**
+ * Recursively walk given directory and invoke callback on all files.
+ *
+ * @param directory Directory to walk
+ * @param callback Callback function to invoke on files
+ */
+void walk_directory(char* directory, void(callback)(const char*)) {
+    DIR* dir = opendir(directory);
+    if (!dir) return;
+
+    struct dirent* entry;
+    struct stat s;
+    char fullpath[512];
+    memset(fullpath, 0, 512);
+
+    // Iterate over directory contents
+    while ((entry = readdir(dir))) {
+        // Ignore current directory and parent directory
+        if (!strcmp(entry->d_name, ".\0")) continue;
+        if (!strcmp(entry->d_name, "..\0")) continue;
+
+        // Update fullpath
+        snprintf(fullpath, sizeof(fullpath), "%s/%s", directory, entry->d_name);
+        stat(fullpath, &s);
+
+        if (S_ISDIR(s.st_mode)) {
+            walk_directory(fullpath, callback);
+        }
+        else {
+            callback(fullpath);
+        }
+    }
+}
+
+/**
+ * Callback function to count texture assets.
+ */
+void count_textures(const char* filename) {
+    if (check_extension(filename, "gif")) texture_asset_count++;
+}
+
+static int asset_count;
+
+/**
+ * Callback function to add texture assets.
+ *
+ * @param filename Texture filename
+ */
+void add_textures(const char* filename) {
+    if (!check_extension(filename, "gif")) return;
+
+    // Load gif file
+    gif_t* gif = gif_load(filename);
+    if (!gif) {
+        log_error("Failed to load texture: %s", filename);
+        return;
+    }
+
+    // Use first frame as texture
+    texture_t* texture = graphics_texture_copy(gif->frames[0]);
+
+    // Normalize filename
+    char* asset_name = (char*)filename;
+    if (strncmp(asset_name, "assets/", 7) == 0) {
+        asset_name += 7;
+    }
+
+    // Add texture asset
+    texture_assets[asset_count++] = assets_entry_new(asset_name, texture);
+
+    gif_free(gif);
+}
+
+/**
+ * Callback function to count script assets.
+ */
+void count_scripts(const char* filename) {
+    if (check_extension(filename, "lua")) script_asset_count++;
+}
+
+/**
+ * Callback function to add script assets.
+ *
+ * @param filename Script filename
+ */
+void add_scripts(const char* filename) {
+    if (!check_extension(filename, "lua")) return;
+
+    // Open script file
+    FILE* fp = fopen(filename, "r");
+    if (!fp) {
+        log_error("Failed to open script: %s", filename);
+        return;
+    }
+
+    // Get script size
+    fseek(fp, 0, SEEK_END);
+    size_t size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    // Allocate memory
+    char* script = calloc(size + 1, sizeof(char));
+    if (!script) {
+        log_error("Failed to allocate memory for script.");
+        fclose(fp);
+        return;
+    }
+
+    // Read in script bytes
+    fread(script, 1, size, fp);
+
+    // Normalize filename
+    char* asset_name = (char*)filename;
+    if (strncmp(asset_name, "assets/", 7) == 0) {
+        asset_name += 7;
+    }
+
+    // Add script asset
+    script_assets[asset_count++] = assets_entry_new(asset_name, script);
+
+    fclose(fp);
+}
+
+/**
  * Load assets from assets directory.
  *
  * @return true If successful, false otherwise.
@@ -221,55 +350,16 @@ bool load_from_assets_directory(void) {
     gif_free(palette);
 
     // Load textures
-    gif_t* textures = gif_load("assets/textures.gif");
-
-    if (!textures) {
-        log_error("Failed to load textures");
-        return false;
-    }
-
-    texture_t* texture = graphics_texture_copy(textures->frames[0]);
-
-    // Create texture asset entries
-    texture_asset_count = 1;
+    asset_count = 0;
+    walk_directory(assets_directory, count_textures);
     texture_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * texture_asset_count);
-    texture_assets[0] = assets_entry_new("textures.gif", texture);
+    walk_directory(assets_directory, add_textures);
 
-    gif_free(textures);
-
-    // Load script
-    FILE* fp = fopen("assets/main.lua", "r");
-    if (!fp) {
-        log_error("Failed to open script");
-        return false;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    size_t size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    char* script = calloc(size + 1, sizeof(char));
-
-    if (!script) {
-        log_error("Failed to allocate memory for script.");
-        fclose(fp);
-        return false;
-    }
-
-    fread(script, 1, size, fp);
-
-    if (!script) {
-        log_error("Failed to read script data.");
-        fclose(fp);
-        return false;
-    }
-
-    // Create script asset entries
-    script_asset_count = 1;
+    // Load scripts
+    asset_count = 0;
+    walk_directory(assets_directory, count_scripts);
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    script_assets[0] = assets_entry_new("main.lua", script);
-
-    fclose(fp);
+    walk_directory(assets_directory, add_scripts);
 
     return true;
 }
