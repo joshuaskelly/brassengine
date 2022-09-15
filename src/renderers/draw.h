@@ -1,5 +1,5 @@
-#ifndef DRAW_H
-#define DRAW_H
+#ifndef RENDERERS_DRAW_H
+#define RENDERERS_DRAW_H
 
 #include "../graphics.h"
 
