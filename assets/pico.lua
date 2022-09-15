@@ -26,8 +26,8 @@ function circfill(x, y, r, col)
     draw.filled_circle(x, y, r, color_or_default(col))
 end
 
-function clip()
-end
+--function clip()
+--end
 
 --- clear screen; col = clear color
 function cls(col)
@@ -118,7 +118,7 @@ end
 
 --- cosine; range [0..1]
 function cos(x)
-    x = nil_as_zero(x)
+    x = nil_as_zero(x) * math.rad(360)
 
     return math.cos(x)
 end
@@ -181,9 +181,9 @@ end
 
 --- x sine, [0..1]; inverted
 function sin(x)
-    x = nil_as_zero(x)
+    x = nil_as_zero(x) * math.rad(360)
 
-    return math.sin(x)
+    return -math.sin(x)
 end
 
 --- x square root
