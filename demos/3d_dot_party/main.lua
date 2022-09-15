@@ -10,17 +10,6 @@ function t()
     return frame
 end
 
-function all(arr)
-    local i = 0
-    local n = #arr
-    return function()
-        i = i + 1
-        if i <=n then
-            return arr[i]
-        end
-    end
-end
-
 function _init()
     -- make some points
     -- 7x7x7 cube
