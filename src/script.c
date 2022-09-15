@@ -479,15 +479,22 @@ int api_test_blit(lua_State* L) {
  */
 int lua_package_searcher(lua_State* L) {
     const char* module_name = luaL_checkstring(L, 1);
-    char* filename = (char*)calloc(strlen(module_name) + 5, sizeof(char));
+
+    // Append .lua to module name
+    char filename[strlen(module_name) + 5];
+    memset(filename, 0, strlen(module_name) + 5);
     strcat(filename, module_name);
-    strcat(filename, ".lua");
+    strcat(filename, ".lua\0");
+
+    // Look for script asset
     const char* script = assets_get_script(filename);
-    free(filename);
 
     if (script) {
-        int result = luaL_loadbuffer(L, script, strlen(script), module_name);
+        // We found a script asset, remove the module name from the stack.
+        lua_pop(L, 1);
 
+        // Load script.
+        int result = luaL_loadbuffer(L, script, strlen(script), module_name);
         if (result != LUA_OK) {
             message_handler(L);
         }
