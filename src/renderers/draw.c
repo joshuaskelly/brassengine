@@ -84,6 +84,8 @@ void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_
 
 void draw_circle(int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
+    if (radius <= 0) return;
+
     int _x = 0;
     int _y = radius;
     int midpoint_criteria = 1 - radius;
@@ -107,6 +109,8 @@ void draw_circle(int x, int y, int radius, color_t color) {
 
 void draw_filled_circle(int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
+    if (radius <= 0) return;
+
     int _x = 0;
     int _y = radius;
     int midpoint_criteria = 1 - radius;
