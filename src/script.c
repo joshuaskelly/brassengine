@@ -55,7 +55,7 @@ void init_lua_vm(void) {
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
     luaL_requiref(L, "graphics", open_graphics_module, 0);
-    luaL_requiref(L, "graphics/texture", open_texture_module, 0);
+    luaL_requiref(L, "graphics.texture", open_texture_module, 0);
 
     // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));
