@@ -12,6 +12,7 @@
 #include "log.h"
 #include "script.h"
 
+#include "bindings/assets.h"
 #include "bindings/draw.h"
 #include "bindings/graphics.h"
 #include "bindings/texture.h"
@@ -53,6 +54,7 @@ void init_lua_vm(void) {
     lua_register(L, "palette", api_set_palette_color);
 
     // Set modules
+    luaL_requiref(L, "assets", open_assets_module, 0);
     luaL_requiref(L, "draw", open_draw_module, 0);
     luaL_requiref(L, "graphics", open_graphics_module, 0);
     luaL_requiref(L, "graphics.texture", open_texture_module, 0);
