@@ -141,6 +141,8 @@ void script_destroy(void) {
 
 void script_reload(void) {
     log_info("script reload");
+    lua_close(L);
+
     assets_reload();
 
     init_lua_vm();
