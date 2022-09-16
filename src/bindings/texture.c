@@ -32,8 +32,26 @@ int bindings_texture_new(lua_State* L) {
 
     lua_pop(L, -1);
 
-    texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *tp = graphics_texture_new(width, height, NULL);
+    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *texture = graphics_texture_new(width, height, NULL);
+    luaL_setmetatable(L, "texture_userdata_metatable");
+
+    return 1;
+}
+
+/**
+ * Copy given texture.
+ *
+ * @param texture Texture to copy
+ * @return Texture userdata
+ */
+int bindings_texture_copy(lua_State* L) {
+    texture_t** source = lua_touserdata(L, 1);
+
+    lua_pop(L, -1);
+
+    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *texture = graphics_texture_copy(*source);
     luaL_setmetatable(L, "texture_userdata_metatable");
 
     return 1;
@@ -120,6 +138,7 @@ int bindings_texture_blit(lua_State* L) {
 
 static const struct luaL_Reg module_functions[] = {
     {"new", bindings_texture_new},
+    {"copy", bindings_texture_copy},
     {"clear", bindings_texture_clear},
     {"set_pixel", bindings_texture_set_pixel},
     {"get_pixel", bindings_texture_get_pixel},
