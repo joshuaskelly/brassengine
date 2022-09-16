@@ -5,7 +5,7 @@
 #include "log.h"
 
 static texture_t* render_texture = NULL;
-static uint32_t* palette = NULL;
+static uint32_t palette[256];
 
 static struct {
     int x;
@@ -111,12 +111,6 @@ void graphics_init(void) {
         log_fatal("Failed to create frame buffer");
     }
 
-    palette = (uint32_t*)calloc(256, sizeof(uint32_t));
-
-    if (!palette) {
-        log_fatal("Failed to create palette");
-    }
-
     clip_rect.x = 0;
     clip_rect.y = 0;
     clip_rect.width = RENDER_BUFFER_WIDTH;
@@ -124,7 +118,6 @@ void graphics_init(void) {
 }
 
 void graphics_destroy(void) {
-    free(palette);
     graphics_texture_free(render_texture);
 }
 
