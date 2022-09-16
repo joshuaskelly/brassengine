@@ -97,6 +97,14 @@ int bindings_texture_get_pixel(lua_State* L) {
     return 1;
 }
 
+/**
+ * Copy a portion of one texture to another.
+ *
+ * @param source_texture Texture to copy from
+ * @param destination_texture Texture to copy to
+ * @param x
+ * @param y
+ */
 int bindings_texture_blit(lua_State* L) {
     texture_t** source = lua_touserdata(L, 1);
     texture_t** dest = lua_touserdata(L, 2);

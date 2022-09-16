@@ -50,6 +50,15 @@ int bindings_draw_line(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw rectangle.
+ *
+ * @param x Rect top left x-coordinate
+ * @param y Rect top left y-coordinate
+ * @param width Rect width
+ * @param height Rect height
+ * @param color Line color
+ */
 int bindings_draw_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -5);
     int y = (int)lua_tonumber(L, -4);
@@ -64,6 +73,15 @@ int bindings_draw_rectangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw filled rectangle.
+ *
+ * @param x Rect top left x-coordinate
+ * @param y Rect top left y-coordinate
+ * @param width Rect width
+ * @param height Rect height
+ * @param color Fill color
+ */
 int bindings_draw_filled_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -5);
     int y = (int)lua_tonumber(L, -4);
@@ -78,6 +96,14 @@ int bindings_draw_filled_rectangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw circle
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Line color
+ */
 int bindings_draw_circle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
@@ -91,6 +117,14 @@ int bindings_draw_circle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw filled circle
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Fill color
+ */
 int bindings_draw_filled_circle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);

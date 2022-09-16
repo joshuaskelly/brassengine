@@ -6,6 +6,12 @@
 
 #include "../assets.h"
 
+/**
+ * Get texture for given filename
+ *
+ * @param filename Name of texture asset to look for
+ * @return Texture userdata if found, nil otherwise.
+ */
 int bindings_assets_get_texture(lua_State* L) {
     const char* texture_name = lua_tostring(L, 1);
     texture_t* texture = assets_get_texture(texture_name);

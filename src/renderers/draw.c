@@ -82,6 +82,14 @@ void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_
     draw_line( y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, color);
 }
 
+/**
+ * Draw circle
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Line color
+ */
 void draw_circle(int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;
@@ -107,6 +115,14 @@ void draw_circle(int x, int y, int radius, color_t color) {
     }
 }
 
+/**
+ * Draw filled circle
+ *
+ * @param x Circle center x-coordinate
+ * @param y Circle center y-coordinate
+ * @param radius Circle radius
+ * @param color Fill color
+ */
 void draw_filled_circle(int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;

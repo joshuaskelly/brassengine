@@ -26,6 +26,14 @@ int bindings_graphics_set_pixel(lua_State* L) {
     return 0;
 }
 
+/**
+ * Sets clipping rectangle which defines drawable area.
+ *
+ * @param x Rect top left x-coordinate
+ * @param y Rect top left y-coordinate
+ * @param width Rect width
+ * @param height Rect height
+ */
 int bindings_graphics_set_clipping_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
@@ -39,6 +47,11 @@ int bindings_graphics_set_clipping_rectangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Gets render texture.
+ *
+ * @return Render texture userdata.
+ */
 int bindings_graphics_get_render_texture(lua_State* L) {
     texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *tp = graphics_get_render_texture();
