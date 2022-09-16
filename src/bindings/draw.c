@@ -14,7 +14,7 @@
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-int api_draw_pixel(lua_State* L) {
+int bindings_draw_pixel(lua_State* L) {
     int x = (int)lua_tonumber(L, -3);
     int y = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
@@ -36,7 +36,7 @@ int api_draw_pixel(lua_State* L) {
  * @param y1 End y-coordinate
  * @param color Line color
  */
-int api_draw_line(lua_State* L) {
+int bindings_draw_line(lua_State* L) {
     int x0 = (int)lua_tonumber(L, -5);
     int y0 = (int)lua_tonumber(L, -4);
     int x1 = (int)lua_tonumber(L, -3);
@@ -50,7 +50,7 @@ int api_draw_line(lua_State* L) {
     return 0;
 }
 
-int api_draw_rectangle(lua_State* L) {
+int bindings_draw_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -5);
     int y = (int)lua_tonumber(L, -4);
     int width = (int)lua_tonumber(L, -3);
@@ -64,7 +64,7 @@ int api_draw_rectangle(lua_State* L) {
     return 0;
 }
 
-int api_draw_filled_rectangle(lua_State* L) {
+int bindings_draw_filled_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -5);
     int y = (int)lua_tonumber(L, -4);
     int width = (int)lua_tonumber(L, -3);
@@ -78,7 +78,7 @@ int api_draw_filled_rectangle(lua_State* L) {
     return 0;
 }
 
-int api_draw_circle(lua_State* L) {
+int bindings_draw_circle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
     int radius = (int)lua_tonumber(L, -2);
@@ -91,7 +91,7 @@ int api_draw_circle(lua_State* L) {
     return 0;
 }
 
-int api_draw_filled_circle(lua_State* L) {
+int bindings_draw_filled_circle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
     int radius = (int)lua_tonumber(L, -2);
@@ -109,7 +109,7 @@ int api_draw_filled_circle(lua_State* L) {
  *
  * @param color Color to clear screen
  */
-int api_clear_screen(lua_State* L) {
+int bindings_clear_screen(lua_State* L) {
     int color = (int)lua_tonumber(L, -1);
 
     lua_pop(L, -1);
@@ -120,7 +120,7 @@ int api_clear_screen(lua_State* L) {
     return 0;
 }
 
-int api_test_blit(lua_State* L) {
+int bindings_test_blit(lua_State* L) {
     int sx = (int)lua_tonumber(L, 1);
     int sy = (int)lua_tonumber(L, 2);
     int sw = (int)lua_tonumber(L, 3);
@@ -147,14 +147,14 @@ int api_test_blit(lua_State* L) {
 }
 
 static const struct luaL_Reg module_functions[] = {
-    {"pixel", api_draw_pixel},
-    {"line", api_draw_line},
-    {"rectangle", api_draw_rectangle},
-    {"filled_rectangle", api_draw_filled_rectangle},
-    {"circle", api_draw_circle},
-    {"filled_circle", api_draw_filled_circle},
-    {"clear", api_clear_screen},
-    {"test_blit", api_test_blit},
+    {"pixel", bindings_draw_pixel},
+    {"line", bindings_draw_line},
+    {"rectangle", bindings_draw_rectangle},
+    {"filled_rectangle", bindings_draw_filled_rectangle},
+    {"circle", bindings_draw_circle},
+    {"filled_circle", bindings_draw_filled_circle},
+    {"clear", bindings_clear_screen},
+    {"test_blit", bindings_test_blit},
     {NULL, NULL}
 };
 
