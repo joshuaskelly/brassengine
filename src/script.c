@@ -11,7 +11,9 @@
 #include "graphics.h"
 #include "log.h"
 #include "script.h"
+
 #include "bindings/draw.h"
+#include "bindings/graphics.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
@@ -23,7 +25,6 @@ int api_print(lua_State* L);
 int api_button(lua_State* L);
 int api_mouse_position(lua_State* L);
 int api_set_palette_color(lua_State* L);
-int api_set_clipping_rectangle(lua_State* L);
 int lua_package_searcher(lua_State* L);
 
 /**
@@ -49,10 +50,10 @@ void init_lua_vm(void) {
     lua_register(L, "button", api_button);
     lua_register(L, "mouse_position", api_mouse_position);
     lua_register(L, "palette", api_set_palette_color);
-    lua_register(L, "clip", api_set_clipping_rectangle);
 
     // Set modules
     luaL_requiref(L, "draw", open_draw_module, 0);
+    luaL_requiref(L, "graphics", open_graphics_module, 0);
 
     // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));
@@ -289,19 +290,6 @@ int api_set_palette_color(lua_State* L) {
     uint32_t* palette = NULL;
     palette = graphics_palette_get();
     palette[index] = color;
-
-    return 0;
-}
-
-int api_set_clipping_rectangle(lua_State* L) {
-    int x = (int)lua_tonumber(L, -4);
-    int y = (int)lua_tonumber(L, -3);
-    int width = (int)lua_tonumber(L, -2);
-    int height = (int)lua_tonumber(L, -1);
-
-    lua_pop(L, -1);
-
-    graphics_set_clipping_rectangle(x, y, width, height);
 
     return 0;
 }

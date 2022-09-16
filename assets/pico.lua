@@ -2,6 +2,7 @@
 -- pico8-like API wrapper
 
 local draw = require("draw")
+local graphics = require("graphics")
 
 -- Graphics API
 
@@ -26,8 +27,9 @@ function circfill(x, y, r, col)
     draw.filled_circle(x, y, r, color_or_default(col))
 end
 
---function clip()
---end
+function clip(x, y, w, h)
+    graphics.set_clipping_rectangle(x, y, w, h)
+end
 
 --- clear screen; col = clear color
 function cls(col)
