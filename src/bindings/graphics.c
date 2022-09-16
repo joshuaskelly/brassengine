@@ -13,7 +13,7 @@
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-int set_pixel(lua_State* L) {
+int bindings_graphics_set_pixel(lua_State* L) {
     int x = (int)lua_tonumber(L, -3);
     int y = (int)lua_tonumber(L, -2);
     int color = (int)lua_tonumber(L, -1);
@@ -26,7 +26,7 @@ int set_pixel(lua_State* L) {
     return 0;
 }
 
-int set_clipping_rectangle(lua_State* L) {
+int bindings_graphics_set_clipping_rectangle(lua_State* L) {
     int x = (int)lua_tonumber(L, -4);
     int y = (int)lua_tonumber(L, -3);
     int width = (int)lua_tonumber(L, -2);
@@ -39,9 +39,15 @@ int set_clipping_rectangle(lua_State* L) {
     return 0;
 }
 
+int bindings_graphics_get_render_texture(lua_State* L) {
+    lua_pushlightuserdata(L, graphics_get_render_texture());
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
-    {"set_pixel", set_pixel},
-    {"set_clipping_rectangle", set_clipping_rectangle},
+    {"set_pixel", bindings_graphics_set_pixel},
+    {"set_clipping_rectangle", bindings_graphics_set_clipping_rectangle},
+    {"get_render_texture", bindings_graphics_get_render_texture},
     {NULL, NULL}
 };
 
