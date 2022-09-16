@@ -45,7 +45,7 @@ static char* assets_directory = "assets";
 typedef struct {
     int frame_count;
     texture_t** frames;
-    uint32_t* palette;
+    uint32_t palette[256];
 } gif_t;
 
 gif_t* gif_load(const char* filename);
@@ -556,7 +556,9 @@ gif_t* load_gif_internal(GifFileType* gif_file) {
 
     gif->frame_count = frame_count;
     gif->frames = textures;
-    gif->palette = palette;
+    memmove(gif->palette, palette, sizeof(uint32_t) * 256);
+
+    free(palette);
 
     return gif;
 }
@@ -665,8 +667,6 @@ void gif_free(gif_t* gif) {
 
     free(gif->frames);
     gif->frames = NULL;
-    free(gif->palette);
-    gif->palette = NULL;
     free(gif);
     gif = NULL;
 }
