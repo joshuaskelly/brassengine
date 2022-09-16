@@ -27,8 +27,29 @@ int bindings_texture_set_pixel(lua_State* L) {
     return 0;
 }
 
+/**
+ * Gets pixel at given position.
+ *
+ * @param texture Texture userdata
+ * @param x Pixel x-coordinate
+ * @param y Pixel y-coordinate
+ */
+int bindings_texture_get_pixel(lua_State* L) {
+    texture_t* texture = lua_touserdata(L, 1);
+    int x = (int)lua_tonumber(L, 2);
+    int y = (int)lua_tonumber(L, 3);
+
+    lua_pop(L, -1);
+
+    color_t color = graphics_texture_get_pixel(texture, x, y);
+    lua_pushinteger(L, color);
+
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"set_pixel", bindings_texture_set_pixel},
+    {"get_pixel", bindings_texture_get_pixel},
     {NULL, NULL}
 };
 
