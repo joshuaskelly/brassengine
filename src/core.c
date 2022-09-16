@@ -16,7 +16,7 @@ static bool is_running = true;
 void handle_events(void);
 
 void core_init(void) {
-    log_info("engine init");
+    log_info("%s\n", ENGINE_COPYRIGHT);
 
     platform_init();
     graphics_init();

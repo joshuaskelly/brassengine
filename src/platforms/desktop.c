@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 
+#include "../arguments.h"
 #include "../assets.h"
 #include "../core.h"
 #include "../event.h"
@@ -21,6 +22,12 @@ void sdl_handle_events(void);
 void sdl_fix_frame_rate(void);
 
 int platform_main(int argc, char* argv[]) {
+    if (arguments_check("-v") || arguments_check("--version")) {
+       log_info(ENGINE_COPYRIGHT);
+
+       return 0;
+    }
+
     core_init();
     core_run();
     core_destroy();
