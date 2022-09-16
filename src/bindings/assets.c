@@ -11,7 +11,8 @@ int bindings_assets_get_texture(lua_State* L) {
     texture_t* texture = assets_get_texture(texture_name);
 
     if (texture) {
-        lua_pushlightuserdata(L, texture);
+        texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+        *tp = texture;
     }
     else {
         lua_pushnil(L);

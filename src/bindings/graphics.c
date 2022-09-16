@@ -40,7 +40,8 @@ int bindings_graphics_set_clipping_rectangle(lua_State* L) {
 }
 
 int bindings_graphics_get_render_texture(lua_State* L) {
-    lua_pushlightuserdata(L, graphics_get_render_texture());
+    texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *tp = graphics_get_render_texture();
     return 1;
 }
 

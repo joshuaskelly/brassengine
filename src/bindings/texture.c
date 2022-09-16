@@ -7,12 +7,12 @@
 #include "../graphics.h"
 
 int bindings_texture_clear(lua_State* L) {
-    texture_t* texture = lua_touserdata(L, 1);
+    texture_t** texture = lua_touserdata(L, 1);
     int color = (int)lua_tonumber(L, 2);
 
     lua_pop(L, -1);
 
-    graphics_texture_clear(texture, color);
+    graphics_texture_clear(*texture, color);
 
     return 0;
 }
@@ -26,14 +26,14 @@ int bindings_texture_clear(lua_State* L) {
  * @param color Pixel color
  */
 int bindings_texture_set_pixel(lua_State* L) {
-    texture_t* texture = lua_touserdata(L, 1);
+    texture_t** texture = lua_touserdata(L, 1);
     int x = (int)lua_tonumber(L, 2);
     int y = (int)lua_tonumber(L, 3);
     int color = (int)lua_tonumber(L, 4);
 
     lua_pop(L, -1);
 
-    graphics_texture_set_pixel(texture, x, y, color);
+    graphics_texture_set_pixel(*texture, x, y, color);
 
     return 0;
 }
@@ -46,27 +46,27 @@ int bindings_texture_set_pixel(lua_State* L) {
  * @param y Pixel y-coordinate
  */
 int bindings_texture_get_pixel(lua_State* L) {
-    texture_t* texture = lua_touserdata(L, 1);
+    texture_t** texture = lua_touserdata(L, 1);
     int x = (int)lua_tonumber(L, 2);
     int y = (int)lua_tonumber(L, 3);
 
     lua_pop(L, -1);
 
-    color_t color = graphics_texture_get_pixel(texture, x, y);
+    color_t color = graphics_texture_get_pixel(*texture, x, y);
     lua_pushinteger(L, color);
 
     return 1;
 }
 
 int bindings_texture_blit(lua_State* L) {
-    texture_t* source = lua_touserdata(L, 1);
-    texture_t* dest = lua_touserdata(L, 2);
+    texture_t** source = lua_touserdata(L, 1);
+    texture_t** dest = lua_touserdata(L, 2);
     int x = (int)lua_tonumber(L, 3);
     int y = (int)lua_tonumber(L, 4);
 
-    rect_t drect = {x, y, source->width, source->height};
+    rect_t drect = {x, y, (*source)->width, (*source)->height};
 
-    graphics_texture_blit(source, dest, NULL, &drect);
+    graphics_texture_blit(*source, *dest, NULL, &drect);
 
     return 0;
 }
