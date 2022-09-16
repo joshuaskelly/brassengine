@@ -5,6 +5,7 @@
 4. Networking
 
 ## References
+- [Lua 5.4 Reference Manual](https://www.lua.org/manual/5.4/manual.html)
 - [DOOM source code](https://github.com/id-Software/DOOM)
 - [Lua Style Guide](https://github.com/luarocks/lua-style-guide)
 - [Voxel Space Engine GitHub](https://github.com/s-macke/VoxelSpace)
