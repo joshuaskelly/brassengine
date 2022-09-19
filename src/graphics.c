@@ -62,6 +62,9 @@ void graphics_texture_set_pixel(texture_t* texture, int x, int y, color_t color)
 }
 
 color_t graphics_texture_get_pixel(texture_t* texture, int x, int y) {
+    if (x < 0 || x >= texture->width) return 0;
+    if (y < 0 || y >= texture->height) return 0;
+
     return texture->pixels[y * texture->width + x];
 }
 
