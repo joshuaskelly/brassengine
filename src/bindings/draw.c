@@ -15,9 +15,9 @@
  * @param color Pixel color
  */
 int bindings_draw_pixel(lua_State* L) {
-    int x = (int)lua_tonumber(L, -3);
-    int y = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int color = (int)luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
 
@@ -37,11 +37,11 @@ int bindings_draw_pixel(lua_State* L) {
  * @param color Line color
  */
 int bindings_draw_line(lua_State* L) {
-    int x0 = (int)lua_tonumber(L, -5);
-    int y0 = (int)lua_tonumber(L, -4);
-    int x1 = (int)lua_tonumber(L, -3);
-    int y1 = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int color = (int)luaL_checknumber(L, 5);
 
     lua_pop(L, -1);
 
@@ -60,11 +60,11 @@ int bindings_draw_line(lua_State* L) {
  * @param color Line color
  */
 int bindings_draw_rectangle(lua_State* L) {
-    int x = (int)lua_tonumber(L, -5);
-    int y = (int)lua_tonumber(L, -4);
-    int width = (int)lua_tonumber(L, -3);
-    int height = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int width = (int)luaL_checknumber(L, 3);
+    int height = (int)luaL_checknumber(L, 4);
+    int color = (int)luaL_checknumber(L, 5);
 
     lua_pop(L, -1);
 
@@ -83,11 +83,11 @@ int bindings_draw_rectangle(lua_State* L) {
  * @param color Fill color
  */
 int bindings_draw_filled_rectangle(lua_State* L) {
-    int x = (int)lua_tonumber(L, -5);
-    int y = (int)lua_tonumber(L, -4);
-    int width = (int)lua_tonumber(L, -3);
-    int height = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int width = (int)luaL_checknumber(L, 3);
+    int height = (int)luaL_checknumber(L, 4);
+    int color = (int)luaL_checknumber(L, 5);
 
     lua_pop(L, -1);
 
@@ -105,10 +105,10 @@ int bindings_draw_filled_rectangle(lua_State* L) {
  * @param color Line color
  */
 int bindings_draw_circle(lua_State* L) {
-    int x = (int)lua_tonumber(L, -4);
-    int y = (int)lua_tonumber(L, -3);
-    int radius = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int radius = (int)luaL_checknumber(L, 3);
+    int color = (int)luaL_checknumber(L, 4);
 
     lua_pop(L, -1);
 
@@ -126,10 +126,10 @@ int bindings_draw_circle(lua_State* L) {
  * @param color Fill color
  */
 int bindings_draw_filled_circle(lua_State* L) {
-    int x = (int)lua_tonumber(L, -4);
-    int y = (int)lua_tonumber(L, -3);
-    int radius = (int)lua_tonumber(L, -2);
-    int color = (int)lua_tonumber(L, -1);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int radius = (int)luaL_checknumber(L, 3);
+    int color = (int)luaL_checknumber(L, 4);
 
     lua_pop(L, -1);
 
@@ -144,7 +144,7 @@ int bindings_draw_filled_circle(lua_State* L) {
  * @param color Color to clear screen
  */
 int bindings_clear_screen(lua_State* L) {
-    int color = (int)lua_tonumber(L, -1);
+    int color = (int)luaL_checknumber(L, 1);
 
     lua_pop(L, -1);
 
@@ -155,14 +155,14 @@ int bindings_clear_screen(lua_State* L) {
 }
 
 int bindings_test_blit(lua_State* L) {
-    int sx = (int)lua_tonumber(L, 1);
-    int sy = (int)lua_tonumber(L, 2);
-    int sw = (int)lua_tonumber(L, 3);
-    int sh = (int)lua_tonumber(L, 4);
-    int dx = (int)lua_tonumber(L, 5);
-    int dy = (int)lua_tonumber(L, 6);
-    int dw = (int)lua_tonumber(L, 7);
-    int dh = (int)lua_tonumber(L, 8);
+    int sx = (int)luaL_checknumber(L, 1);
+    int sy = (int)luaL_checknumber(L, 2);
+    int sw = (int)luaL_checknumber(L, 3);
+    int sh = (int)luaL_checknumber(L, 4);
+    int dx = (int)luaL_checknumber(L, 5);
+    int dy = (int)luaL_checknumber(L, 6);
+    int dw = (int)luaL_checknumber(L, 7);
+    int dh = (int)luaL_checknumber(L, 8);
 
     lua_pop(L, -1);
 

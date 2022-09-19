@@ -54,5 +54,6 @@ function _draw()
 end
 
 function shade(t)
-    return ramp[(t * #ramp) // 1]
+    local i = t * (#ramp - 1) + 1
+    return ramp[i//1]
 end

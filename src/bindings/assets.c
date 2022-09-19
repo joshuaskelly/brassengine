@@ -13,7 +13,7 @@
  * @return Texture userdata if found, nil otherwise.
  */
 int bindings_assets_get_texture(lua_State* L) {
-    const char* texture_name = lua_tostring(L, 1);
+    const char* texture_name = luaL_checkstring(L, 1);
     texture_t* texture = assets_get_texture(texture_name);
 
     if (texture) {
