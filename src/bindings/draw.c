@@ -154,6 +154,25 @@ int bindings_clear_screen(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw text to screen.
+ *
+ * @param message Text to draw
+ * @param x Text top-left x-coordinate
+ * @param y Text top-left y-coordinate
+ */
+int bindings_draw_text(lua_State* L) {
+    const char* message = (const char*)luaL_checkstring(L, 1);
+    int x = (int)luaL_checknumber(L, 2);
+    int y = (int)luaL_checknumber(L, 3);
+
+    lua_pop(L, -1);
+
+    draw_text(message, x, y);
+
+    return 0;
+}
+
 int bindings_test_blit(lua_State* L) {
     int sx = (int)luaL_checknumber(L, 1);
     int sy = (int)luaL_checknumber(L, 2);
@@ -188,6 +207,7 @@ static const struct luaL_Reg module_functions[] = {
     {"circle", bindings_draw_circle},
     {"filled_circle", bindings_draw_filled_circle},
     {"clear", bindings_clear_screen},
+    {"text", bindings_draw_text},
     {"test_blit", bindings_test_blit},
     {NULL, NULL}
 };

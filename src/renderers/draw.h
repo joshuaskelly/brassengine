@@ -56,4 +56,13 @@ void draw_circle(int x, int y, int radius, color_t color);
  */
 void draw_filled_circle(int x, int y, int radius, color_t color);
 
+/**
+ * Draw text.
+ *
+ * @param message Text to draw
+ * @param x Text top-left x-coordinate
+ * @param y Text top-left y-coordinate
+ */
+void draw_text(const char* message, int x, int y);
+
 #endif

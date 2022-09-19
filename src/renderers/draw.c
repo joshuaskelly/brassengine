@@ -1,7 +1,9 @@
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "draw.h"
+#include "../assets.h"
 #include "../graphics.h"
 
 void draw_line(int x0, int y0, int x1, int y1, color_t color) {
@@ -145,5 +147,39 @@ void draw_filled_circle(int x, int y, int radius, color_t color) {
         }
         _x++;
         fill_pixel_octave_symmetry(_x, _y, x, y, color);
+    }
+}
+
+void draw_text(const char* message, int x, int y) {
+    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* font_texture = assets_get_texture("font.gif");
+    rect_t source_rect = {0, 0, 8, 8};
+    rect_t dest_rect = {0, y, 8, 8};
+
+    int dest_x = x;
+
+    for (int i = 0; i < strlen(message); i++) {
+        char c = message[i];
+
+        if (c == '\n') {
+            dest_x = x;
+            dest_rect.y += 8;
+            continue;
+        }
+
+        int cx = c % (font_texture->width / 8) * 8;
+        int cy = c / (font_texture->width / 8) * 8;
+
+        source_rect.x = cx;
+        source_rect.y = cy;
+        dest_x += 8;
+        dest_rect.x = dest_x;
+
+        graphics_texture_blit(
+            font_texture,
+            render_texture,
+            &source_rect,
+            &dest_rect
+        );
     }
 }
