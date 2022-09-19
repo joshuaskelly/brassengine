@@ -172,8 +172,9 @@ void draw_text(const char* message, int x, int y) {
 
         source_rect.x = cx;
         source_rect.y = cy;
-        dest_x += 8;
         dest_rect.x = dest_x;
+
+        dest_x += 8;
 
         graphics_texture_blit(
             font_texture,
