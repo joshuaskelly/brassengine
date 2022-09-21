@@ -1,5 +1,15 @@
 # toyengine
 
+## Install
+
+###  Clone
+
+`git clone https://github.com/joshuaskelly/toyengine.git`
+
+### Init Submodules
+
+`git submodule update --init`
+
 ## Building
 
 Currently development is primarily being done on MacOS and assumes you have SDL2 installed somewhere.
