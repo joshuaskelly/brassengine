@@ -10,6 +10,10 @@
 
 `$ git submodule update --init`
 
+### Clean
+
+`$ make clean`
+
 ## Building
 
 Currently development is primarily being done on MacOS and assumes you have SDL2 installed somewhere.
