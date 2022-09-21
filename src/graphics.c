@@ -7,12 +7,7 @@
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
 
-static struct {
-    int x;
-    int y;
-    int width;
-    int height;
-} clip_rect;
+static rect_t clip_rect;
 
 texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
