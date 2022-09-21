@@ -4,11 +4,11 @@
 
 ###  Clone
 
-`git clone https://github.com/joshuaskelly/toyengine.git`
+`$ git clone https://github.com/joshuaskelly/toyengine.git`
 
 ### Init Submodules
 
-`git submodule update --init`
+`$ git submodule update --init`
 
 ## Building
 
@@ -44,10 +44,10 @@ Run:
 
 ![Lines Demo](.media/3d-dot-party.gif)
 
-`$ build/bin/toy demos/3d_dot_party`
+`$ ./build/bin/toy demos/3d_dot_party`
 
 Lines Demo
 
 ![Lines Demo](.media/lines-demo.gif)
 
-`$ build/bin/toy demos/lines`
+`$ ./build/bin/toy demos/lines`
