@@ -1,5 +1,6 @@
 CC=gcc
-AR=ar rcs
+AR='ar rcs'
+RANLIB=ranlib
 BIN=toy
 
 SRC_DIR=src
@@ -29,7 +30,6 @@ LIBZIP=$(ZIP_DIR)/zip.a
 
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
-LFLAGS=
 LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) -lSDL2 -lm
 
 default:help
@@ -45,37 +45,45 @@ desktop-run: ## Run desktop build
 	./$(BIN)
 
 web:CC=emcc -s USE_SDL=2 -s USE_GIFLIB=1
-web:LFLAGS=AR='emar rcu' RANLIB=emranlib
-web: $(OBJS) | $(BIN_DIR) $(LIBLUA) ## Build web platform
+web:AR='emar rcu'
+web:RANLIB=emranlib
+web: $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBZIP) ## Build web platform
 	@echo "SRCS = $(SRCS)"
 	$(CC) $^ $(LIBLUA) $(LIBZIP) -o $(WEB_DIR)/main.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/main.html
 
-$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF)
+$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF) $(LIBZIP)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 $(LIBLUA):
-	cd $(LUA_DIR) && make a CC=$(CC) $(LFLAGS)
+	cd $(LUA_DIR) && make a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 $(LIBGIF):
-	cd $(GIFLIB_DIR) && make libgif.a CC=$(CC) $(LFLAGS)
+	cd $(GIFLIB_DIR) && make libgif.a CC=$(CC)
 
 $(LIBZIP):
-	cd $(ZIP_DIR)/src $(CC) -c zip.c && $(AR) zip.a zip.o && cp zip.a .. && cp zip.h ..
+	cd $(ZIP_DIR) && make zip.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 
 clean: ## Deletes all auto generated files
-	find ./build/ -maxdepth 3 -type f -delete
+	rm -rf $(BUILD_DIR)
+	mkdir $(BUILD_DIR)
+	mkdir $(BUILD_DIR)/bin
+	mkdir $(BUILD_DIR)/obj
+	mkdir $(BUILD_DIR)/obj/bindings
+	mkdir $(BUILD_DIR)/obj/platforms
+	mkdir $(BUILD_DIR)/obj/renderers
+	mkdir $(BUILD_DIR)/web
 	cd $(LUA_DIR) && make clean
 	cd $(GIFLIB_DIR) && make clean
-	cd $(ZIP_DIR) && git clean -xdf
+	cd $(ZIP_DIR) && make clean
 
 help: ## Show help prompt
 	@echo "usage:"

@@ -6,4 +6,4 @@
 	url = git://git.code.sf.net/p/giflib/code
 [submodule "libs/zip"]
 	path = libs/zip
-	url = https://github.com/kuba--/zip.git
+	url = https://github.com/joshuaskelly/zip.git
