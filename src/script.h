@@ -8,15 +8,6 @@
 
 #include <stdbool.h>
 
-enum b {
-    SCRIPT_BUTTON_LEFT,
-    SCRIPT_BUTTON_RIGHT,
-    SCRIPT_BUTTON_UP,
-    SCRIPT_BUTTON_DOWN,
-    SCRIPT_BUTTON_A,
-    SCRIPT_BUTTON_B,
-};
-
 /**
  * Initialize scripting system. Called once during application start.
  */
