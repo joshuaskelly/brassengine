@@ -4,6 +4,7 @@
 #include "core.h"
 #include "event.h"
 #include "graphics.h"
+#include "input.h"
 #include "log.h"
 #include "platform.h"
 #include "script.h"
@@ -22,12 +23,14 @@ void core_init(void) {
     graphics_init();
     assets_init();
     script_init();
+    input_init();
 
     // Set initial state
     core_set_state(&test_state);
 }
 
 void core_destroy(void) {
+    input_destroy();
     script_destroy();
     assets_destroy();
     graphics_destroy();
@@ -65,6 +68,8 @@ void handle_events() {
             is_running = false;
             continue;
         }
+
+        input_handle_event(&event);
 
         // Current state handles all others
         current_state.handle_event(&event);

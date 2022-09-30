@@ -1,4 +1,5 @@
 local draw = require("draw")
+local mouse = require("input.mouse")
 
 function _init()
     black = 0
@@ -25,7 +26,7 @@ function _init()
 end
 
 function _draw()
-    local x, y = mouse_position()
+    local x, y = mouse.position()
     --draw.clear(0)
     draw.filled_circle(x, y, math.abs(math.cos(size)) * 32, color)
 

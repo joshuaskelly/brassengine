@@ -178,7 +178,20 @@ void sdl_handle_events(void) {
                 event.motion.y = sdl_event.motion.y * aspect_height;
                 event.motion.rel_x = sdl_event.motion.xrel * aspect_width;
                 event.motion.rel_y = sdl_event.motion.yrel * aspect_height;
+                event_post(&event);
+                break;
 
+            case SDL_MOUSEBUTTONDOWN:
+                event.type = EVENT_MOUSEDOWN;
+                event.button.type = EVENT_MOUSEDOWN;
+                event.button.button = sdl_event.button.button;
+                event_post(&event);
+                break;
+
+            case SDL_MOUSEBUTTONUP:
+                event.type = EVENT_MOUSEUP;
+                event.button.type = EVENT_MOUSEUP;
+                event.button.button = sdl_event.button.button;
                 event_post(&event);
                 break;
 

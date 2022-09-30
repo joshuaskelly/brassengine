@@ -3,6 +3,7 @@
 
 local draw = require("draw")
 local graphics = require("graphics")
+local keyboard = require("input.keyboard")
 
 -- Graphics API
 
@@ -200,4 +201,52 @@ function srand(x)
     x = nil_as_zero(x)
 
     math.randomseed(x)
+end
+
+-- Input API
+
+local button_mapping = {
+    [0] = 80, -- left
+    [1] = 79, -- right
+    [2] = 82, -- up
+    [3] = 81, -- down
+    [4] = 29, -- square
+    [5] = 27, -- cross
+}
+
+-- get button i state for player p
+function btn(i)
+    return keyboard.key(button_mapping[i])
+end
+
+local button_repeat = {
+    [0] = 0,
+    [1] = 0,
+    [2] = 0,
+    [3] = 0,
+    [4] = 0,
+    [5] = 0,
+}
+
+-- true when the button was not pressed the last frame; delays 4 frames after button h
+function btnp(i)
+    local is_button_down = btn(i)
+
+    if is_button_down then
+        button_repeat[i] = button_repeat[i] + 1
+
+        local state = button_repeat[i]
+
+        if state == 1 or state == 16 then
+            return true
+        end
+
+        if state > 16 and (state - 16) % 4 == 0 then
+            return true
+        end
+    else
+        button_repeat[i] = 0
+    end
+
+    return false
 end

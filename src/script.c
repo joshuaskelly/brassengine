@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,23 +10,21 @@
 #include "assets.h"
 #include "event.h"
 #include "graphics.h"
+#include "input.h"
 #include "log.h"
 #include "script.h"
 
 #include "bindings/assets.h"
 #include "bindings/draw.h"
 #include "bindings/graphics.h"
+#include "bindings/keyboard.h"
+#include "bindings/mouse.h"
 #include "bindings/texture.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
 
-static bool buttons[6];
-static int mouse_position[2];
-
 int api_print(lua_State* L);
-int api_button(lua_State* L);
-int api_mouse_position(lua_State* L);
 int api_set_palette_color(lua_State* L);
 int lua_package_searcher(lua_State* L);
 
@@ -49,8 +48,6 @@ void init_lua_vm(void) {
 
     // Set globals
     lua_register(L, "print", api_print);
-    lua_register(L, "button", api_button);
-    lua_register(L, "mouse_position", api_mouse_position);
     lua_register(L, "palette", api_set_palette_color);
 
     // Set modules
@@ -58,6 +55,8 @@ void init_lua_vm(void) {
     luaL_requiref(L, "draw", open_draw_module, 0);
     luaL_requiref(L, "graphics", open_graphics_module, 0);
     luaL_requiref(L, "graphics.texture", open_texture_module, 0);
+    luaL_requiref(L, "input.keyboard", open_keyboard_module, 0);
+    luaL_requiref(L, "input.mouse", open_mouse_module, 0);
 
     // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));
@@ -151,73 +150,13 @@ void script_reload(void) {
 
 bool script_handle_event(event_t* event) {
     switch (event->type) {
-        case EVENT_KEYDOWN:
-            if (event->key.code == KEYCODE_LEFT) {
-                buttons[SCRIPT_BUTTON_LEFT] = true;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_RIGHT) {
-                buttons[SCRIPT_BUTTON_RIGHT] = true;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_UP) {
-                buttons[SCRIPT_BUTTON_UP] = true;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_DOWN) {
-                buttons[SCRIPT_BUTTON_DOWN] = true;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_Z) {
-                buttons[SCRIPT_BUTTON_A] = true;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_X) {
-                buttons[SCRIPT_BUTTON_B] = true;
-                return true;
-            }
-
-            break;
-
         case EVENT_KEYUP:
             if (event->key.code == KEYCODE_F5) {
                 script_reload();
                 return true;
             }
-            else if (event->key.code == KEYCODE_LEFT) {
-                buttons[SCRIPT_BUTTON_LEFT] = false;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_RIGHT) {
-                buttons[SCRIPT_BUTTON_RIGHT] = false;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_UP) {
-                buttons[SCRIPT_BUTTON_UP] = false;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_DOWN) {
-                buttons[SCRIPT_BUTTON_DOWN] = false;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_Z) {
-                buttons[SCRIPT_BUTTON_A] = false;
-                return true;
-            }
-            else if (event->key.code == KEYCODE_X) {
-                buttons[SCRIPT_BUTTON_B] = false;
-                return true;
-            }
-
             break;
 
-        case EVENT_MOUSEMOTION:
-            mouse_position[0] = event->motion.x;
-            mouse_position[1] = event->motion.y;
-            break;
-
-        case EVENT_QUIT:
-        case EVENT_UNSET:
         default:
             break;
     }
@@ -249,37 +188,6 @@ int api_print(lua_State* L) {
     lua_pop(L, -1);
 
     return 0;
-}
-
-/**
- * Get button state for given button id.
- *
- * @param id Button id to check
- * @return True if button is pressed, false otherwise
- */
-int api_button(lua_State* L) {
-    if (lua_isnumber(L, -1)) {
-        int button_id = (int)lua_tonumber(L, -1);
-        lua_pop(L, -1); // button id
-        lua_pushboolean(L, buttons[button_id]);
-    }
-    else {
-        lua_pushboolean(L, false);
-    }
-
-    return 1;
-}
-
-/**
- * Get current mouse position.
- *
- * @return Mouse coords as x, y
- */
-int api_mouse_position(lua_State* L) {
-    lua_pushnumber(L, mouse_position[0]);
-    lua_pushnumber(L, mouse_position[1]);
-
-    return 2;
 }
 
 int api_set_palette_color(lua_State* L) {

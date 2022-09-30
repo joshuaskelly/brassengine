@@ -1,4 +1,7 @@
+-- lines demo
+
 local draw = require("draw")
+local mouse = require("input.mouse")
 
 function _init()
     black = 0
@@ -29,7 +32,7 @@ function _init()
 end
 
 function _update()
-    local x, y = mouse_position()
+    local x, y = mouse.position()
     table.insert(points, {x=x, y=y})
 
     if #points > 200 then
@@ -38,7 +41,7 @@ function _update()
 end
 
 function _draw()
-    local x, y = mouse_position()
+    local x, y = mouse.position()
     draw.clear(0)
 
     if #points < 11 then

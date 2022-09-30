@@ -1,5 +1,6 @@
 -- Testing blitting stuff
 local draw = require("draw")
+local mouse = require("input.mouse")
 local Map = require("map")
 local generate = require("generator")
 
@@ -71,7 +72,7 @@ end
 -- Called once per frame
 function _draw()
     draw.clear(0)
-    local x, y = mouse_position()
+    local x, y = mouse.position()
 
     frame("ENTRANCE")
     draw_map()
