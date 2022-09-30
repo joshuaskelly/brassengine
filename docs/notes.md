@@ -14,5 +14,8 @@
 - [Tonc: Mode 7 Part 1](http://www.coranac.com/tonc/text/mode7.htm)
 - [ModeMode 7 in Lite C](https://fenixfox-studios.com/content/mode_7/)
 
-##  GIFLIB Basic Example
+## GIFLIB Basic Example
 - [gif-lib basic example](https://gist.github.com/suzumura-ss/a5e922994513e44226d33c3a0c2c60d1)
+
+## Sandboxing Lua io.open()
+- [Stack Overflow Question](https://stackoverflow.com/questions/20715652/how-to-wrap-the-io-functions-in-lua-to-prevent-the-user-from-leaving-x-directory)
