@@ -1,6 +1,8 @@
--- Testing blitting stuff
+-- MADX demo
+
 local draw = require("draw")
 local mouse = require("input.mouse")
+local keyboard = require("input.keyboard")
 local Map = require("map")
 local generate = require("generator")
 
@@ -11,41 +13,13 @@ function _init()
     p_x = 0
     p_y = 0
 
-    button_states = {}
-
     map = Map.new(36, 21)
     generate:Noise(map)
     generate:Threshold(map, 0.85)
 end
 
-function handle_buttons()
-    for i = 0, 5 do
-        if button(i) then
-            button_states[i] = button_states[i] + 1
-        else
-            button_states[i] = 0
-        end
-    end
-end
-
-function buttonp(index)
-    local state = button_states[index]
-
-    if state == 1 or state == 16 then
-        return true
-    end
-
-    if state > 16 and (state - 16) % 4 == 0 then
-        return true
-    end
-
-    return false
-end
-
 -- Called once per frame
 function _update()
-    handle_buttons()
-
     local n_x, n_y = p_x, p_y
 
     if buttonp(0) then
@@ -140,4 +114,44 @@ function draw_map()
             end
         end
     end
+end
+
+local button_mapping = {
+    [0] = 80, -- left
+    [1] = 79, -- right
+    [2] = 82, -- up
+    [3] = 81, -- down
+    [4] = 29, -- square
+    [5] = 27, -- cross
+}
+
+local button_repeat = {
+    [0] = 0,
+    [1] = 0,
+    [2] = 0,
+    [3] = 0,
+    [4] = 0,
+    [5] = 0,
+}
+
+function buttonp(i)
+    local is_button_down = keyboard.key(button_mapping[i])
+
+    if is_button_down then
+        button_repeat[i] = button_repeat[i] + 1
+
+        local state = button_repeat[i]
+
+        if state == 1 or state == 16 then
+            return true
+        end
+
+        if state > 16 and (state - 16) % 4 == 0 then
+            return true
+        end
+    else
+        button_repeat[i] = 0
+    end
+
+    return false
 end
