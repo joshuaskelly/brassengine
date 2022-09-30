@@ -1,3 +1,8 @@
+/**
+ * @file input.h
+ * Input module. Manages state of input devices.
+ */
+
 #ifndef INPUT_H
 #define INPUT_H
 
