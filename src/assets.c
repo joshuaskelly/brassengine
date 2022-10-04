@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <dirent.h>
+#include <errno.h>
 #include <sys/stat.h>
 
 #include <giflib/gif_lib.h>
@@ -462,7 +463,13 @@ void* asset_get(asset_entry_t* assets, int count, const char* name) {
 }
 
 FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
+    errno = 0;
     FILE* temp_file = tmpfile();
+
+    if (!temp_file) {
+        log_error("Failed to open temp file: %s", strerror(errno));
+        return NULL;
+    }
 
     struct zip_t* zip = zip_open(arguments_last(), 0, 'r');
     int total_zip_entries = zip_entries_total(zip);
