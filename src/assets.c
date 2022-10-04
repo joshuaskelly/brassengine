@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-// TODO: These are POSIX libraries.
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -460,6 +459,59 @@ void* asset_get(asset_entry_t* assets, int count, const char* name) {
     }
 
     return NULL;
+}
+
+FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
+    FILE* temp_file = tmpfile();
+
+    struct zip_t* zip = zip_open(arguments_last(), 0, 'r');
+    int total_zip_entries = zip_entries_total(zip);
+
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
+
+        if (zip_entry_isdir(zip)) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        const char* name = zip_entry_name(zip);
+
+        if (strcmp(filename, name) != 0) {
+            zip_entry_close(zip);
+            continue;
+        }
+
+        size_t buffer_size = zip_entry_size(zip);
+        void* buffer = NULL;
+        zip_entry_read(zip, &buffer, &buffer_size);
+        zip_entry_close(zip);
+
+        fwrite(buffer, sizeof(void*), buffer_size, temp_file);
+        fseek(temp_file, 0, SEEK_SET);
+
+        break;
+    }
+
+    zip_close(zip);
+
+    return temp_file;
+}
+
+FILE* assets_open_file(const char* filename, const char* mode) {
+    if (check_extension(arguments_last(), "zip")) {
+        return open_zip_entry_as_file(filename, mode);
+    }
+
+    size_t size = strlen(filename) + strlen(assets_directory) + 2;
+    char asset_path[size];
+    memset(asset_path, '\0', size);
+
+    strcat(asset_path, assets_directory);
+    strcat(asset_path, "/");
+    strcat(asset_path, filename);
+
+    return fopen(asset_path, mode);
 }
 
 texture_t* assets_get_texture(const char* filename) {

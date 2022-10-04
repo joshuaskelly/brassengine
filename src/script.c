@@ -27,6 +27,7 @@ static bool is_in_error_state = false;
 int api_print(lua_State* L);
 int api_set_palette_color(lua_State* L);
 int lua_package_searcher(lua_State* L);
+int io_open(lua_State* L);
 
 /**
  * Create and configure Lua VM.
@@ -45,6 +46,10 @@ void init_lua_vm(void) {
     // Add package searcher
     lua_register(L, "_lua_package_searcher", lua_package_searcher);
     luaL_dostring(L, "table.insert(package.searchers, 2, _lua_package_searcher)");
+
+    // Override default io.open behavior
+    lua_register(L, "_io_open", io_open);
+    luaL_dostring(L, "io.open = _io_open");
 
     // Set globals
     lua_register(L, "print", api_print);
@@ -237,4 +242,51 @@ int lua_package_searcher(lua_State* L) {
     }
 
     return 1;
+}
+
+static luaL_Stream *newprefile (lua_State *L) {
+  luaL_Stream *p = (luaL_Stream *)lua_newuserdatauv(L, sizeof(luaL_Stream), 0);
+  p->closef = NULL;  /* mark file handle as 'closed' */
+  luaL_setmetatable(L, LUA_FILEHANDLE);
+  return p;
+}
+
+static int io_fclose (lua_State *L) {
+  luaL_Stream *p =  (luaL_Stream *)luaL_checkudata(L, 1, LUA_FILEHANDLE);
+  int res = fclose(p->f);
+  return luaL_fileresult(L, (res == 0), NULL);
+}
+
+static luaL_Stream *newfile (lua_State *L) {
+  luaL_Stream *p = newprefile(L);
+  p->f = NULL;
+  p->closef = &io_fclose;
+  return p;
+}
+
+static int l_checkmode (const char *mode) {
+  return (*mode != '\0' && strchr("rwa", *(mode++)) != NULL &&
+         (*mode != '+' || ((void)(++mode), 1)) &&  /* skip if char is '+' */
+         (strspn(mode, "b") == strlen(mode)));  /* check extensions */
+}
+
+/**
+ * @brief Opens a file inside asset directory or zip.
+ *
+ * This was largely lifted from liolib.c
+ *
+ * @param filename Name of file
+ * @param mode File access mode
+ * @return File handle
+ */
+int io_open(lua_State* L) {
+    const char *filename = luaL_checkstring(L, 1);
+    const char *mode = luaL_optstring(L, 2, "r");
+    luaL_Stream *p = newfile(L);
+    const char *md = mode;  /* to traverse/check mode */
+    luaL_argcheck(L, l_checkmode(md), 2, "invalid mode");
+
+    p->f = assets_open_file(filename, mode);
+
+    return (p->f == NULL) ? luaL_fileresult(L, 0, filename) : 1;
 }
