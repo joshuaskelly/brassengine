@@ -14,7 +14,7 @@
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-int bindings_draw_pixel(lua_State* L) {
+static int bindings_draw_pixel(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int color = (int)luaL_checknumber(L, 3);
@@ -36,7 +36,7 @@ int bindings_draw_pixel(lua_State* L) {
  * @param y1 End y-coordinate
  * @param color Line color
  */
-int bindings_draw_line(lua_State* L) {
+static int bindings_draw_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
@@ -59,7 +59,7 @@ int bindings_draw_line(lua_State* L) {
  * @param height Rect height
  * @param color Line color
  */
-int bindings_draw_rectangle(lua_State* L) {
+static int bindings_draw_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -82,7 +82,7 @@ int bindings_draw_rectangle(lua_State* L) {
  * @param height Rect height
  * @param color Fill color
  */
-int bindings_draw_filled_rectangle(lua_State* L) {
+static int bindings_draw_filled_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -104,7 +104,7 @@ int bindings_draw_filled_rectangle(lua_State* L) {
  * @param radius Circle radius
  * @param color Line color
  */
-int bindings_draw_circle(lua_State* L) {
+static int bindings_draw_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
@@ -125,7 +125,7 @@ int bindings_draw_circle(lua_State* L) {
  * @param radius Circle radius
  * @param color Fill color
  */
-int bindings_draw_filled_circle(lua_State* L) {
+static int bindings_draw_filled_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
@@ -143,7 +143,7 @@ int bindings_draw_filled_circle(lua_State* L) {
  *
  * @param color Color to clear screen
  */
-int bindings_clear_screen(lua_State* L) {
+static int bindings_clear_screen(lua_State* L) {
     int color = (int)luaL_checknumber(L, 1);
 
     lua_pop(L, -1);
@@ -161,7 +161,7 @@ int bindings_clear_screen(lua_State* L) {
  * @param x Text top-left x-coordinate
  * @param y Text top-left y-coordinate
  */
-int bindings_draw_text(lua_State* L) {
+static int bindings_draw_text(lua_State* L) {
     const char* message = (const char*)luaL_checkstring(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
@@ -173,7 +173,7 @@ int bindings_draw_text(lua_State* L) {
     return 0;
 }
 
-int bindings_test_blit(lua_State* L) {
+static int bindings_test_blit(lua_State* L) {
     int sx = (int)luaL_checknumber(L, 1);
     int sy = (int)luaL_checknumber(L, 2);
     int sw = (int)luaL_checknumber(L, 3);

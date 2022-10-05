@@ -24,15 +24,15 @@
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
 
-int api_print(lua_State* L);
-int api_set_palette_color(lua_State* L);
-int lua_package_searcher(lua_State* L);
-int io_open(lua_State* L);
+static int api_print(lua_State* L);
+static int api_set_palette_color(lua_State* L);
+static int lua_package_searcher(lua_State* L);
+static int io_open(lua_State* L);
 
 /**
  * Create and configure Lua VM.
  */
-void init_lua_vm(void) {
+static void init_lua_vm(void) {
     // Create Lua VM
     L = luaL_newstate();
     is_in_error_state = false;
@@ -107,7 +107,7 @@ static int message_handler (lua_State *L) {
  * @param L Lua VM
  * @param function_name Name of the function to call
  */
-void call_global_lua_function(lua_State* L, const char* function_name) {
+static void call_global_lua_function(lua_State* L, const char* function_name) {
     if (is_in_error_state) return;
 
     int base = lua_gettop(L);
@@ -186,7 +186,7 @@ void script_draw(void) {
  *
  * @param arg Object to print to console
  */
-int api_print(lua_State* L) {
+static int api_print(lua_State* L) {
     const char* message = lua_tostring(L, -1);
     printf("%s\n", message);
 
@@ -195,7 +195,7 @@ int api_print(lua_State* L) {
     return 0;
 }
 
-int api_set_palette_color(lua_State* L) {
+static int api_set_palette_color(lua_State* L) {
     int index = (int)lua_tonumber(L, -4);
     int r = (int)lua_tonumber(L, -3) & 0xFF;
     int g = (int)lua_tonumber(L, -2) & 0xFF;
@@ -218,7 +218,7 @@ int api_set_palette_color(lua_State* L) {
  *
  * @param name Module name to search for
  */
-int lua_package_searcher(lua_State* L) {
+static int lua_package_searcher(lua_State* L) {
     const char* module_name = luaL_checkstring(L, 1);
 
     // Append .lua to module name
@@ -279,7 +279,7 @@ static int l_checkmode (const char *mode) {
  * @param mode File access mode
  * @return File handle
  */
-int io_open(lua_State* L) {
+static int io_open(lua_State* L) {
     const char *filename = luaL_checkstring(L, 1);
     const char *mode = luaL_optstring(L, 2, "r");
     luaL_Stream *p = newfile(L);

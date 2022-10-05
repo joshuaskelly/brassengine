@@ -16,7 +16,7 @@
  *
  * @return True if key is down.
  */
-int bindings_get_keyboard_key(lua_State* L) {
+static int bindings_get_keyboard_key(lua_State* L) {
     // Key code
     if (lua_isinteger(L, 1)) {
         int key_code = luaL_checkinteger(L, 1);

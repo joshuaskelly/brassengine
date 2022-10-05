@@ -14,7 +14,7 @@
 static state_t current_state;
 static bool is_running = true;
 
-void handle_events(void);
+static void handle_events(void);
 
 void core_init(void) {
     log_info("%s\n", ENGINE_COPYRIGHT);
@@ -59,7 +59,7 @@ void core_set_state(state_t* state) {
 /**
  * Process all events in the event queue.
  */
-void handle_events() {
+static void handle_events() {
     event_t event;
 
     while (event_poll(&event)) {

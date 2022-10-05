@@ -16,7 +16,7 @@
  *
  * @return True if button is down, false otherwise
  */
-int bindings_get_mouse_button(lua_State* L) {
+static int bindings_get_mouse_button(lua_State* L) {
     int button = luaL_checkinteger(L, 1);
 
     lua_pop(L, -1);
@@ -32,7 +32,7 @@ int bindings_get_mouse_button(lua_State* L) {
  *
  * @return Mouse coords as x, y
  */
-int bindings_get_mouse_position(lua_State* L) {
+static int bindings_get_mouse_position(lua_State* L) {
     int x = 0;
     int y = 0;
 

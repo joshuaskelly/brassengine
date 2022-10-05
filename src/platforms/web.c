@@ -12,7 +12,7 @@ static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t render_buffer[RENDER_BUFFER_WIDTH * RENDER_BUFFER_HEIGHT];
 
-void sdl_handle_events(void);
+static void sdl_handle_events(void);
 
 int platform_main(int argc, char* argv[]) {
     core_init();
@@ -121,7 +121,7 @@ void platform_draw(void) {
     SDL_RenderPresent(renderer);
 }
 
-void sdl_handle_events(void) {
+static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 

@@ -57,7 +57,7 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
  * @param offset_y Y-coordinate offset
  * @param color Line color
  */
-void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
+static void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
     graphics_set_pixel( x + offset_x,  y + offset_y, color);
     graphics_set_pixel( y + offset_x,  x + offset_y, color);
     graphics_set_pixel(-x + offset_x,  y + offset_y, color);
@@ -77,7 +77,7 @@ void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_
  * @param offset_y Y-coordinate offset
  * @param color Fill color
  */
-void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
+static void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
     draw_line( x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, color);
     draw_line( y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, color);
     draw_line( x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, color);

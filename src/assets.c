@@ -27,7 +27,7 @@ typedef struct {
  * @param asset Asset data
  * @return asset_entry_t
  */
-asset_entry_t assets_entry_new(const char* name, void* asset) {
+static asset_entry_t assets_entry_new(const char* name, void* asset) {
     int n = strlen(name);
     char* asset_name = (char*)calloc(n + 1, sizeof(char));
     strncpy(asset_name, name, n);
@@ -48,12 +48,12 @@ typedef struct {
     uint32_t palette[256];
 } gif_t;
 
-gif_t* gif_load(const char* filename);
-void gif_free(gif_t* gif);
-gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size);;
+static gif_t* gif_load(const char* filename);
+static void gif_free(gif_t* gif);
+static gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size);;
 
-bool load_assets(void);
-void unload_assets(void);
+static bool load_assets(void);
+static void unload_assets(void);
 
 void assets_init(void) {
     log_info("assets init");
@@ -74,7 +74,7 @@ void assets_destroy(void) {
  * @param ext Extension to look for
  * @return true if match, false otherwise
  */
-bool check_extension(const char* filename, const char* ext) {
+static bool check_extension(const char* filename, const char* ext) {
     if (filename == NULL || ext == NULL) return false;
 
     const char* dot = strrchr(filename, '.');
@@ -91,7 +91,7 @@ bool check_extension(const char* filename, const char* ext) {
  *
  * @return true if successful, false otherwise.
  */
-bool load_from_zip(void) {
+static bool load_from_zip(void) {
     const char* filename = arguments_last();
     struct zip_t* zip = zip_open(filename, 0, 'r');
 
@@ -216,7 +216,7 @@ bool load_from_zip(void) {
  * @param directory Directory to walk
  * @param callback Callback function to invoke on files
  */
-void walk_directory(char* directory, void(callback)(const char*)) {
+static void walk_directory(char* directory, void(callback)(const char*)) {
     DIR* dir = opendir(directory);
     if (!dir) return;
 
@@ -250,7 +250,7 @@ void walk_directory(char* directory, void(callback)(const char*)) {
  * @param filename Filename
  * @return char* Filename with asset directory removed
  */
-char* normalize_filename(const char* filename) {
+static char* normalize_filename(const char* filename) {
     char* name = (char*)filename;
 
     // Get asset directory with trailing slash
@@ -271,7 +271,7 @@ char* normalize_filename(const char* filename) {
 /**
  * Callback function to count texture assets.
  */
-void count_textures(const char* filename) {
+static void count_textures(const char* filename) {
     if (check_extension(filename, "gif")) texture_asset_count++;
 }
 
@@ -282,7 +282,7 @@ static int asset_count;
  *
  * @param filename Texture filename
  */
-void add_textures(const char* filename) {
+static void add_textures(const char* filename) {
     if (!check_extension(filename, "gif")) return;
 
     // Load gif file
@@ -307,7 +307,7 @@ void add_textures(const char* filename) {
 /**
  * Callback function to count script assets.
  */
-void count_scripts(const char* filename) {
+static void count_scripts(const char* filename) {
     if (check_extension(filename, "lua")) script_asset_count++;
 }
 
@@ -316,7 +316,7 @@ void count_scripts(const char* filename) {
  *
  * @param filename Script filename
  */
-void add_scripts(const char* filename) {
+static void add_scripts(const char* filename) {
     if (!check_extension(filename, "lua")) return;
 
     // Open script file
@@ -356,7 +356,7 @@ void add_scripts(const char* filename) {
  *
  * @return true If successful, false otherwise.
  */
-bool load_from_assets_directory(void) {
+static bool load_from_assets_directory(void) {
     log_info("loading directory: %s", assets_directory);
 
     // Load palette
@@ -395,7 +395,7 @@ bool load_from_assets_directory(void) {
  *
  * @return true if successful, false otherwise
  */
-bool load_assets(void) {
+static bool load_assets(void) {
     // Check if user gave us a zip file or asset directory
     if (arguments_count() > 1) {
         const char* zip_or_directory = arguments_last();
@@ -415,7 +415,7 @@ bool load_assets(void) {
 /**
  * Unload all assets.
  */
-void unload_assets(void) {
+static void unload_assets(void) {
     // Free textures
     for (int i = 0; i < texture_asset_count; i++) {
         graphics_texture_free(texture_assets[i].asset);
@@ -451,7 +451,7 @@ void assets_reload(void)  {
  * @param name Name to look for
  * @return void* Asset for name if found, NULL otherwise
  */
-void* asset_get(asset_entry_t* assets, int count, const char* name) {
+static void* asset_get(asset_entry_t* assets, int count, const char* name) {
     for (int i = 0; i < count; i++) {
         const char* asset_name = assets[i].name;
         if (strcmp(name, asset_name) == 0) {
@@ -462,7 +462,7 @@ void* asset_get(asset_entry_t* assets, int count, const char* name) {
     return NULL;
 }
 
-FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
+static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
     errno = 0;
     FILE* temp_file = tmpfile();
 
@@ -535,7 +535,7 @@ const char* assets_get_script(const char* filename) {
  * @param gif_file GifFileType* to process
  * @return gif_t* new gif_t if successful, NULL otherwise
  */
-gif_t* load_gif_internal(GifFileType* gif_file) {
+static gif_t* load_gif_internal(GifFileType* gif_file) {
     int error;
 
     // Read GIF file contents
@@ -637,7 +637,7 @@ typedef struct {
  * @param bytes_to_read Number of bytes to read.
  * @return int Number of bytes read.
  */
-int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_to_read) {
+static int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_to_read) {
     gif_read_buffer_t* buffer;
     size_t bytes_read;
 
@@ -676,7 +676,7 @@ int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_to_read
  * @param buffer_size buffer size
  * @return gif_t* new gif_t if successful, NULL otherwise.
  */
-gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size) {
+static gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size) {
     gif_read_buffer_t buffer_;
     buffer_.data = (GifByteType*)buffer;
     buffer_.size = buffer_size;
@@ -699,7 +699,7 @@ gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size) {
  * @param filename GIF file path.
  * @return gif_t* new gif_t if successful, NULL otherwise.
  */
-gif_t* gif_load(const char* filename) {
+static gif_t* gif_load(const char* filename) {
     int error;
 
     GifFileType* gif_file = DGifOpenFileName(filename, &error);
@@ -718,7 +718,7 @@ gif_t* gif_load(const char* filename) {
  *
  * @param gif gif_t to free
  */
-void gif_free(gif_t* gif) {
+static void gif_free(gif_t* gif) {
     for (int i = 0; i < gif->frame_count; i++) {
         free(gif->frames[i]);
         gif->frames[i] = NULL;

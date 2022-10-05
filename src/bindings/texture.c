@@ -12,7 +12,7 @@
  * @param L Lua VM
  * @return int
  */
-int texture_gc(lua_State* L) {
+static int texture_gc(lua_State* L) {
     texture_t** texture = lua_touserdata(L, 1);
     graphics_texture_free(*texture);
 
@@ -26,7 +26,7 @@ int texture_gc(lua_State* L) {
  * @param height Texture height
  * @return Texture userdata
  */
-int bindings_texture_new(lua_State* L) {
+static int bindings_texture_new(lua_State* L) {
     int width = (int)lua_tonumber(L, 1);
     int height = (int)lua_tonumber(L, 2);
 
@@ -45,7 +45,7 @@ int bindings_texture_new(lua_State* L) {
  * @param texture Texture to copy
  * @return Texture userdata
  */
-int bindings_texture_copy(lua_State* L) {
+static int bindings_texture_copy(lua_State* L) {
     texture_t** source = lua_touserdata(L, 1);
 
     lua_pop(L, -1);
@@ -63,7 +63,7 @@ int bindings_texture_copy(lua_State* L) {
  * @param texture
  * @param color
  */
-int bindings_texture_clear(lua_State* L) {
+static int bindings_texture_clear(lua_State* L) {
     texture_t** texture = lua_touserdata(L, 1);
     int color = (int)lua_tonumber(L, 2);
 
@@ -82,7 +82,7 @@ int bindings_texture_clear(lua_State* L) {
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-int bindings_texture_set_pixel(lua_State* L) {
+static int bindings_texture_set_pixel(lua_State* L) {
     texture_t** texture = lua_touserdata(L, 1);
     int x = (int)lua_tonumber(L, 2);
     int y = (int)lua_tonumber(L, 3);
@@ -102,7 +102,7 @@ int bindings_texture_set_pixel(lua_State* L) {
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  */
-int bindings_texture_get_pixel(lua_State* L) {
+static int bindings_texture_get_pixel(lua_State* L) {
     texture_t** texture = lua_touserdata(L, 1);
     int x = (int)lua_tonumber(L, 2);
     int y = (int)lua_tonumber(L, 3);
@@ -123,7 +123,7 @@ int bindings_texture_get_pixel(lua_State* L) {
  * @param x
  * @param y
  */
-int bindings_texture_blit(lua_State* L) {
+static int bindings_texture_blit(lua_State* L) {
     texture_t** source = lua_touserdata(L, 1);
     texture_t** dest = lua_touserdata(L, 2);
     int x = (int)lua_tonumber(L, 3);

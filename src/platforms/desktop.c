@@ -18,8 +18,8 @@ static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t render_buffer[RENDER_BUFFER_WIDTH * RENDER_BUFFER_HEIGHT];
 static int ticks_last_frame;
 
-void sdl_handle_events(void);
-void sdl_fix_frame_rate(void);
+static void sdl_handle_events(void);
+static void sdl_fix_frame_rate(void);
 
 int platform_main(int argc, char* argv[]) {
     if (arguments_check("-v") || arguments_check("--version")) {
@@ -135,7 +135,7 @@ void platform_draw(void) {
     SDL_RenderPresent(renderer);
 }
 
-void sdl_handle_events(void) {
+static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 
@@ -207,7 +207,7 @@ void sdl_handle_events(void) {
     }
 }
 
-void sdl_fix_frame_rate(void) {
+static void sdl_fix_frame_rate(void) {
     int time_to_wait = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks_last_frame);
     if (0 < time_to_wait && time_to_wait < FRAME_TIME_LENGTH) {
         SDL_Delay(time_to_wait);
