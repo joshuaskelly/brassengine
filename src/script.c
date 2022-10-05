@@ -13,6 +13,7 @@
 #include "input.h"
 #include "log.h"
 #include "script.h"
+#include "time.h"
 
 #include "bindings/assets.h"
 #include "bindings/draw.h"
@@ -26,6 +27,8 @@ static bool is_in_error_state = false;
 
 static int api_print(lua_State* L);
 static int api_set_palette_color(lua_State* L);
+static int api_get_delta_time(lua_State* L);
+static int api_get_time_since_init(lua_State* L);
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 
@@ -53,6 +56,8 @@ static void init_lua_vm(void) {
 
     // Set globals
     lua_register(L, "print", api_print);
+    lua_register(L, "delta_time", api_get_delta_time);
+    lua_register(L, "time", api_get_time_since_init);
     lua_register(L, "palette", api_set_palette_color);
 
     // Set modules
@@ -147,6 +152,7 @@ void script_reload(void) {
     log_info("script reload");
     lua_close(L);
 
+    time_reload();
     assets_reload();
 
     init_lua_vm();
@@ -211,6 +217,20 @@ static int api_set_palette_color(lua_State* L) {
     palette[index] = color;
 
     return 0;
+}
+
+static int api_get_delta_time(lua_State* L) {
+    double delta_time = time_delta_time();
+    lua_pushnumber(L, delta_time);
+
+    return 1;
+}
+
+static int api_get_time_since_init(lua_State* L) {
+    double time = time_since_init();
+    lua_pushnumber(L, time);
+
+    return 1;
 }
 
 /**

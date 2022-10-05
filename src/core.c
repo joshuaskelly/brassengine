@@ -10,6 +10,7 @@
 #include "script.h"
 #include "state.h"
 #include "teststate.h"
+#include "time.h"
 
 static state_t current_state;
 static bool is_running = true;
@@ -19,6 +20,7 @@ static void handle_events(void);
 void core_init(void) {
     log_info("%s\n", ENGINE_COPYRIGHT);
 
+    time_init();
     platform_init();
     graphics_init();
     assets_init();
@@ -35,6 +37,7 @@ void core_destroy(void) {
     assets_destroy();
     graphics_destroy();
     platform_destroy();
+    time_destroy();
 }
 
 void core_run(void) {
@@ -49,6 +52,7 @@ void core_main_loop(void) {
     current_state.update();
     current_state.draw();
     platform_draw();
+    time_update();
 }
 
 void core_set_state(state_t* state) {
