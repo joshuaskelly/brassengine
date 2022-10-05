@@ -19,6 +19,8 @@ const char** arguments_vector(void) {
 }
 
 const char* arguments_last(void) {
+    if (argc == 0) return NULL;
+
     return (const char*)argv[argc - 1];
 }
 
