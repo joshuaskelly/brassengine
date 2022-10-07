@@ -26,9 +26,9 @@ texture_t** luaL_checktexture(lua_State* L, int index) {
  * @param L Lua VM
  * @return int
  */
-static int texture_gc(lua_State* L) {
-    texture_t** texture = lua_touserdata(L, 1);
     // TODO: Only free up dynamic textures, not ones acquire from assets
+static int texture_gc(lua_State* L) {
+    //texture_t** texture = lua_touserdata(L, 1);
     //graphics_texture_free(*texture);
 
     return 0;
