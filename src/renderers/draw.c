@@ -151,7 +151,6 @@ void draw_filled_circle(int x, int y, int radius, color_t color) {
 }
 
 void draw_text(const char* message, int x, int y) {
-    texture_t* render_texture = graphics_get_render_texture();
     texture_t* font_texture = assets_get_texture("font.gif");
     rect_t source_rect = {0, 0, 8, 8};
     rect_t dest_rect = {0, y, 8, 8};
@@ -176,9 +175,8 @@ void draw_text(const char* message, int x, int y) {
 
         dest_x += 8;
 
-        graphics_texture_blit(
+        graphics_blit(
             font_texture,
-            render_texture,
             &source_rect,
             &dest_rect
         );

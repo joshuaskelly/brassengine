@@ -173,32 +173,6 @@ static int bindings_draw_text(lua_State* L) {
     return 0;
 }
 
-static int bindings_test_blit(lua_State* L) {
-    int sx = (int)luaL_checknumber(L, 1);
-    int sy = (int)luaL_checknumber(L, 2);
-    int sw = (int)luaL_checknumber(L, 3);
-    int sh = (int)luaL_checknumber(L, 4);
-    int dx = (int)luaL_checknumber(L, 5);
-    int dy = (int)luaL_checknumber(L, 6);
-    int dw = (int)luaL_checknumber(L, 7);
-    int dh = (int)luaL_checknumber(L, 8);
-
-    lua_pop(L, -1);
-
-    rect_t source_rect = {sx, sy, sw, sh};
-    rect_t dest_rect = {dx, dy, dw, dh};
-    texture_t* render_texture = graphics_get_render_texture();
-
-    // TODO: Fix this hard coding of main texture
-    texture_t* source_texture = assets_get_texture("textures.gif");
-
-    if (source_texture) {
-        graphics_texture_blit(source_texture, render_texture, &source_rect, &dest_rect);
-    }
-
-    return 0;
-}
-
 static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
@@ -208,7 +182,6 @@ static const struct luaL_Reg module_functions[] = {
     {"filled_circle", bindings_draw_filled_circle},
     {"clear", bindings_clear_screen},
     {"text", bindings_draw_text},
-    {"test_blit", bindings_test_blit},
     {NULL, NULL}
 };
 
