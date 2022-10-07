@@ -10,7 +10,7 @@ static double delta_time = 0;
 static double get_time_millis(void) {
     struct timeval ts;
     gettimeofday(&ts, NULL);
-    return (ts.tv_sec * 1000000) + ((double)ts.tv_usec / 1000.0f);
+    return (ts.tv_sec * 1000) + ((double)ts.tv_usec / 1000.0f);
 }
 
 void time_init(void) {
