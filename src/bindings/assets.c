@@ -19,6 +19,7 @@ static int bindings_assets_get_texture(lua_State* L) {
     if (texture) {
         texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
         *tp = texture;
+        luaL_setmetatable(L, "texture");
     }
     else {
         lua_pushnil(L);

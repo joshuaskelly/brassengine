@@ -125,6 +125,24 @@ void graphics_palette_set(uint32_t* palette);
 void graphics_palette_clear(void);
 
 /**
+ * Get draw palette.
+ *
+ * @return Palette as a 256 color array.
+ */
+uint32_t* graphics_draw_palette_get(void);
+
+/**
+ * Set draw palette.
+ * @param palette 256 color array.
+ */
+void graphics_draw_palette_set(uint32_t* palette);
+
+/**
+ * Reset all draw palette values.
+ */
+void graphics_draw_palette_clear(void);
+
+/**
  * Set pixel color.
  *
  * @param x Pixel x-coordinate
@@ -132,6 +150,8 @@ void graphics_palette_clear(void);
  * @param color Pixel color
  */
 void graphics_set_pixel(int x, int y, color_t color);
+
+void graphics_blit(texture_t* texture, rect_t* source_rect, rect_t* destination_rect);
 
 /**
  * Sets clipping rectangle which defines drawable area.
