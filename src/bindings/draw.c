@@ -15,9 +15,9 @@
  * @param color Pixel color
  */
 static int bindings_draw_pixel(lua_State* L) {
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int color = (int)luaL_checknumber(L, 3);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int color = luaL_checkinteger(L, 3);
 
     lua_pop(L, -1);
 
@@ -37,11 +37,11 @@ static int bindings_draw_pixel(lua_State* L) {
  * @param color Line color
  */
 static int bindings_draw_line(lua_State* L) {
-    int x0 = (int)luaL_checknumber(L, 1);
-    int y0 = (int)luaL_checknumber(L, 2);
-    int x1 = (int)luaL_checknumber(L, 3);
-    int y1 = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+    int x0 = luaL_checkinteger(L, 1);
+    int y0 = luaL_checkinteger(L, 2);
+    int x1 = luaL_checkinteger(L, 3);
+    int y1 = luaL_checkinteger(L, 4);
+    int color = luaL_checkinteger(L, 5);
 
     lua_pop(L, -1);
 
@@ -60,11 +60,11 @@ static int bindings_draw_line(lua_State* L) {
  * @param color Line color
  */
 static int bindings_draw_rectangle(lua_State* L) {
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int width = (int)luaL_checknumber(L, 3);
-    int height = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int width = luaL_checkinteger(L, 3);
+    int height = luaL_checkinteger(L, 4);
+    int color = luaL_checkinteger(L, 5);
 
     lua_pop(L, -1);
 
@@ -83,11 +83,11 @@ static int bindings_draw_rectangle(lua_State* L) {
  * @param color Fill color
  */
 static int bindings_draw_filled_rectangle(lua_State* L) {
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int width = (int)luaL_checknumber(L, 3);
-    int height = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int width = luaL_checkinteger(L, 3);
+    int height = luaL_checkinteger(L, 4);
+    int color = luaL_checkinteger(L, 5);
 
     lua_pop(L, -1);
 
@@ -105,10 +105,10 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
  * @param color Line color
  */
 static int bindings_draw_circle(lua_State* L) {
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int radius = (int)luaL_checknumber(L, 3);
-    int color = (int)luaL_checknumber(L, 4);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int radius = luaL_checkinteger(L, 3);
+    int color = luaL_checkinteger(L, 4);
 
     lua_pop(L, -1);
 
@@ -126,10 +126,10 @@ static int bindings_draw_circle(lua_State* L) {
  * @param color Fill color
  */
 static int bindings_draw_filled_circle(lua_State* L) {
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int radius = (int)luaL_checknumber(L, 3);
-    int color = (int)luaL_checknumber(L, 4);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int radius = luaL_checkinteger(L, 3);
+    int color = luaL_checkinteger(L, 4);
 
     lua_pop(L, -1);
 
@@ -144,7 +144,7 @@ static int bindings_draw_filled_circle(lua_State* L) {
  * @param color Color to clear screen
  */
 static int bindings_clear_screen(lua_State* L) {
-    int color = (int)luaL_checknumber(L, 1);
+    int color = luaL_checkinteger(L, 1);
 
     lua_pop(L, -1);
 
@@ -163,8 +163,8 @@ static int bindings_clear_screen(lua_State* L) {
  */
 static int bindings_draw_text(lua_State* L) {
     const char* message = (const char*)luaL_checkstring(L, 1);
-    int x = (int)luaL_checknumber(L, 2);
-    int y = (int)luaL_checknumber(L, 3);
+    int x = luaL_checkinteger(L, 2);
+    int y = luaL_checkinteger(L, 3);
 
     lua_pop(L, -1);
 

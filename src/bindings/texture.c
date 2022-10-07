@@ -42,8 +42,8 @@ static int texture_gc(lua_State* L) {
  * @return Texture userdata
  */
 static int bindings_texture_new(lua_State* L) {
-    int width = (int)luaL_checkinteger(L, 1);
-    int height = (int)luaL_checkinteger(L, 2);
+    int width = luaL_checkinteger(L, 1);
+    int height = luaL_checkinteger(L, 2);
 
     lua_pop(L, -1);
 
@@ -80,7 +80,7 @@ static int bindings_texture_copy(lua_State* L) {
  */
 static int bindings_texture_clear(lua_State* L) {
     texture_t** texture = luaL_checktexture(L, 1);
-    int color = (int)luaL_checkinteger(L, 2);
+    int color = luaL_checkinteger(L, 2);
 
     lua_pop(L, -1);
 
@@ -99,9 +99,9 @@ static int bindings_texture_clear(lua_State* L) {
  */
 static int bindings_texture_set_pixel(lua_State* L) {
     texture_t** texture = luaL_checktexture(L, 1);
-    int x = (int)luaL_checkinteger(L, 2);
-    int y = (int)luaL_checkinteger(L, 3);
-    int color = (int)luaL_checkinteger(L, 4);
+    int x = luaL_checkinteger(L, 2);
+    int y = luaL_checkinteger(L, 3);
+    int color = luaL_checkinteger(L, 4);
 
     lua_pop(L, -1);
 
@@ -119,8 +119,8 @@ static int bindings_texture_set_pixel(lua_State* L) {
  */
 static int bindings_texture_get_pixel(lua_State* L) {
     texture_t** texture = luaL_checktexture(L, 1);
-    int x = (int)luaL_checkinteger(L, 2);
-    int y = (int)luaL_checkinteger(L, 3);
+    int x = luaL_checkinteger(L, 2);
+    int y = luaL_checkinteger(L, 3);
 
     lua_pop(L, -1);
 
@@ -141,8 +141,8 @@ static int bindings_texture_get_pixel(lua_State* L) {
 static int bindings_texture_blit(lua_State* L) {
     texture_t** source = luaL_checktexture(L, 1);
     texture_t** dest = luaL_checktexture(L, 2);
-    int x = (int)luaL_checkinteger(L, 3);
-    int y = (int)luaL_checkinteger(L, 4);
+    int x = luaL_checkinteger(L, 3);
+    int y = luaL_checkinteger(L, 4);
 
     rect_t drect = {x, y, (*source)->width, (*source)->height};
 

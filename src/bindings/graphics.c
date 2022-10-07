@@ -16,9 +16,9 @@
  * @param color Pixel color
  */
 static int bindings_graphics_set_pixel(lua_State* L) {
-    int x = (int)luaL_checkinteger(L, 1);
-    int y = (int)luaL_checkinteger(L, 2);
-    int color = (int)luaL_checkinteger(L, 3);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int color = luaL_checkinteger(L, 3);
 
     lua_pop(L, -1);
 
@@ -43,14 +43,14 @@ static int bindings_graphics_set_pixel(lua_State* L) {
  */
 static int bindings_graphics_blit(lua_State* L) {
     texture_t** texture = luaL_checktexture(L, 1);
-    int sx = (int)luaL_checkinteger(L, 2);
-    int sy = (int)luaL_checkinteger(L, 3);
-    int sw = (int)luaL_checkinteger(L, 4);
-    int sh = (int)luaL_checkinteger(L, 5);
-    int dx = (int)luaL_checkinteger(L, 6);
-    int dy = (int)luaL_checkinteger(L, 7);
-    int dw = (int)luaL_checkinteger(L, 8);
-    int dh = (int)luaL_checkinteger(L, 9);
+    int sx = luaL_checkinteger(L, 2);
+    int sy = luaL_checkinteger(L, 3);
+    int sw = luaL_checkinteger(L, 4);
+    int sh = luaL_checkinteger(L, 5);
+    int dx = luaL_checkinteger(L, 6);
+    int dy = luaL_checkinteger(L, 7);
+    int dw = luaL_checkinteger(L, 8);
+    int dh = luaL_checkinteger(L, 9);
 
     lua_pop(L, -1);
 
@@ -71,10 +71,10 @@ static int bindings_graphics_blit(lua_State* L) {
  * @param height Rect height
  */
 static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
-    int x = (int)luaL_checkinteger(L, 1);
-    int y = (int)luaL_checkinteger(L, 2);
-    int width = (int)luaL_checkinteger(L, 3);
-    int height = (int)luaL_checkinteger(L, 4);
+    int x = luaL_checkinteger(L, 1);
+    int y = luaL_checkinteger(L, 2);
+    int width = luaL_checkinteger(L, 3);
+    int height = luaL_checkinteger(L, 4);
 
     lua_pop(L, -1);
 
@@ -102,8 +102,8 @@ static int bindings_graphics_get_render_texture(lua_State* L) {
  * @param color New color to set.
  */
 static int bindings_graphics_set_draw_palette_color(lua_State* L) {
-    int index = (int)luaL_checkinteger(L, 1);
-    int color = (int)luaL_checkinteger(L, 2);
+    int index = luaL_checkinteger(L, 1);
+    int color = luaL_checkinteger(L, 2);
 
     uint32_t* palette = graphics_draw_palette_get();
     palette[index] = color;
