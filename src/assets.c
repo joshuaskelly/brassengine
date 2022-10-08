@@ -585,6 +585,17 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
         palette[i] = color;
     }
 
+    // Get transparent color
+    for (int i = 0; i < gif_file->ExtensionBlockCount; i++) {
+        ExtensionBlock* block = &gif_file->ExtensionBlocks[i];
+
+        if (block->Function == GRAPHICS_EXT_FUNC_CODE) {
+            GraphicsControlBlock* gcb = NULL;
+            DGifExtensionToGCB(block->ByteCount, block->Bytes, gcb);
+            graphics_transparent_color_set(gcb->TransparentColor);
+        }
+    }
+
     // Get frames
     int frame_count = gif_file->ImageCount;
     texture_t** textures = (texture_t**)malloc(sizeof(texture_t*) * frame_count);

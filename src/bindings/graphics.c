@@ -111,12 +111,22 @@ static int bindings_graphics_set_draw_palette_color(lua_State* L) {
     return 0;
 }
 
+static int bindings_graphics_set_transparent_color(lua_State* L) {
+    int color = luaL_optinteger(L, 1, -1);
+    graphics_transparent_color_set(color);
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"set_pixel", bindings_graphics_set_pixel},
     {"blit", bindings_graphics_blit},
     {"set_clipping_rectangle", bindings_graphics_set_clipping_rectangle},
     {"get_render_texture", bindings_graphics_get_render_texture},
     {"set_palette_color", bindings_graphics_set_draw_palette_color},
+    {"set_transparent_color", bindings_graphics_set_transparent_color},
     {NULL, NULL}
 };
 
