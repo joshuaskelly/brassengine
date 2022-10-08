@@ -82,6 +82,8 @@ void platform_init(void) {
     if (!render_buffer_texture) {
         log_fatal("Error creating SDL frame buffer texture");
     }
+
+    SDL_ShowCursor(SDL_DISABLE);
 }
 
 void platform_destroy(void) {
