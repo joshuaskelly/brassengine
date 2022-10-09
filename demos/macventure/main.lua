@@ -35,11 +35,10 @@ function _draw()
 
     if x > 16 and x < 192 and y > 16 and y < 128 then
         sx = math.floor((104 - x) / 88 * 16)
-        --sy = math.floor((72 - y) / 56 * 16) + 16
+        sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
     end
 
     graphics.blit(scene, 0, 0, 208, 128, sx, sy, 208, 128)
-    -- 94, 34
     graphics.blit(skull, 0, 0, 19, 22, 94 + sx, 34 + sy, 19, 22)
 
     graphics.set_clipping_rectangle(0, 0, 320, 200)
