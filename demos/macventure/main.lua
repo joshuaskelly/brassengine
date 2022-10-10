@@ -31,6 +31,7 @@ function _draw()
 
     local x, y = mouse.position()
 
+    -- Draw scene
     graphics.set_clipping_rectangle(16, 16, 176, 112)
 
     if x > 16 and x < 192 and y > 16 and y < 128 then
@@ -43,14 +44,20 @@ function _draw()
 
     graphics.set_clipping_rectangle(0, 0, 320, 200)
 
+    -- Draw UI
+    graphics.blit(frame, 0, 0, 320, 200, 0, 0, 320, 200)
 
+    -- Draw text
     font:draw("The last thing that you", rt, 24, 144 + 0 * font.size)
     font:draw("remember is standing", rt, 24, 144 + 1 * font.size)
     font:draw("before the wizard Lakmir", rt, 24, 144 + 2 * font.size)
 
     font:draw("INVENTORY", rt, 216, 24)
 
+    graphics.set_palette_color(1,2)
+    font:draw("ENTRANCE", rt, 72, 8)
+    graphics.set_palette_color(1,1)
 
-    graphics.blit(frame, 0, 0, 320, 200, 0, 0, 320, 200)
+    -- Draw cursor
     graphics.blit(cursor, 0, 0, 16, 16, x - 4, y, 16, 16)
 end
