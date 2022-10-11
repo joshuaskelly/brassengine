@@ -1,0 +1,25 @@
+{
+    "objects": [
+        {
+            "id": 1,
+            "texture": "skull.gif"
+        }
+    ],
+    "rooms": [
+        {
+            "id": 1,
+            "name": "ENTRANCE",
+            "background": "entrance.gif",
+            "objects": [
+                {
+                    "id": 1,
+                    "position" : {
+                        "x": 94,
+                        "y": 34
+                    }
+                }
+            ],
+            "exits": []
+        }
+    ]
+}
