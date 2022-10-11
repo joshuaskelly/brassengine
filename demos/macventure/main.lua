@@ -59,7 +59,7 @@ function _draw()
     local x, y = mouse.position()
     graphics.blit(cursor, 0, 0, 16, 16, x - 4, y, 16, 16)
 
-    --draw.text(get_fps(), 0, 0)
+    --show_fps()
 end
 
 function draw_room(room_id)
@@ -89,8 +89,12 @@ function draw_room(room_id)
     graphics.set_clipping_rectangle(0, 0, 320, 200)
 end
 
-function get_fps()
+function show_fps()
     local dt = delta_time() / 1000
     local fps = 1 / dt
-    return string.format("%.0f", fps)
+    local str = string.format("%.0f", fps)
+
+    graphics.set_transparent_color(-1)
+    draw.text(str, 8, 8)
+    graphics.set_transparent_color(0)
 end
