@@ -4,6 +4,7 @@ local Rect = require("rect")
 local game_data = require("gamedata")
 local graphics = require("graphics")
 local mouse = require("input.mouse")
+local draw = require("draw")
 
 local module = {}
 module.__index = module
@@ -31,10 +32,14 @@ function GUI:update()
     end
 end
 
+--t = 0
 function GUI:draw(offset_x, offset_y)
     for _, child in ipairs(self.children) do
         child:draw(offset_x, offset_y)
     end
+
+    --draw.rectangle(offset_x + self.rect.x, offset_y + self.rect.y, self.rect.width, self.rect.height, math.floor(t) + 1)
+    --t = (t + 0.05) % 2
 end
 
 function GUI:click(x, y)
@@ -73,14 +78,17 @@ setmetatable(Image, {
 })
 
 function Image:_init(texture_name, x, y)
-    --TODO Need a way to get texture dimensions
-    GUI._init(self, x, y, 0, 0)
+    local texture = assets.get_texture(texture_name)
+    local width, height = texture:size()
 
-    self.texture = assets.get_texture(texture_name)
+    GUI._init(self, x, y, width, height)
+
+    self.texture = texture
 end
 
 function Image:draw(offset_x, offset_y)
     graphics.blit(self.texture, offset_x + self.rect.x, offset_y + self.rect.y)
+    GUI.draw(self, offset_x, offset_y)
 end
 
 local View = {}
@@ -104,6 +112,11 @@ function View:_init(room_id)
     self.sy = 0
 end
 
+function View:on_click(x, y)
+    print("id: 0")
+    return true
+end
+
 function View:set_room(room_id)
     local room = game_data.rooms[room_id]
 
@@ -116,8 +129,6 @@ function View:set_room(room_id)
         local x, y = o.position.x, o.position.y
 
         local g = Image(object.texture, x, y)
-        g.rect.width = 32
-        g.rect.height = 32
 
         function g:update()
         end

@@ -28,11 +28,6 @@ function _init()
     current_room = 1
 
     scene_root = gui.GUI(0, 0, 320, 200)
-    function scene_root:on_click(x, y)
-        print("SCREEN")
-        return true
-    end
-
     scene_root:add_child(gui.View(current_room))
     scene_root:add_child(gui.Image("frame.gif", 0, 0))
 end
