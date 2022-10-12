@@ -5,6 +5,7 @@ local game_data = require("gamedata")
 local graphics = require("graphics")
 local mouse = require("input.mouse")
 local draw = require("draw")
+local texture = require("graphics.texture")
 
 local module = {}
 module.__index = module
@@ -53,7 +54,7 @@ function GUI:click(x, y)
         end
     end
 
-    return self.on_click(x, y)
+    return self:on_click(x, y)
 end
 
 function GUI:on_click(x, y)
@@ -89,6 +90,11 @@ end
 function Image:draw(offset_x, offset_y)
     graphics.blit(self.texture, offset_x + self.rect.x, offset_y + self.rect.y)
     GUI.draw(self, offset_x, offset_y)
+end
+
+function Image:on_click(x, y)
+    local color = texture.get_pixel(self.texture, x, y)
+    return color ~= 0
 end
 
 local View = {}
