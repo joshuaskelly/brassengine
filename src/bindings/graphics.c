@@ -16,9 +16,9 @@
  * @param color Pixel color
  */
 static int bindings_graphics_set_pixel(lua_State* L) {
-    int x = luaL_checkinteger(L, 1);
-    int y = luaL_checkinteger(L, 2);
-    int color = luaL_checkinteger(L, 3);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int color = (int)luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
 
@@ -31,6 +31,12 @@ static int bindings_graphics_set_pixel(lua_State* L) {
 /**
  * Blit given texture to render texture
  *
+ * Simple API
+ * @param texture Source texture to blit
+ * @param dx Destination x-offset
+ * @param dy Destination y-offset
+ *
+ * Full API
  * @param texture Source texture to blit
  * @param sx Source x-offset
  * @param sy Source y-offset
@@ -42,15 +48,34 @@ static int bindings_graphics_set_pixel(lua_State* L) {
  * @param dh Destination height
  */
 static int bindings_graphics_blit(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
     texture_t** texture = luaL_checktexture(L, 1);
-    int sx = luaL_checkinteger(L, 2);
-    int sy = luaL_checkinteger(L, 3);
-    int sw = luaL_checkinteger(L, 4);
-    int sh = luaL_checkinteger(L, 5);
-    int dx = luaL_checkinteger(L, 6);
-    int dy = luaL_checkinteger(L, 7);
-    int dw = luaL_checkinteger(L, 8);
-    int dh = luaL_checkinteger(L, 9);
+    int sx = 0;
+    int sy = 0;
+    int sw = (*texture)->width;
+    int sh = (*texture)->height;
+    int dx = 0;
+    int dy = 0;
+    int dw = RENDER_BUFFER_WIDTH;
+    int dh = RENDER_BUFFER_HEIGHT;
+
+    if (arg_count == 3) {
+        dx = (int)luaL_checknumber(L, 2);
+        dy = (int)luaL_checknumber(L, 3);
+        dw = sw;
+        dh = sh;
+    }
+    else {
+        sx = (int)luaL_checknumber(L, 2);
+        sy = (int)luaL_checknumber(L, 3);
+        sw = (int)luaL_checknumber(L, 4);
+        sh = (int)luaL_checknumber(L, 5);
+        dx = (int)luaL_checknumber(L, 6);
+        dy = (int)luaL_checknumber(L, 7);
+        dw = (int)luaL_checknumber(L, 8);
+        dh = (int)luaL_checknumber(L, 9);
+    }
 
     lua_pop(L, -1);
 
@@ -71,10 +96,10 @@ static int bindings_graphics_blit(lua_State* L) {
  * @param height Rect height
  */
 static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
-    int x = luaL_checkinteger(L, 1);
-    int y = luaL_checkinteger(L, 2);
-    int width = luaL_checkinteger(L, 3);
-    int height = luaL_checkinteger(L, 4);
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int width = (int)luaL_checknumber(L, 3);
+    int height = (int)luaL_checknumber(L, 4);
 
     lua_pop(L, -1);
 
@@ -102,8 +127,8 @@ static int bindings_graphics_get_render_texture(lua_State* L) {
  * @param color New color to set.
  */
 static int bindings_graphics_set_draw_palette_color(lua_State* L) {
-    int index = luaL_checkinteger(L, 1);
-    int color = luaL_checkinteger(L, 2);
+    int index = (int)luaL_checknumber(L, 1);
+    int color = (int)luaL_checknumber(L, 2);
 
     uint32_t* palette = graphics_draw_palette_get();
     palette[index] = color;
