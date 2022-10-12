@@ -34,6 +34,20 @@ static int texture_gc(lua_State* L) {
     return 0;
 }
 
+static int texture_size(lua_State* L) {
+    texture_t** texture = luaL_checktexture(L, 1);
+
+    lua_pushinteger(L, (*texture)->width);
+    lua_pushinteger(L, (*texture)->height);
+
+    return 2;
+}
+
+static const struct luaL_Reg texture_methods[] = {
+    {"size", texture_size},
+    {NULL, NULL}
+};
+
 /**
  * Create new texture.
  *
@@ -166,6 +180,9 @@ int open_texture_module(lua_State* L) {
 
     // Push texture userdata metatable
     luaL_newmetatable(L, "texture");
+    luaL_newlib(L, texture_methods);
+    lua_setfield(L, -2, "__index");
+
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, texture_gc);
     lua_settable(L, -3);
