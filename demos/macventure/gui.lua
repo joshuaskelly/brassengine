@@ -47,7 +47,7 @@ function GUI:click(x, y)
     for i = #self.children, 1, -1 do
         local child = self.children[i]
 
-        if child.rect:contains(x, y) then
+        if child:contains(x, y) then
             if child:click(x, y) then
                 return true
             end
@@ -63,6 +63,10 @@ end
 
 function GUI:add_child(child)
     table.insert(self.children, child)
+end
+
+function GUI:contains(x, y)
+    return self.rect:contains(x, y)
 end
 
 local Image = {}
@@ -93,7 +97,12 @@ function Image:draw(offset_x, offset_y)
 end
 
 function Image:on_click(x, y)
-    local color = texture.get_pixel(self.texture, x, y)
+    print("Clicked!")
+    return true
+end
+
+function Image:contains(x, y)
+    local color = texture.get_pixel(self.texture, x - self.rect.x, y - self.rect.y)
     return color ~= 0
 end
 
@@ -118,8 +127,11 @@ function View:_init(room_id)
     self.sy = 0
 end
 
+function View:click(x, y)
+    GUI.click(self, x - sx, y - sy)
+end
+
 function View:on_click(x, y)
-    print("id: 0")
     return true
 end
 
@@ -137,11 +149,6 @@ function View:set_room(room_id)
         local g = Image(object.texture, x, y)
 
         function g:update()
-        end
-
-        function g:on_click(x, y)
-            print("id: "..o.id)
-            return true
         end
 
         self:add_child(g)

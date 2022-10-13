@@ -29,7 +29,11 @@ function _init()
 
     scene_root = gui.GUI(0, 0, 320, 200)
     scene_root:add_child(gui.View(current_room))
-    scene_root:add_child(gui.Image("frame.gif", 0, 0))
+    local frame = gui.Image("frame.gif", 0, 0)
+    function frame:on_click(x, y)
+        return false
+    end
+    scene_root:add_child(frame)
 end
 
 -- Called once per frame
