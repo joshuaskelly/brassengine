@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include <sys/time.h>
 
 #include "time.h"
