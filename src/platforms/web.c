@@ -11,6 +11,7 @@ static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t render_buffer[RENDER_BUFFER_WIDTH * RENDER_BUFFER_HEIGHT];
+static SDL_Rect display_rect;
 
 static void sdl_handle_events(void);
 
@@ -83,6 +84,11 @@ void platform_init(void) {
         log_fatal("Error creating SDL frame buffer texture");
     }
 
+    display_rect.x = 0;
+    display_rect.y = 0;
+    display_rect.w = window_width;
+    display_rect.h = window_height;
+
     SDL_ShowCursor(SDL_DISABLE);
 }
 
@@ -106,6 +112,28 @@ void platform_draw(void) {
         render_buffer[i] = palette[render_texture->pixels[i]];
     }
 
+    // Maintain aspect ratio and center in window
+    int window_width;
+    int window_height;
+
+    SDL_GetWindowSize(window, &window_width, &window_height);
+
+    float window_aspect = window_width / (float)window_height;
+    float buffer_aspect = RENDER_BUFFER_WIDTH / (float)RENDER_BUFFER_HEIGHT;
+
+    display_rect.w = window_width;
+    display_rect.h = window_height;
+
+    if (buffer_aspect < window_aspect) {
+        display_rect.w = display_rect.h * buffer_aspect;
+    }
+    else {
+        display_rect.h = display_rect.w / buffer_aspect;
+    }
+
+    display_rect.x = (window_width - display_rect.w) / 2;
+    display_rect.y = (window_height - display_rect.h) / 2;
+
     SDL_UpdateTexture(
         render_buffer_texture,
         NULL,
@@ -117,22 +145,24 @@ void platform_draw(void) {
         renderer,
         render_buffer_texture,
         NULL,
-        NULL
+        &display_rect
     );
 
     SDL_RenderPresent(renderer);
+}
+
+static float clamp(float x, float min, float max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
 }
 
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 
-    int width = 0;
-    int height = 0;
-    SDL_GetWindowSize(window, &width, &height);
-
-    float aspect_width = RENDER_BUFFER_WIDTH / (float)width;
-    float aspect_height = RENDER_BUFFER_HEIGHT / (float)height;
+    float aspect_width = RENDER_BUFFER_WIDTH / (float)display_rect.w;
+    float aspect_height = RENDER_BUFFER_HEIGHT / (float)display_rect.h;
 
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
@@ -160,11 +190,30 @@ static void sdl_handle_events(void) {
             case SDL_MOUSEMOTION:
                 event.type = EVENT_MOUSEMOTION;
                 event.motion.type = EVENT_MOUSEMOTION;
-                event.motion.x = sdl_event.motion.x * aspect_width;
-                event.motion.y = sdl_event.motion.y * aspect_height;
-                event.motion.rel_x = sdl_event.motion.xrel * aspect_width;
-                event.motion.rel_y = sdl_event.motion.yrel * aspect_height;
+                event.motion.x = (sdl_event.motion.x - display_rect.x) * aspect_width;
+                event.motion.y = (sdl_event.motion.y - display_rect.y) * aspect_height;
+                event.motion.rel_x = (sdl_event.motion.xrel - display_rect.x) * aspect_width;
+                event.motion.rel_y = (sdl_event.motion.yrel - display_rect.y) * aspect_height;
 
+                event.motion.x = clamp(event.motion.x, 0, 319);
+                event.motion.y = clamp(event.motion.y, 0, 199);
+                event.motion.rel_x = clamp(event.motion.rel_x, 0, 319);
+                event.motion.rel_y = clamp(event.motion.rel_y, 0, 199);
+
+                event_post(&event);
+                break;
+
+            case SDL_MOUSEBUTTONDOWN:
+                event.type = EVENT_MOUSEDOWN;
+                event.button.type = EVENT_MOUSEDOWN;
+                event.button.button = sdl_event.button.button;
+                event_post(&event);
+                break;
+
+            case SDL_MOUSEBUTTONUP:
+                event.type = EVENT_MOUSEUP;
+                event.button.type = EVENT_MOUSEUP;
+                event.button.button = sdl_event.button.button;
                 event_post(&event);
                 break;
         }
