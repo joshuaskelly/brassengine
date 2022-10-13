@@ -60,9 +60,7 @@ function _draw()
 
     font:draw("INVENTORY", rt, 216, 24)
 
-    graphics.set_palette_color(1,2)
     font:draw("ENTRANCE", rt, 72, 8)
-    graphics.set_palette_color(1,1)
 
     -- Draw cursor
     local x, y = mouse.position()
