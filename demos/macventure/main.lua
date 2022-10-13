@@ -17,10 +17,7 @@ function _init()
     font = chevyfont.new("fonts/skullboy_mono/atlas8.gif", "fonts/skullboy_mono/metrics.json")
     font.size = 12
 
-    scene = assets.get_texture(game_data.rooms[1].background)
-    skull = assets.get_texture(game_data.objects[1].texture)
-    frame = assets.get_texture("frame.gif")
-    cursor = assets.get_texture("cursor.gif")
+    cursor = assets.get_texture("textures/ui/cursor.gif")
     graphics.set_transparent_color(0)
 
     sx, sy = 0, 0
@@ -29,7 +26,7 @@ function _init()
 
     scene_root = gui.GUI(0, 0, 320, 200)
     scene_root:add_child(gui.View(current_room))
-    local frame = gui.Image("frame.gif", 0, 0)
+    local frame = gui.Image("textures/ui/frame.gif", 0, 0)
     function frame:on_click(x, y)
         return false
     end
@@ -64,7 +61,7 @@ function _draw()
 
     -- Draw cursor
     local x, y = mouse.position()
-    graphics.blit(cursor, x - 4, y)
+    graphics.blit(cursor, x - 4, y - 2)
 
     --show_fps()
 end
