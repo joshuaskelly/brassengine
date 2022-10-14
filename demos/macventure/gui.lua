@@ -97,8 +97,7 @@ function Image:draw(offset_x, offset_y)
 end
 
 function Image:on_click(x, y)
-    print("Clicked!")
-    return true
+    return false
 end
 
 function Image:contains(x, y)
@@ -147,9 +146,6 @@ function View:set_room(room_id)
         local x, y = o.position.x, o.position.y
 
         local g = Image(object.texture, x, y)
-
-        function g:update()
-        end
 
         self:add_child(g)
     end

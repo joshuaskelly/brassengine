@@ -51,9 +51,9 @@ function _draw()
     scene_root:draw(0, 0)
 
     -- Draw text
-    font:draw("The last thing that you", rt, 24, 144 + 0 * font.size)
-    font:draw("remember is standing", rt, 24, 144 + 1 * font.size)
-    font:draw("before the wizard Lakmir", rt, 24, 144 + 2 * font.size)
+    --font:draw("The last thing that you", rt, 24, 144 + 0 * font.size)
+    --font:draw("remember is standing", rt, 24, 144 + 1 * font.size)
+    --font:draw("before the wizard Lakmir", rt, 24, 144 + 2 * font.size)
 
     font:draw("INVENTORY", rt, 216, 24)
 

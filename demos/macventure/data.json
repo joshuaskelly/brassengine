@@ -7,6 +7,10 @@
         {
             "id": 2,
             "texture": "textures/objects/key.gif"
+        },
+        {
+            "id": 3,
+            "texture": "textures/objects/door.gif"
         }
     ],
     "rooms": [
@@ -15,6 +19,13 @@
             "name": "ENTRANCE",
             "background": "textures/rooms/entrance.gif",
             "objects": [
+                {
+                    "id": 3,
+                    "position": {
+                        "x": 70,
+                        "y": 56
+                    }
+                },
                 {
                     "id": 2,
                     "position": {
