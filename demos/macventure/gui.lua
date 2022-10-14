@@ -127,7 +127,7 @@ function View:_init(room_id)
 end
 
 function View:click(x, y)
-    GUI.click(self, x - sx, y - sy)
+    GUI.click(self, x - self.sx, y - self.sy)
 end
 
 function View:on_click(x, y)
@@ -157,17 +157,17 @@ function View:update()
     local x, y = mouse.position()
 
     if x > self.rect.x and x < self.rect.x + self.rect.width and y > self.rect.y and y < self.rect.y + self.rect.height then
-        sx = math.floor((104 - x) / 88 * 16)
-        sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
+        self.sx = math.floor((104 - x) / 88 * 16)
+        self.sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
     end
 end
 
 function View:draw(offset_x, offset_y)
     graphics.set_clipping_rectangle(self.rect.x, self.rect.y, self.rect.width, self.rect.height)
 
-    graphics.blit(self.texture, offset_x + sx, offset_y + sy)
+    graphics.blit(self.texture, offset_x + self.sx, offset_y + self.sy)
 
-    GUI.draw(self, offset_x + sx, offset_y + sy)
+    GUI.draw(self, offset_x + self.sx, offset_y + self.sy)
 
     graphics.set_clipping_rectangle(0, 0, 320, 200)
 end
