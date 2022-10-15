@@ -1,14 +1,13 @@
 --main.lua
-local json = require("json")
-
 local assets = require("assets")
 local draw = require("draw")
 local graphics = require("graphics")
 local mouse = require("input.mouse")
 
 local chevyfont = require("chevyfont")
-local game_data = require("gamedata")
-local gui = require("gui")
+local GUI = require("gui")
+local Image = require("gui.image")
+local View = require("gui.view")
 
 -- Called once at startup
 function _init()
@@ -24,9 +23,9 @@ function _init()
 
     current_room = 1
 
-    scene_root = gui.GUI(0, 0, 320, 200)
-    scene_root:add_child(gui.View(current_room))
-    local frame = gui.Image("textures/ui/frame.gif", 0, 0)
+    scene_root = GUI(0, 0, 320, 200)
+    scene_root:add_child(View(current_room))
+    local frame = Image("textures/ui/frame.gif", 0, 0)
     function frame:on_click(x, y)
         return false
     end
