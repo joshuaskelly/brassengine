@@ -41,14 +41,13 @@ function ChevyFont.new(texture, metrics_)
     return new_font
 end
 
-function ChevyFont:draw(text, texture_, x, y)
+function ChevyFont:draw(text, x, y)
     local a = 0
 
     for i = 1, #text do
         local c = text:sub(i, i)
         local g = self.atlas[c]
 
-        --texture.blit(self.texture, texture_, g.pack_x, g.pack_y, g.width, g.height, x + a + g.offset_x, y + 8 + g.offset_y, g.width, g.height)
         graphics.blit(self.texture, g.pack_x, g.pack_y, g.width, g.height, x + a + g.offset_x, y + 8 + g.offset_y, g.width, g.height)
         a = a + g.advance + 1
     end
