@@ -17,9 +17,14 @@ function _init()
     current_screen = game_screen
 end
 
+left_button_down = false
+
 -- Called once per frame
 function _update()
     if mouse.button(1) then
+        left_button_down = true
+    elseif left_button_down then
+        left_button_down = false
         local x, y = mouse.position()
         current_screen:click(x, y)
     end

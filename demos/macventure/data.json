@@ -49,14 +49,46 @@
             ]
         },
         {
-            "id": 1,
+            "id": 2,
             "name": "HALLWAY",
-            "background": "textures/rooms/entrance.gif",
+            "background": "textures/rooms/hallway.gif",
+            "objects": [],
+            "exits": [
+                {
+                    "slot": 2,
+                    "room_id": 4
+                },
+                {
+                    "slot": 14,
+                    "room_id": 3
+                },
+                {
+                    "slot": 22,
+                    "room_id": 1
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "CLOSET",
+            "background": "textures/rooms/hallway.gif",
             "objects": [],
             "exits": [
                 {
                     "slot": 22,
-                    "room_id": 1
+                    "room_id": 2
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "HALLWAY",
+            "background": "textures/rooms/hallway.gif",
+            "objects": [],
+            "exits": [
+                {
+                    "slot": 22,
+                    "room_id": 2
                 }
             ]
         }

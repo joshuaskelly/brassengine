@@ -44,7 +44,8 @@ function GUI:click(x, y)
     for i = #self.children, 1, -1 do
         local child = self.children[i]
 
-        if child.visible then
+        -- TODO: Why is the child nil sometimes?
+        if child ~= nil and child.visible then
             if child:contains(x - self.rect.x, y - self.rect.y) then
                 if child:click(x - self.rect.x, y - self.rect.y) then
                     return true
