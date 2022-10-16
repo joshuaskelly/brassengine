@@ -41,7 +41,24 @@
                     }
                 }
             ],
-            "exits": []
+            "exits": [
+                {
+                    "slot": 2,
+                    "room_id": 2
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "HALLWAY",
+            "background": "textures/rooms/entrance.gif",
+            "objects": [],
+            "exits": [
+                {
+                    "slot": 22,
+                    "room_id": 1
+                }
+            ]
         }
     ]
 }

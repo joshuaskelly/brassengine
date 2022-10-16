@@ -4,42 +4,27 @@ local draw = require("draw")
 local graphics = require("graphics")
 local mouse = require("input.mouse")
 
-local chevyfont = require("chevyfont")
-local GUI = require("gui")
-local Image = require("gui.image")
-local View = require("gui.view")
+local GameScreen = require("gui.screens.game")
 
 -- Called once at startup
 function _init()
-    rt = graphics.get_render_texture()
-
-    font = chevyfont.new("fonts/skullboy_mono/atlas8.gif", "fonts/skullboy_mono/metrics.json")
-    font.size = 12
-
     cursor = assets.get_texture("textures/ui/cursor.gif")
     graphics.set_transparent_color(0)
 
-    sx, sy = 0, 0
+    local current_room = 1
 
-    current_room = 1
-
-    scene_root = GUI(0, 0, 320, 200)
-    scene_root:add_child(View(current_room))
-    local frame = Image("textures/ui/frame.gif", 0, 0)
-    function frame:on_click(x, y)
-        return false
-    end
-    scene_root:add_child(frame)
+    game_screen = GameScreen(current_room)
+    current_screen = game_screen
 end
 
 -- Called once per frame
 function _update()
     if mouse.button(1) then
         local x, y = mouse.position()
-        scene_root:click(x, y)
+        current_screen:click(x, y)
     end
 
-    scene_root:update()
+    current_screen:update()
 end
 
 -- Called once per frame
@@ -47,16 +32,7 @@ function _draw()
     draw.clear(0)
 
     -- Draw scene
-    scene_root:draw(0, 0)
-
-    -- Draw text
-    --font:draw("The last thing that you", rt, 24, 144 + 0 * font.size)
-    --font:draw("remember is standing", rt, 24, 144 + 1 * font.size)
-    --font:draw("before the wizard Lakmir", rt, 24, 144 + 2 * font.size)
-
-    font:draw("INVENTORY", rt, 216, 24)
-
-    font:draw("ENTRANCE", rt, 72, 8)
+    current_screen:draw(0, 0)
 
     -- Draw cursor
     local x, y = mouse.position()

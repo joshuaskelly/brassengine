@@ -5,6 +5,7 @@ local mouse = require("input.mouse")
 
 local GUI = require("gui")
 local Image = require("gui.image")
+local Rect = require("rect")
 
 local View = {}
 View.__index = View
@@ -22,13 +23,9 @@ setmetatable(View, {
 function View:_init(room_id)
     GUI._init(self, 16, 16, 176, 112)
 
-    self:set_room(room_id)
-    self.sx = 0
-    self.sy = 0
-end
+    self.original_rect = Rect.new(16, 16, 176, 112)
 
-function View:click(x, y)
-    GUI.click(self, x - self.sx, y - self.sy)
+    self:set_room(room_id)
 end
 
 function View:on_click(x, y)
@@ -41,7 +38,6 @@ function View:set_room(room_id)
     self.room_id = room_id
     self.texture = assets.get_texture(room.background)
     self.children = {}
-    local c = self.children
 
     for _, o in ipairs(room.objects) do
         local object = game_data.objects[o.id]
@@ -62,19 +58,22 @@ function View:update()
     GUI.update(self)
 
     local x, y = mouse.position()
+    local sx, sy = 0, 0
 
-    if x > self.rect.x and x < self.rect.x + self.rect.width and y > self.rect.y and y < self.rect.y + self.rect.height then
-        self.sx = math.floor((104 - x) / 88 * 16)
-        self.sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
+    if self.original_rect:contains(x, y) then
+        sx = math.floor((104 - x) / 88 * 16)
+        sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
     end
+
+    self.rect.x = sx
+    self.rect.y = sy
 end
 
 function View:draw(offset_x, offset_y)
-    graphics.set_clipping_rectangle(self.rect.x, self.rect.y, self.rect.width, self.rect.height)
+    graphics.set_clipping_rectangle(self.original_rect.x, self.original_rect.y, self.original_rect.width, self.original_rect.height)
 
-    graphics.blit(self.texture, offset_x + self.sx, offset_y + self.sy)
-
-    GUI.draw(self, offset_x + self.sx, offset_y + self.sy)
+    graphics.blit(self.texture, offset_x + self.rect.x, offset_y + self.rect.y)
+    GUI.draw(self, offset_x, offset_y)
 
     graphics.set_clipping_rectangle(0, 0, 320, 200)
 end

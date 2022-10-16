@@ -1,4 +1,5 @@
 --gui.lua
+local draw = require("draw")
 local Rect = require("rect")
 
 local GUI = {}
@@ -31,7 +32,7 @@ end
 function GUI:draw(offset_x, offset_y)
     for _, child in ipairs(self.children) do
         if child.visible then
-            child:draw(offset_x, offset_y)
+            child:draw(offset_x + self.rect.x, offset_y + self.rect.y)
         end
     end
 
@@ -44,8 +45,8 @@ function GUI:click(x, y)
         local child = self.children[i]
 
         if child.visible then
-            if child:contains(x, y) then
-                if child:click(x, y) then
+            if child:contains(x - self.rect.x, y - self.rect.y) then
+                if child:click(x - self.rect.x, y - self.rect.y) then
                     return true
                 end
             end
