@@ -129,7 +129,7 @@ void graphics_palette_clear(void);
  *
  * @return Palette as a 256 color array.
  */
-uint32_t* graphics_draw_palette_get(void);
+color_t* graphics_draw_palette_get(void);
 
 /**
  * Set draw palette.

@@ -6,7 +6,7 @@
 
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
-static uint32_t draw_palette[256];
+static color_t draw_palette[256];
 static int transparent_color = -1;
 
 static rect_t clip_rect;
@@ -151,7 +151,7 @@ void graphics_palette_clear(void) {
     memset(palette, 0, sizeof(palette));
 }
 
-uint32_t* graphics_draw_palette_get(void) {
+color_t* graphics_draw_palette_get(void) {
     return draw_palette;
 }
 
