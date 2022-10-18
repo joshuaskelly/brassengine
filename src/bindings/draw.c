@@ -3,6 +3,7 @@
 #include <lua/lualib.h>
 
 #include "draw.h"
+#include "texture.h"
 #include "../assets.h"
 #include "../graphics.h"
 #include "../renderers/draw.h"
@@ -41,11 +42,19 @@ static int bindings_draw_line(lua_State* L) {
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
     int y1 = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+
+    if (lua_isnumber(L, 5)) {
+        int color = (int)luaL_checknumber(L, 5);
+        draw_line(x0, y0, x1, y1, color);
+    }
+    else {
+        texture_t** pattern = luaL_checktexture(L, 5);
+        int offset_x = (int)luaL_checknumber(L, 6);
+        int offset_y = (int)luaL_checknumber(L, 7);
+        draw_pattern_line(x0, y0, x1, y1, *pattern, offset_x, offset_y);
+    }
 
     lua_pop(L, -1);
-
-    draw_line(x0, y0, x1, y1, color);
 
     return 0;
 }
@@ -64,11 +73,19 @@ static int bindings_draw_rectangle(lua_State* L) {
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
     int height = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+
+    if (lua_isnumber(L, 5)) {
+        int color = (int)luaL_checknumber(L, 5);
+        draw_rectangle(x, y, width, height, color);
+    }
+    else {
+        texture_t** pattern = luaL_checktexture(L, 5);
+        int offset_x = (int)luaL_checknumber(L, 6);
+        int offset_y = (int)luaL_checknumber(L, 7);
+        draw_pattern_rectangle(x, y, width, height, *pattern, offset_x, offset_y);
+    }
 
     lua_pop(L, -1);
-
-    draw_rectangle(x, y, width, height, color);
 
     return 0;
 }
@@ -87,11 +104,19 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
     int height = (int)luaL_checknumber(L, 4);
-    int color = (int)luaL_checknumber(L, 5);
+
+    if (lua_isnumber(L, 5)) {
+        int color = (int)luaL_checknumber(L, 5);
+        draw_filled_rectangle(x, y, width, height, color);
+    }
+    else {
+        texture_t** pattern = luaL_checktexture(L, 5);
+        int offset_x = (int)luaL_checknumber(L, 6);
+        int offset_y = (int)luaL_checknumber(L, 7);
+        draw_filled_pattern_rectangle(x, y, width, height, *pattern, offset_x, offset_y);
+    }
 
     lua_pop(L, -1);
-
-    draw_filled_rectangle(x, y, width, height, color);
 
     return 0;
 }
@@ -108,11 +133,19 @@ static int bindings_draw_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
-    int color = (int)luaL_checknumber(L, 4);
+
+    if (lua_isnumber(L, 4)) {
+        int color = (int)luaL_checknumber(L, 4);
+        draw_circle(x, y, radius, color);
+    }
+    else {
+        texture_t** pattern = luaL_checktexture(L, 4);
+        int offset_x = (int)luaL_checknumber(L, 5);
+        int offset_y = (int)luaL_checknumber(L, 6);
+        draw_pattern_circle(x, y, radius, *pattern, offset_x, offset_y);
+    }
 
     lua_pop(L, -1);
-
-    draw_circle(x, y, radius, color);
 
     return 0;
 }
@@ -129,11 +162,19 @@ static int bindings_draw_filled_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
-    int color = (int)luaL_checknumber(L, 4);
+
+    if (lua_isnumber(L, 4)) {
+        int color = (int)luaL_checknumber(L, 4);
+        draw_filled_circle(x, y, radius, color);
+    }
+    else {
+        texture_t** pattern = luaL_checktexture(L, 4);
+        int offset_x = (int)luaL_checknumber(L, 5);
+        int offset_y = (int)luaL_checknumber(L, 6);
+        draw_filled_pattern_circle(x, y, radius, *pattern, offset_x, offset_y);
+    }
 
     lua_pop(L, -1);
-
-    draw_filled_circle(x, y, radius, color);
 
     return 0;
 }
