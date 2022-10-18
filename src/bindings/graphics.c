@@ -130,7 +130,7 @@ static int bindings_graphics_set_draw_palette_color(lua_State* L) {
     int index = (int)luaL_checknumber(L, 1);
     int color = (int)luaL_checknumber(L, 2);
 
-    uint32_t* palette = graphics_draw_palette_get();
+    color_t* palette = graphics_draw_palette_get();
     palette[index] = color;
 
     return 0;
