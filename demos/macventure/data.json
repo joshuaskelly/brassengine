@@ -11,6 +11,10 @@
         {
             "id": 3,
             "texture": "textures/objects/door.gif"
+        },
+        {
+            "id": 4,
+            "texture": "textures/objects/broom.gif"
         }
     ],
     "rooms": [
@@ -71,8 +75,16 @@
         {
             "id": 3,
             "name": "CLOSET",
-            "background": "textures/rooms/hallway.gif",
-            "objects": [],
+            "background": "textures/rooms/closet.gif",
+            "objects": [
+                {
+                    "id": 4,
+                    "position": {
+                        "x": 63,
+                        "y": 41
+                    }
+                }
+            ],
             "exits": [
                 {
                     "slot": 22,
