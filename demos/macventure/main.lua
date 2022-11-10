@@ -1,15 +1,12 @@
 --main.lua
-local assets = require("assets")
-local draw = require("draw")
-local graphics = require("graphics")
-local mouse = require("input.mouse")
+local engine = require("engine")
 
 local GameScreen = require("gui.screens.game")
 
 -- Called once at startup
 function _init()
-    cursor = assets.get_texture("textures/ui/cursor.gif")
-    graphics.set_transparent_color(0)
+    cursor = engine.assets.get_texture("textures/ui/cursor.gif")
+    engine.graphics.set_transparent_color(0)
 
     local current_room = 1
 
@@ -21,11 +18,11 @@ left_button_down = false
 
 -- Called once per frame
 function _update()
-    if mouse.button(1) then
+    if engine.input.mouse.button(1) then
         left_button_down = true
     elseif left_button_down then
         left_button_down = false
-        local x, y = mouse.position()
+        local x, y = engine.input.mouse.position()
         current_screen:click(x, y)
     end
 
@@ -34,14 +31,14 @@ end
 
 -- Called once per frame
 function _draw()
-    draw.clear(0)
+    engine.draw.clear(0)
 
     -- Draw scene
     current_screen:draw(0, 0)
 
     -- Draw cursor
-    local x, y = mouse.position()
-    graphics.blit(cursor, x - 4, y - 2)
+    local x, y = engine.input.mouse.position()
+    engine.graphics.blit(cursor, x - 4, y - 2)
 
     --show_fps()
 end
@@ -51,7 +48,7 @@ function show_fps()
     local fps = 1 / dt
     local str = string.format("%.0f", fps)
 
-    graphics.set_transparent_color(-1)
-    draw.text(str, 8, 8)
-    graphics.set_transparent_color(0)
+    engine.graphics.set_transparent_color(-1)
+    engine.draw.text(str, 8, 8)
+    engine.graphics.set_transparent_color(0)
 end
