@@ -241,10 +241,19 @@ static int api_get_time_since_init(lua_State* L) {
 static int lua_package_searcher(lua_State* L) {
     const char* module_name = luaL_checkstring(L, 1);
 
-    // Append .lua to module name
+    // Copy module name
     char filename[strlen(module_name) + 5];
     memset(filename, 0, strlen(module_name) + 5);
     strcat(filename, module_name);
+
+    // Replace dot with path separator
+    char* next_dot = strchr(filename, '.');
+    while (next_dot) {
+        *next_dot = '/';
+        next_dot = strchr(next_dot, '.');
+    }
+
+    // Append .lua to module name
     strcat(filename, ".lua\0");
 
     // Look for script asset
