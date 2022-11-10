@@ -43,13 +43,20 @@ end
 
 function ChevyFont:draw(text, x, y)
     local a = 0
+    local b = 8
 
     for i = 1, #text do
         local c = text:sub(i, i)
-        local g = self.atlas[c]
 
-        graphics.blit(self.texture, g.pack_x, g.pack_y, g.width, g.height, x + a + g.offset_x, y + 8 + g.offset_y, g.width, g.height)
-        a = a + g.advance + 1
+        if c == '\n' then
+            a = 0
+            b = b + self.size
+        else
+            local g = self.atlas[c]
+
+            graphics.blit(self.texture, g.pack_x, g.pack_y, g.width, g.height, x + a + g.offset_x, y + b + g.offset_y, g.width, g.height)
+            a = a + g.advance + 1
+        end
     end
 end
 
