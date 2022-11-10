@@ -1,5 +1,6 @@
 local gamedata = require("gamedata")
 local GUI = require("gui")
+local DescriptionText = require("gui.description")
 local Image = require("gui.image")
 local View = require("gui.view")
 local Text = require("gui.text")
@@ -33,6 +34,8 @@ function GameScreen:_init(room_id)
     self:add_child(self.room_name)
 
     self:add_child(Text("INVENTORY", 216, 24))
+
+    self:add_child(DescriptionText(76, 140))
 
     self:set_room(room_id)
 end
