@@ -3,7 +3,7 @@ local chevyfont = require("chevyfont")
 local GUI = require("gui")
 
 local font = chevyfont.new("fonts/skullboy_mono/atlas8.gif", "fonts/skullboy_mono/metrics.json")
-font.size = 12
+font.size = 10
 
 local Text = {}
 Text.__index = Text
