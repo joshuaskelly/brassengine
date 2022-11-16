@@ -5,6 +5,7 @@ local Image = require("gui.image")
 local View = require("gui.view")
 local Text = require("gui.text")
 local MiniMap = require("gui.minimap")
+local scripting = require("scripting")
 
 local GameScreen = {}
 GameScreen.__index = GameScreen
@@ -37,12 +38,12 @@ function GameScreen:_init(room_id)
 
     self.description = DescriptionText(76, 140)
     self:add_child(self.description)
-
-    self:set_room(room_id)
 end
 
 function GameScreen:set_room(room_id)
     local room = gamedata.rooms[room_id]
+
+    scripting.execute(room.enter)
 
     self.view:set_room(room_id)
     self.minimap:set_room(room_id)

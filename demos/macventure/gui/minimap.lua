@@ -1,3 +1,5 @@
+local scripting = require("scripting")
+
 local gamedata = require("gamedata")
 local GUI = require("gui")
 local Image = require("gui.image")
@@ -30,7 +32,7 @@ function MiniMap:set_room(room_id)
 
         local e = Image("textures/ui/exit.gif", x, y)
         function e:on_click(x, y, button)
-            game_screen:set_room(exit.room_id)
+            scripting.execute(exit.click)
         end
 
         self:add_child(e)

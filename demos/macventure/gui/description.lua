@@ -60,7 +60,6 @@ function DescriptionText:_init(x, y)
     self.lines_to_show = 4
     self.done = true
 
-    self:set("The last thing that you \nremember is standing before \nthe wizard Lakmir as he \nwaved his hands.")
     self:add_child(self.text_object)
 end
 

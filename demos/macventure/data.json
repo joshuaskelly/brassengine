@@ -46,9 +46,11 @@
                     "position" : { "x": 94, "y": 34 }
                 }
             ],
+            "enter": "entrance_enter()",
             "exits": [
                 {
                     "slot": 2,
+                    "click": "go_to(2)",
                     "room_id": 2
                 }
             ]
@@ -58,17 +60,21 @@
             "name": "HALLWAY",
             "background": "textures/rooms/hallway.gif",
             "objects": [],
+            "enter": "hallway_enter()",
             "exits": [
                 {
                     "slot": 2,
+                    "click": "hallway_exit_locked()",
                     "room_id": 4
                 },
                 {
                     "slot": 14,
+                    "click": "go_to(3)",
                     "room_id": 3
                 },
                 {
                     "slot": 22,
+                    "click": "go_to(1)",
                     "room_id": 1
                 }
             ]
@@ -87,9 +93,11 @@
                     "position": { "x": 103, "y": 84 }
                 }
             ],
+            "enter": "",
             "exits": [
                 {
                     "slot": 22,
+                    "click": "go_to(2)",
                     "room_id": 2
                 }
             ]
@@ -99,9 +107,11 @@
             "name": "HALLWAY",
             "background": "textures/rooms/hallway.gif",
             "objects": [],
+            "enter": "",
             "exits": [
                 {
                     "slot": 22,
+                    "click": "go_to(2)",
                     "room_id": 2
                 }
             ]
