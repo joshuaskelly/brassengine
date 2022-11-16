@@ -40,24 +40,24 @@ function GUI:draw(offset_x, offset_y)
     --t = (t + 0.05) % 2
 end
 
-function GUI:click(x, y)
+function GUI:click(x, y, button)
     for i = #self.children, 1, -1 do
         local child = self.children[i]
 
         -- TODO: Why is the child nil sometimes?
         if child ~= nil and child.visible then
             if child:contains(x - self.rect.x, y - self.rect.y) then
-                if child:click(x - self.rect.x, y - self.rect.y) then
+                if child:click(x - self.rect.x, y - self.rect.y, button) then
                     return true
                 end
             end
         end
     end
 
-    return self:on_click(x, y)
+    return self:on_click(x, y, button)
 end
 
-function GUI:on_click(x, y)
+function GUI:on_click(x, y, button)
     return false
 end
 

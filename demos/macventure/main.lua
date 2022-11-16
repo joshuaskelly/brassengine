@@ -14,7 +14,8 @@ function _init()
     current_screen = game_screen
 end
 
-left_button_down = false
+local left_button_down = false
+local right_button_down = false
 
 -- Called once per frame
 function _update()
@@ -23,7 +24,15 @@ function _update()
     elseif left_button_down then
         left_button_down = false
         local x, y = engine.input.mouse.position()
-        current_screen:click(x, y)
+        current_screen:click(x, y, 1)
+    end
+
+    if engine.input.mouse.button(3) then
+        right_button_down = true
+    elseif right_button_down then
+        right_button_down = false
+        local x, y = engine.input.mouse.position()
+        current_screen:click(x, y, 3)
     end
 
     current_screen:update()

@@ -2,15 +2,24 @@ local scripting = {}
 
 local sandbox = {}
 
-function sandbox.entrance_skull_default()
+function sandbox.entrance_skull_interact()
+end
+
+function sandbox.entrance_skull_inspect()
     game_screen:describe("It's the skull of some creature. Its meaning is quite clear: death lurks inside.")
 end
 
-function sandbox.entrance_key_default()
+function sandbox.entrance_key_interact()
+end
+
+function sandbox.entrance_key_inspect()
     game_screen:describe("It's a small iron key.")
 end
 
-function sandbox.entrance_door_default()
+function sandbox.entrance_door_interact()
+end
+
+function sandbox.entrance_door_inspect()
     game_screen:describe("It's a heavy wooden door with iron hinges.")
 end
 

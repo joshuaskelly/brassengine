@@ -29,7 +29,7 @@ function MiniMap:set_room(room_id)
         local y = (exit.slot // 5) * 8
 
         local e = Image("textures/ui/exit.gif", x, y)
-        function e:on_click(x, y)
+        function e:on_click(x, y, button)
             game_screen:set_room(exit.room_id)
         end
 

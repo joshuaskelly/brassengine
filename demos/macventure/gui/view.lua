@@ -29,7 +29,7 @@ function View:_init(room_id)
     self:set_room(room_id)
 end
 
-function View:on_click(x, y)
+function View:on_click(x, y, button)
     return true
 end
 
@@ -46,8 +46,12 @@ function View:set_room(room_id)
 
         local g = Image(object.texture, x, y)
 
-        function g:on_click(x, y)
-            scripting.execute(object.default)
+        function g:on_click(x, y, button)
+            if button == 1 then
+                scripting.execute(object.interact)
+            elseif button == 3 then
+                scripting.execute(object.inspect)
+            end
             --self.visible = false
             return true
         end

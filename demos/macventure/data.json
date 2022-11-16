@@ -3,17 +3,20 @@
         {
             "id": 1,
             "texture": "textures/objects/skull.gif",
-            "default": "entrance_skull_default()"
+            "interact": "entrance_skull_interact()",
+            "inspect": "entrance_skull_inspect()"
         },
         {
             "id": 2,
             "texture": "textures/objects/key.gif",
-            "default": "entrance_key_default()"
+            "interact": "entrance_key_interact()",
+            "inspect": "entrance_key_inspect()"
         },
         {
             "id": 3,
             "texture": "textures/objects/door.gif",
-            "default": "entrance_door_default()"
+            "interact": "entrance_door_interact()",
+            "inspect": "entrance_door_inspect()"
         },
         {
             "id": 4,

@@ -79,7 +79,7 @@ function DescriptionText:contains(x, y)
     return GUI.contains(self, x, y)
 end
 
-function DescriptionText:on_click(x, y)
+function DescriptionText:on_click(x, y, button)
     local char = (time() - self.time) * 16 // 1000
 
     if char < #self.text then

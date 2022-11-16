@@ -31,7 +31,7 @@ function Image:draw(offset_x, offset_y)
     GUI.draw(self, offset_x, offset_y)
 end
 
-function Image:on_click(x, y)
+function Image:on_click(x, y, button)
     return false
 end
 
