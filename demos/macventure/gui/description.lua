@@ -1,3 +1,5 @@
+local options = require("options")
+
 local GUI = require("gui")
 local Text = require("gui.text")
 
@@ -62,10 +64,12 @@ function DescriptionText:_init(x, y)
     self:add_child(self.text_object)
 end
 
+local chars_per_second = 4.7 / 60
+
 function DescriptionText:update()
     GUI.update(self)
 
-    local chars = (time() - self.time) * 16 // 1000
+    local chars = (time() - self.time) * (options.text_speed_wpm * chars_per_second) // 1000
 
     self.text_object:set(string.sub(self.text, 0, chars))
 end
@@ -80,7 +84,7 @@ function DescriptionText:contains(x, y)
 end
 
 function DescriptionText:on_click(x, y, button)
-    local char = (time() - self.time) * 16 // 1000
+    local char = (time() - self.time) * (options.text_speed_wpm * chars_per_second) // 1000
 
     if char < #self.text then
         -- Show the full text
