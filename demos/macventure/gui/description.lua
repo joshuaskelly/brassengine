@@ -55,7 +55,7 @@ function DescriptionText:_init(x, y)
     self.time = time()
     self.lines = {}
     self.current_line = 1
-    self.lines_to_show = 2
+    self.lines_to_show = 4
     self.done = true
 
     self:set("The last thing that you \nremember is standing before \nthe wizard Lakmir as he \nwaved his hands.")
@@ -125,7 +125,7 @@ function DescriptionText:set(text)
 end
 
 function DescriptionText:advance()
-    if self.current_line + self.lines_to_show >= #self.lines then
+    if self.current_line + self.lines_to_show > #self.lines then
         self.done = true
         self.text = ""
         return
