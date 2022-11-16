@@ -56,8 +56,9 @@ function DescriptionText:_init(x, y)
     self.lines = {}
     self.current_line = 1
     self.lines_to_show = 2
-    self:set("The last thing that you \nremember is standing before \nthe wizard Lakmir as he \nwaved his hands.")
+    self.done = true
 
+    self:set("The last thing that you \nremember is standing before \nthe wizard Lakmir as he \nwaved his hands.")
     self:add_child(self.text_object)
 end
 
@@ -67,6 +68,15 @@ function DescriptionText:update()
     local chars = (time() - self.time) * 16 // 1000
 
     self.text_object:set(string.sub(self.text, 0, chars))
+end
+
+function DescriptionText:contains(x, y)
+    -- Consume all clicks while showing text
+    if not self.done then
+        return true
+    end
+
+    return GUI.contains(self, x, y)
 end
 
 function DescriptionText:on_click(x, y)
@@ -107,6 +117,7 @@ local function lines(text)
 end
 
 function DescriptionText:set(text)
+    self.done = false
     self.lines = lines(text)
 
     self.current_line = 1 - self.lines_to_show
@@ -115,6 +126,8 @@ end
 
 function DescriptionText:advance()
     if self.current_line + self.lines_to_show >= #self.lines then
+        self.done = true
+        self.text = ""
         return
     end
 
