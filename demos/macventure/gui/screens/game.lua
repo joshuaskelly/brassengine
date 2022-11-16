@@ -35,7 +35,8 @@ function GameScreen:_init(room_id)
 
     self:add_child(Text("INVENTORY", 216, 24))
 
-    self:add_child(DescriptionText(76, 140))
+    self.description = DescriptionText(76, 140)
+    self:add_child(self.description)
 
     self:set_room(room_id)
 end
@@ -46,6 +47,10 @@ function GameScreen:set_room(room_id)
     self.view:set_room(room_id)
     self.minimap:set_room(room_id)
     self.room_name:set(room.name)
+end
+
+function GameScreen:describe(text)
+    self.description.set(text)
 end
 
 return GameScreen
