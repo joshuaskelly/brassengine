@@ -50,7 +50,7 @@ function GameScreen:set_room(room_id)
 end
 
 function GameScreen:describe(text)
-    self.description.set(text)
+    self.description:set(text)
 end
 
 return GameScreen
