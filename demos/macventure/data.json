@@ -2,15 +2,18 @@
     "objects": [
         {
             "id": 1,
-            "texture": "textures/objects/skull.gif"
+            "texture": "textures/objects/skull.gif",
+            "default": "entrance_skull_default()"
         },
         {
             "id": 2,
-            "texture": "textures/objects/key.gif"
+            "texture": "textures/objects/key.gif",
+            "default": "entrance_key_default()"
         },
         {
             "id": 3,
-            "texture": "textures/objects/door.gif"
+            "texture": "textures/objects/door.gif",
+            "default": "entrance_door_default()"
         },
         {
             "id": 4,
@@ -29,24 +32,15 @@
             "objects": [
                 {
                     "id": 3,
-                    "position": {
-                        "x": 70,
-                        "y": 56
-                    }
+                    "position": { "x": 70, "y": 56 }
                 },
                 {
                     "id": 2,
-                    "position": {
-                        "x": 96,
-                        "y": 41
-                    }
+                    "position": { "x": 96, "y": 41 }
                 },
                 {
                     "id": 1,
-                    "position" : {
-                        "x": 94,
-                        "y": 34
-                    }
+                    "position" : { "x": 94, "y": 34 }
                 }
             ],
             "exits": [
@@ -83,17 +77,11 @@
             "objects": [
                 {
                     "id": 4,
-                    "position": {
-                        "x": 63,
-                        "y": 41
-                    }
+                    "position": { "x": 63, "y": 41 }
                 },
                 {
                     "id": 5,
-                    "position": {
-                        "x": 103,
-                        "y": 84
-                    }
+                    "position": { "x": 103, "y": 84 }
                 }
             ],
             "exits": [

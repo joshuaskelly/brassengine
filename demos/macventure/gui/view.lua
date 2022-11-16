@@ -6,6 +6,7 @@ local mouse = require("input.mouse")
 local GUI = require("gui")
 local Image = require("gui.image")
 local Rect = require("rect")
+local scripting = require("scripting")
 
 local View = {}
 View.__index = View
@@ -46,7 +47,8 @@ function View:set_room(room_id)
         local g = Image(object.texture, x, y)
 
         function g:on_click(x, y)
-            self.visible = false
+            scripting.execute(object.default)
+            --self.visible = false
             return true
         end
 
