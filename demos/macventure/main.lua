@@ -14,25 +14,18 @@ function _init()
     current_screen = game_screen
 end
 
-local left_button_down = false
-local right_button_down = false
+local mouse_button_down = {false, false, false}
 
 -- Called once per frame
 function _update()
-    if engine.input.mouse.button(1) then
-        left_button_down = true
-    elseif left_button_down then
-        left_button_down = false
-        local x, y = engine.input.mouse.position()
-        current_screen:click(x, y, 1)
-    end
-
-    if engine.input.mouse.button(3) then
-        right_button_down = true
-    elseif right_button_down then
-        right_button_down = false
-        local x, y = engine.input.mouse.position()
-        current_screen:click(x, y, 3)
+    for i = 1, 3 do
+        if engine.input.mouse.button(i) then
+            mouse_button_down[i] = true
+        elseif mouse_button_down[i] then
+            mouse_button_down[i] = false
+            local x, y = engine.input.mouse.position()
+            current_screen:click(x, y, i)
+        end
     end
 
     current_screen:update()
