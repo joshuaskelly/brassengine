@@ -43,7 +43,7 @@ function sandbox.hallway_enter()
         hallway_intro_text_shown = true
         return
     end
-    
+
     game_screen:describe("You stand in a long corridor. Huge stone archways line the entire hall.")
 end
 
@@ -53,6 +53,10 @@ end
 
 function sandbox.go_to(room_id)
     game_screen:set_room(room_id)
+end
+
+function sandbox.describe(s)
+    game_screen:describe(s)
 end
 
 function scripting.execute(s)
