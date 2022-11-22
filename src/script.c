@@ -193,7 +193,7 @@ void script_draw(void) {
  * @param arg Object to print to console
  */
 static int api_print(lua_State* L) {
-    const char* message = lua_tostring(L, -1);
+    const char* message = luaL_tolstring(L, -1, NULL);
     printf("%s\n", message);
 
     lua_pop(L, -1);
