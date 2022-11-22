@@ -56,6 +56,19 @@ function View:set_room(room_id)
             return true
         end
 
+        function g:on_drag_start(x, y, button)
+            -- TODO: drag start logic
+            return true
+        end
+
+        function g:on_drag(x, y, button)
+            -- TODO: drag logic
+        end
+
+        function g:on_drag_end(x, y, button)
+            -- TODO: drop logic
+        end
+
         self:add_child(g)
     end
 end

@@ -61,6 +61,53 @@ function GUI:on_click(x, y, button)
     return false
 end
 
+local dragged = nil
+
+function GUI:drag_start(x, y, button)
+    dragged = nil
+
+    for i = #self.children, 1, -1 do
+        local child = self.children[i]
+
+        -- TODO: Why is the child nil sometimes?
+        if child ~= nil and child.visible then
+            if child:contains(x - self.rect.x, y - self.rect.y) then
+                if child:drag_start(x - self.rect.x, y - self.rect.y, button) then
+                    if dragged == nil then
+                        dragged = child
+                    end
+
+                    return true
+                end
+            end
+        end
+    end
+
+    return self:on_drag_start(x, y, button)
+end
+
+function GUI:on_drag_start(x, y, button)
+    return false
+end
+
+function GUI:drag(x, y, button)
+    if dragged then
+        dragged:on_drag(x, y, button)
+    end
+end
+
+function GUI:on_drag(x, y, button)
+end
+
+function GUI:drag_end(x, y, button)
+    if dragged then
+        dragged:on_drag_end(x, y, button)
+    end
+end
+
+function GUI:on_drag_end(x, y, button)
+end
+
 function GUI.add_child(self, child)
     table.insert(self.children, child)
 end
