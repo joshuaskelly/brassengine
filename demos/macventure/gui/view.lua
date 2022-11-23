@@ -45,6 +45,7 @@ function View:set_room(room_id)
         local x, y = o.position.x, o.position.y
 
         local g = Image(object.texture, x, y)
+        g.id = o.id
 
         function g:on_click(x, y, button)
             if button == 1 then

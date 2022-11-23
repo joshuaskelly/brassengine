@@ -1,8 +1,24 @@
+local Action = require("gui.action")
+
 local scripting = {}
 
 local sandbox = {}
 
-local entrance_intro_text_shown = false
+local function get_object_in_current_room(id)
+    local children = game_screen.view.children
+
+    for i=1, #children do
+        local child = children[i]
+
+        if child.id == id then
+            return child
+        end
+    end
+
+    return nil
+end
+
+local entrance_intro_text_shown = true
 
 function sandbox.entrance_enter()
     if not entrance_intro_text_shown then
@@ -14,7 +30,42 @@ function sandbox.entrance_enter()
     game_screen:describe("It's the entrance to Shadowgate. You can hear wolves howling deep in the forest behind you...")
 end
 
+local function skull_animate_up(self)
+    if self.target.rect.y > 22 then
+        self.target.rect.y = self.target.rect.y - 0.25
+    else
+        self.target:remove_action(self)
+    end
+end
+
+local function skull_animate_down(self)
+    if self.target.rect.y < 34 then
+        self.target.rect.y = self.target.rect.y + 0.25
+    else
+        self.target:remove_action(self)
+    end
+end
+
+local skull_text_shown = false
+
 function sandbox.entrance_skull_interact()
+    local skull = get_object_in_current_room(1)
+    if skull == nil then
+        return
+    end
+
+    if (skull.up) then
+        skull:add_action(Action(skull_animate_down))
+        skull.up = false
+    else
+        skull:add_action(Action(skull_animate_up))
+        skull.up = true
+    end
+
+    if not skull_text_shown then
+        game_screen:describe("As if by magic the skull rises.")
+        skull_text_shown = true
+    end
 end
 
 function sandbox.entrance_skull_inspect()
@@ -22,6 +73,13 @@ function sandbox.entrance_skull_inspect()
 end
 
 function sandbox.entrance_key_interact()
+    local key = get_object_in_current_room(2)
+    if key == nil then
+        return
+    end
+
+    key.visible = false
+    game_screen:describe("The key is in hand.")
 end
 
 function sandbox.entrance_key_inspect()
@@ -29,6 +87,13 @@ function sandbox.entrance_key_inspect()
 end
 
 function sandbox.entrance_door_interact()
+    local door = get_object_in_current_room(3)
+    if door == nil then
+        return
+    end
+
+    door.visible = false
+    game_screen:describe("The door is open.")
 end
 
 function sandbox.entrance_door_inspect()

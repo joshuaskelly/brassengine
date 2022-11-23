@@ -15,6 +15,7 @@ setmetatable(GUI, {
 })
 
 function GUI:_init(x, y, width, height)
+    self.actions = {}
     self.children = {}
     self.rect = Rect.new(x, y, width, height)
     self.visible = true
@@ -25,6 +26,10 @@ function GUI:update()
         if child.visible then
             child:update()
         end
+    end
+
+    for _, action in ipairs(self.actions) do
+        action:update()
     end
 end
 
@@ -113,11 +118,40 @@ function GUI.add_child(self, child)
 end
 
 function GUI:remove(child)
-    table.remove(self.children, child)
+    local index = 0
+
+    for i, c in ipairs(self.children) do
+        if c == child then
+            index = i
+            break
+        end
+    end
+
+    table.remove(self.children, index)
 end
 
 function GUI:contains(x, y)
     return self.rect:contains(x, y)
+end
+
+function GUI:add_action(action)
+    if action.target == nil then
+        action.target = self
+        table.insert(self.actions, action)
+    end
+end
+
+function GUI:remove_action(action)
+    local index = 0
+
+    for i, a in ipairs(self.actions) do
+        if a == action then
+            index = i
+            break
+        end
+    end
+
+    table.remove(self.actions, index)
 end
 
 return GUI
