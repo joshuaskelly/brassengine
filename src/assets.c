@@ -320,7 +320,7 @@ static void add_scripts(const char* filename) {
     if (!check_extension(filename, "lua")) return;
 
     // Open script file
-    FILE* fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "rb");
     if (!fp) {
         log_error("Failed to open script: %s", filename);
         return;
@@ -329,7 +329,7 @@ static void add_scripts(const char* filename) {
     // Get script size
     fseek(fp, 0, SEEK_END);
     size_t size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
+    rewind(fp);
 
     // Allocate memory
     char* script = calloc(size + 1, sizeof(char));
@@ -340,7 +340,15 @@ static void add_scripts(const char* filename) {
     }
 
     // Read in script bytes
-    fread(script, 1, size, fp);
+    size_t ret_code = fread(script, 1, size, fp);
+    if (ret_code != size) {
+        if (feof(fp)) {
+            log_error("Error reading %s: unexpected end of file\n", filename);
+        }
+        else if (ferror(fp)) {
+            log_error("Error reading %s", filename);
+        }
+    }
 
     // Normalize filename
     char* asset_name = normalize_filename(filename);
