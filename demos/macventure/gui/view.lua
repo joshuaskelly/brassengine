@@ -2,6 +2,7 @@ local assets = require("assets")
 local game_data = require("gamedata")
 local graphics = require("graphics")
 local mouse = require("input.mouse")
+local texture = require("graphics.texture")
 
 local GUI = require("gui")
 local Image = require("gui.image")
@@ -29,7 +30,34 @@ function View:_init(room_id)
     self:set_room(room_id)
 end
 
+function View:contains(x, y)
+    return self.original_rect:contains(x, y)
+end
+
 function View:on_click(x, y, button)
+    x = x - self.rect.x
+    y = y - self.rect.y
+
+    local room = game_data.rooms[self.room_id]
+    if room.pick_mask == nil then
+        return
+    end
+
+    local pick_texture = assets.get_texture(room.pick_mask)
+    if pick_texture == nil then
+        return
+    end
+
+    local picked = texture.get_pixel(pick_texture, x, y)
+
+    if button == 1 then
+        local str = string.format(room.interact, picked)
+        scripting.execute(str)
+    elseif button == 3 then
+        local str = string.format(room.inspect, picked)
+        scripting.execute(str)
+    end
+
     return true
 end
 

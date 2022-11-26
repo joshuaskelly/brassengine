@@ -32,6 +32,7 @@
             "id": 1,
             "name": "ENTRANCE",
             "background": "textures/rooms/entrance.gif",
+            "pick_mask": "textures/rooms/entrance_pick_mask.gif",
             "objects": [
                 {
                     "id": 3,
@@ -47,6 +48,8 @@
                 }
             ],
             "enter": "entrance_enter()",
+            "interact": "entrance_interact(%i)",
+            "inspect": "entrance_inspect(%i)",
             "exits": [
                 {
                     "slot": 2,
@@ -64,7 +67,7 @@
             "exits": [
                 {
                     "slot": 2,
-                    "click": "hallway_exit_locked()",
+                    "click": "go_to(4)",
                     "room_id": 4
                 },
                 {
@@ -104,10 +107,29 @@
         },
         {
             "id": 4,
-            "name": "HALLWAY",
-            "background": "textures/rooms/hallway.gif",
+            "name": "MALCOLM",
+            "background": "textures/rooms/test.gif",
             "objects": [],
-            "enter": "",
+            "enter": "describe(\"Hello from Malcolm!\")",
+            "exits": [
+                {
+                    "slot": 2,
+                    "click": "go_to(5)",
+                    "room_id": 5
+                },
+                {
+                    "slot": 22,
+                    "click": "go_to(2)",
+                    "room_id": 2
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "name": "DESTROY",
+            "background": "textures/rooms/test.gif",
+            "objects": [],
+            "enter": "describe(\"malcolm  destroys  everything  before  you  the  door  collapses  now  only  your  bones  are  left\")",
             "exits": [
                 {
                     "slot": 22,

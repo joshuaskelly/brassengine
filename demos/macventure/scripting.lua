@@ -30,6 +30,32 @@ function sandbox.entrance_enter()
     game_screen:describe("It's the entrance to Shadowgate. You can hear wolves howling deep in the forest behind you...")
 end
 
+function sandbox.entrance_interact(id)
+    if id == 2 then
+        sandbox.go_to(2)
+    end
+end
+
+function sandbox.entrance_inspect(id)
+    if id == 0 then
+        print("ground")
+    elseif id == 1 then
+        game_screen:describe("You stand before a stone wall that has been carved out of the earth.")
+    elseif id == 2 then
+        game_screen:describe("The door is now open.")
+    elseif id == 3 then
+        game_screen:describe("The forest ends some twenty feet from the wall, as if sensing some great evil.")
+    elseif id == 4 then
+        print("door frame")
+    elseif id == 5 then
+        print("left grass")
+    elseif id == 6 then
+        print("right grass")
+    elseif id == 7 then
+        print("hole")
+    end
+end
+
 local function skull_animate_up(self)
     if self.target.rect.y > 22 then
         self.target.rect.y = self.target.rect.y - 0.25
