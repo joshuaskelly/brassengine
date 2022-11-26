@@ -33,6 +33,8 @@ end
 function sandbox.entrance_interact(id)
     if id == 2 then
         sandbox.go_to(2)
+    else
+        game_screen:describe("Nothing happened.")
     end
 end
 
@@ -52,7 +54,7 @@ function sandbox.entrance_inspect(id)
     elseif id == 6 then
         print("right grass")
     elseif id == 7 then
-        print("hole")
+        game_screen:describe("A small hole has been roughly chiselled into the keystone.")
     end
 end
 
