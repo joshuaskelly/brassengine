@@ -53,20 +53,26 @@ function GameScreen:_init(room_id)
     self:add_child(Text("INVENTORY", 216, 24))
 end
 
-function GameScreen:set_room(room_id, direction)
+function GameScreen:move_to(room_id, direction)
     local room = gamedata.rooms[room_id]
 
     self.transition:play(
         direction,
         function()
-            self.view:set_room(room_id)
-            self.minimap:set_room(room_id)
-            self.room_name:set(room.name)
+            self:set_room(room_id)
         end,
         function()
             scripting.execute(room.enter)
         end
     )
+end
+
+function GameScreen:set_room(room_id)
+    local room = gamedata.rooms[room_id]
+
+    self.view:set_room(room_id)
+    self.minimap:set_room(room_id)
+    self.room_name:set(room.name)
 end
 
 function GameScreen:describe(text)

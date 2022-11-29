@@ -12,7 +12,7 @@ function _init()
     local current_room = 1
 
     game_screen = GameScreen(current_room)
-    game_screen:set_room(1)
+    game_screen:move_to(1)
     current_screen = game_screen
 end
 
