@@ -4,6 +4,7 @@ local DescriptionText = require("gui.description")
 local Image = require("gui.image")
 local View = require("gui.view")
 local Text = require("gui.text")
+local Transition = require("gui.transition")
 local MiniMap = require("gui.minimap")
 local scripting = require("scripting")
 
@@ -23,31 +24,48 @@ setmetatable(GameScreen, {
 function GameScreen:_init(room_id)
     GUI._init(self, 0, 0, 320, 200)
 
+    -- Scene view
     self.view = View(room_id)
     self:add_child(self.view)
 
-    self:add_child(Image("textures/ui/frame.gif", 0, 0))
-
+    -- Minimap
+    self:add_child(Image("textures/ui/minimap.gif", 20, 140))
     self.minimap = MiniMap(20, 140)
     self:add_child(self.minimap)
 
+    -- Transition
+    self.transition = Transition("textures/vfx/transition_forward.gif", 16, 16)
+    self.transition.visible = false
+    self:add_child(self.transition)
+
+    -- UI frame
+    self:add_child(Image("textures/ui/frame.gif", 0, 0))
+
+    -- Room name
     self.room_name = Text("", 72, 8)
     self:add_child(self.room_name)
 
-    self:add_child(Text("INVENTORY", 216, 24))
-
+    -- Description text
     self.description = DescriptionText(76, 140)
     self:add_child(self.description)
+
+    -- Inventory
+    self:add_child(Text("INVENTORY", 216, 24))
 end
 
 function GameScreen:set_room(room_id)
     local room = gamedata.rooms[room_id]
 
-    scripting.execute(room.enter)
-
-    self.view:set_room(room_id)
-    self.minimap:set_room(room_id)
-    self.room_name:set(room.name)
+    self.transition:play(
+        function()
+            self.view:set_room(room_id)
+            self.minimap:set_room(room_id)
+            self.room_name:set(room.name)
+        end,
+        function()
+            scripting.execute(room.enter)
+        end
+    )
 end
 
 function GameScreen:describe(text)
