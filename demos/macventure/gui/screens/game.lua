@@ -29,7 +29,7 @@ function GameScreen:_init(room_id)
     self:add_child(self.view)
 
     -- Minimap
-    self:add_child(Image("textures/ui/minimap.gif", 20, 140))
+    self:add_child(Image("textures/gui/minimap.gif", 20, 140))
     self.minimap = MiniMap(20, 140)
     self:add_child(self.minimap)
 
@@ -39,7 +39,7 @@ function GameScreen:_init(room_id)
     self:add_child(self.transition)
 
     -- UI frame
-    self:add_child(Image("textures/ui/frame.gif", 0, 0))
+    self:add_child(Image("textures/gui/frame.gif", 0, 0))
 
     -- Room name
     self.room_name = Text("", 72, 8)

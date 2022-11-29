@@ -5,7 +5,7 @@ local GameScreen = require("gui.screens.game")
 
 -- Called once at startup
 function _init()
-    cursor = engine.assets.get_texture("textures/ui/cursor.gif")
+    cursor = engine.assets.get_texture("textures/gui/cursor.gif")
     engine.graphics.set_transparent_color(0)
 
     local current_room = 1
