@@ -144,8 +144,8 @@ function sandbox.hallway_exit_locked()
     game_screen:describe("It's locked.")
 end
 
-function sandbox.go_to(room_id)
-    game_screen:set_room(room_id)
+function sandbox.go_to(room_id, direction)
+    game_screen:set_room(room_id, direction)
 end
 
 function sandbox.describe(s)

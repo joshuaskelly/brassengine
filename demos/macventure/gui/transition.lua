@@ -24,7 +24,18 @@ function Transition:_init(texture_name, x, y)
     self.end_callback = nil
 end
 
-function Transition:play(halfway_callback, end_callback)
+local direction_textures = {
+    forward = engine.assets.get_texture("textures/vfx/transition_forward.gif"),
+    backward = engine.assets.get_texture("textures/vfx/transition_backward.gif"),
+    left = engine.assets.get_texture("textures/vfx/transition_left.gif"),
+    right = engine.assets.get_texture("textures/vfx/transition_right.gif"),
+    up = engine.assets.get_texture("textures/vfx/transition_up.gif"),
+    down = engine.assets.get_texture("textures/vfx/transition_down.gif")
+}
+
+function Transition:play(direction, halfway_callback, end_callback)
+    self.texture = direction_textures[direction] or direction_textures["forward"]
+
     self.visible = true
     self.effect_time = time()
     self.times_looped = 0

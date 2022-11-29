@@ -53,8 +53,7 @@
             "exits": [
                 {
                     "slot": 2,
-                    "click": "go_to(2)",
-                    "room_id": 2
+                    "click": "go_to(2)"
                 }
             ]
         },
@@ -67,18 +66,15 @@
             "exits": [
                 {
                     "slot": 2,
-                    "click": "go_to(4)",
-                    "room_id": 4
+                    "click": "go_to(4)"
                 },
                 {
                     "slot": 14,
-                    "click": "go_to(3)",
-                    "room_id": 3
+                    "click": "go_to(3, \"right\")"
                 },
                 {
                     "slot": 22,
-                    "click": "go_to(1)",
-                    "room_id": 1
+                    "click": "go_to(1, \"backward\")"
                 }
             ]
         },
@@ -100,7 +96,7 @@
             "exits": [
                 {
                     "slot": 22,
-                    "click": "go_to(2)",
+                    "click": "go_to(2, \"backward\")",
                     "room_id": 2
                 }
             ]
@@ -114,13 +110,11 @@
             "exits": [
                 {
                     "slot": 2,
-                    "click": "go_to(5)",
-                    "room_id": 5
+                    "click": "go_to(5)"
                 },
                 {
                     "slot": 22,
-                    "click": "go_to(2)",
-                    "room_id": 2
+                    "click": "go_to(2, \"backward\")"
                 }
             ]
         },
@@ -133,8 +127,7 @@
             "exits": [
                 {
                     "slot": 22,
-                    "click": "go_to(2)",
-                    "room_id": 2
+                    "click": "go_to(4, \"backward\")"
                 }
             ]
         }
