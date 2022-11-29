@@ -67,7 +67,7 @@ function _draw()
 
     -- Draw cursor
     local x, y = engine.input.mouse.position()
-    if mouse_button_down[1] or mouse_button_down[3] then
+    if (mouse_button_down[1] or mouse_button_down[3]) and not dragging then
         engine.graphics.blit(cursor_down, x - 4, y - 2)
     else
         engine.graphics.blit(cursor, x - 4, y - 2)
