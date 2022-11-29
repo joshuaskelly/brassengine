@@ -32,7 +32,7 @@
             "id": 1,
             "name": "ENTRANCE",
             "background": "textures/rooms/entrance.gif",
-            "pick_mask": "textures/rooms/entrance_pick_mask.gif",
+            "pick_mask": "textures/pickmasks/entrance.gif",
             "objects": [
                 {
                     "id": 3,
