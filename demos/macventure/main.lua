@@ -6,6 +6,7 @@ local GameScreen = require("gui.screens.game")
 -- Called once at startup
 function _init()
     cursor = engine.assets.get_texture("textures/gui/cursor.gif")
+    cursor_down = engine.assets.get_texture("textures/gui/cursor_down.gif")
     engine.graphics.set_transparent_color(0)
 
     local current_room = 1
@@ -66,7 +67,11 @@ function _draw()
 
     -- Draw cursor
     local x, y = engine.input.mouse.position()
-    engine.graphics.blit(cursor, x - 4, y - 2)
+    if mouse_button_down[1] or mouse_button_down[3] then
+        engine.graphics.blit(cursor_down, x - 4, y - 2)
+    else
+        engine.graphics.blit(cursor, x - 4, y - 2)
+    end
 
     --show_fps()
 end
