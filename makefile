@@ -14,7 +14,7 @@ PLATFORMS=desktop web
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
-SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(wildcard $(SRC_DIR)/bindings/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
+SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(wildcard $(SRC_DIR)/modules/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 INC=-Ilibs
@@ -77,7 +77,7 @@ clean: ## Deletes all auto generated files
 	mkdir $(BUILD_DIR)
 	mkdir $(BUILD_DIR)/bin
 	mkdir $(BUILD_DIR)/obj
-	mkdir $(BUILD_DIR)/obj/bindings
+	mkdir $(BUILD_DIR)/obj/modules
 	mkdir $(BUILD_DIR)/obj/platforms
 	mkdir $(BUILD_DIR)/obj/renderers
 	mkdir $(BUILD_DIR)/web

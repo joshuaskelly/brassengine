@@ -15,12 +15,12 @@
 #include "script.h"
 #include "time.h"
 
-#include "bindings/assets.h"
-#include "bindings/draw.h"
-#include "bindings/graphics.h"
-#include "bindings/keyboard.h"
-#include "bindings/mouse.h"
-#include "bindings/texture.h"
+#include "modules/assets.h"
+#include "modules/draw.h"
+#include "modules/graphics.h"
+#include "modules/keyboard.h"
+#include "modules/mouse.h"
+#include "modules/texture.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
