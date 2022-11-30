@@ -18,7 +18,7 @@ setmetatable(Transition, {
 function Transition:_init(texture_name, x, y)
     Image._init(self, texture_name, x, y)
 
-    self.effect_time = 0
+    self.start_time = 0
     self.times_looped = 0
     self.halfway_callback = nil
     self.end_callback = nil
@@ -33,14 +33,17 @@ local direction_textures = {
     down = engine.assets.get_texture("textures/vfx/transition_down.gif")
 }
 
+local function nop()
+end
+
 function Transition:play(direction, halfway_callback, end_callback)
     self.texture = direction_textures[direction] or direction_textures["forward"]
 
     self.visible = true
-    self.effect_time = time()
+    self.start_time = time()
     self.times_looped = 0
-    self.halfway_callback = halfway_callback
-    self.end_callback = end_callback
+    self.halfway_callback = halfway_callback or nop
+    self.end_callback = end_callback or nop
 end
 
 local function reset_draw_palette()
@@ -51,33 +54,32 @@ end
 
 local fore = 0
 local back = 2
+local half_effect_length = 500
 
 function Transition:draw(offset_x, offset_y)
     for i = 0, 255 do
+        -- Threshold palette
         local c = fore
-        if ((time() - self.effect_time) % 750) * 176 * 2 // 1000 >= i then
+        if ((time() - self.start_time) % half_effect_length) / half_effect_length * 128 >= i then
             c = back
         end
 
-        if time() - self.effect_time > 750 then
+        if time() - self.start_time > half_effect_length then
+            -- End
             if self.times_looped >= 1 then
                 self.visible = false
                 fore, back = 0, 2
 
-                if self.end_callback then
-                    self.end_callback()
-                end
-
+                self.end_callback()
 
                 return
             end
 
-            if self.halfway_callback then
-                self.halfway_callback()
-            end
+            -- Halfway
+            self.halfway_callback()
 
             fore, back = back, fore
-            self.effect_time = time()
+            self.start_time = time()
             self.times_looped = self.times_looped + 1
         end
 
