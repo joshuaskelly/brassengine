@@ -14,6 +14,7 @@ setmetatable(Action, {
 function Action:_init(func)
     self.target = nil
     self.func = func
+    self.done = false
 end
 
 function Action:update()

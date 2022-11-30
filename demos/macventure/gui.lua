@@ -31,6 +31,14 @@ function GUI:update()
     for _, action in ipairs(self.actions) do
         action:update()
     end
+
+    for i = #self.actions, 1, -1 do
+        local action = self.actions[i]
+
+        if action.done then
+            table.remove(self.actions, i)
+        end
+    end
 end
 
 --t = 0
