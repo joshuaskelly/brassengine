@@ -21,7 +21,7 @@ function Transition:_init(texture_name, x, y)
     self.start_time = 0
     self.halfway_callback = nil
     self.end_callback = nil
-    self.state = nil
+    self.animate = nil
 end
 
 local direction_textures = {
@@ -43,7 +43,7 @@ function Transition:play(direction, halfway_callback, end_callback)
     self.start_time = time()
     self.halfway_callback = halfway_callback or nop
     self.end_callback = end_callback or nop
-    self.state = Transition.animate_in
+    self.animate = Transition.animate_in
 end
 
 local function reset_draw_palette()
@@ -57,7 +57,7 @@ local animate_hold_time = 300
 local animate_out_time = 350
 
 function Transition:draw(offset_x, offset_y)
-    self:state()
+    self:animate()
 
     Image.draw(self, offset_x, offset_y)
     reset_draw_palette()
@@ -65,11 +65,12 @@ end
 
 function Transition:animate_in()
     local elapsed = time() - self.start_time
+    local threshold = elapsed / animate_in_time * 128
 
+    -- Animate palette
     for i = 0, 255 do
-        -- Threshold palette
         local c = 0
-        if  elapsed / animate_in_time * 128 >= i then
+        if i < threshold then
             c = 2
         end
 
@@ -79,7 +80,7 @@ function Transition:animate_in()
     -- Check for transition
     if elapsed >= animate_in_time then
         self.halfway_callback()
-        self.state = Transition.animate_hold
+        self.animate = Transition.animate_hold
         self.start_time = time()
     end
 end
@@ -87,24 +88,26 @@ end
 function Transition:animate_hold()
     local elapsed = time() - self.start_time
 
+    -- Animate palette
     for i = 0, 255 do
         engine.graphics.set_palette_color(i, 2)
     end
 
     -- Check for transition
     if elapsed >= animate_hold_time then
-        self.state = Transition.animate_out
+        self.animate = Transition.animate_out
         self.start_time = time()
     end
 end
 
 function Transition:animate_out()
     local elapsed = time() - self.start_time
+    local threshold = elapsed / animate_out_time * 128
 
+    -- Animate palette
     for i = 0, 255 do
-        -- Threshold palette
         local c = 2
-        if elapsed / animate_out_time * 128 >= i then
+        if i < threshold then
             c = 0
         end
 
@@ -113,7 +116,7 @@ function Transition:animate_out()
 
     -- Check for transition
     if elapsed >= animate_out_time then
-        self.state = nop
+        self.animate = nop
         self.visible = false
         self.end_callback()
     end
