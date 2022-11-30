@@ -25,6 +25,24 @@
         {
             "id": 5,
             "texture": "textures/objects/bucket.gif"
+        },
+        {
+            "id": 6,
+            "texture": "textures/objects/hallway_rug.gif",
+            "interact": "hallway_rug_interact()",
+            "inspect": "hallway_rug_inspect()"
+        },
+        {
+            "id": 7,
+            "texture": "textures/objects/hallway_door_1.gif",
+            "interact": "hallway_door_1_interact()",
+            "inspect": "hallway_door_1_inspect()"
+        },
+        {
+            "id": 8,
+            "texture": "textures/objects/hallway_door_2.gif",
+            "interact": "hallway_door_2_interact()",
+            "inspect": "hallway_door_2_inspect()"
         }
     ],
     "rooms": [
@@ -61,8 +79,24 @@
             "id": 2,
             "name": "HALLWAY",
             "background": "textures/rooms/hallway.gif",
-            "objects": [],
+            "pick_mask": "textures/pickmasks/hallway.gif",
+            "objects": [
+                {
+                    "id": 6,
+                    "position": {"x": 64, "y": 109}
+                },
+                {
+                    "id": 7,
+                    "position": {"x": 84, "y": 36}
+                },
+                {
+                    "id": 8,
+                    "position": {"x": 166, "y": 60}
+                }
+            ],
             "enter": "hallway_enter()",
+            "interact": "hallway_interact(%i)",
+            "inspect": "hallway_inspect(%i)",
             "exits": [
                 {
                     "slot": 2,
@@ -92,7 +126,7 @@
                     "position": { "x": 103, "y": 84 }
                 }
             ],
-            "enter": "",
+            "enter": "closet_enter()",
             "exits": [
                 {
                     "slot": 22,
@@ -113,6 +147,14 @@
                     "click": "go_to(5)"
                 },
                 {
+                    "slot": 13,
+                    "click": "go_to(6, \"up\")"
+                },
+                {
+                    "slot": 16,
+                    "click": "go_to(8, \"down\")"
+                },
+                {
                     "slot": 22,
                     "click": "go_to(2, \"backward\")"
                 }
@@ -124,6 +166,52 @@
             "background": "textures/rooms/test.gif",
             "objects": [],
             "enter": "describe(\"malcolm  destroys  everything  before  you  the  door  collapses  now  only  your  bones  are  left\")",
+            "exits": [
+                {
+                    "slot": 22,
+                    "click": "go_to(4, \"backward\")"
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "name": "CONRAD",
+            "background": "textures/rooms/conrad.gif",
+            "pick_mask": "textures/pickmasks/conrad.gif",
+            "objects": [],
+            "enter": "describe(\"As you enter the room you see a monster staring at you.\")",
+            "interact": "conrad_interact(%i)",
+            "inspect": "conrad_inspect(%i)",
+            "exits": [
+                {
+                    "slot": 1,
+                    "click": "go_to(7, \"down\")"
+                },
+                {
+                    "slot": 22,
+                    "click": "go_to(4, \"backward\")"
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "DEATH!",
+            "background": "textures/rooms/conrad2.gif",
+            "objects": [],
+            "enter": "describe(\"When you enter the room the monsters stop what they are doing and watch you.\")",
+            "exits": [
+                {
+                    "slot": 22,
+                    "click": "go_to(6, \"backward\")"
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "name": "MALCOLM2",
+            "background": "textures/rooms/malcolm2.gif",
+            "objects": [],
+            "enter": "describe(\"\")",
             "exits": [
                 {
                     "slot": 22,
