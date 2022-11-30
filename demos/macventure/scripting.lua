@@ -1,4 +1,4 @@
-local Action = require("gui.action")
+local TimedAction = require("gui.actions.timedaction")
 
 local scripting = {}
 
@@ -88,20 +88,16 @@ function sandbox.entrance_inspect(id)
     end
 end
 
+local function lerp(a, b, t)
+    return a * (1 - t) + b * t
+end
+
 local function skull_animate_up(self)
-    if self.target.rect.y > 22 then
-        self.target.rect.y = self.target.rect.y - 0.25
-    else
-        self.target:remove_action(self)
-    end
+    self.target.rect.y = lerp(34, 22, self.progress)
 end
 
 local function skull_animate_down(self)
-    if self.target.rect.y < 34 then
-        self.target.rect.y = self.target.rect.y + 0.25
-    else
-        self.target:remove_action(self)
-    end
+    self.target.rect.y = lerp(22, 34, self.progress)
 end
 
 local skull_text_shown = false
@@ -113,10 +109,10 @@ function sandbox.entrance_skull_interact()
     end
 
     if (skull.up) then
-        skull:add_action(Action(skull_animate_down))
+        skull:add_action(TimedAction(skull_animate_down, 500))
         skull.up = false
     else
-        skull:add_action(Action(skull_animate_up))
+        skull:add_action(TimedAction(skull_animate_up, 500))
         skull.up = true
     end
 
