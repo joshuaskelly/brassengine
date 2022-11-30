@@ -27,6 +27,10 @@ function Image:_init(texture_name, x, y)
 end
 
 function Image:draw(offset_x, offset_y)
+    if not self.visible then
+        return
+    end
+
     graphics.blit(self.texture, offset_x + self.rect.x, offset_y + self.rect.y)
     GUI.draw(self, offset_x, offset_y)
 end
