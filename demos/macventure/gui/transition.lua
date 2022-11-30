@@ -64,17 +64,20 @@ function Transition:draw(offset_x, offset_y)
 end
 
 function Transition:animate_in()
+    local elapsed = time() - self.start_time
+
     for i = 0, 255 do
         -- Threshold palette
         local c = 0
-        if (time() - self.start_time) / animate_in_time * 128 >= i then
+        if  elapsed / animate_in_time * 128 >= i then
             c = 2
         end
 
         engine.graphics.set_palette_color(i, c)
     end
 
-    if time() - self.start_time >= animate_in_time then
+    -- Check for transition
+    if elapsed >= animate_in_time then
         self.halfway_callback()
         self.state = Transition.animate_hold
         self.start_time = time()
@@ -82,28 +85,35 @@ function Transition:animate_in()
 end
 
 function Transition:animate_hold()
+    local elapsed = time() - self.start_time
+
     for i = 0, 255 do
         engine.graphics.set_palette_color(i, 2)
     end
 
-    if time() - self.start_time >= animate_hold_time then
+    -- Check for transition
+    if elapsed >= animate_hold_time then
         self.state = Transition.animate_out
         self.start_time = time()
     end
 end
 
 function Transition:animate_out()
+    local elapsed = time() - self.start_time
+
     for i = 0, 255 do
         -- Threshold palette
         local c = 2
-        if (time() - self.start_time) / animate_out_time * 128 >= i then
+        if elapsed / animate_out_time * 128 >= i then
             c = 0
         end
 
         engine.graphics.set_palette_color(i, c)
     end
 
-    if time() - self.start_time >= animate_out_time then
+    -- Check for transition
+    if elapsed >= animate_out_time then
+        self.state = nop
         self.visible = false
         self.end_callback()
     end
