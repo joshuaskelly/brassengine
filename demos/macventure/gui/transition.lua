@@ -52,73 +52,60 @@ local function reset_draw_palette()
     end
 end
 
-local fore = 0
-local back = 2
-
 local animate_in_time = 350
 local animate_hold_time = 300
 local animate_out_time = 350
 
 function Transition:draw(offset_x, offset_y)
-    self:state(offset_x, offset_y)
+    self:state()
 
     Image.draw(self, offset_x, offset_y)
     reset_draw_palette()
 end
 
-function Transition:animate_in(offset_x, offset_y)
+function Transition:animate_in()
     for i = 0, 255 do
         -- Threshold palette
-        local c = fore
-        if ((time() - self.start_time) % animate_in_time) / animate_in_time * 128 >= i then
-            c = back
-        end
-
-        if time() - self.start_time > animate_in_time then
-            -- Halfway
-            self.halfway_callback()
-            self.state = Transition.animate_hold
-
-            fore, back = back, fore
-            self.start_time = time()
+        local c = 0
+        if (time() - self.start_time) / animate_in_time * 128 >= i then
+            c = 2
         end
 
         engine.graphics.set_palette_color(i, c)
     end
+
+    if time() - self.start_time >= animate_in_time then
+        self.halfway_callback()
+        self.state = Transition.animate_hold
+        self.start_time = time()
+    end
 end
 
-function Transition:animate_hold(offset_x, offset_y)
+function Transition:animate_hold()
     for i = 0, 255 do
-        if time() - self.start_time > animate_hold_time then
-            self.state = Transition.animate_out
-            self.start_time = time()
-
-            return
-        end
-
         engine.graphics.set_palette_color(i, 2)
     end
+
+    if time() - self.start_time >= animate_hold_time then
+        self.state = Transition.animate_out
+        self.start_time = time()
+    end
 end
 
-function Transition:animate_out(offset_x, offset_y)
+function Transition:animate_out()
     for i = 0, 255 do
         -- Threshold palette
-        local c = fore
-        if ((time() - self.start_time) % animate_out_time) / animate_out_time * 128 >= i then
-            c = back
-        end
-
-        if time() - self.start_time > animate_out_time then
-            -- End
-            self.visible = false
-            fore, back = 0, 2
-
-            self.end_callback()
-
-            return
+        local c = 2
+        if (time() - self.start_time) / animate_out_time * 128 >= i then
+            c = 0
         end
 
         engine.graphics.set_palette_color(i, c)
+    end
+
+    if time() - self.start_time >= animate_out_time then
+        self.visible = false
+        self.end_callback()
     end
 end
 
