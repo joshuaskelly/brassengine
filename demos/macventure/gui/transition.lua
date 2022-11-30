@@ -58,7 +58,6 @@ local animate_out_time = 350
 
 function Transition:draw(offset_x, offset_y)
     self:animate()
-
     Image.draw(self, offset_x, offset_y)
     reset_draw_palette()
 end
