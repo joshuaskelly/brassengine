@@ -38,7 +38,6 @@ end
 
 function Transition:play(direction, halfway_callback, end_callback)
     self.texture = direction_textures[direction] or direction_textures["forward"]
-
     self.visible = true
     self.start_time = time()
     self.halfway_callback = halfway_callback or nop
