@@ -22,12 +22,14 @@ function GUI:_init(x, y, width, height)
 end
 
 function GUI:update()
+    -- Update children
     for _, child in ipairs(self.children) do
         if child.visible then
             child:update()
         end
     end
 
+    -- Run actions
     for _, action in ipairs(self.actions) do
         action:update()
     end
@@ -144,7 +146,7 @@ end
 
 function GUI:add_action(action)
     if action.target == nil then
-        action.target = self
+        action:set_target(self)
         table.insert(self.actions, action)
     end
 end

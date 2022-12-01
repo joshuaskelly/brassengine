@@ -21,4 +21,8 @@ function Action:update()
     self:func()
 end
 
+function Action:set_target(target)
+    self.target = target
+end
+
 return Action

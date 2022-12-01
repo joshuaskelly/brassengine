@@ -1,4 +1,4 @@
---sequentialaction.lua
+--parallelaction.lua
 local Action = require("gui.action")
 
 local ParallelAction = {}
@@ -32,6 +32,14 @@ function ParallelAction:update()
         end
 
         self.done = self.done and action.done
+    end
+end
+
+function ParallelAction:set_target(target)
+    Action.set_target(self, target)
+
+    for _, action in ipairs(self.actions) do
+        action:set_target(target)
     end
 end
 

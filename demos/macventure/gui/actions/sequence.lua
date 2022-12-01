@@ -1,10 +1,10 @@
---sequentialaction.lua
+--sequence.lua
 local Action = require("gui.action")
 
-local SequentialAction = {}
-SequentialAction.__index = SequentialAction
+local Sequence = {}
+Sequence.__index = Sequence
 
-setmetatable(SequentialAction, {
+setmetatable(Sequence, {
     __index = Action,
     __call = function(cls, ...)
         local self = setmetatable({}, cls)
@@ -17,7 +17,7 @@ setmetatable(SequentialAction, {
 local function nop()
 end
 
-function SequentialAction:_init(...)
+function Sequence:_init(...)
     Action._init(self, nop)
 
     self.actions = table.pack(...)
@@ -25,7 +25,7 @@ function SequentialAction:_init(...)
     self.current = 1
 end
 
-function SequentialAction:update()
+function Sequence:update()
     local action = self.actions[self.current]
 
     action:update()
@@ -38,4 +38,12 @@ function SequentialAction:update()
 
 end
 
-return SequentialAction
+function Sequence:set_target(target)
+    Action.set_target(self, target)
+
+    for _, action in ipairs(self.actions) do
+        action:set_target(target)
+    end
+end
+
+return Sequence

@@ -8,6 +8,9 @@ local GUI = require("gui")
 local Image = require("gui.image")
 local Rect = require("rect")
 local scripting = require("scripting")
+local Delay = require("gui.actions.delay")
+local MoveTo = require("gui.actions.moveto")
+local Sequence = require("gui.actions.sequence")
 
 local View = {}
 View.__index = View
@@ -23,7 +26,7 @@ setmetatable(View, {
 })
 
 function View:_init(room_id)
-    GUI._init(self, 16, 16, 176, 112)
+    GUI._init(self, 0, 0, 176, 112)
 
     self.original_rect = Rect.new(16, 16, 176, 112)
 
@@ -67,6 +70,9 @@ function View:set_room(room_id)
     self.room_id = room_id
     self.texture = assets.get_texture(room.background)
     self.children = {}
+    self.actions = {}
+    self.rect.x = 0
+    self.rect.y = 0
 
     for _, o in ipairs(room.objects) do
         local object = game_data.objects[o.id]
@@ -102,6 +108,12 @@ function View:set_room(room_id)
     end
 end
 
+local function lerp(a, b, t)
+    return a * (1 - t) + b * t
+end
+
+local mouse_over = false
+
 function View:update()
     GUI.update(self)
 
@@ -109,12 +121,26 @@ function View:update()
     local sx, sy = 0, 0
 
     if self.original_rect:contains(x, y) then
+        mouse_over = true
+
+        -- Smooth blend to mouse position
         sx = math.floor((104 - x) / 88 * 16)
         sy = -math.floor(math.min(0, (72 - y) / 56 * -16))
-    end
+        self.rect.x = math.floor(lerp(self.rect.x, sx, 0.35))
+        self.rect.y = math.floor(lerp(self.rect.y, sy, 0.35))
 
-    self.rect.x = sx
-    self.rect.y = sy
+        -- Clear out actions
+        self.actions = {}
+    elseif mouse_over then
+        mouse_over = false
+
+        self:add_action(
+            Sequence(
+                Delay(2000),
+                MoveTo(0, 0, 1000)
+            )
+        )
+    end
 end
 
 function View:draw(offset_x, offset_y)
