@@ -48,7 +48,6 @@ static void init_from_assets_directory(const char* directory) {
     // Open script file
     FILE* fp = fopen(config_path, "rb");
     if (!fp) {
-        log_error("Failed to open script: %s", config_path);
         return;
     }
 
