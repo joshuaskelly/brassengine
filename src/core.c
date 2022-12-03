@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 #include "assets.h"
+#include "configuration.h"
 #include "core.h"
 #include "event.h"
 #include "graphics.h"
@@ -20,6 +21,7 @@ static void handle_events(void);
 void core_init(void) {
     log_info("%s\n", ENGINE_COPYRIGHT);
 
+    configuration_init();
     time_init();
     platform_init();
     graphics_init();
@@ -38,6 +40,7 @@ void core_destroy(void) {
     graphics_destroy();
     platform_destroy();
     time_destroy();
+    configuration_destroy();
 }
 
 void core_run(void) {

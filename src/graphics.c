@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "configuration.h"
 #include "graphics.h"
 #include "log.h"
 
@@ -112,8 +113,8 @@ void graphics_init(void) {
     log_info("graphics init");
 
     render_texture = graphics_texture_new(
-        RENDER_BUFFER_WIDTH,
-        RENDER_BUFFER_HEIGHT,
+        configuration_resolution_width_get(),
+        configuration_resolution_height_get(),
         NULL
     );
 
@@ -123,8 +124,8 @@ void graphics_init(void) {
 
     clip_rect.x = 0;
     clip_rect.y = 0;
-    clip_rect.width = RENDER_BUFFER_WIDTH;
-    clip_rect.height = RENDER_BUFFER_HEIGHT;
+    clip_rect.width = configuration_resolution_width_get();
+    clip_rect.height = configuration_resolution_height_get();
 
     for (int i = 0; i < 256; i++) {
         draw_palette[i] = i;
