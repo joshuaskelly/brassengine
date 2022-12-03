@@ -70,8 +70,8 @@ function _draw()
 
     for p in all(pt) do
         --> screen space
-        sx = 160 + p.cx * 64 / p.cz
-        sy = 100 + p.cy * 64 / p.cz
+        sx = 64 + p.cx * 64 / p.cz
+        sy = 64 + p.cy * 64 / p.cz
         rad = rad1 / p.cz
 
         if (p.cz > 0.1) then -- clip
