@@ -36,8 +36,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-
 /* Size: Total bytes allocated to *buf
  * Length: String length, excluding optional NULL terminator.
  * Increment: Allocation increments when resizing the string buffer.
@@ -305,7 +303,6 @@ static int calculate_new_size(strbuf_t *s, int len)
     return newsize;
 }
 
-
 /* Ensure strbuf can handle a string length bytes long (ignoring NULL
  * optional termination). */
 static void strbuf_resize(strbuf_t *s, int len)
@@ -394,7 +391,6 @@ static void strbuf_append_fmt_retry(strbuf_t *s, const char *fmt, ...)
 
     s->length += fmt_len;
 }
-
 
 /* Lua CJSON floating point conversion routines */
 
