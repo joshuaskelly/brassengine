@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
+#include <drwav/dr_wav.h>
 #include <giflib/gif_lib.h>
 #include <zip/zip.h>
 
@@ -14,6 +15,7 @@
 #include "assets.h"
 #include "graphics.h"
 #include "log.h"
+#include "sounds.h"
 
 typedef struct {
     const char* name;
@@ -39,6 +41,8 @@ static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
 static asset_entry_t* script_assets = NULL;
 static int script_asset_count = 0;
+static asset_entry_t* sound_assets = NULL;
+static int sound_asset_count = 0;
 
 static char* assets_directory = "assets";
 
@@ -269,10 +273,18 @@ static char* normalize_filename(const char* filename) {
 }
 
 /**
- * Callback function to count texture assets.
+ * Callback function to count assets.
  */
-static void count_textures(const char* filename) {
-    if (check_extension(filename, "gif")) texture_asset_count++;
+static void count_assets(const char* filename) {
+    if (check_extension(filename, "gif")) {
+        texture_asset_count++;
+    }
+    else if (check_extension(filename, "lua")) {
+        script_asset_count++;
+    }
+    else if (check_extension(filename, "wav")) {
+        sound_asset_count++;
+    }
 }
 
 static int asset_count;
@@ -302,13 +314,6 @@ static void add_textures(const char* filename) {
     texture_assets[asset_count++] = assets_entry_new(asset_name, texture);
 
     gif_free(gif);
-}
-
-/**
- * Callback function to count script assets.
- */
-static void count_scripts(const char* filename) {
-    if (check_extension(filename, "lua")) script_asset_count++;
 }
 
 /**
@@ -360,6 +365,53 @@ static void add_scripts(const char* filename) {
 }
 
 /**
+ * Callback function to add sound assets.
+ *
+ * @param filename Sound filename
+ */
+static void add_sounds(const char* filename) {
+    if (!check_extension(filename, "wav")) return;
+
+    drwav wav;
+
+    if (!drwav_init_file(&wav, filename, NULL)) {
+        log_error("Failed to open sound: %s", filename);
+        return;
+    }
+
+    size_t total_frames = wav.totalPCMFrameCount;
+    int16_t* pcm = malloc(total_frames * wav.channels * sizeof(int16_t));
+    if (!pcm) {
+        log_error("Failed to allocate memory for sound");
+        drwav_uninit(&wav);
+        return;
+    }
+
+    size_t frames_read = drwav_read_pcm_frames_s16(&wav, total_frames, pcm);
+    if (frames_read != total_frames) {
+        log_error("Failed to read PCM data.");
+        free(pcm);
+        drwav_uninit(&wav);
+        return;
+    }
+
+    sound_t* sound = sounds_sound_new(
+        total_frames,
+        wav.channels,
+        pcm
+    );
+
+    //free(pcm);
+    drwav_uninit(&wav);
+
+    // Normalize filename
+    char* asset_name = normalize_filename(filename);
+
+    // Add script asset
+    sound_assets[asset_count++] = assets_entry_new(asset_name, sound);
+}
+
+/**
  * Load assets from assets directory.
  *
  * @return true If successful, false otherwise.
@@ -383,17 +435,23 @@ static bool load_from_assets_directory(void) {
     graphics_palette_set(palette->palette);
     gif_free(palette);
 
+    // Count all assets
+    walk_directory(assets_directory, count_assets);
+
     // Load textures
     asset_count = 0;
-    walk_directory(assets_directory, count_textures);
     texture_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * texture_asset_count);
     walk_directory(assets_directory, add_textures);
 
     // Load scripts
     asset_count = 0;
-    walk_directory(assets_directory, count_scripts);
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
     walk_directory(assets_directory, add_scripts);
+
+    // Load sounds
+    asset_count = 0;
+    sound_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * sound_asset_count);
+    walk_directory(assets_directory, add_sounds);
 
     return true;
 }
@@ -535,6 +593,10 @@ texture_t* assets_get_texture(const char* filename) {
 
 const char* assets_get_script(const char* filename) {
     return(const char*)asset_get(script_assets, script_asset_count, filename);
+}
+
+sound_t* assets_get_sound(const char* filename) {
+    return(sound_t*)asset_get(sound_assets, sound_asset_count, filename);
 }
 
 /**

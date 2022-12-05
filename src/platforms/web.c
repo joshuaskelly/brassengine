@@ -1,12 +1,14 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <emscripten.h>
 
-#include "../platform.h"
 #include "../configuration.h"
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../platform.h"
+#include "../sounds.h"
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
@@ -27,13 +29,17 @@ void platform_init(void) {
     // Get platform version info
     SDL_version version;
     SDL_GetVersion(&version);
-    char buffer[64];
+
+    const SDL_version* mix_version = Mix_Linked_Version();
+
+    char buffer[128];
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i)",
+        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i, SDL Mixer %i.%i.%i)",
         __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__,
-        version.major, version.minor, version.patch
+        version.major, version.minor, version.patch,
+        mix_version->major, mix_version->minor, mix_version->patch
     );
 
     log_info(buffer);
@@ -43,6 +49,10 @@ void platform_init(void) {
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         log_fatal("Error initializing SDL");
+    }
+
+    if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
+        log_fatal("Error intializing SDL Mixer");
     }
 
     window = SDL_CreateWindow(
@@ -226,4 +236,9 @@ static void sdl_handle_events(void) {
                 break;
         }
     }
+}
+
+void platform_play_sound(sound_t* sound) {
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(int16_t));
+    Mix_PlayChannel(-1, chunk, 0);
 }

@@ -5,6 +5,7 @@
 #include "assets.h"
 
 #include "../assets.h"
+#include "../sounds.h"
 
 /**
  * Get texture for given filename
@@ -28,8 +29,31 @@ static int bindings_assets_get_texture(lua_State* L) {
     return 1;
 }
 
+/**
+ * Get sound for given filename
+ *
+ * @param filename Name of sound asset to look for
+ * @return Sound userdata if found, nil otherwise.
+ */
+static int bindings_assets_get_sound(lua_State* L) {
+    const char* sound_name = luaL_checkstring(L, 1);
+    sound_t* sound = assets_get_sound(sound_name);
+
+    if (sound) {
+        sound_t** sp = (texture_t**)lua_newuserdata(L, sizeof(sound_t*));
+        *sp = sound;
+        luaL_setmetatable(L, "sound");
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"get_texture", bindings_assets_get_texture},
+    {"get_sound", bindings_assets_get_sound},
     {NULL, NULL}
 };
 

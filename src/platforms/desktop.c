@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "../arguments.h"
 #include "../assets.h"
@@ -8,7 +9,7 @@
 #include "../graphics.h"
 #include "../log.h"
 #include "../platform.h"
-#include "../script.h"
+#include "../sounds.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
@@ -41,12 +42,17 @@ void platform_init(void) {
     // Get platform version info
     SDL_version version;
     SDL_GetVersion(&version);
-    char buffer[32];
+
+    const SDL_version* mix_version = Mix_Linked_Version();
+
+    char buffer[128];
+
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (SDL %i.%i.%i)",
-        version.major, version.minor, version.patch
+        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i)",
+        version.major, version.minor, version.patch,
+        mix_version->major, mix_version->minor, mix_version->patch
     );
 
     log_info(buffer);
@@ -54,8 +60,12 @@ void platform_init(void) {
     const int window_width = configuration_resolution_width_get() * 3;
     const int window_height = configuration_resolution_height_get() * 3;
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         log_fatal("Error initializing SDL");
+    }
+
+    if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
+        log_fatal("Error intializing SDL Mixer");
     }
 
     window = SDL_CreateWindow(
@@ -260,4 +270,9 @@ static void sdl_fix_frame_rate(void) {
     }
 
     ticks_last_frame = SDL_GetTicks();
+}
+
+void platform_play_sound(sound_t* sound) {
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(int16_t));
+    Mix_PlayChannel(-1, chunk, 0);
 }
