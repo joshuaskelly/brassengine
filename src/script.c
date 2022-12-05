@@ -18,6 +18,7 @@
 #include "modules/assets.h"
 #include "modules/draw.h"
 #include "modules/graphics.h"
+#include "modules/json.h"
 #include "modules/keyboard.h"
 #include "modules/mouse.h"
 #include "modules/texture.h"
@@ -63,6 +64,7 @@ static void init_lua_vm(void) {
     // Set modules
     luaL_requiref(L, "assets", open_assets_module, 0);
     luaL_requiref(L, "draw", open_draw_module, 0);
+    luaL_requiref(L, "json", open_json_module, 0);
     luaL_requiref(L, "graphics", open_graphics_module, 0);
     luaL_requiref(L, "graphics.texture", open_texture_module, 0);
     luaL_requiref(L, "input.keyboard", open_keyboard_module, 0);
