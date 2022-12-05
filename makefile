@@ -73,7 +73,7 @@ $(LIBZIP):
 	cd $(ZIP_DIR) && make zip.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 $(LIBCJSON):
-	cd $(CJSON_DIR) && make static CC=$(CC) RANLIB=$(RANLIB)
+	cd $(CJSON_DIR) && make libcjson.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
