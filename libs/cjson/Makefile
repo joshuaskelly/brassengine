@@ -56,7 +56,7 @@ static: $(CJSON_STATIC)
 #static libraries
 #cJSON
 $(CJSON_STATIC): $(CJSON_OBJ)
-	$(AR) rcs $@ $<
+	$(AR) $@ $<
 
 #shared libraries .so.1.0.0
 #cJSON
