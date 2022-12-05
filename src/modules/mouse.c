@@ -50,7 +50,7 @@ static const struct luaL_Reg module_functions[] = {
     {NULL, NULL}
 };
 
-int open_mouse_module(lua_State* L) {
+int luaopen_mouse(lua_State* L) {
     luaL_newlib(L, module_functions);
     return 1;
 }

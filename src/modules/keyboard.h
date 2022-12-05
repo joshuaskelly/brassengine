@@ -1,8 +1,8 @@
-#ifndef BINDINGS_KEYBOARD_H
-#define BINDINGS_KEYBOARD_H
+#ifndef MODULES_KEYBOARD_H
+#define MODULES_KEYBOARD_H
 
 #include <lua/lua.h>
 
-int open_keyboard_module(lua_State* L);
+int luaopen_keyboard(lua_State* L);
 
 #endif

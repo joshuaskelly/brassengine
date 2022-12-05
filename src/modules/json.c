@@ -2022,6 +2022,6 @@ static int luaopen_cjson_safe(lua_State *l)
     return 1;
 }
 
-int open_json_module(lua_State* L) {
+int luaopen_json(lua_State* L) {
     return luaopen_cjson(L);
 }

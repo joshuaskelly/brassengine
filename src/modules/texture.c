@@ -175,7 +175,7 @@ static const struct luaL_Reg module_functions[] = {
     {NULL, NULL}
 };
 
-int open_texture_module(lua_State* L) {
+int luaopen_texture(lua_State* L) {
     luaL_newlib(L, module_functions);
 
     // Push texture userdata metatable

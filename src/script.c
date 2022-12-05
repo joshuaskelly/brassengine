@@ -62,13 +62,13 @@ static void init_lua_vm(void) {
     lua_register(L, "palette", api_set_palette_color);
 
     // Set modules
-    luaL_requiref(L, "assets", open_assets_module, 0);
-    luaL_requiref(L, "draw", open_draw_module, 0);
-    luaL_requiref(L, "json", open_json_module, 0);
-    luaL_requiref(L, "graphics", open_graphics_module, 0);
-    luaL_requiref(L, "graphics.texture", open_texture_module, 0);
-    luaL_requiref(L, "input.keyboard", open_keyboard_module, 0);
-    luaL_requiref(L, "input.mouse", open_mouse_module, 0);
+    luaL_requiref(L, "assets", luaopen_assets, 0);
+    luaL_requiref(L, "draw", luaopen_draw, 0);
+    luaL_requiref(L, "json", luaopen_json, 0);
+    luaL_requiref(L, "graphics", luaopen_graphics, 0);
+    luaL_requiref(L, "graphics.texture", luaopen_texture, 0);
+    luaL_requiref(L, "input.keyboard", luaopen_keyboard, 0);
+    luaL_requiref(L, "input.mouse", luaopen_mouse, 0);
 
     // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));

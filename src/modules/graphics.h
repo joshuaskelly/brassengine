@@ -1,8 +1,8 @@
-#ifndef BINDINGS_GRAPHICS_H
-#define BINDINGS_GRAPHICS_H
+#ifndef MODULES_GRAPHICS_H
+#define MODULES_GRAPHICS_H
 
 #include <lua/lua.h>
 
-int open_graphics_module(lua_State* L);
+int luaopen_graphics(lua_State* L);
 
 #endif

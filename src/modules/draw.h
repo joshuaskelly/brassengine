@@ -1,8 +1,8 @@
-#ifndef BINDINGS_DRAW_H
-#define BINDINGS_DRAW_H
+#ifndef MODULES_DRAW_H
+#define MODULES_DRAW_H
 
 #include <lua/lua.h>
 
-int open_draw_module(lua_State* L);
+int luaopen_draw(lua_State* L);
 
 #endif

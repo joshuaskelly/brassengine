@@ -1,8 +1,8 @@
-#ifndef BINDINGS_JSON_H
-#define BINDINGS_JSON_H
+#ifndef MODULES_JSON_H
+#define MODULES_JSON_H
 
 #include <lua/lua.h>
 
-int open_json_module(lua_State* L);
+int luaopen_json(lua_State* L);
 
 #endif
