@@ -49,8 +49,8 @@ static int bindings_draw_line(lua_State* L) {
     }
     else {
         texture_t** pattern = luaL_checktexture(L, 5);
-        int offset_x = (int)luaL_checknumber(L, 6);
-        int offset_y = (int)luaL_checknumber(L, 7);
+        int offset_x = (int)luaL_optnumber(L, 6, 0);
+        int offset_y = (int)luaL_optnumber(L, 7, 0);
         draw_pattern_line(x0, y0, x1, y1, *pattern, offset_x, offset_y);
     }
 
@@ -80,8 +80,8 @@ static int bindings_draw_rectangle(lua_State* L) {
     }
     else {
         texture_t** pattern = luaL_checktexture(L, 5);
-        int offset_x = (int)luaL_checknumber(L, 6);
-        int offset_y = (int)luaL_checknumber(L, 7);
+        int offset_x = (int)luaL_optnumber(L, 6, 0);
+        int offset_y = (int)luaL_optnumber(L, 7, 0);
         draw_pattern_rectangle(x, y, width, height, *pattern, offset_x, offset_y);
     }
 
@@ -111,8 +111,8 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
     }
     else {
         texture_t** pattern = luaL_checktexture(L, 5);
-        int offset_x = (int)luaL_checknumber(L, 6);
-        int offset_y = (int)luaL_checknumber(L, 7);
+        int offset_x = (int)luaL_optnumber(L, 6, 0);
+        int offset_y = (int)luaL_optnumber(L, 7, 0);
         draw_filled_pattern_rectangle(x, y, width, height, *pattern, offset_x, offset_y);
     }
 
@@ -140,8 +140,8 @@ static int bindings_draw_circle(lua_State* L) {
     }
     else {
         texture_t** pattern = luaL_checktexture(L, 4);
-        int offset_x = (int)luaL_checknumber(L, 5);
-        int offset_y = (int)luaL_checknumber(L, 6);
+        int offset_x = (int)luaL_optnumber(L, 5, 0);
+        int offset_y = (int)luaL_optnumber(L, 6, 0);
         draw_pattern_circle(x, y, radius, *pattern, offset_x, offset_y);
     }
 
@@ -169,8 +169,8 @@ static int bindings_draw_filled_circle(lua_State* L) {
     }
     else {
         texture_t** pattern = luaL_checktexture(L, 4);
-        int offset_x = (int)luaL_checknumber(L, 5);
-        int offset_y = (int)luaL_checknumber(L, 6);
+        int offset_x = (int)luaL_optnumber(L, 5, 0);
+        int offset_y = (int)luaL_optnumber(L, 6, 0);
         draw_filled_pattern_circle(x, y, radius, *pattern, offset_x, offset_y);
     }
 
