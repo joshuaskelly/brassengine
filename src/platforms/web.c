@@ -11,7 +11,7 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
-static uint32_t render_buffer[configuration_resolution_width_get() * configuration_resolution_height_get()];
+static uint32_t* render_buffer = NULL;
 static SDL_Rect display_rect;
 
 static void sdl_handle_events(void);
@@ -73,6 +73,12 @@ void platform_init(void) {
         SDL_BLENDMODE_BLEND
     );
 
+    render_buffer = calloc(configuration_resolution_width_get() * configuration_resolution_height_get(), sizeof(uint32_t));
+
+    if (!render_buffer) {
+        log_fatal("Error creating frame buffer.");
+    }
+
     render_buffer_texture = SDL_CreateTexture(
         renderer,
         SDL_PIXELFORMAT_RGBA32,
@@ -95,6 +101,7 @@ void platform_init(void) {
 
 void platform_destroy(void) {
     SDL_DestroyTexture(render_buffer_texture);
+    free(render_buffer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

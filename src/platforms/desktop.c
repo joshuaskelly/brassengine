@@ -16,7 +16,7 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
-static uint32_t* render_buffer;
+static uint32_t* render_buffer = NULL;
 static int ticks_last_frame;
 static SDL_Rect display_rect;
 
@@ -87,6 +87,10 @@ void platform_init(void) {
     );
 
     render_buffer = calloc(configuration_resolution_width_get() * configuration_resolution_height_get(), sizeof(uint32_t));
+
+    if (!render_buffer) {
+        log_fatal("Error creating frame buffer.");
+    }
 
     render_buffer_texture = SDL_CreateTexture(
         renderer,
