@@ -219,10 +219,10 @@ static void sdl_handle_events(void) {
                 event.motion.rel_x = (sdl_event.motion.xrel - display_rect.x) * aspect_width;
                 event.motion.rel_y = (sdl_event.motion.yrel - display_rect.y) * aspect_height;
 
-                event.motion.x = clamp(event.motion.x, 0, 319);
-                event.motion.y = clamp(event.motion.y, 0, 199);
-                event.motion.rel_x = clamp(event.motion.rel_x, 0, 319);
-                event.motion.rel_y = clamp(event.motion.rel_y, 0, 199);
+                event.motion.x = clamp(event.motion.x, 0, configuration_resolution_width_get() - 1);
+                event.motion.y = clamp(event.motion.y, 0, configuration_resolution_height_get() - 1);
+                event.motion.rel_x = clamp(event.motion.rel_x, 0, configuration_resolution_width_get() - 1);
+                event.motion.rel_y = clamp(event.motion.rel_y, 0, configuration_resolution_height_get() - 1);
 
                 event_post(&event);
                 break;
