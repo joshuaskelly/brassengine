@@ -8,9 +8,6 @@
 
 #include <stdint.h>
 
-#define RENDER_BUFFER_WIDTH 320
-#define RENDER_BUFFER_HEIGHT 200
-
 typedef struct {
     int x;
     int y;

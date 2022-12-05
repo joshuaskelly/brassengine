@@ -5,6 +5,7 @@
 #include "graphics.h"
 #include "texture.h"
 
+#include "../configuration.h"
 #include "../assets.h"
 #include "../graphics.h"
 
@@ -57,8 +58,8 @@ static int bindings_graphics_blit(lua_State* L) {
     int sh = (*texture)->height;
     int dx = 0;
     int dy = 0;
-    int dw = RENDER_BUFFER_WIDTH;
-    int dh = RENDER_BUFFER_HEIGHT;
+    int dw = configuration_resolution_width_get();
+    int dh = configuration_resolution_height_get();
 
     if (arg_count == 3) {
         dx = (int)luaL_checknumber(L, 2);

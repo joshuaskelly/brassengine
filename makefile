@@ -28,9 +28,12 @@ LIBGIF=$(GIFLIB_DIR)/libgif.a
 ZIP_DIR=libs/zip
 LIBZIP=$(ZIP_DIR)/zip.a
 
+CJSON_DIR=libs/cjson
+LIBCJSON=$(CJSON_DIR)/libcjson.a
+
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
-LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) -lSDL2 -lm
+LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lm ##-lssp
 
 default:help
 
@@ -47,14 +50,14 @@ desktop-run: ## Run desktop build
 web:CC=emcc -s USE_SDL=2 -s USE_GIFLIB=1
 web:AR='emar rcu'
 web:RANLIB=emranlib
-web: $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBZIP) ## Build web platform
+web: $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBZIP) $(LIBCJSON) ## Build web platform
 	@echo "SRCS = $(SRCS)"
-	$(CC) $^ $(LIBLUA) $(LIBZIP) -o $(WEB_DIR)/main.html --embed-file assets
+	$(CC) $^ $(LIBLUA) $(LIBZIP) $(LIBCJSON) -o $(WEB_DIR)/main.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/main.html
 
-$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF) $(LIBZIP)
+$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -68,6 +71,9 @@ $(LIBGIF):
 
 $(LIBZIP):
 	cd $(ZIP_DIR) && make zip.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
+
+$(LIBCJSON):
+	cd $(CJSON_DIR) && make libcjson.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
@@ -84,6 +90,7 @@ clean: ## Deletes all auto generated files
 	cd $(LUA_DIR) && make clean
 	cd $(GIFLIB_DIR) && make clean
 	cd $(ZIP_DIR) && make clean
+	cd $(CJSON_DIR) && make clean
 
 help: ## Show help prompt
 	@echo "usage:"

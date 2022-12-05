@@ -2,6 +2,7 @@
 #include <emscripten.h>
 
 #include "../platform.h"
+#include "../configuration.h"
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
@@ -10,7 +11,7 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
-static uint32_t render_buffer[RENDER_BUFFER_WIDTH * RENDER_BUFFER_HEIGHT];
+static uint32_t* render_buffer = NULL;
 static SDL_Rect display_rect;
 
 static void sdl_handle_events(void);
@@ -37,8 +38,8 @@ void platform_init(void) {
 
     log_info(buffer);
 
-    const int window_width = RENDER_BUFFER_WIDTH * 3;
-    const int window_height = RENDER_BUFFER_HEIGHT * 3;
+    const int window_width = configuration_resolution_width_get() * 3;
+    const int window_height = configuration_resolution_height_get() * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         log_fatal("Error initializing SDL");
@@ -72,12 +73,18 @@ void platform_init(void) {
         SDL_BLENDMODE_BLEND
     );
 
+    render_buffer = calloc(configuration_resolution_width_get() * configuration_resolution_height_get(), sizeof(uint32_t));
+
+    if (!render_buffer) {
+        log_fatal("Error creating frame buffer.");
+    }
+
     render_buffer_texture = SDL_CreateTexture(
         renderer,
         SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
-        RENDER_BUFFER_WIDTH,
-        RENDER_BUFFER_HEIGHT
+        configuration_resolution_width_get(),
+        configuration_resolution_height_get()
     );
 
     if (!render_buffer_texture) {
@@ -94,6 +101,7 @@ void platform_init(void) {
 
 void platform_destroy(void) {
     SDL_DestroyTexture(render_buffer_texture);
+    free(render_buffer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -119,7 +127,7 @@ void platform_draw(void) {
     SDL_GetWindowSize(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
-    float buffer_aspect = RENDER_BUFFER_WIDTH / (float)RENDER_BUFFER_HEIGHT;
+    float buffer_aspect = configuration_resolution_width_get() / (float)configuration_resolution_height_get();
 
     display_rect.w = window_width;
     display_rect.h = window_height;
@@ -161,8 +169,8 @@ static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 
-    float aspect_width = RENDER_BUFFER_WIDTH / (float)display_rect.w;
-    float aspect_height = RENDER_BUFFER_HEIGHT / (float)display_rect.h;
+    float aspect_width = configuration_resolution_width_get() / (float)display_rect.w;
+    float aspect_height = configuration_resolution_height_get() / (float)display_rect.h;
 
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
