@@ -62,16 +62,16 @@ typedef struct {
 #endif
 
 /* Initialise */
-extern strbuf_t *strbuf_new(int len);
-extern void strbuf_init(strbuf_t *s, int len);
-extern void strbuf_set_increment(strbuf_t *s, int increment);
+static strbuf_t *strbuf_new(int len);
+static void strbuf_init(strbuf_t *s, int len);
+static void strbuf_set_increment(strbuf_t *s, int increment);
 
 /* Release */
-extern void strbuf_free(strbuf_t *s);
-extern char *strbuf_free_to_string(strbuf_t *s, int *len);
+static void strbuf_free(strbuf_t *s);
+static char *strbuf_free_to_string(strbuf_t *s, int *len);
 
 /* Management */
-extern void strbuf_resize(strbuf_t *s, int len);
+static void strbuf_resize(strbuf_t *s, int len);
 static int strbuf_empty_length(strbuf_t *s);
 static char *strbuf_string(strbuf_t *s, int *len);
 static void strbuf_ensure_empty_length(strbuf_t *s, int len);
@@ -79,10 +79,10 @@ static char *strbuf_empty_ptr(strbuf_t *s);
 static void strbuf_extend_length(strbuf_t *s, int len);
 
 /* Update */
-extern void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...);
-extern void strbuf_append_fmt_retry(strbuf_t *s, const char *format, ...);
+static void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...);
+static void strbuf_append_fmt_retry(strbuf_t *s, const char *format, ...);
 static void strbuf_append_mem(strbuf_t *s, const char *c, int len);
-extern void strbuf_append_string(strbuf_t *s, const char *str);
+static void strbuf_append_string(strbuf_t *s, const char *str);
 static void strbuf_append_char(strbuf_t *s, const char c);
 static void strbuf_ensure_null(strbuf_t *s);
 
@@ -188,7 +188,7 @@ static void die(const char *fmt, ...)
     exit(-1);
 }
 
-void strbuf_init(strbuf_t *s, int len)
+static void strbuf_init(strbuf_t *s, int len)
 {
     int size;
 
@@ -212,7 +212,7 @@ void strbuf_init(strbuf_t *s, int len)
     strbuf_ensure_null(s);
 }
 
-strbuf_t *strbuf_new(int len)
+static strbuf_t *strbuf_new(int len)
 {
     strbuf_t *s;
 
@@ -228,7 +228,7 @@ strbuf_t *strbuf_new(int len)
     return s;
 }
 
-void strbuf_set_increment(strbuf_t *s, int increment)
+static void strbuf_set_increment(strbuf_t *s, int increment)
 {
     /* Increment > 0:  Linear buffer growth rate
      * Increment < -1: Exponential buffer growth rate */
@@ -248,7 +248,7 @@ static inline void debug_stats(strbuf_t *s)
 
 /* If strbuf_t has not been dynamically allocated, strbuf_free() can
  * be called any number of times strbuf_init() */
-void strbuf_free(strbuf_t *s)
+static void strbuf_free(strbuf_t *s)
 {
     debug_stats(s);
 
@@ -260,7 +260,7 @@ void strbuf_free(strbuf_t *s)
         free(s);
 }
 
-char *strbuf_free_to_string(strbuf_t *s, int *len)
+static char *strbuf_free_to_string(strbuf_t *s, int *len)
 {
     char *buf;
 
@@ -308,7 +308,7 @@ static int calculate_new_size(strbuf_t *s, int len)
 
 /* Ensure strbuf can handle a string length bytes long (ignoring NULL
  * optional termination). */
-void strbuf_resize(strbuf_t *s, int len)
+static void strbuf_resize(strbuf_t *s, int len)
 {
     int newsize;
 
@@ -326,7 +326,7 @@ void strbuf_resize(strbuf_t *s, int len)
     s->reallocs++;
 }
 
-void strbuf_append_string(strbuf_t *s, const char *str)
+static void strbuf_append_string(strbuf_t *s, const char *str)
 {
     int space, i;
 
@@ -346,7 +346,7 @@ void strbuf_append_string(strbuf_t *s, const char *str)
 
 /* strbuf_append_fmt() should only be used when an upper bound
  * is known for the output string. */
-void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...)
+static void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...)
 {
     va_list arg;
     int fmt_len;
@@ -365,7 +365,7 @@ void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...)
 
 /* strbuf_append_fmt_retry() can be used when the there is no known
  * upper bound for the output string. */
-void strbuf_append_fmt_retry(strbuf_t *s, const char *fmt, ...)
+static void strbuf_append_fmt_retry(strbuf_t *s, const char *fmt, ...)
 {
     va_list arg;
     int fmt_len;
@@ -410,11 +410,11 @@ static inline void fpconv_init()
     /* Do nothing - not required */
 }
 #else
-extern void fpconv_init();
+static void fpconv_init();
 #endif
 
-extern int fpconv_g_fmt(char*, double, int);
-extern double fpconv_strtod(const char*, char**);
+static int fpconv_g_fmt(char*, double, int);
+static double fpconv_strtod(const char*, char**);
 
 /* fpconv - Floating point conversion routines
  *
@@ -514,7 +514,7 @@ static int strtod_buffer_size(const char *s)
 
 /* Similar to strtod(), but must be passed the current locale's decimal point
  * character. Guaranteed to be called at the start of any valid number in a string */
-double fpconv_strtod(const char *nptr, char **endptr)
+static double fpconv_strtod(const char *nptr, char **endptr)
 {
     char localbuf[FPCONV_G_FMT_BUFSIZE];
     char *buf, *endbuf, *dp;
@@ -582,7 +582,7 @@ static void set_number_format(char *fmt, int precision)
 }
 
 /* Assumes there is always at least 32 characters available in the target buffer */
-int fpconv_g_fmt(char *str, double num, int precision)
+static int fpconv_g_fmt(char *str, double num, int precision)
 {
     char buf[FPCONV_G_FMT_BUFSIZE];
     char fmt[6];
@@ -607,7 +607,7 @@ int fpconv_g_fmt(char *str, double num, int precision)
     return len;
 }
 
-void fpconv_init()
+static void fpconv_init()
 {
     fpconv_update_locale();
 }
@@ -656,12 +656,6 @@ void fpconv_init()
 
 #ifndef CJSON_VERSION
 #define CJSON_VERSION   "2.1devel"
-#endif
-
-#ifdef _MSC_VER
-#define CJSON_EXPORT    __declspec(dllexport)
-#else
-#define CJSON_EXPORT    extern
 #endif
 
 /* Workaround for Solaris platforms missing isinf() */
@@ -2016,7 +2010,7 @@ static int lua_cjson_safe_new(lua_State *l)
     return 1;
 }
 
-CJSON_EXPORT int luaopen_cjson(lua_State *l)
+static int luaopen_cjson(lua_State *l)
 {
     lua_cjson_new(l);
 
@@ -2030,7 +2024,7 @@ CJSON_EXPORT int luaopen_cjson(lua_State *l)
     return 1;
 }
 
-CJSON_EXPORT int luaopen_cjson_safe(lua_State *l)
+static int luaopen_cjson_safe(lua_State *l)
 {
     lua_cjson_safe_new(l);
 
