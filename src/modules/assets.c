@@ -40,7 +40,7 @@ static int bindings_assets_get_sound(lua_State* L) {
     sound_t* sound = assets_get_sound(sound_name);
 
     if (sound) {
-        sound_t** sp = (texture_t**)lua_newuserdata(L, sizeof(sound_t*));
+        sound_t** sp = (sound_t**)lua_newuserdata(L, sizeof(sound_t*));
         *sp = sound;
         luaL_setmetatable(L, "sound");
     }
