@@ -114,6 +114,7 @@ void platform_destroy(void) {
     free(render_buffer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    Mix_Quit();
     SDL_Quit();
 }
 
