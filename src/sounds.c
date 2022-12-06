@@ -4,7 +4,7 @@
 
 #include "sounds.h"
 
-sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, int16_t* data) {
+sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, sample_t* data) {
     sound_t* sound = (sound_t*)malloc(sizeof(sound_t));
 
     if (!sound) {

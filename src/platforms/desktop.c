@@ -274,6 +274,6 @@ static void sdl_fix_frame_rate(void) {
 }
 
 void platform_play_sound(sound_t* sound) {
-    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(int16_t));
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
     Mix_PlayChannel(-1, chunk, 0);
 }

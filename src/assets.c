@@ -380,7 +380,7 @@ static void add_sounds(const char* filename) {
     }
 
     size_t total_frames = wav.totalPCMFrameCount;
-    int16_t* pcm = malloc(total_frames * wav.channels * sizeof(int16_t));
+    sample_t* pcm = malloc(total_frames * wav.channels * sizeof(sample_t));
     if (!pcm) {
         log_error("Failed to allocate memory for sound");
         drwav_uninit(&wav);
