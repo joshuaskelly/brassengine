@@ -33,7 +33,7 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
-LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lm ##-lssp
+LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lSDL2_mixer -lm ##-lssp
 
 default:help
 
