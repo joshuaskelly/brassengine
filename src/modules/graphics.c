@@ -58,8 +58,8 @@ static int bindings_graphics_blit(lua_State* L) {
     int sh = (*texture)->height;
     int dx = 0;
     int dy = 0;
-    int dw = configuration_resolution_width_get();
-    int dh = configuration_resolution_height_get();
+    int dw = config->resolution.width;
+    int dh = config->resolution.height;
 
     if (arg_count == 3) {
         dx = (int)luaL_checknumber(L, 2);

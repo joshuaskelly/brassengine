@@ -113,8 +113,8 @@ void graphics_init(void) {
     log_info("graphics init");
 
     render_texture = graphics_texture_new(
-        configuration_resolution_width_get(),
-        configuration_resolution_height_get(),
+        config->resolution.width,
+        config->resolution.height,
         NULL
     );
 
@@ -124,8 +124,8 @@ void graphics_init(void) {
 
     clip_rect.x = 0;
     clip_rect.y = 0;
-    clip_rect.width = configuration_resolution_width_get();
-    clip_rect.height = configuration_resolution_height_get();
+    clip_rect.width = config->resolution.width;
+    clip_rect.height = config->resolution.height;
 
     for (int i = 0; i < 256; i++) {
         draw_palette[i] = i;

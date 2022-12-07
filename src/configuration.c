@@ -9,8 +9,7 @@
 #include "configuration.h"
 #include "log.h"
 
-static int resolution_width = 320;
-static int resolution_height = 200;
+struct config* config = NULL;
 
 static bool check_extension(const char* filename, const char* ext) {
     if (filename == NULL || ext == NULL) return false;
@@ -32,8 +31,8 @@ static void set(cJSON* json) {
         cJSON* height = cJSON_GetObjectItemCaseSensitive(resolution, "height");
 
         if (cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
-            resolution_width = width->valueint;
-            resolution_height = height->valueint;
+            config->resolution.width = width->valueint;
+            config->resolution.height = width->valueint;
         }
     }
 }
@@ -89,6 +88,12 @@ static void init_from_zip(const char* zip) {
 }
 
 void configuration_init(void) {
+    config = (struct config*)malloc(sizeof(struct config));
+
+    // Set defaults
+    config->resolution.width = 320;
+    config->resolution.height = 200;
+
     // Check if user gave us a zip file or asset directory
     if (arguments_count() > 1) {
         const char* zip_or_directory = arguments_last();
@@ -109,12 +114,4 @@ void configuration_init(void) {
 
 void configuration_destroy(void) {
 
-}
-
-int configuration_resolution_width_get(void) {
-    return resolution_width;
-}
-
-int configuration_resolution_height_get(void) {
-    return resolution_height;
 }

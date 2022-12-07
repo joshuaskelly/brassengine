@@ -44,8 +44,8 @@ void platform_init(void) {
 
     log_info(buffer);
 
-    const int window_width = configuration_resolution_width_get() * 3;
-    const int window_height = configuration_resolution_height_get() * 3;
+    const int window_width = config->resolution.width * 3;
+    const int window_height = config->resolution.height * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         log_fatal("Error initializing SDL");
@@ -83,7 +83,7 @@ void platform_init(void) {
         SDL_BLENDMODE_BLEND
     );
 
-    render_buffer = calloc(configuration_resolution_width_get() * configuration_resolution_height_get(), sizeof(uint32_t));
+    render_buffer = calloc(config->resolution.width * config->resolution.height, sizeof(uint32_t));
 
     if (!render_buffer) {
         log_fatal("Error creating frame buffer.");
@@ -93,8 +93,8 @@ void platform_init(void) {
         renderer,
         SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
-        configuration_resolution_width_get(),
-        configuration_resolution_height_get()
+        config->resolution.width,
+        config->resolution.height
     );
 
     if (!render_buffer_texture) {
@@ -138,7 +138,7 @@ void platform_draw(void) {
     SDL_GetWindowSize(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
-    float buffer_aspect = configuration_resolution_width_get() / (float)configuration_resolution_height_get();
+    float buffer_aspect = config->resolution.width / (float)config->resolution.height;
 
     display_rect.w = window_width;
     display_rect.h = window_height;
@@ -180,8 +180,8 @@ static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
 
-    float aspect_width = configuration_resolution_width_get() / (float)display_rect.w;
-    float aspect_height = configuration_resolution_height_get() / (float)display_rect.h;
+    float aspect_width = config->resolution.width / (float)display_rect.w;
+    float aspect_height = config->resolution.height / (float)display_rect.h;
 
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
@@ -214,10 +214,10 @@ static void sdl_handle_events(void) {
                 event.motion.rel_x = (sdl_event.motion.xrel - display_rect.x) * aspect_width;
                 event.motion.rel_y = (sdl_event.motion.yrel - display_rect.y) * aspect_height;
 
-                event.motion.x = clamp(event.motion.x, 0, configuration_resolution_width_get() - 1);
-                event.motion.y = clamp(event.motion.y, 0, configuration_resolution_height_get() - 1);
-                event.motion.rel_x = clamp(event.motion.rel_x, 0, configuration_resolution_width_get() - 1);
-                event.motion.rel_y = clamp(event.motion.rel_y, 0, configuration_resolution_height_get() - 1);
+                event.motion.x = clamp(event.motion.x, 0, config->resolution.width - 1);
+                event.motion.y = clamp(event.motion.y, 0, config->resolution.height - 1);
+                event.motion.rel_x = clamp(event.motion.rel_x, 0, config->resolution.width - 1);
+                event.motion.rel_y = clamp(event.motion.rel_y, 0, config->resolution.height - 1);
 
                 event_post(&event);
                 break;
