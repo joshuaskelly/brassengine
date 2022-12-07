@@ -113,5 +113,5 @@ void configuration_init(void) {
 
 
 void configuration_destroy(void) {
-
+    free(config);
 }
