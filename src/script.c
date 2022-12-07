@@ -17,6 +17,7 @@
 
 #include "modules/assets.h"
 #include "modules/draw.h"
+#include "modules/globals.h"
 #include "modules/graphics.h"
 #include "modules/json.h"
 #include "modules/keyboard.h"
@@ -27,10 +28,6 @@
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
 
-static int api_print(lua_State* L);
-static int api_set_palette_color(lua_State* L);
-static int api_get_delta_time(lua_State* L);
-static int api_get_time_since_init(lua_State* L);
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 
@@ -57,10 +54,7 @@ static void init_lua_vm(void) {
     luaL_dostring(L, "io.open = _io_open");
 
     // Set globals
-    lua_register(L, "print", api_print);
-    lua_register(L, "delta_time", api_get_delta_time);
-    lua_register(L, "time", api_get_time_since_init);
-    lua_register(L, "palette", api_set_palette_color);
+    luaL_openglobals(L);
 
     // Set modules
     luaL_requiref(L, "assets", luaopen_assets, 0);
@@ -189,52 +183,6 @@ void script_setup(void) {
 
 void script_draw(void) {
     call_global_lua_function(L, "_draw");
-}
-
-/**
- * Prints given object to console.
- *
- * @param arg Object to print to console
- */
-static int api_print(lua_State* L) {
-    const char* message = luaL_tolstring(L, -1, NULL);
-    printf("%s\n", message);
-
-    lua_pop(L, -1);
-
-    return 0;
-}
-
-static int api_set_palette_color(lua_State* L) {
-    int index = (int)lua_tonumber(L, -4);
-    int r = (int)lua_tonumber(L, -3) & 0xFF;
-    int g = (int)lua_tonumber(L, -2) & 0xFF;
-    int b = (int)lua_tonumber(L, -1) & 0xFF;
-    int a = 0xFF;
-
-    lua_pop(L, -1);
-
-    uint32_t color = a << 24 | b << 16 | g << 8 | r;
-
-    uint32_t* palette = NULL;
-    palette = graphics_palette_get();
-    palette[index] = color;
-
-    return 0;
-}
-
-static int api_get_delta_time(lua_State* L) {
-    double delta_time = time_delta_time();
-    lua_pushnumber(L, delta_time);
-
-    return 1;
-}
-
-static int api_get_time_since_init(lua_State* L) {
-    double time = time_since_init();
-    lua_pushnumber(L, time);
-
-    return 1;
 }
 
 /**

@@ -146,6 +146,24 @@ static int bindings_graphics_set_transparent_color(lua_State* L) {
     return 0;
 }
 
+static int bindings_graphics_set_palette_color(lua_State* L) {
+    int index = (int)lua_tonumber(L, -4);
+    int r = (int)lua_tonumber(L, -3) & 0xFF;
+    int g = (int)lua_tonumber(L, -2) & 0xFF;
+    int b = (int)lua_tonumber(L, -1) & 0xFF;
+    int a = 0xFF;
+
+    lua_pop(L, -1);
+
+    uint32_t color = a << 24 | b << 16 | g << 8 | r;
+
+    uint32_t* palette = NULL;
+    palette = graphics_palette_get();
+    palette[index] = color;
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"set_pixel", bindings_graphics_set_pixel},
     {"blit", bindings_graphics_blit},
@@ -153,6 +171,7 @@ static const struct luaL_Reg module_functions[] = {
     {"get_render_texture", bindings_graphics_get_render_texture},
     {"set_palette_color", bindings_graphics_set_draw_palette_color},
     {"set_transparent_color", bindings_graphics_set_transparent_color},
+    {"set_global_palette_color", bindings_graphics_set_palette_color},
     {NULL, NULL}
 };
 
