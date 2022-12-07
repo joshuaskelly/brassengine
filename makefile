@@ -33,7 +33,7 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
-LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lm ##-lssp
+LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lSDL2_mixer -lm ##-lssp
 
 default:help
 
@@ -47,11 +47,10 @@ debug:all
 desktop-run: ## Run desktop build
 	./$(BIN)
 
-web:CC=emcc -s USE_SDL=2 -s USE_GIFLIB=1
+web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1
 web:AR='emar rcu'
 web:RANLIB=emranlib
 web: $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBZIP) $(LIBCJSON) ## Build web platform
-	@echo "SRCS = $(SRCS)"
 	$(CC) $^ $(LIBLUA) $(LIBZIP) $(LIBCJSON) -o $(WEB_DIR)/main.html --embed-file assets
 
 web-run: ## Run web build

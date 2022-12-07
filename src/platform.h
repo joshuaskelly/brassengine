@@ -10,6 +10,8 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include "sounds.h"
+
 /**
  * Platform specific engine main entry point.
  *
@@ -37,5 +39,10 @@ void platform_update(void);
  * Draw system. Called at the end of an engine update cycle.
  */
 void platform_draw(void);
+
+/**
+ * Plays given sound.
+ */
+void platform_play_sound(sound_t* sound);
 
 #endif

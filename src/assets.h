@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "graphics.h"
+#include "sounds.h"
 
 /**
  * Initialize assets system.
@@ -51,5 +52,13 @@ texture_t* assets_get_texture(const char* filename);
  * @return const char* script text if found, NULL otherwise
  */
 const char* assets_get_script(const char* filename);
+
+/**
+ * Get sound for given filename.
+ *
+ * @param filename Name to search for.
+ * @return sound_tt* sound if found, NULL otherwise
+ */
+sound_t* assets_get_sound(const char* filename);
 
 #endif
