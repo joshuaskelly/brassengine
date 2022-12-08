@@ -505,7 +505,7 @@ static void unload_assets(void) {
     // Free sounds
     for (int i = 0; i <  sound_asset_count; i++) {
         sounds_sound_free(sound_assets[i].asset);
-        free((char *) texture_assets[i].name);
+        free((char*) sound_assets[i].name);
         sound_assets[i].name = NULL;
     }
     free(sound_assets);
