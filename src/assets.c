@@ -71,6 +71,28 @@ void assets_destroy(void) {
     unload_assets();
 }
 
+sound_t* sound_from_wav(drwav* wav) {
+    size_t total_frames = wav->totalPCMFrameCount;
+    sample_t* pcm = malloc(total_frames * wav->channels * sizeof(sample_t));
+    if (!pcm) {
+        log_error("Failed to allocate memory for sound");
+        return NULL;
+    }
+
+    size_t frames_read = drwav_read_pcm_frames_s16(wav, total_frames, pcm);
+    if (frames_read != total_frames) {
+        log_error("Failed to read PCM data.");
+        free(pcm);
+        return NULL;
+    }
+
+    return sounds_sound_new(
+        total_frames,
+        wav->channels,
+        pcm
+    );
+}
+
 /**
  * Check filename extension.
  *
@@ -172,6 +194,8 @@ static bool load_from_zip(void) {
 
             gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
             texture_t* texture = graphics_texture_copy(textures->frames[0]);
+
+            // Add texture asset
             texture_assets[asset_index++] = assets_entry_new(name, texture);
 
             gif_free(textures);
@@ -203,7 +227,51 @@ static bool load_from_zip(void) {
 
             zip_entry_noallocread(zip, script, buffer_size);
 
+            // Add script asset
             script_assets[asset_index++] = assets_entry_new(name, script);
+        }
+        zip_entry_close(zip);
+    }
+
+    // Load sounds
+    sound_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * sound_asset_count);
+    asset_index = 0;
+
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
+        {
+            if (zip_entry_isdir(zip)) {
+                zip_entry_close(zip);
+                continue;
+            }
+
+            const char* name = zip_entry_name(zip);
+
+            if (!check_extension(name, "wav")) {
+                zip_entry_close(zip);
+                continue;
+            }
+
+            void* buffer = NULL;
+            size_t buffer_size = 0;
+            zip_entry_read(zip, &buffer, &buffer_size);
+
+            // Load sounds
+            drwav wav;
+            if (!drwav_init_memory(&wav, buffer, buffer_size, NULL)) {
+                log_error("Failed to open sound: %s", name);
+                zip_entry_close(zip);
+                continue;
+            }
+
+            sound_t* sound = sound_from_wav(&wav);
+
+            if (sound) {
+                // Add script asset
+                sound_assets[asset_index++] = assets_entry_new(name, sound);
+            }
+
+            drwav_uninit(&wav);
         }
         zip_entry_close(zip);
     }
@@ -372,42 +440,22 @@ static void add_sounds(const char* filename) {
     if (!check_extension(filename, "wav")) return;
 
     drwav wav;
-
     if (!drwav_init_file(&wav, filename, NULL)) {
         log_error("Failed to open sound: %s", filename);
         return;
     }
 
-    size_t total_frames = wav.totalPCMFrameCount;
-    sample_t* pcm = malloc(total_frames * wav.channels * sizeof(sample_t));
-    if (!pcm) {
-        log_error("Failed to allocate memory for sound");
-        drwav_uninit(&wav);
-        return;
+    sound_t* sound = sound_from_wav(&wav);
+
+    if (sound) {
+        // Normalize filename
+        char* asset_name = normalize_filename(filename);
+
+        // Add script asset
+        sound_assets[asset_count++] = assets_entry_new(asset_name, sound);
     }
 
-    size_t frames_read = drwav_read_pcm_frames_s16(&wav, total_frames, pcm);
-    if (frames_read != total_frames) {
-        log_error("Failed to read PCM data.");
-        free(pcm);
-        drwav_uninit(&wav);
-        return;
-    }
-
-    sound_t* sound = sounds_sound_new(
-        total_frames,
-        wav.channels,
-        pcm
-    );
-
-    //free(pcm);
     drwav_uninit(&wav);
-
-    // Normalize filename
-    char* asset_name = normalize_filename(filename);
-
-    // Add script asset
-    sound_assets[asset_count++] = assets_entry_new(asset_name, sound);
 }
 
 /**
