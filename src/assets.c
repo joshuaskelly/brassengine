@@ -540,8 +540,9 @@ static void* asset_get(asset_entry_t* assets, int count, const char* name) {
 
 static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
     errno = 0;
-    FILE* temp_file = tmpfile();
 
+    // Get a temp file to write to
+    FILE* temp_file = tmpfile();
     if (!temp_file) {
         log_error("Failed to open temp file: %s", strerror(errno));
         return NULL;
@@ -549,29 +550,33 @@ static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
 
     struct zip_t* zip = zip_open(arguments_last(), 0, 'r');
     int total_zip_entries = zip_entries_total(zip);
-
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
 
+        // Early out on directories
         if (zip_entry_isdir(zip)) {
             zip_entry_close(zip);
             continue;
         }
 
+        // Find the zip entry
         const char* name = zip_entry_name(zip);
-
         if (strcmp(filename, name) != 0) {
             zip_entry_close(zip);
             continue;
         }
 
+        // Read zip entry data
         size_t buffer_size = zip_entry_size(zip);
-        void* buffer = NULL;
-        zip_entry_read(zip, &buffer, &buffer_size);
+        uint8_t* buffer = calloc(buffer_size, sizeof(uint8_t));
+        zip_entry_noallocread(zip, (void*)buffer, buffer_size);
         zip_entry_close(zip);
 
-        fwrite(buffer, sizeof(void*), buffer_size, temp_file);
-        fseek(temp_file, 0, SEEK_SET);
+        // Write data to temp file
+        fwrite(buffer, sizeof(uint8_t), buffer_size, temp_file);
+        rewind(temp_file);
+
+        free(buffer);
 
         break;
     }
