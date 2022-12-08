@@ -20,7 +20,7 @@ Currently development is primarily being done on MacOS and assumes you have SDL2
 
 ### Desktop
 
-Requires SDL2
+Requires SDL2 and SDL2_mixer
 
 Build:
 
