@@ -502,6 +502,16 @@ static void unload_assets(void) {
     free(script_assets);
     script_assets = NULL;
     script_asset_count = 0;
+
+    // Free sounds
+    for (int i = 0; i <  sound_asset_count; i++) {
+        sounds_sound_free(sound_assets[i].asset);
+        free((char *) texture_assets[i].name);
+        sound_assets[i].name = NULL;
+    }
+    free(sound_assets);
+    sound_assets = NULL;
+    sound_asset_count = 0;
 }
 
 void assets_reload(void)  {
