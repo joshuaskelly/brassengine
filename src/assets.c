@@ -106,106 +106,105 @@ static bool load_from_zip(void) {
 
     log_info("loading zip file: %s", filename);
 
-    void* buffer = NULL;
-    size_t buffer_size = 0;
-
     // Load palette
     zip_entry_open(zip, "palette.gif");
-    buffer_size = zip_entry_size(zip);
-    zip_entry_read(zip, &buffer, &buffer_size);
+    {
+        void* buffer = NULL;
+        size_t buffer_size = 0;
+
+        zip_entry_read(zip, &buffer, &buffer_size);
+
+        gif_t* palette = gif_load_from_buffer(buffer, buffer_size);
+        graphics_palette_set(palette->palette);
+
+        gif_free(palette);
+    }
     zip_entry_close(zip);
-    gif_t* palette = gif_load_from_buffer(buffer, buffer_size);
-    graphics_palette_set(palette->palette);
-    gif_free(palette);
-    free(buffer);
-    buffer = NULL;
 
     int total_zip_entries = zip_entries_total(zip);
 
-    // Load textures
+    // Count assets
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
+        {
+            if (zip_entry_isdir(zip)) {
+                zip_entry_close(zip);
+                continue;
+            }
 
-        if (zip_entry_isdir(zip)) {
-            zip_entry_close(zip);
-            continue;
+            const char* name = zip_entry_name(zip);
+
+            if (check_extension(name, "gif")) {
+                texture_asset_count++;
+            }
+            else if (check_extension(name, "lua")) {
+                script_asset_count++;
+            }
+            else if (check_extension(name, "wav")) {
+                sound_asset_count++;
+            }
         }
-
-        const char* name = zip_entry_name(zip);
-
-        if (check_extension(name, "gif")) texture_asset_count++;
-
         zip_entry_close(zip);
     }
 
+    // Load textures
     texture_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * texture_asset_count);
-    int j = 0;
+    int asset_index = 0;
 
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
+        {
+            if (zip_entry_isdir(zip)) {
+                zip_entry_close(zip);
+                continue;
+            }
 
-        if (zip_entry_isdir(zip)) {
-            zip_entry_close(zip);
-            continue;
-        }
+            const char* name = zip_entry_name(zip);
 
-        const char* name = zip_entry_name(zip);
+            if (!check_extension(name, "gif")) {
+                zip_entry_close(zip);
+                continue;
+            }
 
-        if (check_extension(name, "gif")) {
-            buffer_size = zip_entry_size(zip);
+            void* buffer = NULL;
+            size_t buffer_size = 0;
             zip_entry_read(zip, &buffer, &buffer_size);
+
             gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
             texture_t* texture = graphics_texture_copy(textures->frames[0]);
-            texture_assets[j++] = assets_entry_new(name, texture);
-            zip_entry_close(zip);
-            gif_free(textures);
-            free(buffer);
-            buffer = NULL;
-        }
+            texture_assets[asset_index++] = assets_entry_new(name, texture);
 
+            gif_free(textures);
+        }
         zip_entry_close(zip);
     }
 
     // Load scripts
-    for (int i = 0; i < total_zip_entries; i++) {
-        zip_entry_openbyindex(zip, i);
-
-        if (zip_entry_isdir(zip)) {
-            zip_entry_close(zip);
-            continue;
-        }
-
-        const char* name = zip_entry_name(zip);
-
-        if (check_extension(name, "lua")) script_asset_count++;
-
-        zip_entry_close(zip);
-    }
-
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    j = 0;
+    asset_index = 0;
 
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
+        {
+            if (zip_entry_isdir(zip)) {
+                zip_entry_close(zip);
+                continue;
+            }
 
-        if (zip_entry_isdir(zip)) {
-            zip_entry_close(zip);
-            continue;
-        }
+            const char* name = zip_entry_name(zip);
 
-        const char* name = zip_entry_name(zip);
+            if (!check_extension(name, "lua")) {
+                zip_entry_close(zip);
+                continue;
+            }
 
-        if (check_extension(name, "lua")) {
-            buffer_size = zip_entry_size(zip);
-            zip_entry_read(zip, &buffer, &buffer_size);
+            size_t buffer_size = zip_entry_size(zip);
             char* script = calloc(buffer_size + 1, sizeof(char));
-            memcpy(script, buffer, buffer_size);
-            script_assets[j++] = assets_entry_new(name, script);
-            zip_entry_close(zip);
-            free(buffer);
-            buffer = NULL;
-        }
 
+            zip_entry_noallocread(zip, script, buffer_size);
+
+            script_assets[asset_index++] = assets_entry_new(name, script);
+        }
         zip_entry_close(zip);
     }
 
