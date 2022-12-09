@@ -39,10 +39,15 @@ static asset_entry_t assets_entry_new(const char* name, void* asset) {
 
 static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
+static size_t texture_assets_total_bytes = 0;
+
 static asset_entry_t* script_assets = NULL;
 static int script_asset_count = 0;
+static size_t script_assets_total_bytes = 0;
+
 static asset_entry_t* sound_assets = NULL;
 static int sound_asset_count = 0;
+static size_t sound_assets_total_bytes = 0;
 
 static char* assets_directory = "assets";
 
@@ -65,6 +70,10 @@ void assets_init(void) {
     if (!load_assets()) {
         log_fatal("assets init failed");
     }
+
+    log_info("scripts:  %iB", script_assets_total_bytes);
+    log_info("sounds:   %iB", sound_assets_total_bytes);
+    log_info("textures: %iB", texture_assets_total_bytes);
 }
 
 void assets_destroy(void) {
@@ -73,7 +82,8 @@ void assets_destroy(void) {
 
 sound_t* sound_from_wav(drwav* wav) {
     size_t total_frames = wav->totalPCMFrameCount;
-    sample_t* pcm = malloc(total_frames * wav->channels * sizeof(sample_t));
+    size_t size = total_frames * wav->channels * sizeof(sample_t);
+    sample_t* pcm = malloc(size);
     if (!pcm) {
         log_error("Failed to allocate memory for sound");
         return NULL;
@@ -85,6 +95,8 @@ sound_t* sound_from_wav(drwav* wav) {
         free(pcm);
         return NULL;
     }
+
+    sound_assets_total_bytes += size + sizeof(sound_t);
 
     return sounds_sound_new(
         total_frames,
@@ -194,6 +206,7 @@ static bool load_from_zip(void) {
 
             gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
             texture_t* texture = graphics_texture_copy(textures->frames[0]);
+            texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
 
             // Add texture asset
             texture_assets[asset_index++] = assets_entry_new(name, texture);
@@ -224,6 +237,7 @@ static bool load_from_zip(void) {
 
             size_t buffer_size = zip_entry_size(zip);
             char* script = calloc(buffer_size + 1, sizeof(char));
+            script_assets_total_bytes += buffer_size + 1;
 
             zip_entry_noallocread(zip, script, buffer_size);
 
@@ -373,6 +387,7 @@ static void add_textures(const char* filename) {
 
     // Use first frame as texture
     texture_t* texture = graphics_texture_copy(gif->frames[0]);
+    texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
 
     // Normalize filename
     char* asset_name = normalize_filename(filename);
@@ -421,6 +436,8 @@ static void add_scripts(const char* filename) {
             log_error("Error reading %s", filename);
         }
     }
+
+    script_assets_total_bytes += size;
 
     // Normalize filename
     char* asset_name = normalize_filename(filename);
