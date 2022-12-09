@@ -54,7 +54,7 @@ typedef struct {
 
 static gif_t* gif_load(const char* filename);
 static void gif_free(gif_t* gif);
-static gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size);;
+static gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size);
 
 static bool load_assets(void);
 static void unload_assets(void);
