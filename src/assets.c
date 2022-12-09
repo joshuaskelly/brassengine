@@ -327,6 +327,8 @@ static void walk_directory(char* directory, void(callback)(const char*)) {
             callback(fullpath);
         }
     }
+
+    closedir(dir);
 }
 
 /**
@@ -663,7 +665,14 @@ FILE* assets_open_file(const char* filename, const char* mode) {
     strcat(asset_path, "/");
     strcat(asset_path, filename);
 
-    return fopen(asset_path, mode);
+    FILE* fp = fopen(asset_path, mode);
+
+    if (!fp) {
+        log_error("Failed to open file: %s", strerror(errno));
+        return NULL;
+    }
+
+    return fp;
 }
 
 texture_t* assets_get_texture(const char* filename) {
