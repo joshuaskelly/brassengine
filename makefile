@@ -3,6 +3,9 @@ AR='ar rcs'
 RANLIB=ranlib
 BIN=toy
 
+CFLAGS=-Wall -std=c99 -O3
+DFLAGS=-Wall -std=c99 -DDEBUG -g
+
 SRC_DIR=src
 BUILD_DIR=build
 OBJ_DIR:=$(BUILD_DIR)/obj
@@ -31,9 +34,11 @@ LIBZIP=$(ZIP_DIR)/zip.a
 CJSON_DIR=libs/cjson
 LIBCJSON=$(CJSON_DIR)/libcjson.a
 
-CFLAGS=-Wall -std=c99 -O3
-DFLAGS=-Wall -std=c99 -DDEBUG -g
-LDLIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) -lSDL2 -lSDL2_mixer -lm ##-lssp
+MATHC_DIR=libs/mathc
+LIBMATHC=$(MATHC_DIR)/libmathc.a
+
+LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
+LDLIBS=$(LIBS) -lSDL2 -lSDL2_mixer -lm
 
 default:help
 
@@ -50,13 +55,13 @@ desktop-run: ## Run desktop build
 web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1
 web:AR='emar rcu'
 web:RANLIB=emranlib
-web: $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBZIP) $(LIBCJSON) ## Build web platform
-	$(CC) $^ $(LIBLUA) $(LIBZIP) $(LIBCJSON) -o $(WEB_DIR)/main.html --embed-file assets
+web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
+	$(CC) $^ $(LIBS) -o $(WEB_DIR)/main.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/main.html
 
-$(BIN): $(OBJS) | $(BIN_DIR) $(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON)
+$(BIN): $(OBJS) | $(BIN_DIR) $(LIBS)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -74,6 +79,9 @@ $(LIBZIP):
 $(LIBCJSON):
 	cd $(CJSON_DIR) && make libcjson.a CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
+$(LIBMATHC):
+	cd $(MATHC_DIR) && make CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
+
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 
@@ -90,6 +98,7 @@ clean: ## Deletes all auto generated files
 	cd $(GIFLIB_DIR) && make clean
 	cd $(ZIP_DIR) && make clean
 	cd $(CJSON_DIR) && make clean
+	cd $(MATHC_DIR) && make clean
 
 help: ## Show help prompt
 	@echo "usage:"
