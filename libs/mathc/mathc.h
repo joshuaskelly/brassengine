@@ -156,7 +156,7 @@ typedef double mfloat_t;
 
 #if defined(MATHC_USE_STRUCT_FUNCTIONS) || defined(MATHC_USE_POINTER_STRUCT_FUNCTIONS)
 #if defined(MATHC_USE_INT)
-typedef struct vec2i {
+struct vec2i {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -169,9 +169,9 @@ typedef struct vec2i {
 	mint_t x;
 	mint_t y;
 #endif
-} vec2i_t;
+};
 
-typedef struct vec3i {
+struct vec3i {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -186,9 +186,9 @@ typedef struct vec3i {
 	mint_t y;
 	mint_t z;
 #endif
-} vec3i_t;
+};
 
-typedef struct vec4i {
+struct vec4i {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -205,11 +205,11 @@ typedef struct vec4i {
 	mint_t z;
 	mint_t w;
 #endif
-} vec4i_t;
+};
 #endif
 
 #if defined(MATHC_USE_FLOATING_POINT)
-typedef struct vec2 {
+struct vec2 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -222,9 +222,9 @@ typedef struct vec2 {
 	mfloat_t x;
 	mfloat_t y;
 #endif
-} vec2_t;
+};
 
-typedef struct vec3 {
+struct vec3 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -239,9 +239,9 @@ typedef struct vec3 {
 	mfloat_t y;
 	mfloat_t z;
 #endif
-} vec3_t;
+};
 
-typedef struct vec4 {
+struct vec4 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -258,9 +258,9 @@ typedef struct vec4 {
 	mfloat_t z;
 	mfloat_t w;
 #endif
-} vec4_t;
+};
 
-typedef struct quat {
+struct quat {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -277,14 +277,14 @@ typedef struct quat {
 	mfloat_t z;
 	mfloat_t w;
 #endif
-} quat_t;
+};
 
 /*
 Matrix 2×2 representation:
 0/m11 2/m12
 1/m21 3/m22
 */
-typedef struct mat2 {
+struct mat2 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -301,7 +301,7 @@ typedef struct mat2 {
 	mfloat_t m12;
 	mfloat_t m22;
 #endif
-} mat2_t;
+};
 
 /*
 Matrix 3×3 representation:
@@ -309,7 +309,7 @@ Matrix 3×3 representation:
 1/m21 4/m22 7/m23
 2/m31 5/m32 8/m33
 */
-typedef struct mat3 {
+struct mat3 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -336,7 +336,7 @@ typedef struct mat3 {
 	mfloat_t m23;
 	mfloat_t m33;
 #endif
-} mat3_t;
+};
 
 /*
 Matrix 4×4 representation:
@@ -345,7 +345,7 @@ Matrix 4×4 representation:
 2/m31 6/m32 10/m33 14/m34
 3/m41 7/m42 11/m43 15/m44
 */
-typedef struct mat4 {
+struct mat4 {
 #if defined(MATHC_USE_UNIONS)
 	union {
 		struct {
@@ -386,7 +386,7 @@ typedef struct mat4 {
 	mfloat_t m34;
 	mfloat_t m44;
 #endif
-} mat4_t;
+};
 #endif
 #endif
 
