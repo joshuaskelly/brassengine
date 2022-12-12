@@ -1299,4 +1299,6 @@ mfloat_t bounce_ease_in(mfloat_t f);
 mfloat_t bounce_ease_in_out(mfloat_t f);
 #endif
 
+typedef mfloat_t vec2_t[VEC2_SIZE];
+
 #endif

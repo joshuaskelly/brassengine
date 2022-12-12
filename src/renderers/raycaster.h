@@ -5,6 +5,6 @@
 
 #include "../graphics.h"
 
-void raycaster_render(struct vec2* position, struct vec2* direction, texture_t* map);
+void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* map);
 
 #endif

@@ -14,12 +14,13 @@ static int module_raycast_render(lua_State* L) {
     float py = luaL_checknumber(L, 2);
     float dx = luaL_checknumber(L, 3);
     float dy = luaL_checknumber(L, 4);
-    texture_t** texture = luaL_checktexture(L, 5);
+    float fov = luaL_checknumber(L, 5);
+    texture_t** texture = luaL_checktexture(L, 6);
 
-    struct vec2 position = {px, py};
-    struct vec2 direction = {dx, dy};
+    vec2_t position = {px, py};
+    vec2_t direction = {dx, dy};
 
-    raycaster_render(&position, &direction, *texture);
+    raycaster_render(&position, &direction, fov, *texture);
     return 0;
 }
 
