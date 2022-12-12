@@ -57,16 +57,6 @@ static void ray_rotate(ray_t* ray, float f) {
     vec2_rotate(ray->direction, ray->direction, f);
 }
 
-static void ray_draw(ray_t* ray) {
-    draw_line(
-        ray->position[0] * 32,
-        ray->position[1] * 32,
-        ray->hit_info.position[0] * 32,
-        ray->hit_info.position[1] * 32,
-        12
-    );
-}
-
 static void ray_cast(ray_t* ray, map_t* map) {
     // Horizontal checks
     if (ray->direction[1] != 0.0f)
@@ -207,14 +197,6 @@ static void ray_cast(ray_t* ray, map_t* map) {
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
     texture_t* render_texture = graphics_get_render_texture();
 
-    // Draw background
-    for (int y = 0; y < map->height; y++) {
-        for (int x = 0; x < map->width; x++) {
-            color_t c = graphics_texture_get_pixel(map, x, y);
-            draw_filled_rectangle(x *  32, y * 32, 32, 32, c);
-        }
-    }
-
     int ray_count = render_texture->width;
     float fov_rads = fov * M_PI / 180.0f;
     float fov_inc = fov_rads / (ray_count - 1);
@@ -228,15 +210,20 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     mfloat_t m[MAT2_SIZE];
     mat2_rotation_z(m, fov_inc);
 
+    // TODO: Fix magic number. Likely related to calculation of projection plane
+    float magic_number = 128.0f;
+
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
-        ray_draw(&ray);
+
+        float d = 1.0f / ray.hit_info.distance;
+        d = d * magic_number;
+        float half_d = d / 2.0f;
+
+        draw_line(i, 100 - half_d, i, 100 + half_d, 15);
 
         vec2_multiply_mat2(ray.direction, ray.direction, m);
         ray.hit_info.distance = FLT_MAX;
     }
-
-    // Draw camera position
-    graphics_texture_set_pixel(render_texture, position[0] * 32, position[1] * 32, 12);
 }
