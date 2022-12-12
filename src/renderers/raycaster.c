@@ -73,7 +73,8 @@ static void draw_grid_cell(int x, int y, color_t c) {
 
 static void ray_cast(ray_t* ray, map_t* map) {
     // Horizontal checks
-    if (ray->direction[1] != 0.0f)
+    //if (ray->direction[1] != 0.0f)
+    if (false)
     {
         float y_intercept;
         float x_intercept;
@@ -146,6 +147,83 @@ static void ray_cast(ray_t* ray, map_t* map) {
             // Otherwise next iteration
             vec2_add(intersection, intersection, step);
             distance += fabsf(inv_y);
+        }
+    }
+
+    // Vertical checks
+    if (ray->direction[0] != 0.0f)
+    {
+        float x_intercept;
+        float y_intercept;
+        bool ray_facing_right = ray->direction[0] > 0;
+        float distance;
+        float inv_x = 1.0f / ray->direction[0];
+
+        // Determine x-value of first vertical intersection from ray origin
+        x_intercept = floorf(ray->position[0]);
+        if (ray_facing_right) {
+            x_intercept += 1;
+        }
+
+        // Calculate ratio of x-components
+        float ratio = (x_intercept - ray->position[0]) * inv_x;
+
+        // Use ratio to determine y-value of first vertical intersection from
+        // ray origin
+        y_intercept = (ray->direction[1] * ratio) + ray->position[1];
+
+        // This also happens to be the distance to the first intersection
+        distance = ratio;
+
+        // Track horizontal grid intersections
+        vec2_t intersection;
+        vec2_assign(intersection, ray->direction);
+        vec2_multiply_f(intersection, intersection, ratio);
+        vec2_add(intersection, intersection, ray->position);
+
+        // After the first intersection, all following intersections are at a
+        // regular interval
+        vec2_t step;
+        vec2_assign(step, ray->direction);
+        vec2_multiply_f(step, step, inv_x);
+        if (!ray_facing_right) {
+            vec2_multiply_f(step, step, -1.0f);
+        }
+
+        int ray_direction_offset = ray_facing_right ? 0 : -1;
+
+        int bound = map->height;
+
+        for(int s = 0; s < bound; s++) {
+            // Ensure we are still inside map bounds
+            if (!map_contains(map, intersection[0], intersection[1])) break;
+
+            int i = floorf(intersection[0]) + ray_direction_offset;
+            int j = floorf(intersection[1]);
+
+            // DEBUG: Show path of checks
+            draw_grid_cell(i, j, 79);
+
+            graphics_set_pixel(
+                intersection[0] * 32,
+                intersection[1] * 32,
+                14
+            );
+
+            // Check if we've hit a wall
+            if (map_is_solid(map, i, j)) {
+                // DEBUG: Show chosen cell for hit
+                draw_grid_cell(i, j, 14);
+                ray->hit_info.position[0] = intersection[0];
+                ray->hit_info.position[1] = intersection[1];
+                ray->hit_info.distance = distance;
+
+                break;
+            }
+
+            // Otherwise next iteration
+            vec2_add(intersection, intersection, step);
+            distance += fabsf(inv_x);
         }
     }
 }
