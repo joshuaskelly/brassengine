@@ -31,19 +31,19 @@ static bool map_is_solid(map_t* map, int x, int y) {
 }
 
 typedef struct {
-    vec2_t position;
+    mfloat_t position[VEC2_SIZE];
     float distance;
     map_data_t* data;
     bool was_vertical;
 } ray_hit_info_t;
 
 typedef struct {
-    vec2_t position;
-    vec2_t direction;
+    mfloat_t position[VEC2_SIZE];
+    mfloat_t direction[VEC2_SIZE];
     ray_hit_info_t hit_info;
 } ray_t;
 
-static void ray_set(ray_t* ray, vec2_t position, vec2_t direction) {
+static void ray_set(ray_t* ray, mfloat_t* position, mfloat_t* direction) {
     vec2_assign(ray->position, position);
     vec2_assign(ray->direction, direction);
 
@@ -98,14 +98,14 @@ static void ray_cast(ray_t* ray, map_t* map) {
         distance = ratio;
 
         // Track horizontal grid intersections
-        vec2_t intersection;
+        mfloat_t intersection[VEC2_SIZE];
         vec2_assign(intersection, ray->direction);
         vec2_multiply_f(intersection, intersection, ratio);
         vec2_add(intersection, intersection, ray->position);
 
         // After the first intersection, all following intersections are at a
         // regular interval
-        vec2_t step;
+        mfloat_t step[VEC2_SIZE];
         vec2_assign(step, ray->direction);
         vec2_multiply_f(step, step, inv_y);
         if (!ray_facing_down) {
@@ -164,14 +164,14 @@ static void ray_cast(ray_t* ray, map_t* map) {
         distance = ratio;
 
         // Track horizontal grid intersections
-        vec2_t intersection;
+        mfloat_t intersection[VEC2_SIZE];
         vec2_assign(intersection, ray->direction);
         vec2_multiply_f(intersection, intersection, ratio);
         vec2_add(intersection, intersection, ray->position);
 
         // After the first intersection, all following intersections are at a
         // regular interval
-        vec2_t step;
+        mfloat_t step[VEC2_SIZE];
         vec2_assign(step, ray->direction);
         vec2_multiply_f(step, step, inv_x);
         if (!ray_facing_right) {
@@ -208,7 +208,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
     }
 }
 
-void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* map) {
+void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
     texture_t* render_texture = graphics_get_render_texture();
 
     // Draw background
@@ -229,12 +229,15 @@ void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* m
     ray_set(&ray, position, direction);
     ray_rotate(&ray, fov_rads * -0.5f);
 
+    mfloat_t m[MAT2_SIZE];
+    mat2_rotation_z(m, fov_inc);
+
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
         ray_draw(&ray);
 
-        ray_rotate(&ray, fov_inc);
+        vec2_multiply_mat2(ray.direction, ray.direction, m);
         ray.hit_info.distance = FLT_MAX;
     }
 

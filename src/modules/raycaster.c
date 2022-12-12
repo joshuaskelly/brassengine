@@ -17,8 +17,8 @@ static int module_raycast_render(lua_State* L) {
     float fov = luaL_checknumber(L, 5);
     texture_t** texture = luaL_checktexture(L, 6);
 
-    vec2_t position = {px, py};
-    vec2_t direction = {dx, dy};
+    mfloat_t position[VEC2_SIZE] = {px, py};
+    mfloat_t direction[VEC2_SIZE] = {dx, dy};
 
     raycaster_render(&position, &direction, fov, *texture);
     return 0;
