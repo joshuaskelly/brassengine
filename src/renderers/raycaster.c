@@ -73,8 +73,7 @@ static void draw_grid_cell(int x, int y, color_t c) {
 
 static void ray_cast(ray_t* ray, map_t* map) {
     // Horizontal checks
-    //if (ray->direction[1] != 0.0f)
-    if (false)
+    if (ray->direction[1] != 0.0f)
     {
         float y_intercept;
         float x_intercept;
@@ -197,6 +196,9 @@ static void ray_cast(ray_t* ray, map_t* map) {
         for(int s = 0; s < bound; s++) {
             // Ensure we are still inside map bounds
             if (!map_contains(map, intersection[0], intersection[1])) break;
+
+            // Early out if further than horizontal intersection
+            if (distance > ray->hit_info.distance) break;
 
             int i = floorf(intersection[0]) + ray_direction_offset;
             int j = floorf(intersection[1]);
