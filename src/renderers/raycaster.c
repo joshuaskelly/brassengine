@@ -123,19 +123,8 @@ static void ray_cast(ray_t* ray, map_t* map) {
             int i = floorf(intersection[0]);
             int j = floorf(intersection[1] + 0.001f) + ray_direction_offset;
 
-            // DEBUG: Show path of checks
-            draw_grid_cell(i, j, 79);
-
-            graphics_set_pixel(
-                intersection[0] * 32,
-                intersection[1] * 32,
-                14
-            );
-
             // Check if we've hit a wall
             if (map_is_solid(map, i, j)) {
-                // DEBUG: Show chosen cell for hit
-                draw_grid_cell(i, j, 14);
                 ray->hit_info.position[0] = intersection[0];
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
@@ -203,19 +192,8 @@ static void ray_cast(ray_t* ray, map_t* map) {
             int i = floorf(intersection[0] + 0.001f) + ray_direction_offset;
             int j = floorf(intersection[1]);
 
-            // DEBUG: Show path of checks
-            draw_grid_cell(i, j, 79);
-
-            graphics_set_pixel(
-                intersection[0] * 32,
-                intersection[1] * 32,
-                14
-            );
-
             // Check if we've hit a wall
             if (map_is_solid(map, i, j)) {
-                // DEBUG: Show chosen cell for hit
-                draw_grid_cell(i, j, 14);
                 ray->hit_info.position[0] = intersection[0];
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
@@ -241,28 +219,16 @@ void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* m
         }
     }
 
-    // Draw grid
-    for (int i = 0; i < render_texture->height; i += 32) {
-        draw_line(0, i, render_texture->width, i, 8);
-    }
-
-    for (int i = 0; i < render_texture->width; i += 32) {
-        draw_line(i, 0, i, render_texture->height, 8);
-    }
-
+    int ray_count = render_texture->width;
     float fov_rads = fov * M_PI / 180.0f;
+    float fov_inc = fov_rads / (ray_count - 1);
 
     vec2_normalize(direction, direction);
-
-    int ray_count = render_texture->width;
-    //int ray_count = 4;
-    float fov_inc = fov_rads / (ray_count - 1);
 
     ray_t ray;
     ray_set(&ray, position, direction);
     ray_rotate(&ray, fov_rads * -0.5f);
 
-    if (true) {
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
@@ -270,45 +236,6 @@ void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* m
 
         ray_rotate(&ray, fov_inc);
         ray.hit_info.distance = FLT_MAX;
-    }
-    }
-    else {
-        // DEBUG: Test a single ray.
-        ray_set(&ray, position, direction);
-        ray_cast(&ray, map);
-        ray_draw(&ray);
-
-        if (ray.hit_info.distance != FLT_MAX) {
-            //log_info("distance: %f", ray.hit_info.distance);
-        }
-    }
-
-    if (true) {
-        vec2_t left_bound;
-        vec2_assign(left_bound, direction);
-        vec2_rotate(left_bound, left_bound, fov_rads * -0.5f);
-        vec2_multiply_f(left_bound, left_bound, 32.0f);
-
-        draw_line(
-            position[0] * 32,
-            position[1] * 32,
-            position[0] * 32 + left_bound[0] * 32,
-            position[1] * 32 + left_bound[1] * 32,
-            31
-        );
-
-        vec2_t right_bound;
-        vec2_assign(right_bound, direction);
-        vec2_rotate(right_bound, right_bound, fov_rads * 0.5f);
-        vec2_multiply_f(right_bound, right_bound, 32.0f);
-
-        draw_line(
-            position[0] * 32,
-            position[1] * 32,
-            position[0] * 32 + right_bound[0] * 32,
-            position[1] * 32 + right_bound[1] * 32,
-            31
-        );
     }
 
     // Draw camera position
