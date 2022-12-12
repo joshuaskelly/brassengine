@@ -114,6 +114,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[0] = intersection[0];
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
+                ray->hit_info.was_vertical = false;
 
                 break;
             }
@@ -183,6 +184,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[0] = intersection[0];
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
+                ray->hit_info.was_vertical = true;
 
                 break;
             }
@@ -221,7 +223,12 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         d = d * magic_number;
         float half_d = d / 2.0f;
 
-        draw_line(i, 100 - half_d, i, 100 + half_d, 15);
+        color_t c = 15;
+        if (ray.hit_info.was_vertical) {
+            c = 21;
+        }
+
+        draw_line(i, 100 - half_d, i, 100 + half_d, c);
 
         vec2_multiply_mat2(ray.direction, ray.direction, m);
         ray.hit_info.distance = FLT_MAX;
