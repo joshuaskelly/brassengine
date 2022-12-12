@@ -121,7 +121,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
             if (!map_contains(map, intersection[0], intersection[1])) break;
 
             int i = floorf(intersection[0]);
-            int j = floorf(intersection[1]) + ray_direction_offset;
+            int j = floorf(intersection[1] + 0.001f) + ray_direction_offset;
 
             // DEBUG: Show path of checks
             draw_grid_cell(i, j, 79);
@@ -191,7 +191,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
 
         int ray_direction_offset = ray_facing_right ? 0 : -1;
 
-        int bound = map->height;
+        int bound = map->width;
 
         for(int s = 0; s < bound; s++) {
             // Ensure we are still inside map bounds
@@ -200,7 +200,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
             // Early out if further than horizontal intersection
             if (distance > ray->hit_info.distance) break;
 
-            int i = floorf(intersection[0]) + ray_direction_offset;
+            int i = floorf(intersection[0] + 0.001f) + ray_direction_offset;
             int j = floorf(intersection[1]);
 
             // DEBUG: Show path of checks
@@ -262,13 +262,14 @@ void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* m
     ray_set(&ray, position, direction);
     ray_rotate(&ray, fov_rads * -0.5f);
 
-    if (false) {
+    if (true) {
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
         ray_draw(&ray);
 
         ray_rotate(&ray, fov_inc);
+        ray.hit_info.distance = FLT_MAX;
     }
     }
     else {
@@ -278,7 +279,7 @@ void raycaster_render(vec2_t position, vec2_t direction, float fov, texture_t* m
         ray_draw(&ray);
 
         if (ray.hit_info.distance != FLT_MAX) {
-            log_info("distance: %f", ray.hit_info.distance);
+            //log_info("distance: %f", ray.hit_info.distance);
         }
     }
 
