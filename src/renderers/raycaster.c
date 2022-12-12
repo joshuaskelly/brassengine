@@ -67,10 +67,6 @@ static void ray_draw(ray_t* ray) {
     );
 }
 
-static void draw_grid_cell(int x, int y, color_t c) {
-    draw_rectangle(x * 32, y * 32, 32, 32, c);
-}
-
 static void ray_cast(ray_t* ray, map_t* map) {
     // Horizontal checks
     if (ray->direction[1] != 0.0f)
