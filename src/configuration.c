@@ -32,7 +32,7 @@ static void set(cJSON* json) {
 
         if (cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
             config->resolution.width = width->valueint;
-            config->resolution.height = width->valueint;
+            config->resolution.height = height->valueint;
         }
     }
 }
