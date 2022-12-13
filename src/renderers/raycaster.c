@@ -202,6 +202,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     int ray_count = render_texture->width;
     float fov_rads = fov * M_PI / 180.0f;
     float fov_inc = fov_rads / (ray_count - 1);
+    float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(fov_rads / 2.0f);
 
     vec2_normalize(direction, direction);
 
@@ -212,23 +213,27 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     mfloat_t m[MAT2_SIZE];
     mat2_rotation_z(m, fov_inc);
 
-    // TODO: Fix magic number. Likely related to calculation of projection plane
-    float magic_number = 128.0f;
-
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
 
-        float d = 1.0f / ray.hit_info.distance;
-        d = d * magic_number;
-        float half_d = d / 2.0f;
+        // Calculate wall height
+        float wall_height = 1.0f / ray.hit_info.distance * distance_to_projection_plane;
+        float half_wall_height = wall_height / 2.0f;
 
         color_t c = 15;
         if (ray.hit_info.was_vertical) {
             c = 21;
         }
 
-        draw_line(i, 100 - half_d, i, 100 + half_d, c);
+        // Draw wall strip
+        draw_line(
+            i,
+            render_texture->height / 2.0f - half_wall_height,
+            i,
+            render_texture->height / 2.0f + half_wall_height,
+            c
+        );
 
         vec2_multiply_mat2(ray.direction, ray.direction, m);
         ray.hit_info.distance = FLT_MAX;
