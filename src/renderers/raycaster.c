@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <mathc/mathc.h>
@@ -9,6 +10,8 @@
 #include "draw.h"
 
 #include "raycaster.h"
+
+static texture_t* texture_palette[256];
 
 typedef texture_t map_t;
 typedef color_t map_data_t;
@@ -21,8 +24,6 @@ static bool map_contains(map_t* map, int x, int y) {
 }
 
 static map_data_t map_get_data(map_t* map, int x, int y) {
-    //if (!map_contains(map, x, y)) return -1;
-
     return graphics_texture_get_pixel(map, x, y);
 }
 
@@ -33,7 +34,7 @@ static bool map_is_solid(map_t* map, int x, int y) {
 typedef struct {
     mfloat_t position[VEC2_SIZE];
     float distance;
-    map_data_t* data;
+    map_data_t data;
     bool was_vertical;
 } ray_hit_info_t;
 
@@ -49,7 +50,7 @@ static void ray_set(ray_t* ray, mfloat_t* position, mfloat_t* direction) {
 
     vec2_assign(ray->hit_info.position, position);
     ray->hit_info.distance = FLT_MAX;
-    ray->hit_info.data = NULL;
+    ray->hit_info.data = 0;
     ray->hit_info.was_vertical = false;
 }
 
@@ -115,6 +116,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
                 ray->hit_info.was_vertical = false;
+                ray->hit_info.data = map_get_data(map, i, j);
 
                 break;
             }
@@ -185,6 +187,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
                 ray->hit_info.was_vertical = true;
+                ray->hit_info.data = map_get_data(map, i, j);
 
                 break;
             }
@@ -193,6 +196,21 @@ static void ray_cast(ray_t* ray, map_t* map) {
             vec2_add(intersection, intersection, step);
             distance += fabsf(inv_x);
         }
+    }
+}
+
+static void draw_wall_strip(texture_t* texture, int x, int y0, int y1, float offset) {
+    int length = y1 - y0;
+
+    const int s = texture->width * offset;
+    for (int i = 0; i < length; i++) {
+        float amount = i / (float)length;
+
+        int y = y0 + i;
+        int t = texture->height * amount;
+        color_t c = graphics_texture_get_pixel(texture, s, t);
+
+        graphics_set_pixel(x, y, c);
     }
 }
 
@@ -267,14 +285,35 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             c = 21;
         }
 
-        // Draw wall strip
-        draw_line(
-            i,
-            render_texture->height / 2.0f - half_wall_height,
-            i,
-            render_texture->height / 2.0f + half_wall_height,
-            c
-        );
+        // Calculate the texture normalized horizontal offset (u-coordinate).
+        float offset = 0.0f;
+        if (ray.hit_info.was_vertical) {
+            offset = fmodf(ray.hit_info.position[1], 1.0f);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[0] < 0) {
+                offset = 1.0f - offset;
+            }
+        }
+        else {
+            offset = fmodf(ray.hit_info.position[0], 1.0f);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[1] > 0) {
+                offset = 1.0f - offset;
+            }
+        }
+
+        texture_t* t = raycaster_get_texture(ray.hit_info.data);
+        if (t) {
+            draw_wall_strip(
+                t,
+                i,
+                render_texture->height / 2.0f - half_wall_height,
+                render_texture->height / 2.0f + half_wall_height,
+                offset
+            );
+        }
 
         // Orient ray to next position along plane
         vec2_assign(ray.direction, step);
@@ -284,5 +323,14 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         // Clear out hit info
         ray.hit_info.distance = FLT_MAX;
+        ray.hit_info.data = 0;
     }
+}
+
+texture_t* raycaster_get_texture(int i) {
+    return texture_palette[i];
+}
+
+void raycaster_set_texture(int i, texture_t* texture) {
+    texture_palette[i] = texture;
 }

@@ -7,4 +7,8 @@
 
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map);
 
+texture_t* raycaster_get_texture(int i);
+
+void raycaster_set_texture(int i, texture_t* texture);
+
 #endif
