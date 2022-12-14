@@ -218,7 +218,11 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         ray_cast(&ray, map);
 
         // Calculate wall height
-        float wall_height = 1.0f / ray.hit_info.distance * distance_to_projection_plane;
+        mfloat_t hit_vector[VEC2_SIZE];
+        vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
+        float corrected_distance = vec2_dot(hit_vector, direction);
+
+        float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
         float half_wall_height = wall_height / 2.0f;
 
         color_t c = 15;
