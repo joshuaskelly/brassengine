@@ -199,19 +199,56 @@ static void ray_cast(ray_t* ray, map_t* map) {
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
     texture_t* render_texture = graphics_get_render_texture();
 
-    int ray_count = render_texture->width;
-    float fov_rads = fov * M_PI / 180.0f;
-    float fov_inc = fov_rads / (ray_count - 1);
-    float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(fov_rads / 2.0f);
+    const int ray_count = render_texture->width;
+    const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(fov_rads / 2.0f);
 
+    // Ensure direction is normalized
     vec2_normalize(direction, direction);
+
+    /*
+     * Casting rays along a plane in front of the camera.
+     *
+     * To determine the ray directions:
+     *
+     * 1. Two points on opposite sides of the view frustum are found. These are
+     *    called left bound and right bound.
+     *
+     * 2. A vector between the two bounds is found to determine the direction
+     *    along the plane the rays will be cast.
+     *
+     * 3. The vector along the plane is scaled by 1 / render texture width to
+     *    determine the step of each ray.
+     *
+     *            \_                 _/
+     * (left bound) l<----plane---->r (right bound)
+     *               \_           _/
+     *                 \_       _/
+     *                   \_   _/
+     *                     \ /
+     *                      c (camera position)
+     */
+
+    // Get left bound
+    mfloat_t left_bound[VEC2_SIZE];
+    vec2_assign(left_bound, direction);
+    vec2_rotate(left_bound, left_bound, fov_rads * -0.5f);
+
+    mfloat_t step[VEC2_SIZE];
+
+    // Get right bound
+    vec2_assign(step, direction);
+    vec2_rotate(step, step, fov_rads * 0.5f);
+
+    // Get vector along plane
+    vec2_subtract(step, step, left_bound);
+
+    // Scale by inverse texture width to get step vector
+    vec2_multiply_f(step, step, 1.0f / render_texture->width);
 
     ray_t ray;
     ray_set(&ray, position, direction);
     ray_rotate(&ray, fov_rads * -0.5f);
-
-    mfloat_t m[MAT2_SIZE];
-    mat2_rotation_z(m, fov_inc);
 
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
@@ -239,7 +276,13 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             c
         );
 
-        vec2_multiply_mat2(ray.direction, ray.direction, m);
+        // Orient ray to next position along plane
+        vec2_assign(ray.direction, step);
+        vec2_multiply_f(ray.direction, ray.direction, i + 1);
+        vec2_add(ray.direction, ray.direction, left_bound);
+        vec2_normalize(ray.direction, ray.direction);
+
+        // Clear out hit info
         ray.hit_info.distance = FLT_MAX;
     }
 }
