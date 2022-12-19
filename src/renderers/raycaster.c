@@ -44,18 +44,18 @@ typedef struct {
     ray_hit_info_t hit_info;
 } ray_t;
 
+static void ray_hit_info_reset(ray_hit_info_t* hit_info) {
+    hit_info->distance = FLT_MAX;
+    hit_info->data = 0;
+    hit_info->was_vertical = false;
+}
+
 static void ray_set(ray_t* ray, mfloat_t* position, mfloat_t* direction) {
     vec2_assign(ray->position, position);
     vec2_assign(ray->direction, direction);
 
     vec2_assign(ray->hit_info.position, position);
-    ray->hit_info.distance = FLT_MAX;
-    ray->hit_info.data = 0;
-    ray->hit_info.was_vertical = false;
-}
-
-static void ray_rotate(ray_t* ray, float f) {
-    vec2_rotate(ray->direction, ray->direction, f);
+    ray_hit_info_reset(&ray->hit_info);
 }
 
 static void ray_cast(ray_t* ray, map_t* map) {
@@ -217,9 +217,10 @@ static void draw_wall_strip(texture_t* texture, int x, int y0, int y1, float off
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
     texture_t* render_texture = graphics_get_render_texture();
 
-    const int ray_count = render_texture->width;
+    const float width = render_texture->width;
+    const float height = render_texture->height;
+    const int ray_count = width;
     const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(fov_rads / 2.0f);
 
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
@@ -229,44 +230,57 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
      *
      * To determine the ray directions:
      *
-     * 1. Two points on opposite sides of the view frustum are found. These are
-     *    called left bound and right bound.
+     * 1. Determine distance to the projection plane. This distance will ensure
+     *    that width of the projection plane bounded by our fov is the same
+     *    width as the render texture.
      *
-     * 2. A vector between the two bounds is found to determine the direction
-     *    along the plane the rays will be cast.
+     * 2. Find left bound. This is the point on the projection plane where the
+     *    left fov bound intersects the plane.
      *
-     * 3. The vector along the plane is scaled by 1 / render texture width to
-     *    determine the step of each ray.
+     * 3. Find step vector. Because the projection plane width is the same width
+     *    as the render texture, each step vector is of length one. The step
+     *    vector is just the negated tangent to the camera direction.
      *
-     *            \_                 _/
-     * (left bound) l<----plane---->r (right bound)
-     *               \_           _/
-     *                 \_       _/
-     *                   \_   _/
-     *                     \ /
-     *                      c (camera position)
+     *           \_                    _/
+     * (left bound) _l<----plane---->_/
+     *                \_           _/
+     *                  \_   ^   _/
+     *                    \_ |<---(camera direction)
+     *                      \|/
+     *                       c (camera position)
      */
 
-    // Get left bound
-    mfloat_t left_bound[VEC2_SIZE];
-    vec2_assign(left_bound, direction);
-    vec2_rotate(left_bound, left_bound, fov_rads * -0.5f);
+    // 1. Determine distance to project plane
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
 
+    // 2. Find left bound
+
+    // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
 
-    // Get right bound
-    vec2_assign(step, direction);
-    vec2_rotate(step, step, fov_rads * 0.5f);
+    // Calculate left bound
+    // left_bound = position + (direction * distance_to_projection_plane) - (step * width / 2)
+    mfloat_t left_bound[VEC2_SIZE];
+    vec2_multiply_f(left_bound, direction, distance_to_projection_plane);
+    vec2_add(left_bound, position, left_bound);
+    vec2_multiply_f(step, step, width * 0.5f);
+    vec2_subtract(left_bound, left_bound, step);
 
-    // Get vector along plane
-    vec2_subtract(step, step, left_bound);
+    // 3. Find step vector
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
 
-    // Scale by inverse texture width to get step vector
-    vec2_multiply_f(step, step, 1.0f / render_texture->width);
-
+    // Initialize ray to point to left bound
     ray_t ray;
-    ray_set(&ray, position, direction);
-    ray_rotate(&ray, fov_rads * -0.5f);
+    ray_set(&ray, position, ray.direction);
+    vec2_subtract(ray.direction, left_bound, position);
+    vec2_normalize(ray.direction, ray.direction);
+
+    // Track where the next ray needs to point
+    mfloat_t next[VEC2_SIZE];
+    vec2_assign(next, left_bound);
 
     // Cast all rays
     for (int i = 0; i < ray_count; i++) {
@@ -309,21 +323,19 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             draw_wall_strip(
                 t,
                 i,
-                render_texture->height / 2.0f - half_wall_height,
-                render_texture->height / 2.0f + half_wall_height,
+                height / 2.0f - half_wall_height,
+                height / 2.0f + half_wall_height,
                 offset
             );
         }
 
         // Orient ray to next position along plane
-        vec2_assign(ray.direction, step);
-        vec2_multiply_f(ray.direction, ray.direction, i + 1);
-        vec2_add(ray.direction, ray.direction, left_bound);
+        vec2_add(next, next, step);
+        vec2_subtract(ray.direction, next, position);
         vec2_normalize(ray.direction, ray.direction);
 
         // Clear out hit info
-        ray.hit_info.distance = FLT_MAX;
-        ray.hit_info.data = 0;
+        ray_hit_info_reset(&ray.hit_info);
     }
 }
 
