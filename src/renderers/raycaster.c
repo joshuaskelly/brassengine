@@ -387,7 +387,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         float half_height = s_height / 2.0f;
 
         rect_t rect = {
-            (width / 2.0f) + x_offset - (s_height * 0.5f),
+            (width / 2.0f) + x_offset - half_height,
             (height / 2.0f) - half_height,
             s_height,
             s_height
