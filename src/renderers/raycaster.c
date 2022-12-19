@@ -5,6 +5,7 @@
 
 #include <mathc/mathc.h>
 
+#include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
 #include "draw.h"
@@ -200,19 +201,37 @@ static void ray_cast(ray_t* ray, map_t* map) {
 }
 
 static void draw_wall_strip(texture_t* texture, int x, int y0, int y1, float offset) {
-    int length = y1 - y0;
-
+    const int length = y1 - y0;
     const int s = texture->width * offset;
-    for (int i = 0; i < length; i++) {
+    int start = 0;
+
+    if (y0 < 0) {
+        start = abs(y0);
+    }
+
+    for (int i = start; i < length; i++) {
         float amount = i / (float)length;
 
         int y = y0 + i;
+        if (y > 200) break;
+
         int t = texture->height * amount;
         color_t c = graphics_texture_get_pixel(texture, s, t);
 
         graphics_set_pixel(x, y, c);
     }
 }
+
+typedef struct {
+    char* texture;
+    float x;
+    float y;
+} sprite_t;
+
+#define SPRITE_COUNT 1
+static const sprite_t sprites[SPRITE_COUNT] = {
+    {"textures/barrel.gif", 31.5f, 57.5f}
+};
 
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
     texture_t* render_texture = graphics_get_render_texture();
@@ -336,6 +355,50 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         // Clear out hit info
         ray_hit_info_reset(&ray.hit_info);
+    }
+
+    for (int i = 0; i < SPRITE_COUNT; i++) {
+        sprite_t sprite = sprites[i];
+
+        texture_t* texture = assets_get_texture(sprite.texture);
+        if (!texture) continue;
+
+        mfloat_t sprite_position[VEC2_SIZE] = {sprite.x, sprite.y};
+
+        mfloat_t dir[VEC2_SIZE];
+        vec2_subtract(dir, sprite_position, position);
+        float corrected_distance = vec2_dot(direction, dir);
+
+        mfloat_t d[VEC2_SIZE];
+        vec2_assign(d, dir);
+        vec2_normalize(d, d);
+
+        // Frustum culling
+        float ang = acos(vec2_dot(direction, d));
+        if (ang > (fov_rads / 2.0f) + 0.175f) continue;
+
+        // Scale to put point on projection plane.
+        vec2_multiply_f(dir, dir, distance_to_projection_plane / corrected_distance);
+
+        // Find x offset
+        float x_offset = vec2_dot(dir, step);
+
+        float s_height = 1.0f / corrected_distance * distance_to_projection_plane;
+        float half_height = s_height / 2.0f;
+
+        rect_t rect = {
+            (width / 2.0f) + x_offset - (s_height * 0.5f),
+            (height / 2.0f) - half_height,
+            s_height,
+            s_height
+        };
+
+        // Draw sprite
+        graphics_blit(
+            texture,
+            NULL,
+            &rect
+        );
     }
 }
 
