@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -91,10 +92,30 @@ static void blit(texture_t* source_texture, texture_t* destination_texture, rect
     int dx = left;
     float sx = source_rect->x;
     float sy = source_rect->y;
+    float s_left = source_rect->x;
+    float s_top = source_rect->y;
 
-    // TODO: Add checks for destination boundaries.
-    for (dy = top, sy = source_rect->y; dy < bottom; dy++, sy += y_step) {
-        for (dx = left, sx = source_rect->x; dx < right; dx++, sx += x_step) {
+    // Adjust draw boundaries to destination texture
+    if (dx < 0) {
+        left = 0;
+        s_left = abs(dx) * x_step;
+    }
+
+    if (dy < 0) {
+        top = 0;
+        s_top = abs(dy) * y_step;
+    }
+
+    if (bottom > destination_texture->height) {
+        bottom = destination_texture->height;
+    }
+
+    if (right > destination_texture->width) {
+        right = destination_texture->width;
+    }
+
+    for (dy = top, sy = s_top; dy < bottom; dy++, sy += y_step) {
+        for (dx = left, sx = s_left; dx < right; dx++, sx += x_step) {
             func(source_texture, destination_texture, sx, sy, dx, dy);
         }
     }
