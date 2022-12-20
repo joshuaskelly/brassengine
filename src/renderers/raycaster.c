@@ -200,10 +200,11 @@ static void ray_cast(ray_t* ray, map_t* map) {
     }
 }
 
-static void draw_wall_strip(texture_t* texture, int x, int y0, int y1, float offset) {
+static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset) {
     const int length = y1 - y0;
-    const int s = texture->width * offset;
+    const int s = wall_texture->width * offset;
     int start = 0;
+    const int bottom = destination_texture->height;
 
     if (y0 < 0) {
         start = abs(y0);
@@ -213,10 +214,10 @@ static void draw_wall_strip(texture_t* texture, int x, int y0, int y1, float off
         float amount = i / (float)length;
 
         int y = y0 + i;
-        if (y > 200) break;
+        if (y >= bottom) break;
 
-        int t = texture->height * amount;
-        color_t c = graphics_texture_get_pixel(texture, s, t);
+        int t = wall_texture->height * amount;
+        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
 
         graphics_set_pixel(x, y, c);
     }
@@ -379,6 +380,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         if (t) {
             draw_wall_strip(
                 t,
+                render_texture,
                 i,
                 height / 2.0f - half_wall_height,
                 height / 2.0f + half_wall_height,
