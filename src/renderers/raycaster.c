@@ -226,11 +226,37 @@ typedef struct {
     char* texture;
     float x;
     float y;
+    float distance;
 } sprite_t;
 
-#define SPRITE_COUNT 1
-static const sprite_t sprites[SPRITE_COUNT] = {
-    {"textures/barrel.gif", 31.5f, 57.5f}
+static float* depths = NULL;
+static float sprite_depth = FLT_MAX;
+
+static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
+    if (depths[dx] < sprite_depth) return;
+
+    color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
+    if (pixel == graphics_transparent_color_get()) return;
+
+    graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
+}
+
+static int sprite_compare(const void* a, const void* b) {
+    sprite_t* l = (sprite_t*)a;
+    sprite_t* r = (sprite_t*)b;
+
+    if (l->distance < r->distance) return 1;
+    if (l->distance > r->distance) return -1;
+
+    return 0;
+}
+
+#define SPRITE_COUNT 4
+static sprite_t sprites[SPRITE_COUNT] = {
+    {"textures/barrel.gif", 31.5f, 57.5f, FLT_MAX},
+    {"textures/barrel.gif", 32.5f, 57.5f, FLT_MAX},
+    {"textures/barrel.gif", 33.5f, 57.5f, FLT_MAX},
+    {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
 };
 
 void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
@@ -240,6 +266,15 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     const float height = render_texture->height;
     const int ray_count = width;
     const float fov_rads = fov * M_PI / 180.0f;
+
+    // Ensure depth buffer
+    if (!depths) {
+        // TODO: Need to free this
+        depths = (float*)malloc(sizeof(float) * width);
+        for (int i = 0; i < width; i++) {
+            depths[i] = FLT_MAX;
+        }
+    }
 
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
@@ -301,7 +336,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     mfloat_t next[VEC2_SIZE];
     vec2_assign(next, left_bound);
 
-    // Cast all rays
+    // Draw walls
     for (int i = 0; i < ray_count; i++) {
         ray_cast(&ray, map);
 
@@ -309,6 +344,9 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         mfloat_t hit_vector[VEC2_SIZE];
         vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
         float corrected_distance = vec2_dot(hit_vector, direction);
+
+        // Write to depth buffer
+        depths[i] = corrected_distance;
 
         float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
         float half_wall_height = wall_height / 2.0f;
@@ -359,6 +397,17 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
     for (int i = 0; i < SPRITE_COUNT; i++) {
         sprite_t sprite = sprites[i];
+        mfloat_t dir[VEC2_SIZE];
+        mfloat_t sprite_position[VEC2_SIZE] = {sprite.x, sprite.y};
+        vec2_subtract(dir, sprite_position, position);
+        sprites[i].distance = vec2_dot(direction, dir);
+    }
+
+    qsort(sprites, SPRITE_COUNT, sizeof(sprite_t), sprite_compare);
+
+    // Draw sprites
+    for (int i = 0; i < SPRITE_COUNT; i++) {
+        sprite_t sprite = sprites[i];
 
         texture_t* texture = assets_get_texture(sprite.texture);
         if (!texture) continue;
@@ -368,6 +417,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         mfloat_t dir[VEC2_SIZE];
         vec2_subtract(dir, sprite_position, position);
         float corrected_distance = vec2_dot(direction, dir);
+
+        sprite_depth = corrected_distance;
 
         mfloat_t d[VEC2_SIZE];
         vec2_assign(d, dir);
@@ -396,8 +447,10 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         // Draw sprite
         graphics_blit(
             texture,
+            render_texture,
             NULL,
-            &rect
+            &rect,
+            sprite_depth_blit_func
         );
     }
 }
