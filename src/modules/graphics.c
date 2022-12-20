@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -83,7 +85,7 @@ static int bindings_graphics_blit(lua_State* L) {
     rect_t source_rect = {sx, sy, sw, sh};
     rect_t dest_rect = {dx, dy, dw, dh};
 
-    graphics_blit(*texture, &source_rect, &dest_rect);
+    graphics_blit(*texture, NULL, &source_rect, &dest_rect, NULL);
 
     return 0;
 }

@@ -163,7 +163,34 @@ int graphics_transparent_color_get(void);
  */
 void graphics_set_pixel(int x, int y, color_t color);
 
-void graphics_blit(texture_t* texture, rect_t* source_rect, rect_t* destination_rect);
+/**
+ * Function to copy a pixel from the source texture to the destination texture.
+ */
+typedef void(*pixel_copy_func_t)(
+    texture_t* source_texture,
+    texture_t* destination_texture,
+    int sx,
+    int sy,
+    int dx,
+    int dy
+);
+
+/**
+ * Copy pixels from source texture to destination texture.
+ *
+ * @param source_texture Texture to copy from
+ * @param destination_texture Texture to copy to. NULL to copy to the render texture
+ * @param source_rect Rect representing area to copy from. NULL to copy from everything
+ * @param destination_rect Rect representing area to copy to. NULL to copy to everything
+ * @param func Function used to set pixels. NULL to use default pixel copy function
+ */
+void graphics_blit(
+    texture_t* source_texture,
+    texture_t* destination_texture,
+    rect_t* source_rect,
+    rect_t* destination_rect,
+    pixel_copy_func_t func
+);
 
 /**
  * Sets clipping rectangle which defines drawable area.

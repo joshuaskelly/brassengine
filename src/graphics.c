@@ -67,67 +67,13 @@ color_t graphics_texture_get_pixel(texture_t* texture, int x, int y) {
     return texture->pixels[y * texture->width + x];
 }
 
-typedef void(*pixel_copy_func_t)(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy);
-
-static void blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect, pixel_copy_func_t func) {
-    rect_t default_source_rect = {0, 0, source_texture->width, source_texture->height};
-    if (!source_rect) {
-        source_rect = &default_source_rect;
-    }
-
-    rect_t default_destination_rect = {0, 0, destination_texture->width, destination_texture->height};
-    if (!destination_rect) {
-        destination_rect = &default_destination_rect;
-    }
-
-    float x_step = source_rect->width / (float)destination_rect->width;
-    float y_step = source_rect->height / (float)destination_rect->height;
-
-    int left = destination_rect->x;
-    int right = destination_rect->x + destination_rect->width;
-    int top = destination_rect->y;
-    int bottom = destination_rect->y + destination_rect->height;
-
-    int dy = top;
-    int dx = left;
-    float sx = source_rect->x;
-    float sy = source_rect->y;
-    float s_left = source_rect->x;
-    float s_top = source_rect->y;
-
-    // Adjust draw boundaries to destination texture
-    if (dx < 0) {
-        left = 0;
-        s_left = abs(dx) * x_step;
-    }
-
-    if (dy < 0) {
-        top = 0;
-        s_top = abs(dy) * y_step;
-    }
-
-    if (bottom > destination_texture->height) {
-        bottom = destination_texture->height;
-    }
-
-    if (right > destination_texture->width) {
-        right = destination_texture->width;
-    }
-
-    for (dy = top, sy = s_top; dy < bottom; dy++, sy += y_step) {
-        for (dx = left, sx = s_left; dx < right; dx++, sx += x_step) {
-            func(source_texture, destination_texture, sx, sy, dx, dy);
-        }
-    }
-}
-
 static void texture_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
     graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
 }
 
 void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect) {
-    blit(source_texture, destination_texture, source_rect, destination_rect, texture_blit_func);
+    graphics_blit(source_texture, destination_texture, source_rect, destination_rect, texture_blit_func);
 }
 
 void graphics_init(void) {
@@ -201,15 +147,71 @@ void graphics_set_pixel(int x, int y, color_t color) {
     graphics_texture_set_pixel(render_texture, x, y, color);
 }
 
-static void graphics_blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
+static void default_blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
     pixel = draw_palette[pixel];
 
     graphics_set_pixel(dx, dy, pixel);
 }
 
-void graphics_blit(texture_t* texture, rect_t* source_rect, rect_t* destination_rect) {
-    blit(texture, render_texture, source_rect, destination_rect, graphics_blit_func);
+void graphics_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect, pixel_copy_func_t func) {
+    if (!destination_texture) {
+        destination_texture = render_texture;
+    }
+
+    if (!func) {
+        func = default_blit_func;
+    }
+
+    rect_t default_source_rect = {0, 0, source_texture->width, source_texture->height};
+    if (!source_rect) {
+        source_rect = &default_source_rect;
+    }
+
+    rect_t default_destination_rect = {0, 0, destination_texture->width, destination_texture->height};
+    if (!destination_rect) {
+        destination_rect = &default_destination_rect;
+    }
+
+    float x_step = source_rect->width / (float)destination_rect->width;
+    float y_step = source_rect->height / (float)destination_rect->height;
+
+    int left = destination_rect->x;
+    int right = destination_rect->x + destination_rect->width;
+    int top = destination_rect->y;
+    int bottom = destination_rect->y + destination_rect->height;
+
+    int dy = top;
+    int dx = left;
+    float sx = source_rect->x;
+    float sy = source_rect->y;
+    float s_left = source_rect->x;
+    float s_top = source_rect->y;
+
+    // Adjust draw boundaries to destination texture
+    if (dx < 0) {
+        left = 0;
+        s_left = abs(dx) * x_step;
+    }
+
+    if (dy < 0) {
+        top = 0;
+        s_top = abs(dy) * y_step;
+    }
+
+    if (bottom > destination_texture->height) {
+        bottom = destination_texture->height;
+    }
+
+    if (right > destination_texture->width) {
+        right = destination_texture->width;
+    }
+
+    for (dy = top, sy = s_top; dy < bottom; dy++, sy += y_step) {
+        for (dx = left, sx = s_left; dx < right; dx++, sx += x_step) {
+            func(source_texture, destination_texture, sx, sy, dx, dy);
+        }
+    }
 }
 
 void graphics_set_clipping_rectangle(int x, int y, int width, int height) {
