@@ -382,31 +382,6 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     const float width = render_texture->width;
     const float height = render_texture->height;
 
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
-
-    // Draw floor/ceiling
-    for (int j = height / 2; j < height; j++) {
-        // Calculate distance from render texture y-coord
-        float wall_height = 2.0f * j - height;
-        float distance = distance_to_projection_plane / wall_height;
-        if (isinf(distance)) continue;
-
-        float brightness = get_distance_based_brightness(distance);
-
-        for (int i = 0; i < width; i++) {
-            // Floor
-            graphics_set_pixel(
-                i, j, shade_pixel(8, brightness)
-            );
-
-            // Ceiling
-            graphics_set_pixel(
-                i, height- j, shade_pixel(29, brightness)
-            );
-        }
-    }
-
     // Ensure depth buffer
     if (!depths) {
         // TODO: Need to free this
@@ -444,32 +419,75 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
      *                       c (camera position)
      */
 
+    // 1. Determine distance to the projection plane.
+    const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
     vec2_tangent(step, direction);
     vec2_negative(step, step);
 
-    // Calculate left bound
+    // 2. Calculate left bound.
+
     // left_bound = position + (direction * distance_to_projection_plane) - (step * width / 2)
     mfloat_t left_bound[VEC2_SIZE];
     vec2_multiply_f(left_bound, direction, distance_to_projection_plane);
-    vec2_add(left_bound, position, left_bound);
     vec2_multiply_f(step, step, width * 0.5f);
     vec2_subtract(left_bound, left_bound, step);
 
-    // Find step vector
+    // 3. Find step vector
     vec2_tangent(step, direction);
     vec2_negative(step, step);
 
     // Initialize ray to point to left bound
     ray_t ray;
     ray_set(&ray, position, ray.direction);
-    vec2_subtract(ray.direction, left_bound, position);
     vec2_normalize(ray.direction, ray.direction);
 
     // Track where the next ray needs to point
     mfloat_t next[VEC2_SIZE];
-    vec2_assign(next, left_bound);
+    vec2_add(next, left_bound, position);
+
+    mfloat_t floor_left_bound[VEC2_SIZE];
+    mfloat_t floor_step[VEC2_SIZE];
+    mfloat_t floor_next[VEC2_SIZE];
+
+    texture_t* f = assets_get_texture("textures/colorstone.gif");
+
+    // Draw floor/ceiling
+    for (int j = height / 2.0f; j < height; j++) {
+        // Calculate distance from render texture y-coord
+        float wall_height = 2.0f * j - height;
+        float distance = distance_to_projection_plane / wall_height;
+        if (isinf(distance)) continue;
+
+        float brightness = get_distance_based_brightness(distance);
+
+        float scale = 1.0f / wall_height;
+
+        vec2_multiply_f(floor_left_bound, left_bound, scale);
+        vec2_add(floor_left_bound, floor_left_bound, position);
+        vec2_assign(floor_next, floor_left_bound);
+        vec2_multiply_f(floor_step, step, scale);
+
+        for (int i = 0; i < width; i++) {
+            int sx = fmodf(floor_next[0], 1.0f) * f->width;
+            int sy = fmodf(floor_next[1], 1.0f) * f->height;
+            color_t c = graphics_texture_get_pixel(f, sx, sy);
+            // Floor
+            graphics_set_pixel(
+                i, j, shade_pixel(c, brightness)
+            );
+
+            // Ceiling
+            graphics_set_pixel(
+                i, height - j, shade_pixel(c, brightness)
+            );
+
+            vec2_add(floor_next, floor_next, floor_step);
+        }
+    }
 
     // Draw walls
     for (int i = 0; i < width; i++) {
@@ -529,6 +547,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         ray_hit_info_reset(&ray.hit_info);
     }
 
+    // Calculate sprite projected distance
     for (int i = 0; i < SPRITE_COUNT; i++) {
         sprite_t sprite = sprites[i];
         mfloat_t dir[VEC2_SIZE];
@@ -537,6 +556,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         sprites[i].distance = vec2_dot(direction, dir);
     }
 
+    // Sort sprites furthest to closest
     qsort(sprites, SPRITE_COUNT, sizeof(sprite_t), sprite_compare);
 
     // Draw sprites
