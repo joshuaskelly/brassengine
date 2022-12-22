@@ -12,12 +12,27 @@
 
 #include "raycaster.h"
 
-static texture_t* texture_palette[256];
-static texture_t* shade_table;
-
 typedef texture_t map_t;
 typedef color_t map_data_t;
 
+/** Palette of wall textures. */
+static texture_t* texture_palette[256];
+
+/**
+ * Shade table. Used for shading a given pixel. The y-coordinate corresponds
+ * to original color and the x-coordinate corresponds to desired brightness.
+ */
+static texture_t* shade_table;
+
+/**
+ * Determine if given point is contained in the map bounds.
+ *
+ * @param map Map to check against
+ * @param x Point x-coordinate
+ * @param y Point y-coordinate
+ * @return true If point is contained in map bounds.
+ * @return false If point is outside of map bounds.
+ */
 static bool map_contains(map_t* map, int x, int y) {
     if (x < 0 || x >= map->width) return false;
     if (y < 0 || y >= map->height) return false;
@@ -25,10 +40,27 @@ static bool map_contains(map_t* map, int x, int y) {
     return true;
 }
 
+/**
+ * Get map data at a given point
+ *
+ * @param map Map to check
+ * @param x Point x-coordinate
+ * @param y Point y-coordinate
+ * @return map_data_t
+ */
 static map_data_t map_get_data(map_t* map, int x, int y) {
     return graphics_texture_get_pixel(map, x, y);
 }
 
+/**
+ * Check if map is solid at a given point.
+ *
+ * @param map Map to check
+ * @param x Point x-coordinate
+ * @param y Point y-coordinate
+ * @return true If map is solid at given point.
+ * @return false If map is not solid at given point.
+ */
 static bool map_is_solid(map_t* map, int x, int y) {
     return map_get_data(map, x, y) > 0;
 }
@@ -46,6 +78,11 @@ typedef struct {
     ray_hit_info_t hit_info;
 } ray_t;
 
+/**
+ * Reset ray hit info to initial state.
+ *
+ * @param hit_info Hit info to reset.
+ */
 static void ray_hit_info_reset(ray_hit_info_t* hit_info) {
     hit_info->distance = FLT_MAX;
     hit_info->data = 0;
@@ -60,6 +97,12 @@ static void ray_set(ray_t* ray, mfloat_t* position, mfloat_t* direction) {
     ray_hit_info_reset(&ray->hit_info);
 }
 
+/**
+ * Casts a ray. The ray hit info will be updated with the result of the cast.
+ *
+ * @param ray Ray to cast.
+ * @param map Map to cast against.
+ */
 static void ray_cast(ray_t* ray, map_t* map) {
     // Horizontal checks
     if (ray->direction[1] != 0.0f)
@@ -201,24 +244,43 @@ static void ray_cast(ray_t* ray, map_t* map) {
     }
 }
 
-static color_t shade(color_t color, float amount) {
+/**
+ * Shades given pixel to given brightness using the shade table.
+ *
+ * @param color Original color
+ * @param brightness Amount to shade pixel. 1.0 = full bright 0.0 = full dark
+ * @return color_t Shaded color
+ */
+static color_t shade_pixel(color_t color, float brightness) {
     if (!shade_table) return color;
+    if (color >= shade_table->height) return color;
 
-    if (amount < 0.0f) amount = 0;
-    if (amount > 1.0f) amount = 1.0f;
+    if (brightness < 0.0f) brightness = 0;
+    if (brightness > 1.0f) brightness = 1.0f;
 
-    amount = 1.0f - amount;
+    brightness = 1.0f - brightness;
 
-    int s = amount * (shade_table->width - 1);
+    int amount = brightness * (shade_table->width - 1);
 
     return graphics_texture_get_pixel(
         shade_table,
-        s,
+        amount,
         color
     );
 }
 
-static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float shade_) {
+/**
+ * Draw a single pixel wide vertical wall strip.
+ *
+ * @param wall_texture Wall texture
+ * @param destination_texture Texture to draw wall to
+ * @param x Wall x-coordinate on destination texture
+ * @param y0 Top of wall y-coordinate on destination texture
+ * @param y1 Bottom of wall y-coordinate on destination texture
+ * @param offset Wall texture x-coordinate offset.
+ * @param brightness How light/dark to shade wall.
+ */
+static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float brightness) {
     const int length = y1 - y0;
     const int s = wall_texture->width * offset;
     int start = 0;
@@ -236,7 +298,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
 
         int t = wall_texture->height * amount;
         color_t c = graphics_texture_get_pixel(wall_texture, s, t);
-        c = shade(c, shade_);
+        c = shade_pixel(c, brightness);
 
         graphics_set_pixel(x, y, c);
     }
@@ -249,9 +311,22 @@ typedef struct {
     float distance;
 } sprite_t;
 
+/** Distances of all rays cast this frame. */
 static float* depths = NULL;
+
+/** Depth of currently rendering sprite. */
 static float sprite_depth = FLT_MAX;
 
+/**
+ * Pixel drawing function that respects ray depth.
+ *
+ * @param source_texture Texture to copy from
+ * @param destination_texture Texture to copy to
+ * @param sx Source x-coordinate
+ * @param sy Source y-coordinate
+ * @param dx Destination x-coordinate
+ * @param dy Destination y-coordinate
+ */
 static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
     if (depths[dx] < sprite_depth) return;
 
@@ -261,6 +336,15 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
 }
 
+/**
+ * Sort sprites by furthest to nearest along camera view direction.
+ *
+ * @param a First sprite
+ * @param b Second sprite
+ * @return 1 if first sprite is closer.
+ * @return -1 if first sprite is further.
+ * @return 0 if they are equidistant.
+ */
 static int sprite_compare(const void* a, const void* b) {
     sprite_t* l = (sprite_t*)a;
     sprite_t* r = (sprite_t*)b;
