@@ -270,6 +270,16 @@ static color_t shade_pixel(color_t color, float brightness) {
 }
 
 /**
+ * Get brightness for given distance.
+ *
+ * @param distance Distance from camera
+ * @return float Brightness where 1.0 is full bright and 0.0 is full dark.
+ */
+static float get_distance_based_brightness(float distance) {
+    return 1.0f - distance / 32.0f;
+}
+
+/**
  * Draw a single pixel wide vertical wall strip.
  *
  * @param wall_texture Wall texture
@@ -332,6 +342,9 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
 
     color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
     if (pixel == graphics_transparent_color_get()) return;
+
+    float brightness = get_distance_based_brightness(sprite_depth);
+    pixel = shade_pixel(pixel, brightness);
 
     graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
 }
@@ -481,8 +494,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         texture_t* t = raycaster_get_texture(ray.hit_info.data);
         if (t) {
-            float s = (1.0f - ray.hit_info.distance / 32.0f);
-            s *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
+            float brightness = get_distance_based_brightness(sprite_depth);
+            brightness *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
             draw_wall_strip(
                 t,
                 render_texture,
@@ -490,7 +503,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
                 height / 2.0f - half_wall_height,
                 height / 2.0f + half_wall_height,
                 offset,
-                s
+                brightness
             );
         }
 
