@@ -398,7 +398,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         texture_t* t = raycaster_get_texture(ray.hit_info.data);
         if (t) {
             float s = (1.0f - ray.hit_info.distance / 32.0f);
-            s *= ray.hit_info.was_vertical ? 1.0f : 0.5f;
+            s *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
             draw_wall_strip(
                 t,
                 render_texture,
