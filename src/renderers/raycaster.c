@@ -13,6 +13,7 @@
 #include "raycaster.h"
 
 static texture_t* texture_palette[256];
+static texture_t* shade_table;
 
 typedef texture_t map_t;
 typedef color_t map_data_t;
@@ -200,7 +201,24 @@ static void ray_cast(ray_t* ray, map_t* map) {
     }
 }
 
-static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset) {
+static color_t shade(color_t color, float amount) {
+    if (!shade_table) return color;
+
+    if (amount < 0.0f) amount = 0;
+    if (amount > 1.0f) amount = 1.0f;
+
+    amount = 1.0f - amount;
+
+    int s = amount * (shade_table->width - 1);
+
+    return graphics_texture_get_pixel(
+        shade_table,
+        s,
+        color
+    );
+}
+
+static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float shade_) {
     const int length = y1 - y0;
     const int s = wall_texture->width * offset;
     int start = 0;
@@ -218,6 +236,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
 
         int t = wall_texture->height * amount;
         color_t c = graphics_texture_get_pixel(wall_texture, s, t);
+        c = shade(c, shade_);
 
         graphics_set_pixel(x, y, c);
     }
@@ -378,13 +397,16 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         texture_t* t = raycaster_get_texture(ray.hit_info.data);
         if (t) {
+            float s = (1.0f - ray.hit_info.distance / 32.0f);
+            s *= ray.hit_info.was_vertical ? 1.0f : 0.5f;
             draw_wall_strip(
                 t,
                 render_texture,
                 i,
                 height / 2.0f - half_wall_height,
                 height / 2.0f + half_wall_height,
-                offset
+                offset,
+                s
             );
         }
 
@@ -463,4 +485,12 @@ texture_t* raycaster_get_texture(int i) {
 
 void raycaster_set_texture(int i, texture_t* texture) {
     texture_palette[i] = texture;
+}
+
+texture_t* raycaster_shade_table_get(void) {
+    return shade_table;
+}
+
+void raycaster_shade_table_set(texture_t* texture) {
+    shade_table = texture;
 }

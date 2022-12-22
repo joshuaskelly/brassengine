@@ -11,4 +11,8 @@ texture_t* raycaster_get_texture(int i);
 
 void raycaster_set_texture(int i, texture_t* texture);
 
+texture_t* raycaster_shade_table_get(void);
+
+void raycaster_shade_table_set(texture_t* texture);
+
 #endif
