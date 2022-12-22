@@ -381,8 +381,31 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
     const float width = render_texture->width;
     const float height = render_texture->height;
-    const int ray_count = width;
+
     const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+
+    // Draw floor/ceiling
+    for (int j = height / 2; j < height; j++) {
+        // Calculate distance from render texture y-coord
+        float wall_height = 2.0f * j - height;
+        float distance = distance_to_projection_plane / wall_height;
+        if (isinf(distance)) continue;
+
+        float brightness = get_distance_based_brightness(distance);
+
+        for (int i = 0; i < width; i++) {
+            // Floor
+            graphics_set_pixel(
+                i, j, shade_pixel(8, brightness)
+            );
+
+            // Ceiling
+            graphics_set_pixel(
+                i, height- j, shade_pixel(29, brightness)
+            );
+        }
+    }
 
     // Ensure depth buffer
     if (!depths) {
@@ -421,11 +444,6 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
      *                       c (camera position)
      */
 
-    // 1. Determine distance to project plane
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
-
-    // 2. Find left bound
-
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
     vec2_tangent(step, direction);
@@ -439,7 +457,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     vec2_multiply_f(step, step, width * 0.5f);
     vec2_subtract(left_bound, left_bound, step);
 
-    // 3. Find step vector
+    // Find step vector
     vec2_tangent(step, direction);
     vec2_negative(step, step);
 
@@ -454,7 +472,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     vec2_assign(next, left_bound);
 
     // Draw walls
-    for (int i = 0; i < ray_count; i++) {
+    for (int i = 0; i < width; i++) {
         ray_cast(&ray, map);
 
         // Calculate wall height
@@ -467,11 +485,6 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
         float half_wall_height = wall_height / 2.0f;
-
-        color_t c = 15;
-        if (ray.hit_info.was_vertical) {
-            c = 21;
-        }
 
         // Calculate the texture normalized horizontal offset (u-coordinate).
         float offset = 0.0f;
@@ -494,7 +507,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         texture_t* t = raycaster_get_texture(ray.hit_info.data);
         if (t) {
-            float brightness = get_distance_based_brightness(sprite_depth);
+            float brightness = get_distance_based_brightness(ray.hit_info.distance);
             brightness *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
             draw_wall_strip(
                 t,
