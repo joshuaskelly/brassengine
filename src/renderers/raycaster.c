@@ -323,6 +323,8 @@ typedef struct {
 
 /** Distances of all rays cast this frame. */
 static float* depths = NULL;
+static int depths_width = 0;
+static int depths_offset = 0;
 
 /** Depth of currently rendering sprite. */
 static float sprite_depth = FLT_MAX;
@@ -342,7 +344,7 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
     if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
 
-    if (depths[dx] < sprite_depth) return;
+    if (depths[dx - depths_offset] < sprite_depth) return;
 
     color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
     if (pixel == graphics_transparent_color_get()) return;
@@ -395,13 +397,29 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     const float width = render_rect->width;
     const float height = render_rect->height;
 
-    // Ensure depth buffer
+    bool depths_dirty = false;
+
     if (!depths) {
+        depths_dirty = true;
+    }
+
+    depths_offset = render_rect->x;
+
+    // Free up and mark dirty if depth buffer not large enough.
+    if (depths_width < render_rect->width) {
+        depths_dirty = true;
+        free(depths);
+    }
+
+    // Ensure depth buffer
+    if (depths_dirty) {
         // TODO: Need to free this
         depths = (float*)malloc(sizeof(float) * width);
         for (int i = 0; i < width; i++) {
             depths[i] = FLT_MAX;
         }
+
+        depths_width = render_rect->width;
     }
 
     // Ensure direction is normalized
@@ -497,12 +515,12 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
             // Floor
             graphics_set_pixel(
-                i, j, shade_pixel(color, brightness)
+                render_rect->x + i, render_rect->y + j, shade_pixel(color, brightness)
             );
 
             // Ceiling
             graphics_set_pixel(
-                i, height - j - 1, shade_pixel(color, brightness)
+                render_rect->x + i, render_rect->y + height - j - 1, shade_pixel(color, brightness)
             );
 
             vec2_add(floor_next, floor_next, floor_step);
@@ -552,9 +570,9 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             draw_wall_strip(
                 wall_texture,
                 render_texture,
-                i,
-                height / 2.0f - half_wall_height,
-                height / 2.0f + half_wall_height,
+                render_rect->x + i,
+                render_rect->y + (height / 2.0f - half_wall_height),
+                render_rect->y + (height / 2.0f + half_wall_height),
                 offset,
                 brightness
             );
@@ -614,8 +632,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         float half_height = s_height / 2.0f;
 
         rect_t rect = {
-            (width / 2.0f) + x_offset - half_height,
-            (height / 2.0f) - half_height,
+            render_rect->x + (width / 2.0f) + x_offset - half_height,
+            render_rect->y + (height / 2.0f) - half_height,
             s_height,
             s_height
         };
