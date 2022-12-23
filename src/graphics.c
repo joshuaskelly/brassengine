@@ -214,9 +214,16 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
     }
 }
 
-void graphics_set_clipping_rectangle(int x, int y, int width, int height) {
-    clip_rect.x = x;
-    clip_rect.y = y;
-    clip_rect.width = width;
-    clip_rect.height = height;
+void graphics_set_clipping_rectangle(rect_t* rect) {
+    rect_t default_rect = {0, 0, render_texture->width, render_texture->height};
+
+    if (!rect) {
+        rect = &default_rect;
+    }
+
+    clip_rect = *rect;
+}
+
+rect_t* graphics_get_clipping_rectangle(void) {
+    return &clip_rect;
 }

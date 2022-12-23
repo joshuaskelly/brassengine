@@ -12,8 +12,17 @@
  * @param direction Camera direction vector
  * @param fov Camera field of view in degrees
  * @param map Map to render
+ * @param render_texture Texture to render to. NULL will use default render target
+ * @param render_rect Portion of render texture to render to. NULL will use entire render target
  */
-void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map);
+void raycaster_render(
+    mfloat_t* position,
+    mfloat_t* direction,
+    float fov,
+    texture_t* map,
+    texture_t* render_texture,
+    rect_t* render_rect
+);
 
 /**
  * Returns a texture in the texture palette for given index.

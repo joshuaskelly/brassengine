@@ -16,13 +16,25 @@ static int module_raycaster_render(lua_State* L) {
     float dy = luaL_checknumber(L, 4);
     float fov = luaL_checknumber(L, 5);
     texture_t** texture = luaL_checktexture(L, 6);
+    texture_t** render_texture = luaL_checktexture(L, 7);
+    float rx = luaL_optnumber(L, 8, 0);
+    float ry = luaL_optnumber(L, 9, 0);
+    float rw = luaL_optnumber(L, 10, (*render_texture)->width);
+    float rh = luaL_optnumber(L, 11, (*render_texture)->height);
 
     lua_pop(L, 1);
 
     mfloat_t position[VEC2_SIZE] = {px, py};
     mfloat_t direction[VEC2_SIZE] = {dx, dy};
+    rect_t rect = {rx, ry, rw, rh};
 
-    raycaster_render(position, direction, fov, *texture);
+    raycaster_render(
+        position,
+        direction,
+        fov,
+        *texture,
+        *render_texture,
+        &rect);
     return 0;
 }
 

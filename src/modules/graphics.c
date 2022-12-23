@@ -99,6 +99,13 @@ static int bindings_graphics_blit(lua_State* L) {
  * @param height Rect height
  */
 static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
+    if (arg_count == 0) {
+        graphics_set_clipping_rectangle(NULL);
+        return 0;
+    }
+
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -106,7 +113,9 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
 
     lua_pop(L, -1);
 
-    graphics_set_clipping_rectangle(x, y, width, height);
+    rect_t clip_rect = {x, y, width, height};
+
+    graphics_set_clipping_rectangle(&clip_rect);
 
     return 0;
 }

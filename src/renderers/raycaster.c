@@ -338,6 +338,10 @@ static float sprite_depth = FLT_MAX;
  * @param dy Destination y-coordinate
  */
 static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
+    rect_t* clip_rect = graphics_get_clipping_rectangle();
+    if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
+    if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
+
     if (depths[dx] < sprite_depth) return;
 
     color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
@@ -376,11 +380,20 @@ static sprite_t sprites[SPRITE_COUNT] = {
     {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
 };
 
-void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map) {
-    texture_t* render_texture = graphics_get_render_texture();
+void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map, texture_t* render_texture, rect_t* render_rect) {
+    if (!render_texture) {
+        render_texture = graphics_get_render_texture();
+    }
 
-    const float width = render_texture->width;
-    const float height = render_texture->height;
+    rect_t default_rect = {0, 0, render_texture->width, render_texture->height};
+    if (!render_rect) {
+        render_rect = &default_rect;
+    }
+
+    graphics_set_clipping_rectangle(render_rect);
+
+    const float width = render_rect->width;
+    const float height = render_rect->height;
 
     // Ensure depth buffer
     if (!depths) {
@@ -616,6 +629,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             sprite_depth_blit_func
         );
     }
+
+    graphics_set_clipping_rectangle(NULL);
 }
 
 texture_t* raycaster_get_texture(int i) {
