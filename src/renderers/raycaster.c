@@ -460,6 +460,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
         // Calculate distance from render texture y-coord
         float wall_height = 2.0f * j - height;
         float distance = distance_to_projection_plane / wall_height;
+
+        // Distance at horizon line is infinity.
         if (isinf(distance)) continue;
 
         float brightness = get_distance_based_brightness(distance);
