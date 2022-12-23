@@ -453,37 +453,43 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     mfloat_t floor_step[VEC2_SIZE];
     mfloat_t floor_next[VEC2_SIZE];
 
+    // TODO: Move this down in the scanline rendering and lookup actual texture
     texture_t* f = assets_get_texture("textures/colorstone.gif");
 
     // Draw floor/ceiling
     for (int j = height / 2.0f; j < height; j++) {
-        // Calculate distance from render texture y-coord
+        // Calculate distance from render texture y-coordinate
         float wall_height = 2.0f * j - height;
         float distance = distance_to_projection_plane / wall_height;
 
-        // Distance at horizon line is infinity.
+        // Distance at horizon line is
         if (isinf(distance)) continue;
-
-        float brightness = get_distance_based_brightness(distance);
 
         float scale = 1.0f / wall_height;
 
+        // Determine floor left bound
         vec2_multiply_f(floor_next, left_bound, scale);
         vec2_add(floor_next, floor_next, position);
+
+        // Determine floor horizontal step.
         vec2_multiply_f(floor_step, step, scale);
 
+        float brightness = get_distance_based_brightness(distance);
+
+        // Draw current scanline for both floor and ceiling
         for (int i = 0; i < width; i++) {
-            int sx = fmodf(floor_next[0], 1.0f) * f->width;
-            int sy = fmodf(floor_next[1], 1.0f) * f->height;
-            color_t c = graphics_texture_get_pixel(f, sx, sy);
+            int x = fmodf(floor_next[0], 1.0f) * f->width;
+            int y = fmodf(floor_next[1], 1.0f) * f->height;
+            color_t color = graphics_texture_get_pixel(f, x, y);
+
             // Floor
             graphics_set_pixel(
-                i, j, shade_pixel(c, brightness)
+                i, j, shade_pixel(color, brightness)
             );
 
             // Ceiling
             graphics_set_pixel(
-                i, height - j - 1, shade_pixel(c, brightness)
+                i, height - j - 1, shade_pixel(color, brightness)
             );
 
             vec2_add(floor_next, floor_next, floor_step);
@@ -524,12 +530,14 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
             }
         }
 
-        texture_t* t = raycaster_get_texture(ray.hit_info.data);
-        if (t) {
+        texture_t* wall_texture = raycaster_get_texture(ray.hit_info.data);
+        if (wall_texture) {
             float brightness = get_distance_based_brightness(ray.hit_info.distance);
+            // Darken vertically aligned walls.
             brightness *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
+
             draw_wall_strip(
-                t,
+                wall_texture,
                 render_texture,
                 i,
                 height / 2.0f - half_wall_height,
@@ -564,8 +572,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     for (int i = 0; i < SPRITE_COUNT; i++) {
         sprite_t sprite = sprites[i];
 
-        texture_t* texture = assets_get_texture(sprite.texture);
-        if (!texture) continue;
+        texture_t* sprite_texture = assets_get_texture(sprite.texture);
+        if (!sprite_texture) continue;
 
         mfloat_t sprite_position[VEC2_SIZE] = {sprite.x, sprite.y};
 
@@ -601,7 +609,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         // Draw sprite
         graphics_blit(
-            texture,
+            sprite_texture,
             render_texture,
             NULL,
             &rect,
