@@ -440,14 +440,15 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     vec2_tangent(step, direction);
     vec2_negative(step, step);
 
-    // Initialize ray to point to left bound
-    ray_t ray;
-    ray_set(&ray, position, ray.direction);
-    vec2_normalize(ray.direction, ray.direction);
-
     // Track where the next ray needs to point
     mfloat_t next[VEC2_SIZE];
     vec2_add(next, left_bound, position);
+
+    // Initialize ray to point to left bound
+    ray_t ray;
+    ray_set(&ray, position, ray.direction);
+    vec2_subtract(ray.direction, next, position);
+    vec2_normalize(ray.direction, ray.direction);
 
     mfloat_t floor_left_bound[VEC2_SIZE];
     mfloat_t floor_step[VEC2_SIZE];
