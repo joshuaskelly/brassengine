@@ -450,7 +450,6 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
     vec2_subtract(ray.direction, next, position);
     vec2_normalize(ray.direction, ray.direction);
 
-    mfloat_t floor_left_bound[VEC2_SIZE];
     mfloat_t floor_step[VEC2_SIZE];
     mfloat_t floor_next[VEC2_SIZE];
 
@@ -467,9 +466,8 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
         float scale = 1.0f / wall_height;
 
-        vec2_multiply_f(floor_left_bound, left_bound, scale);
-        vec2_add(floor_left_bound, floor_left_bound, position);
-        vec2_assign(floor_next, floor_left_bound);
+        vec2_multiply_f(floor_next, left_bound, scale);
+        vec2_add(floor_next, floor_next, position);
         vec2_multiply_f(floor_step, step, scale);
 
         for (int i = 0; i < width; i++) {
