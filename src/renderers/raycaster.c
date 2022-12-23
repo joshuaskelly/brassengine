@@ -483,7 +483,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
             // Ceiling
             graphics_set_pixel(
-                i, height - j, shade_pixel(c, brightness)
+                i, height - j - 1, shade_pixel(c, brightness)
             );
 
             vec2_add(floor_next, floor_next, floor_step);
