@@ -21,8 +21,8 @@ mfloat_t* luaL_checkvector(lua_State* L, int index) {
 }
 
 static int vector2_new(lua_State* L) {
-    float x = (float)luaL_checknumber(L, 1);
-    float y = (float)luaL_checknumber(L, 2);
+    float x = (float)luaL_optnumber(L, 1, 0);
+    float y = (float)luaL_optnumber(L, 2, 0);
 
     lua_pop(L, -1);
 
