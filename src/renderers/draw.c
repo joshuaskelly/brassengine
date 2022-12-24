@@ -304,8 +304,10 @@ void draw_text(const char* message, int x, int y) {
 
         graphics_blit(
             font_texture,
+            NULL,
             &source_rect,
-            &dest_rect
+            &dest_rect,
+            NULL
         );
     }
 }

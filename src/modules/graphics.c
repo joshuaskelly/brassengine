@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -83,7 +85,7 @@ static int bindings_graphics_blit(lua_State* L) {
     rect_t source_rect = {sx, sy, sw, sh};
     rect_t dest_rect = {dx, dy, dw, dh};
 
-    graphics_blit(*texture, &source_rect, &dest_rect);
+    graphics_blit(*texture, NULL, &source_rect, &dest_rect, NULL);
 
     return 0;
 }
@@ -97,6 +99,13 @@ static int bindings_graphics_blit(lua_State* L) {
  * @param height Rect height
  */
 static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
+    if (arg_count == 0) {
+        graphics_set_clipping_rectangle(NULL);
+        return 0;
+    }
+
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -104,7 +113,9 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
 
     lua_pop(L, -1);
 
-    graphics_set_clipping_rectangle(x, y, width, height);
+    rect_t clip_rect = {x, y, width, height};
+
+    graphics_set_clipping_rectangle(&clip_rect);
 
     return 0;
 }
