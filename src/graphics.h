@@ -200,6 +200,8 @@ void graphics_blit(
  * @param width Rect width
  * @param height Rect height
  */
-void graphics_set_clipping_rectangle(int x, int y, int width, int height);
+void graphics_set_clipping_rectangle(rect_t* rect);
+
+rect_t* graphics_get_clipping_rectangle(void);
 
 #endif
