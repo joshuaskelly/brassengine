@@ -24,6 +24,8 @@ static texture_t* texture_palette[256];
  */
 static texture_t* shade_table;
 
+static float fog_distance = 32.0f;
+
 /**
  * Determine if given point is contained in the map bounds.
  *
@@ -276,7 +278,7 @@ static color_t shade_pixel(color_t color, float brightness) {
  * @return float Brightness where 1.0 is full bright and 0.0 is full dark.
  */
 static float get_distance_based_brightness(float distance) {
-    return 1.0f - distance / 32.0f;
+    return 1.0f - distance / fog_distance;
 }
 
 /**
@@ -665,4 +667,12 @@ texture_t* raycaster_shade_table_get(void) {
 
 void raycaster_shade_table_set(texture_t* texture) {
     shade_table = texture;
+}
+
+float raycaster_fog_distance_get(void) {
+    return fog_distance;
+}
+
+void raycaster_fog_distance_set(float distance) {
+    fog_distance = distance;
 }

@@ -54,4 +54,8 @@ texture_t* raycaster_shade_table_get(void);
  */
 void raycaster_shade_table_set(texture_t* texture);
 
+float raycaster_fog_distance_get(void);
+
+void raycaster_fog_distance_set(float distance);
+
 #endif

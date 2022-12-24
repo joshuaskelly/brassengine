@@ -59,10 +59,19 @@ static int module_raycaster_shade_table_set(lua_State* L) {
     return 0;
 }
 
+static int module_raycaster_fog_distance_set(lua_State* L) {
+    float distance = luaL_checknumber(L, 1);
+
+    raycaster_fog_distance_set(distance);
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"render", module_raycaster_render},
     {"palette", module_raycaster_palette},
     {"shade_table", module_raycaster_shade_table_set},
+    {"fog_distance", module_raycaster_fog_distance_set},
     {NULL, NULL}
 };
 
