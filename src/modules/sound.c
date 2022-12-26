@@ -1,3 +1,7 @@
+/**
+ * Module for playing sounds.
+ * @module sound
+ */
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -18,14 +22,8 @@ sound_t** luaL_checksound(lua_State* L, int index) {
     return sound;
 }
 
-/**
- * Texture garbage collection metamethod.
- *
- * @param L Lua VM
- * @return int
- */
-    // TODO: Only free up dynamic textures, not ones acquire from assets
 static int sound_gc(lua_State* L) {
+    // TODO: Only free up dynamic textures, not ones acquire from assets
     //sound_t** sound = lua_touserdata(L, 1);
     //sounds_sound_free(*texture);
 
@@ -36,6 +34,11 @@ static const struct luaL_Reg sound_methods[] = {
     {NULL, NULL}
 };
 
+/**
+ * Plays given sound.
+ * @function play
+ * @param sound Sound to play.
+ */
 static int play_sound(lua_State* L) {
     sound_t** sound = luaL_checksound(L, 1);
     platform_play_sound(*sound);

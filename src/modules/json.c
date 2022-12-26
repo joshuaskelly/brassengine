@@ -1,3 +1,7 @@
+/**
+ * Module for working with JSON.
+ * @module json
+ */
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
@@ -1306,6 +1310,12 @@ static void json_append_data(lua_State *l, json_config_t *cfg,
     }
 }
 
+/**
+ * Returns a string representing given object encoded in JSON.
+ * @function encode
+ * @param object Lua object to encode
+ * @return JSON string representation.
+ */
 static int json_encode(lua_State *l)
 {
     json_config_t *cfg = json_fetch_config(l);
@@ -1855,6 +1865,12 @@ static void json_process_value(lua_State *l, json_parse_t *json,
     }
 }
 
+/**
+ * Returns an object representing given JSON string.
+ * @function decode
+ * @param string String to decode
+ * @return Object from string representation.
+ */
 static int json_decode(lua_State *l)
 {
     json_parse_t json;

@@ -82,6 +82,12 @@ $(LIBCJSON):
 $(LIBMATHC):
 	cd $(MATHC_DIR) && make CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
+docs: ## Generate API documentation
+	ldoc src/modules -d docs -p toyengine
+
+docsclean: ## Delete generated API documentation
+	rm -rf docs
+
 mostlyclean: ## Deletes project auto generated files
 	find ./build/ -maxdepth 3 -type f -delete
 

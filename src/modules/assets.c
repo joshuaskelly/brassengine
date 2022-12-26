@@ -1,3 +1,7 @@
+/**
+ * Module for accessing assets.
+ * @module assets
+ */
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -9,7 +13,7 @@
 
 /**
  * Get texture for given filename
- *
+ * @function get_texture
  * @param filename Name of texture asset to look for
  * @return Texture userdata if found, nil otherwise.
  */
@@ -31,7 +35,7 @@ static int bindings_assets_get_texture(lua_State* L) {
 
 /**
  * Get sound for given filename
- *
+ * @function get_sound
  * @param filename Name of sound asset to look for
  * @return Sound userdata if found, nil otherwise.
  */

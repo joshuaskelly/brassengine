@@ -1,3 +1,7 @@
+/**
+ * Module for getting keyboard input.
+ * @module keyboard
+ */
 #include <ctype.h>
 #include <stdbool.h>
 
@@ -11,9 +15,8 @@
 
 /**
  * Check if given key is down.
- *
- * @param int|string Key code or symbol to check.
- *
+ * @function key
+ * @param code_or_symbol Key code or symbol to check.
  * @return True if key is down.
  */
 static int bindings_get_keyboard_key(lua_State* L) {

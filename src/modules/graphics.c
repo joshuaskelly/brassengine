@@ -1,3 +1,7 @@
+/**
+ * Module for drawing to render texture.
+ * @module graphics
+ */
 #include <stdlib.h>
 
 #include <lua/lua.h>
@@ -13,7 +17,7 @@
 
 /**
  * Draw a pixel at given position and color.
- *
+ * @function set_pixel
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  * @param color Pixel color
@@ -32,14 +36,16 @@ static int bindings_graphics_set_pixel(lua_State* L) {
 }
 
 /**
- * Blit given texture to render texture
- *
- * Simple API
+ * Blit given texture to render texture.
+ * @function blit
  * @param texture Source texture to blit
  * @param dx Destination x-offset
  * @param dy Destination y-offset
- *
- * Full API
+ */
+
+/**
+ * Blit given texture to render texture.
+ * @function blit
  * @param texture Source texture to blit
  * @param sx Source x-offset
  * @param sy Source y-offset
@@ -92,7 +98,7 @@ static int bindings_graphics_blit(lua_State* L) {
 
 /**
  * Sets clipping rectangle which defines drawable area.
- *
+ * @function set_clipping_rectangle
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
@@ -122,7 +128,7 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
 
 /**
  * Gets render texture.
- *
+ * @function get_render_texture
  * @return Render texture userdata.
  */
 static int bindings_graphics_get_render_texture(lua_State* L) {
@@ -134,7 +140,7 @@ static int bindings_graphics_get_render_texture(lua_State* L) {
 
 /**
  * Set color for draw palette.
- *
+ * @function set_palette_color
  * @param index Palette index to change.
  * @param color New color to set.
  */
@@ -148,6 +154,11 @@ static int bindings_graphics_set_draw_palette_color(lua_State* L) {
     return 0;
 }
 
+/**
+ * Sets transparent color.
+ * @function set_transparent_color
+ * @param color Color set set as transparent.
+ */
 static int bindings_graphics_set_transparent_color(lua_State* L) {
     int color = luaL_optinteger(L, 1, -1);
     graphics_transparent_color_set(color);
@@ -157,6 +168,14 @@ static int bindings_graphics_set_transparent_color(lua_State* L) {
     return 0;
 }
 
+/**
+ * Set color for graphics palette.
+ * @function set_global_palette_color
+ * @param index Index of color to set
+ * @param r Red value. [0, 255]
+ * @param g Green value. [0, 255]
+ * @param b Blue value. [0, 255]
+ */
 static int bindings_graphics_set_palette_color(lua_State* L) {
     int index = (int)lua_tonumber(L, -4);
     int r = (int)lua_tonumber(L, -3) & 0xFF;

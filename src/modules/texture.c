@@ -1,3 +1,7 @@
+/**
+ * Module for working with texture data.
+ * @module texture
+ */
 #include <stdbool.h>
 
 #include <lua/lua.h>
@@ -20,14 +24,8 @@ texture_t** luaL_checktexture(lua_State* L, int index) {
     return texture;
 }
 
-/**
- * Texture garbage collection metamethod.
- *
- * @param L Lua VM
- * @return int
- */
-    // TODO: Only free up dynamic textures, not ones acquire from assets
 static int texture_gc(lua_State* L) {
+    // TODO: Only free up dynamic textures, not ones acquire from assets
     //texture_t** texture = lua_touserdata(L, 1);
     //graphics_texture_free(*texture);
 
@@ -50,7 +48,7 @@ static const struct luaL_Reg texture_methods[] = {
 
 /**
  * Create new texture.
- *
+ * @function new
  * @param width Texture width
  * @param height Texture height
  * @return Texture userdata
@@ -70,7 +68,7 @@ static int bindings_texture_new(lua_State* L) {
 
 /**
  * Copy given texture.
- *
+ * @function copy
  * @param texture Texture to copy
  * @return Texture userdata
  */
@@ -88,9 +86,9 @@ static int bindings_texture_copy(lua_State* L) {
 
 /**
  * Fill entire texture with color.
- *
- * @param texture
- * @param color
+ * @function clear
+ * @param texture Texture userdata
+ * @param color Fill color
  */
 static int bindings_texture_clear(lua_State* L) {
     texture_t** texture = luaL_checktexture(L, 1);
@@ -105,7 +103,7 @@ static int bindings_texture_clear(lua_State* L) {
 
 /**
  * Draw a pixel at given position and color.
- *
+ * @function set_pixel
  * @param texture Texture userdata
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
@@ -126,7 +124,7 @@ static int bindings_texture_set_pixel(lua_State* L) {
 
 /**
  * Gets pixel at given position.
- *
+ * @function get_pixel
  * @param texture Texture userdata
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
@@ -146,11 +144,11 @@ static int bindings_texture_get_pixel(lua_State* L) {
 
 /**
  * Copy a portion of one texture to another.
- *
+ * @function blit
  * @param source_texture Texture to copy from
  * @param destination_texture Texture to copy to
- * @param x
- * @param y
+ * @param x Destination x-offset
+ * @param y Destination y-offset
  */
 static int bindings_texture_blit(lua_State* L) {
     texture_t** source = luaL_checktexture(L, 1);

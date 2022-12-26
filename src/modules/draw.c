@@ -1,3 +1,8 @@
+/**
+ * Module for drawing geometric shapes.
+ * @module draw
+ */
+
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -10,7 +15,7 @@
 
 /**
  * Draw a pixel at given position and color.
- *
+ * @function pixel
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  * @param color Pixel color
@@ -30,7 +35,7 @@ static int bindings_draw_pixel(lua_State* L) {
 
 /**
  * Draw a line between given position and color.
- *
+ * @function line
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
  * @param x1 End x-coordinate
@@ -61,7 +66,7 @@ static int bindings_draw_line(lua_State* L) {
 
 /**
  * Draw rectangle.
- *
+ * @function rectangle
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
@@ -92,7 +97,7 @@ static int bindings_draw_rectangle(lua_State* L) {
 
 /**
  * Draw filled rectangle.
- *
+ * @function filled_rectangle
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
@@ -123,7 +128,7 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
 
 /**
  * Draw circle
- *
+ * @function circle
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
@@ -152,7 +157,7 @@ static int bindings_draw_circle(lua_State* L) {
 
 /**
  * Draw filled circle
- *
+ * @function filled_circle
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
@@ -181,7 +186,7 @@ static int bindings_draw_filled_circle(lua_State* L) {
 
 /**
  * Clear screen to given color.
- *
+ * @function clear
  * @param color Color to clear screen
  */
 static int bindings_clear_screen(lua_State* L) {
@@ -197,7 +202,7 @@ static int bindings_clear_screen(lua_State* L) {
 
 /**
  * Draw text to screen.
- *
+ * @function text
  * @param message Text to draw
  * @param x Text top-left x-coordinate
  * @param y Text top-left y-coordinate
