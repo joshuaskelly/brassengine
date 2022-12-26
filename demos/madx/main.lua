@@ -1,14 +1,19 @@
 -- MADX demo
 
+local assets = require("assets")
 local draw = require("draw")
-local mouse = require("input.mouse")
+local graphics = require("graphics")
 local keyboard = require("input.keyboard")
+local mouse = require("input.mouse")
+
 local Map = require("map")
 local generate = require("generator")
 
 -- Called once at startup
 function _init()
     print("lua init")
+
+    textures = assets.get_texture("textures.gif")
 
     p_x = 0
     p_y = 0
@@ -57,7 +62,7 @@ end
 function sprite(index, x, y)
     local sx = (index % 32) * 8
     local sy = (index // 32) * 8
-    draw.test_blit(sx, sy, 8, 8, x, y, 8, 8)
+    graphics.blit(textures, sx, sy, 8, 8, x, y, 8, 8)
 end
 
 function frame(name)
