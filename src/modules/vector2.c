@@ -8,7 +8,7 @@
 
 #include "vector2.h"
 
-mfloat_t* luaL_checkvector(lua_State* L, int index) {
+mfloat_t* luaL_checkvector2(lua_State* L, int index) {
     mfloat_t* vector = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
     vector = (mfloat_t*)luaL_checkudata(L, index, "vector2");
@@ -36,8 +36,8 @@ static int vector2_new(lua_State* L) {
 }
 
 static int vector2_equal(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -49,8 +49,8 @@ static int vector2_equal(lua_State* L) {
 }
 
 static int vector2_add(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -65,8 +65,8 @@ static int vector2_add(lua_State* L) {
 }
 
 static int vector2_subtract(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -81,7 +81,7 @@ static int vector2_subtract(lua_State* L) {
 }
 
 static int vector2_multiply(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     // Scalar multiplication
     if (lua_isnumber(L, 2)) {
@@ -100,7 +100,7 @@ static int vector2_multiply(lua_State* L) {
     }
 
     // Component-wise multiplication
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -115,7 +115,7 @@ static int vector2_multiply(lua_State* L) {
 }
 
 static int vector2_divide(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     // Scalar division
     if (lua_isnumber(L, 2)) {
@@ -134,7 +134,7 @@ static int vector2_divide(lua_State* L) {
     }
 
     // Component-wise division
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -149,7 +149,7 @@ static int vector2_divide(lua_State* L) {
 }
 
 static int vector2_snap(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     // Scalar snapping
     if (lua_isnumber(L, 2)) {
@@ -168,7 +168,7 @@ static int vector2_snap(lua_State* L) {
     }
 
     // Component-wise snapping
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -183,7 +183,7 @@ static int vector2_snap(lua_State* L) {
 }
 
 static int vector2_negative(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -199,7 +199,7 @@ static int vector2_negative(lua_State* L) {
 
 
 static int vector2_abs(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -214,7 +214,7 @@ static int vector2_abs(lua_State* L) {
 }
 
 static int vector2_floor(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -230,7 +230,7 @@ static int vector2_floor(lua_State* L) {
 
 
 static int vector2_ceil(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -245,7 +245,7 @@ static int vector2_ceil(lua_State* L) {
 }
 
 static int vector2_round(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -260,8 +260,8 @@ static int vector2_round(lua_State* L) {
 }
 
 static int vector2_max(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -276,8 +276,8 @@ static int vector2_max(lua_State* L) {
 }
 
 static int vector2_min(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -292,9 +292,9 @@ static int vector2_min(lua_State* L) {
 }
 
 static int vector2_clamp(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
-    mfloat_t* v2 = luaL_checkvector(L, 3);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
+    mfloat_t* v2 = luaL_checkvector2(L, 3);
 
     lua_pop(L, -1);
 
@@ -309,7 +309,7 @@ static int vector2_clamp(lua_State* L) {
 }
 
 static int vector2_normalize(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -324,8 +324,8 @@ static int vector2_normalize(lua_State* L) {
 }
 
 static int vector2_dot(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -337,8 +337,8 @@ static int vector2_dot(lua_State* L) {
 }
 
 static int vector2_project(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -353,8 +353,8 @@ static int vector2_project(lua_State* L) {
 }
 
 static int vector2_slide(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -369,8 +369,8 @@ static int vector2_slide(lua_State* L) {
 }
 
 static int vector2_reflect(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -385,7 +385,7 @@ static int vector2_reflect(lua_State* L) {
 }
 
 static int vector2_tangent(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -400,7 +400,7 @@ static int vector2_tangent(lua_State* L) {
 }
 
 static int vector2_rotate(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
     float f = luaL_checknumber(L, 2);
 
     lua_pop(L, -1);
@@ -416,8 +416,8 @@ static int vector2_rotate(lua_State* L) {
 }
 
 static int vector2_lerp(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
     float f = luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
@@ -433,7 +433,7 @@ static int vector2_lerp(lua_State* L) {
 }
 
 static int vector2_angle(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -445,7 +445,7 @@ static int vector2_angle(lua_State* L) {
 }
 
 static int vector2_length(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -457,7 +457,7 @@ static int vector2_length(lua_State* L) {
 }
 
 static int vector2_length_squared(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_pop(L, -1);
 
@@ -469,8 +469,8 @@ static int vector2_length_squared(lua_State* L) {
 }
 
 static int vector2_distance(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -482,8 +482,8 @@ static int vector2_distance(lua_State* L) {
 }
 
 static int vector2_distance_squared(lua_State* L) {
-    mfloat_t* v0 = luaL_checkvector(L, 1);
-    mfloat_t* v1 = luaL_checkvector(L, 2);
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
     lua_pop(L, -1);
 
@@ -521,7 +521,7 @@ static const struct luaL_Reg module_functions[] = {
 };
 
 static int vector2_meta_index(lua_State* L) {
-    mfloat_t* vector = luaL_checkvector(L, 1);
+    mfloat_t* vector = luaL_checkvector2(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
     lua_pop(L, -1);
@@ -543,7 +543,7 @@ static int vector2_meta_index(lua_State* L) {
 }
 
 static int vector2_meta_newindex(lua_State* L) {
-    mfloat_t* vector = luaL_checkvector(L, 1);
+    mfloat_t* vector = luaL_checkvector2(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
     if (strcmp(key, "x") == 0) {
