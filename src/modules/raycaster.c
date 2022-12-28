@@ -2,6 +2,9 @@
  * Module for raycaster renderer.
  * @module raycaster
  */
+#include <stdlib.h>
+#include <string.h>
+
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -12,6 +15,65 @@
 #include "texture.h"
 
 #include "../renderers/raycaster.h"
+
+raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
+    raycaster_map_t* map = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    map = (raycaster_map_t*)luaL_checkudata(L, index, "raycaster_map");
+
+    if (!map) {
+        luaL_typeerror(L, index, "raycaster_map");
+    }
+
+    return map;
+}
+
+static int modules_raycaster_map_meta_index(lua_State* L) {
+    raycaster_map_t* map = luaL_checkraycastermap(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_pop(L, -1);
+
+    if (strncmp(key, "walls", 5) == 0) {
+        lua_pushtexture(L, map->walls);
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static int modules_raycaster_map_meta_newindex(lua_State* L) {
+    raycaster_map_t* map = luaL_checkraycastermap(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strcmp(key, "walls") == 0) {
+        texture_t* texture = *luaL_checktexture(L, 3);
+        map->walls = texture;
+    }
+    else {
+        luaL_error(L, "attempt to index a raycaster_mapmap value");
+    }
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+static const struct luaL_Reg raycaster_map_meta_functions[] = {
+    {"__index", modules_raycaster_map_meta_index},
+    {"__newindex", modules_raycaster_map_meta_newindex},
+    {NULL, NULL}
+};
+
+static int modules_raycaster_map_new(lua_State* L) {
+    raycaster_map_t* map = (raycaster_map_t*)lua_newuserdata(L, sizeof(raycaster_map_t));
+    map->walls = NULL;
+    luaL_setmetatable(L, "raycaster_map");
+
+    return 1;
+}
 
 /**
  * Renders given map data.
@@ -46,7 +108,7 @@ static int module_raycaster_render(lua_State* L) {
     float dx = luaL_checknumber(L, 3);
     float dy = luaL_checknumber(L, 4);
     float fov = luaL_checknumber(L, 5);
-    texture_t** texture = luaL_checktexture(L, 6);
+    raycaster_map_t* map = luaL_checkraycastermap(L, 6);
     texture_t** render_texture = luaL_checktexture(L, 7);
     float rx = luaL_optnumber(L, 8, 0);
     float ry = luaL_optnumber(L, 9, 0);
@@ -63,9 +125,11 @@ static int module_raycaster_render(lua_State* L) {
         position,
         direction,
         fov,
-        *texture,
+        map,
         *render_texture,
-        &rect);
+        &rect
+    );
+
     return 0;
 }
 
@@ -119,10 +183,17 @@ static const struct luaL_Reg module_functions[] = {
     {"palette", module_raycaster_palette},
     {"shade_table", module_raycaster_shade_table_set},
     {"fog_distance", module_raycaster_fog_distance_set},
+    {"map_new", modules_raycaster_map_new},
     {NULL, NULL}
 };
 
 int luaopen_raycaster(lua_State* L) {
     luaL_newlib(L, module_functions);
+
+    luaL_newmetatable(L, "raycaster_map");
+    luaL_setfuncs(L, raycaster_map_meta_functions, 0);
+
+    lua_pop(L, 1);
+
     return 1;
 }

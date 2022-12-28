@@ -384,7 +384,7 @@ static sprite_t sprites[SPRITE_COUNT] = {
     {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
 };
 
-void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, texture_t* map, texture_t* render_texture, rect_t* render_rect) {
+void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
     if (!render_texture) {
         render_texture = graphics_get_render_texture();
     }
@@ -531,7 +531,7 @@ void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, textur
 
     // Draw walls
     for (int i = 0; i < width; i++) {
-        ray_cast(&ray, map);
+        ray_cast(&ray, map->walls);
 
         // Calculate wall height
         mfloat_t hit_vector[VEC2_SIZE];

@@ -24,6 +24,14 @@ texture_t** luaL_checktexture(lua_State* L, int index) {
     return texture;
 }
 
+int lua_pushtexture(lua_State* L, texture_t* t) {
+    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *texture = t;
+    luaL_setmetatable(L, "texture");
+
+    return 1;
+}
+
 static int texture_gc(lua_State* L) {
     // TODO: Only free up dynamic textures, not ones acquire from assets
     //texture_t** texture = lua_touserdata(L, 1);
