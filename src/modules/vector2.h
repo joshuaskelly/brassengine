@@ -7,6 +7,8 @@
 
 mfloat_t* luaL_checkvector2(lua_State* L, int index);
 
+int lua_pushvector2(lua_State* L, mfloat_t* vector);
+
 int luaopen_vector2(lua_State* L);
 
 #endif

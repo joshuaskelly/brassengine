@@ -20,6 +20,13 @@ mfloat_t* luaL_checkvector2(lua_State* L, int index) {
     return vector;
 }
 
+int lua_pushvector2(lua_State* L, mfloat_t* vector) {
+    mfloat_t* v0 = (mfloat_t*)lua_newuserdata(L, sizeof(mfloat_t) * 2);
+    vec2_assign(v0, vector);
+
+    luaL_setmetatable(L, "vector2");
+}
+
 static int vector2_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
     float y = (float)luaL_optnumber(L, 2, 0);
