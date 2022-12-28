@@ -14,7 +14,7 @@ static int transparent_color = -1;
 static rect_t clip_rect;
 
 texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
-    texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
+    texture_t* texture = (texture_t*)malloc(sizeof(texture_t) + width * height * sizeof(color_t));
 
     if (!texture) {
         log_error("Failed to create texture");
@@ -23,11 +23,7 @@ texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
 
     texture->width = width;
     texture->height = height;
-    texture->pixels = (color_t*)calloc(width * height, sizeof(color_t));
-
-    if (texture->pixels == NULL) {
-        log_fatal("Unable to allocate memory for texture pixels.");
-    }
+    memset(texture->pixels, 0, width * height);
 
     if (pixels) {
         size_t size = width * height * sizeof(color_t);
@@ -38,8 +34,6 @@ texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
 }
 
 void graphics_texture_free(texture_t* texture) {
-    free(texture->pixels);
-    texture->pixels = NULL;
     free(texture);
     texture = NULL;
 }

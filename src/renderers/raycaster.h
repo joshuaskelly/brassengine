@@ -1,9 +1,17 @@
 #ifndef RENDERERS_RAYCASTER_H
 #define RENDERERS_RAYCASTER_H
 
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
+
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
+
+typedef struct {
+    texture_t* walls;
+} raycaster_map_t;
 
 /**
  * Renders given map
@@ -19,7 +27,7 @@ void raycaster_render(
     mfloat_t* position,
     mfloat_t* direction,
     float fov,
-    texture_t* map,
+    raycaster_map_t* map,
     texture_t* render_texture,
     rect_t* render_rect
 );

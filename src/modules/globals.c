@@ -1,3 +1,7 @@
+/**
+ * Global functions.
+ * @module globals
+ */
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
@@ -8,7 +12,7 @@
 
 /**
  * Prints given object to console.
- *
+ * @function print
  * @param arg Object to print to console
  */
 static int api_print(lua_State* L) {
@@ -20,6 +24,11 @@ static int api_print(lua_State* L) {
     return 0;
 }
 
+/**
+ * Gets time since last frame.
+ * @function delta_time
+ * @return Time elapsed in milliseconds.
+ */
 static int api_get_delta_time(lua_State* L) {
     double delta_time = time_delta_time();
     lua_pushnumber(L, delta_time);
@@ -27,6 +36,11 @@ static int api_get_delta_time(lua_State* L) {
     return 1;
 }
 
+/**
+ * Gets time since app launch.
+ * @function time
+ * @return Time elapsed in milliseconds.
+ */
 static int api_get_time_since_init(lua_State* L) {
     double time = time_since_init();
     lua_pushnumber(L, time);

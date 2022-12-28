@@ -18,9 +18,9 @@ typedef struct {
 typedef uint8_t color_t;
 
 typedef struct {
-    color_t* pixels;
     int width;
     int height;
+    color_t pixels[];
 } texture_t;
 
 /**

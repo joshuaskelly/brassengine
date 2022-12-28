@@ -1,3 +1,7 @@
+/**
+ * Module for getting mouse input.
+ * @module mouse
+ */
 #include <stdbool.h>
 
 #include <lua/lua.h>
@@ -10,10 +14,9 @@
 
 /**
  * Check if given button is down.
- *
- * @param int Button index to check. Primary button is 1, middle button is 2,
+ * @function button
+ * @param button Button index to check. Primary button is 1, middle button is 2,
  * secondary button is 3.
- *
  * @return True if button is down, false otherwise
  */
 static int bindings_get_mouse_button(lua_State* L) {
@@ -29,7 +32,7 @@ static int bindings_get_mouse_button(lua_State* L) {
 
 /**
  * Get current mouse position.
- *
+ * @function position
  * @return Mouse coords as x, y
  */
 static int bindings_get_mouse_position(lua_State* L) {

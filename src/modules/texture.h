@@ -7,6 +7,8 @@
 
 texture_t** luaL_checktexture(lua_State* L, int index);
 
+int lua_pushtexture(lua_State* L, texture_t* texture);
+
 int luaopen_texture(lua_State* L);
 
 #endif
