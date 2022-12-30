@@ -7,6 +7,7 @@
 #include <lua/lualib.h>
 
 #include "assets.h"
+#include "texture.h"
 
 #include "../assets.h"
 #include "../sounds.h"
@@ -22,9 +23,7 @@ static int bindings_assets_get_texture(lua_State* L) {
     texture_t* texture = assets_get_texture(texture_name);
 
     if (texture) {
-        texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-        *tp = texture;
-        luaL_setmetatable(L, "texture");
+        lua_pushtexture(L, texture);
     }
     else {
         lua_pushnil(L);
