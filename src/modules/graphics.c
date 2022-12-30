@@ -59,11 +59,11 @@ static int bindings_graphics_set_pixel(lua_State* L) {
 static int bindings_graphics_blit(lua_State* L) {
     int arg_count = lua_gettop(L);
 
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
     int sx = 0;
     int sy = 0;
-    int sw = (*texture)->width;
-    int sh = (*texture)->height;
+    int sw = texture->width;
+    int sh = texture->height;
     int dx = 0;
     int dy = 0;
     int dw = config->resolution.width;
@@ -91,7 +91,7 @@ static int bindings_graphics_blit(lua_State* L) {
     rect_t source_rect = {sx, sy, sw, sh};
     rect_t dest_rect = {dx, dy, dw, dh};
 
-    graphics_blit(*texture, NULL, &source_rect, &dest_rect, NULL);
+    graphics_blit(texture, NULL, &source_rect, &dest_rect, NULL);
 
     return 0;
 }
@@ -132,8 +132,7 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
  * @return Render texture userdata.
  */
 static int bindings_graphics_get_render_texture(lua_State* L) {
-    texture_t** tp = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *tp = graphics_get_render_texture();
+    lua_pushtexture(L, graphics_get_render_texture());
     luaL_setmetatable(L, "texture");
     return 1;
 }

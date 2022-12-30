@@ -49,7 +49,7 @@ static int modules_raycaster_map_meta_newindex(lua_State* L) {
     const char* key = luaL_checkstring(L, 2);
 
     if (strcmp(key, "walls") == 0) {
-        texture_t* texture = *luaL_checktexture(L, 3);
+        texture_t* texture = luaL_checktexture(L, 3);
         map->walls = texture;
     }
     else {
@@ -109,11 +109,11 @@ static int module_raycaster_render(lua_State* L) {
     float dy = luaL_checknumber(L, 4);
     float fov = luaL_checknumber(L, 5);
     raycaster_map_t* map = luaL_checkraycastermap(L, 6);
-    texture_t** render_texture = luaL_checktexture(L, 7);
+    texture_t* render_texture = luaL_checktexture(L, 7);
     float rx = luaL_optnumber(L, 8, 0);
     float ry = luaL_optnumber(L, 9, 0);
-    float rw = luaL_optnumber(L, 10, (*render_texture)->width);
-    float rh = luaL_optnumber(L, 11, (*render_texture)->height);
+    float rw = luaL_optnumber(L, 10, render_texture->width);
+    float rh = luaL_optnumber(L, 11, render_texture->height);
 
     lua_pop(L, 1);
 
@@ -126,7 +126,7 @@ static int module_raycaster_render(lua_State* L) {
         direction,
         fov,
         map,
-        *render_texture,
+        render_texture,
         &rect
     );
 
@@ -141,11 +141,11 @@ static int module_raycaster_render(lua_State* L) {
  */
 static int module_raycaster_palette(lua_State* L) {
     int i = (int)luaL_checknumber(L, 1);
-    texture_t** texture = luaL_checktexture(L, 2);
+    texture_t* texture = luaL_checktexture(L, 2);
 
     lua_pop(L, 1);
 
-    raycaster_set_texture(i, *texture);
+    raycaster_set_texture(i, texture);
 
     return 0;
 }
@@ -156,11 +156,11 @@ static int module_raycaster_palette(lua_State* L) {
  * @param texture Texture to use as lookup table.
  */
 static int module_raycaster_shade_table_set(lua_State* L) {
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
 
     lua_pop(L, 1);
 
-    raycaster_shade_table_set(*texture);
+    raycaster_shade_table_set(texture);
 
     return 0;
 }

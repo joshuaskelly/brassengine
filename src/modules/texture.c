@@ -12,21 +12,21 @@
 
 #include "../graphics.h"
 
-texture_t** luaL_checktexture(lua_State* L, int index) {
-    texture_t** texture = NULL;
+texture_t* luaL_checktexture(lua_State* L, int index) {
+    texture_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
-    texture = (texture_t**)luaL_checkudata(L, index, "texture");
+    handle = (texture_t**)luaL_checkudata(L, index, "texture");
 
-    if (!texture) {
+    if (!handle) {
         luaL_typeerror(L, index, "texture");
     }
 
-    return texture;
+    return *handle;
 }
 
 int lua_pushtexture(lua_State* L, texture_t* t) {
-    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *texture = t;
+    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *handle = t;
     luaL_setmetatable(L, "texture");
 
     return 1;
@@ -41,10 +41,10 @@ static int texture_gc(lua_State* L) {
 }
 
 static int texture_size(lua_State* L) {
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
 
-    lua_pushinteger(L, (*texture)->width);
-    lua_pushinteger(L, (*texture)->height);
+    lua_pushinteger(L, texture->width);
+    lua_pushinteger(L, texture->height);
 
     return 2;
 }
@@ -67,8 +67,8 @@ static int bindings_texture_new(lua_State* L) {
 
     lua_pop(L, -1);
 
-    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *texture = graphics_texture_new(width, height, NULL);
+    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *handle = graphics_texture_new(width, height, NULL);
     luaL_setmetatable(L, "texture");
 
     return 1;
@@ -81,12 +81,12 @@ static int bindings_texture_new(lua_State* L) {
  * @return Texture userdata
  */
 static int bindings_texture_copy(lua_State* L) {
-    texture_t** source = luaL_checktexture(L, 1);
+    texture_t* source = luaL_checktexture(L, 1);
 
     lua_pop(L, -1);
 
-    texture_t** texture = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *texture = graphics_texture_copy(*source);
+    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *handle = graphics_texture_copy(source);
     luaL_setmetatable(L, "texture");
 
     return 1;
@@ -99,12 +99,12 @@ static int bindings_texture_copy(lua_State* L) {
  * @param color Fill color
  */
 static int bindings_texture_clear(lua_State* L) {
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
     int color = (int)luaL_checknumber(L, 2);
 
     lua_pop(L, -1);
 
-    graphics_texture_clear(*texture, color);
+    graphics_texture_clear(texture, color);
 
     return 0;
 }
@@ -118,14 +118,14 @@ static int bindings_texture_clear(lua_State* L) {
  * @param color Pixel color
  */
 static int bindings_texture_set_pixel(lua_State* L) {
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
     int color = (int)luaL_checknumber(L, 4);
 
     lua_pop(L, -1);
 
-    graphics_texture_set_pixel(*texture, x, y, color);
+    graphics_texture_set_pixel(texture, x, y, color);
 
     return 0;
 }
@@ -138,13 +138,13 @@ static int bindings_texture_set_pixel(lua_State* L) {
  * @param y Pixel y-coordinate
  */
 static int bindings_texture_get_pixel(lua_State* L) {
-    texture_t** texture = luaL_checktexture(L, 1);
+    texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
 
-    color_t color = graphics_texture_get_pixel(*texture, x, y);
+    color_t color = graphics_texture_get_pixel(texture, x, y);
     lua_pushinteger(L, color);
 
     return 1;
@@ -159,14 +159,14 @@ static int bindings_texture_get_pixel(lua_State* L) {
  * @param y Destination y-offset
  */
 static int bindings_texture_blit(lua_State* L) {
-    texture_t** source = luaL_checktexture(L, 1);
-    texture_t** dest = luaL_checktexture(L, 2);
+    texture_t* source = luaL_checktexture(L, 1);
+    texture_t* dest = luaL_checktexture(L, 2);
     int x = (int)luaL_checknumber(L, 3);
     int y = (int)luaL_checknumber(L, 4);
 
-    rect_t drect = {x, y, (*source)->width, (*source)->height};
+    rect_t drect = {x, y, source->width, source->height};
 
-    graphics_texture_blit(*source, *dest, NULL, &drect);
+    graphics_texture_blit(source, dest, NULL, &drect);
 
     return 0;
 }
