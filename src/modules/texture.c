@@ -15,10 +15,11 @@
 texture_t* luaL_checktexture(lua_State* L, int index) {
     texture_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
-    handle = (texture_t**)luaL_checkudata(L, index, "texture");
 
+    // Ensure we have correct userdata
+    handle = (texture_t**)luaL_testudata(L, index, "texture_nogc");
     if (!handle) {
-        luaL_typeerror(L, index, "texture");
+        handle = (texture_t**)luaL_checkudata(L, index, "texture");
     }
 
     return *handle;
@@ -27,15 +28,14 @@ texture_t* luaL_checktexture(lua_State* L, int index) {
 int lua_pushtexture(lua_State* L, texture_t* t) {
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = t;
-    luaL_setmetatable(L, "texture");
+    luaL_setmetatable(L, "texture_nogc");
 
     return 1;
 }
 
 static int texture_gc(lua_State* L) {
-    // TODO: Only free up dynamic textures, not ones acquire from assets
-    //texture_t** texture = lua_touserdata(L, 1);
-    //graphics_texture_free(*texture);
+    texture_t** texture = lua_touserdata(L, 1);
+    graphics_texture_free(*texture);
 
     return 0;
 }
@@ -192,6 +192,13 @@ int luaopen_texture(lua_State* L) {
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, texture_gc);
     lua_settable(L, -3);
+
+    lua_pop(L, 1);
+
+    // Push texture_nogc userdata metatable
+    luaL_newmetatable(L, "texture_nogc");
+    luaL_newlib(L, texture_methods);
+    lua_setfield(L, -2, "__index");
 
     lua_pop(L, 1);
 

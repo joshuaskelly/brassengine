@@ -133,7 +133,6 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
  */
 static int bindings_graphics_get_render_texture(lua_State* L) {
     lua_pushtexture(L, graphics_get_render_texture());
-    luaL_setmetatable(L, "texture");
     return 1;
 }
 
