@@ -82,6 +82,75 @@ static const struct luaL_Reg raycaster_camera_meta_functions[] = {
     {NULL, NULL}
 };
 
+raycaster_sprite_t* luaL_checkraycastersprite(lua_State* L, int index) {
+    raycaster_sprite_t* sprite = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    sprite = (raycaster_sprite_t*)luaL_checkudata(L, index, "raycaster_sprite");
+
+    if (!sprite) {
+        luaL_typeerror(L, index, "raycaster_sprite");
+    }
+
+    return sprite;
+}
+
+static int lua_newraycastersprite(lua_State* L) {
+    raycaster_sprite_t* sprite = (raycaster_sprite_t*)lua_newuserdata(L, sizeof(raycaster_sprite_t));
+    sprite->texture = NULL;
+    sprite->position[0] = 0;
+    sprite->position[1] = 0;
+    sprite->distance = FLT_MAX;
+    luaL_setmetatable(L, "raycaster_sprite");
+
+    return 1;
+}
+
+static int modules_raycaster_sprite_meta_index(lua_State* L) {
+    raycaster_sprite_t* sprite = luaL_checkraycastersprite(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_pop(L, -1);
+
+    if (strncmp(key, "position", 8) == 0) {
+        lua_newvector2(L, sprite->position[0], sprite->position[1]);
+    }
+    else if (strncmp(key, "texture", 7) == 0) {
+        lua_pushtexture(L, sprite->texture);
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static int modules_raycaster_sprite_meta_newindex(lua_State* L) {
+    raycaster_sprite_t* sprite = luaL_checkraycastersprite(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strncmp(key, "position", 8) == 0) {
+        mfloat_t* vector = luaL_checkvector2(L, 3);
+        vec2_assign(sprite->position, vector);
+    }
+    else if (strncmp(key, "texture", 7) == 0) {
+        texture_t* texture = luaL_checktexture(L, 3);
+        sprite->texture = texture;
+    }
+    else {
+        luaL_error(L, "attempt to index a raycaster_sprite value");
+    }
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+static const struct luaL_Reg raycaster_sprite_meta_functions[] = {
+    {"__index", modules_raycaster_sprite_meta_index},
+    {"__newindex", modules_raycaster_sprite_meta_newindex},
+    {NULL, NULL}
+};
+
 raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
     raycaster_map_t* map = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -94,6 +163,27 @@ raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
     return map;
 }
 
+static int modules_raycaster_map_create_sprite(lua_State* L) {
+    raycaster_map_t* map = luaL_checkraycastermap(L, 1);
+
+    lua_pop(L, 1);
+
+    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
+        if (map->sprites[i]) continue;
+
+        lua_newraycastersprite(L);
+
+        raycaster_sprite_t* sprite = luaL_checkraycastersprite(L, 1);
+        map->sprites[i] = sprite;
+
+        return 1;
+    }
+
+    lua_pushnil(L);
+
+    return 1;
+}
+
 static int modules_raycaster_map_meta_index(lua_State* L) {
     raycaster_map_t* map = luaL_checkraycastermap(L, 1);
     const char* key = luaL_checkstring(L, 2);
@@ -102,6 +192,9 @@ static int modules_raycaster_map_meta_index(lua_State* L) {
 
     if (strncmp(key, "walls", 5) == 0) {
         lua_pushtexture(L, map->walls);
+    }
+    else if (strncmp(key, "create_sprite", 13) == 0) {
+        lua_pushcfunction(L, modules_raycaster_map_create_sprite);
     }
     else {
         lua_pushnil(L);
@@ -136,6 +229,11 @@ static const struct luaL_Reg raycaster_map_meta_functions[] = {
 static int modules_raycaster_map_new(lua_State* L) {
     raycaster_map_t* map = (raycaster_map_t*)lua_newuserdata(L, sizeof(raycaster_map_t));
     map->walls = NULL;
+
+    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
+        map->sprites[i] = NULL;
+    }
+
     luaL_setmetatable(L, "raycaster_map");
 
     return 1;
@@ -259,6 +357,10 @@ int luaopen_raycaster(lua_State* L) {
 
     luaL_newmetatable(L, "raycaster_camera");
     luaL_setfuncs(L, raycaster_camera_meta_functions, 0);
+    lua_pop(L, 1);
+
+    luaL_newmetatable(L, "raycaster_sprite");
+    luaL_setfuncs(L, raycaster_sprite_meta_functions, 0);
     lua_pop(L, 1);
 
     return 1;

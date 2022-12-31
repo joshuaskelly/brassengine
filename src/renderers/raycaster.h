@@ -16,7 +16,16 @@ typedef struct {
 } raycaster_camera_t;
 
 typedef struct {
+    texture_t* texture;
+    mfloat_t position[VEC2_SIZE];
+    float distance;
+} raycaster_sprite_t;
+
+#define MAX_RAYCASTER_SPRITES 256
+
+typedef struct {
     texture_t* walls;
+    raycaster_sprite_t* sprites[MAX_RAYCASTER_SPRITES];
 } raycaster_map_t;
 
 /**

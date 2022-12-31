@@ -316,13 +316,6 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     }
 }
 
-typedef struct {
-    char* texture;
-    float x;
-    float y;
-    float distance;
-} sprite_t;
-
 /** Distances of all rays cast this frame. */
 static float* depths = NULL;
 static int depths_width = 0;
@@ -367,8 +360,12 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
  * @return 0 if they are equidistant.
  */
 static int sprite_compare(const void* a, const void* b) {
-    sprite_t* l = (sprite_t*)a;
-    sprite_t* r = (sprite_t*)b;
+    raycaster_sprite_t* l = (raycaster_sprite_t*)a;
+    raycaster_sprite_t* r = (raycaster_sprite_t*)b;
+
+    if (l && !r) return 1;
+    if (!l && r) return -1;
+    if (!l && !r) return 0;
 
     if (l->distance < r->distance) return 1;
     if (l->distance > r->distance) return -1;
@@ -376,13 +373,13 @@ static int sprite_compare(const void* a, const void* b) {
     return 0;
 }
 
-#define SPRITE_COUNT 4
-static sprite_t sprites[SPRITE_COUNT] = {
-    {"textures/barrel.gif", 31.5f, 57.5f, FLT_MAX},
-    {"textures/barrel.gif", 32.5f, 57.5f, FLT_MAX},
-    {"textures/barrel.gif", 33.5f, 57.5f, FLT_MAX},
-    {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
-};
+// #define SPRITE_COUNT 4
+// static raycaster_sprite_t sprites[SPRITE_COUNT] = {
+//     {"textures/barrel.gif", 31.5f, 57.5f, FLT_MAX},
+//     {"textures/barrel.gif", 32.5f, 57.5f, FLT_MAX},
+//     {"textures/barrel.gif", 33.5f, 57.5f, FLT_MAX},
+//     {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
+// };
 
 void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
     mfloat_t* position = camera->position;
@@ -594,28 +591,28 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     }
 
     // Calculate sprite projected distance
-    for (int i = 0; i < SPRITE_COUNT; i++) {
-        sprite_t sprite = sprites[i];
+    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
+        raycaster_sprite_t* sprite = map->sprites[i];
+
+        if (!sprite) continue;
+
         mfloat_t dir[VEC2_SIZE];
-        mfloat_t sprite_position[VEC2_SIZE] = {sprite.x, sprite.y};
-        vec2_subtract(dir, sprite_position, position);
-        sprites[i].distance = vec2_dot(direction, dir);
+        vec2_subtract(dir, sprite->position, position);
+        map->sprites[i]->distance = vec2_dot(direction, dir);
     }
 
     // Sort sprites furthest to closest
-    qsort(sprites, SPRITE_COUNT, sizeof(sprite_t), sprite_compare);
+    qsort(map->sprites, MAX_RAYCASTER_SPRITES, sizeof(raycaster_sprite_t*), sprite_compare);
 
     // Draw sprites
-    for (int i = 0; i < SPRITE_COUNT; i++) {
-        sprite_t sprite = sprites[i];
+    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
+        raycaster_sprite_t* sprite = map->sprites[i];
 
-        texture_t* sprite_texture = assets_get_texture(sprite.texture);
-        if (!sprite_texture) continue;
-
-        mfloat_t sprite_position[VEC2_SIZE] = {sprite.x, sprite.y};
+        if (!sprite) continue;
+        if (!sprite->texture) continue;
 
         mfloat_t dir[VEC2_SIZE];
-        vec2_subtract(dir, sprite_position, position);
+        vec2_subtract(dir, sprite->position, position);
         float corrected_distance = vec2_dot(direction, dir);
 
         sprite_depth = corrected_distance;
@@ -646,7 +643,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
 
         // Draw sprite
         graphics_blit(
-            sprite_texture,
+            sprite->texture,
             render_texture,
             NULL,
             &rect,
