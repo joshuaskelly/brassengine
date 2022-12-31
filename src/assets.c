@@ -98,11 +98,16 @@ sound_t* sound_from_wav(drwav* wav) {
 
     sound_assets_total_bytes += size + sizeof(sound_t);
 
-    return sounds_sound_new(
+    sound_t* sound = sounds_sound_new(
         total_frames,
         wav->channels,
         pcm
     );
+
+    free(pcm);
+    pcm = NULL;
+
+    return sound;
 }
 
 /**
