@@ -33,9 +33,9 @@ int lua_newtexture(lua_State* L, int width, int height) {
     return 1;
 }
 
-int lua_pushtexture(lua_State* L, texture_t* t) {
+int lua_pushtexture(lua_State* L, texture_t* texture) {
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *handle = t;
+    *handle = texture;
     luaL_setmetatable(L, "texture_nogc");
 
     return 1;
