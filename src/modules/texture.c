@@ -44,6 +44,7 @@ int lua_pushtexture(lua_State* L, texture_t* texture) {
 static int texture_gc(lua_State* L) {
     texture_t** texture = lua_touserdata(L, 1);
     graphics_texture_free(*texture);
+    *texture = NULL;
 
     return 0;
 }
