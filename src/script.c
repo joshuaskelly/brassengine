@@ -25,6 +25,7 @@
 #include "modules/raycaster.h"
 #include "modules/sound.h"
 #include "modules/texture.h"
+#include "modules/vector2.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
@@ -67,6 +68,7 @@ static void init_lua_vm(void) {
     luaL_requiref(L, "input.mouse", luaopen_mouse, 0);
     luaL_requiref(L, "raycaster", luaopen_raycaster, 0);
     luaL_requiref(L, "sound", luaopen_sound, 0);
+    luaL_requiref(L, "vector2", luaopen_vector2, 0);
 
     // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));
