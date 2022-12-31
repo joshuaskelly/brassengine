@@ -13,8 +13,74 @@
 
 #include "raycaster.h"
 #include "texture.h"
+#include "vector2.h"
 
 #include "../renderers/raycaster.h"
+
+raycaster_camera_t* luaL_checkraycastercamera(lua_State* L, int index) {
+    raycaster_camera_t* camera = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    camera = (raycaster_camera_t*)luaL_checkudata(L, index, "raycaster_camera");
+
+    if (!camera) {
+        luaL_typeerror(L, index, "raycaster_camera");
+    }
+
+    return camera;
+}
+
+static int modules_raycaster_camera_meta_index(lua_State* L) {
+    raycaster_camera_t* camera = luaL_checkraycastercamera(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_pop(L, -1);
+
+    if (strncmp(key, "position", 8) == 0) {
+        lua_pushvector2(L, camera->position);
+    }
+    else if (strncmp(key, "direction", 9) == 0) {
+        lua_pushvector2(L, camera->direction);
+    }
+    else if (strncmp(key, "fov", 3) == 0) {
+        lua_pushnumber(L, camera->fov);
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static int modules_raycaster_camera_meta_newindex(lua_State* L) {
+    raycaster_camera_t* camera = luaL_checkraycastercamera(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strncmp(key, "position", 8) == 0) {
+        mfloat_t* vector = luaL_checkvector2(L, 3);
+        vec2_assign(camera->position, vector);
+    }
+    else if (strncmp(key, "direction", 9) == 0) {
+        mfloat_t* vector = luaL_checkvector2(L, 3);
+        vec2_assign(camera->direction, vector);
+    }
+    else if (strncmp(key, "fov", 3) == 0) {
+        float number = luaL_checknumber(L, 3);
+        camera->fov = number;
+    }
+    else {
+        luaL_error(L, "attempt to index a raycaster_camera value");
+    }
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+static const struct luaL_Reg raycaster_camera_meta_functions[] = {
+    {"__index", modules_raycaster_camera_meta_index},
+    {"__newindex", modules_raycaster_camera_meta_newindex},
+    {NULL, NULL}
+};
 
 raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
     raycaster_map_t* map = NULL;
@@ -75,14 +141,22 @@ static int modules_raycaster_map_new(lua_State* L) {
     return 1;
 }
 
+static int modules_raycaster_camera_new(lua_State* L) {
+    raycaster_camera_t* camera = (raycaster_camera_t*)lua_newuserdata(L, sizeof(raycaster_camera_t));
+    camera->position[0] = 0;
+    camera->position[1] = 0;
+    camera->direction[0] = 1;
+    camera->direction[1] = 0;
+    camera->fov = 90;
+    luaL_setmetatable(L, "raycaster_camera");
+
+    return 1;
+}
+
 /**
  * Renders given map data.
  * @function render
- * @param px Camera position x-coordinate
- * @param py Camera position y-coordinate
- * @param dx Camera forward x-coordinate
- * @param dx Camera forward y-coordinate
- * @param fov Camera field of view in degrees
+ * @param camera Camera to render with
  * @param map Map as texture
  * @param texture Render texture
  */
@@ -90,11 +164,7 @@ static int modules_raycaster_map_new(lua_State* L) {
 /**
  * Renders given map data.
  * @function render
- * @param px Camera position x-coordinate
- * @param py Camera position y-coordinate
- * @param dx Camera forward x-coordinate
- * @param dx Camera forward y-coordinate
- * @param fov Camera field of view in degrees
+ * @param camera Camera to render with
  * @param map Map as texture
  * @param texture Render texture
  * @param rx Render texture x-offset
@@ -103,28 +173,20 @@ static int modules_raycaster_map_new(lua_State* L) {
  * @param rh Render texture height
  */
 static int module_raycaster_render(lua_State* L) {
-    float px = luaL_checknumber(L, 1);
-    float py = luaL_checknumber(L, 2);
-    float dx = luaL_checknumber(L, 3);
-    float dy = luaL_checknumber(L, 4);
-    float fov = luaL_checknumber(L, 5);
-    raycaster_map_t* map = luaL_checkraycastermap(L, 6);
-    texture_t* render_texture = luaL_checktexture(L, 7);
-    float rx = luaL_optnumber(L, 8, 0);
-    float ry = luaL_optnumber(L, 9, 0);
-    float rw = luaL_optnumber(L, 10, render_texture->width);
-    float rh = luaL_optnumber(L, 11, render_texture->height);
+    raycaster_camera_t* camera = luaL_checkraycastercamera(L, 1);
+    raycaster_map_t* map = luaL_checkraycastermap(L, 2);
+    texture_t* render_texture = luaL_checktexture(L, 3);
+    float rx = luaL_optnumber(L, 4, 0);
+    float ry = luaL_optnumber(L, 5, 0);
+    float rw = luaL_optnumber(L, 6, render_texture->width);
+    float rh = luaL_optnumber(L, 7, render_texture->height);
 
     lua_pop(L, 1);
 
-    mfloat_t position[VEC2_SIZE] = {px, py};
-    mfloat_t direction[VEC2_SIZE] = {dx, dy};
     rect_t rect = {rx, ry, rw, rh};
 
     raycaster_render(
-        position,
-        direction,
-        fov,
+        camera,
         map,
         render_texture,
         &rect
@@ -184,6 +246,7 @@ static const struct luaL_Reg module_functions[] = {
     {"shade_table", module_raycaster_shade_table_set},
     {"fog_distance", module_raycaster_fog_distance_set},
     {"map_new", modules_raycaster_map_new},
+    {"camera_new", modules_raycaster_camera_new},
     {NULL, NULL}
 };
 
@@ -192,7 +255,10 @@ int luaopen_raycaster(lua_State* L) {
 
     luaL_newmetatable(L, "raycaster_map");
     luaL_setfuncs(L, raycaster_map_meta_functions, 0);
+    lua_pop(L, 1);
 
+    luaL_newmetatable(L, "raycaster_camera");
+    luaL_setfuncs(L, raycaster_camera_meta_functions, 0);
     lua_pop(L, 1);
 
     return 1;

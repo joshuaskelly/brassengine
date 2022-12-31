@@ -10,23 +10,25 @@
 #include "../graphics.h"
 
 typedef struct {
+    mfloat_t position[VEC2_SIZE];
+    mfloat_t direction[VEC2_SIZE];
+    float fov;
+} raycaster_camera_t;
+
+typedef struct {
     texture_t* walls;
 } raycaster_map_t;
 
 /**
  * Renders given map
  *
- * @param position Camera position vector
- * @param direction Camera direction vector
- * @param fov Camera field of view in degrees
+ * @param camera Camera to render from
  * @param map Map to render
  * @param render_texture Texture to render to. NULL will use default render target
  * @param render_rect Portion of render texture to render to. NULL will use entire render target
  */
 void raycaster_render(
-    mfloat_t* position,
-    mfloat_t* direction,
-    float fov,
+    raycaster_camera_t* camera,
     raycaster_map_t* map,
     texture_t* render_texture,
     rect_t* render_rect

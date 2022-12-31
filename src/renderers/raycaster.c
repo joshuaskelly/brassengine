@@ -384,7 +384,11 @@ static sprite_t sprites[SPRITE_COUNT] = {
     {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
 };
 
-void raycaster_render(mfloat_t* position, mfloat_t* direction, float fov, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
+void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
+    mfloat_t* position = camera->position;
+    mfloat_t* direction = camera->direction;
+    float fov = camera->fov;
+
     if (!render_texture) {
         render_texture = graphics_get_render_texture();
     }
