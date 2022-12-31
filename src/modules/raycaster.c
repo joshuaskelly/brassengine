@@ -36,10 +36,10 @@ static int modules_raycaster_camera_meta_index(lua_State* L) {
     lua_pop(L, -1);
 
     if (strncmp(key, "position", 8) == 0) {
-        lua_pushvector2(L, camera->position);
+        lua_newvector2(L, camera->position[0], camera->position[1]);
     }
     else if (strncmp(key, "direction", 9) == 0) {
-        lua_pushvector2(L, camera->direction);
+        lua_newvector2(L, camera->direction[0], camera->direction[1]);
     }
     else if (strncmp(key, "fov", 3) == 0) {
         lua_pushnumber(L, camera->fov);
