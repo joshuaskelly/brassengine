@@ -10,16 +10,24 @@
 
 #include "sound.h"
 
-sound_t** luaL_checksound(lua_State* L, int index) {
-    sound_t** sound = NULL;
+sound_t* luaL_checksound(lua_State* L, int index) {
+    sound_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
-    sound = (sound_t**)luaL_checkudata(L, index, "sound");
+    handle = (sound_t**)luaL_checkudata(L, index, "sound");
 
-    if (!sound) {
+    if (!handle) {
         luaL_typeerror(L, index, "sound");
     }
 
-    return sound;
+    return *handle;
+}
+
+int lua_pushsound(lua_State* L, sound_t* sound) {
+    sound_t** handle = (sound_t**)lua_newuserdata(L, sizeof(sound_t*));
+    *handle = sound;
+    luaL_setmetatable(L, "sound");
+
+    return 1;
 }
 
 static int sound_gc(lua_State* L) {
@@ -40,8 +48,8 @@ static const struct luaL_Reg sound_methods[] = {
  * @param sound Sound to play.
  */
 static int play_sound(lua_State* L) {
-    sound_t** sound = luaL_checksound(L, 1);
-    platform_play_sound(*sound);
+    sound_t* sound = luaL_checksound(L, 1);
+    platform_play_sound(sound);
 
     return 0;
 }
