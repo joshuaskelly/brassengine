@@ -25,6 +25,14 @@ texture_t* luaL_checktexture(lua_State* L, int index) {
     return *handle;
 }
 
+int lua_newtexture(lua_State* L, int width, int height) {
+    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *handle = graphics_texture_new(width, height, NULL);
+    luaL_setmetatable(L, "texture");
+
+    return 1;
+}
+
 int lua_pushtexture(lua_State* L, texture_t* t) {
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = t;
@@ -67,9 +75,7 @@ static int bindings_texture_new(lua_State* L) {
 
     lua_pop(L, -1);
 
-    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
-    *handle = graphics_texture_new(width, height, NULL);
-    luaL_setmetatable(L, "texture");
+    lua_newtexture(L, width, height);
 
     return 1;
 }
