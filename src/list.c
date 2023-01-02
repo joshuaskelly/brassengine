@@ -157,6 +157,7 @@ static void insert_before(list_t* list, list_node_t* target, list_node_t* node) 
         node->next = target;
         node->prev = NULL;
         target->prev = node;
+        list->count++;
 
         return;
     }
@@ -165,6 +166,7 @@ static void insert_before(list_t* list, list_node_t* target, list_node_t* node) 
     node->next = target;
     target->prev->next = node;
     target->prev = node;
+    list->count++;
 }
 
 /**
@@ -177,6 +179,7 @@ static void remove(list_t* list, list_node_t* node) {
     if (node == list->head) {
         list->head = node->next;
         list->head->prev = NULL;
+        list->count--;
 
         return;
     }
@@ -184,12 +187,14 @@ static void remove(list_t* list, list_node_t* node) {
     if (node == list->tail) {
         list->tail = node->prev;
         list->tail->next = NULL;
+        list->count--;
 
         return;
     }
 
     node->prev->next = node->next;
     node->next->prev = node->prev;
+    list->count--;
 }
 
 /**
