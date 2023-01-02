@@ -26,6 +26,29 @@ static texture_t* shade_table;
 
 static float fog_distance = 32.0f;
 
+raycaster_map_t* raycaster_map_new(void) {
+    raycaster_map_t* map = (raycaster_map_t*)malloc(sizeof(raycaster_map_t));
+    map->walls = NULL;
+    map->sprites = list_new();
+
+    return map;
+}
+
+void raycaster_map_free(raycaster_map_t* map) {
+    list_free(map->sprites);
+    map->sprites = NULL;
+    free(map);
+    map = NULL;
+}
+
+void raycaster_map_add_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite) {
+    list_add(map->sprites, sprite);
+}
+
+void raycaster_map_remove_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite) {
+    list_remove(map->sprites, sprite);
+}
+
 /**
  * Determine if given point is contained in the map bounds.
  *
@@ -591,23 +614,22 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     }
 
     // Calculate sprite projected distance
-    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
-        raycaster_sprite_t* sprite = map->sprites[i];
-
+    list_iterator_t* iter = list_iterator_new(map->sprites);
+    for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
         if (!sprite) continue;
 
         mfloat_t dir[VEC2_SIZE];
         vec2_subtract(dir, sprite->position, position);
-        map->sprites[i]->distance = vec2_dot(direction, dir);
+        sprite->distance = vec2_dot(direction, dir);
     }
+    list_iterator_free(iter);
 
     // Sort sprites furthest to closest
-    qsort(map->sprites, MAX_RAYCASTER_SPRITES, sizeof(raycaster_sprite_t*), sprite_compare);
+    list_sort(map->sprites, sprite_compare);
 
     // Draw sprites
-    for (int i = 0; i < MAX_RAYCASTER_SPRITES; i++) {
-        raycaster_sprite_t* sprite = map->sprites[i];
-
+    iter = list_iterator_new(map->sprites);
+    for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
         if (!sprite) continue;
         if (!sprite->texture) continue;
 
@@ -650,6 +672,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
             sprite_depth_blit_func
         );
     }
+    list_iterator_free(iter);
 
     graphics_set_clipping_rectangle(NULL);
 }

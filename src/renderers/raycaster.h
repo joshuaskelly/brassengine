@@ -8,6 +8,7 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
+#include "../list.h"
 
 typedef struct {
     mfloat_t position[VEC2_SIZE];
@@ -21,12 +22,40 @@ typedef struct {
     float distance;
 } raycaster_sprite_t;
 
-#define MAX_RAYCASTER_SPRITES 256
-
 typedef struct {
     texture_t* walls;
-    raycaster_sprite_t* sprites[MAX_RAYCASTER_SPRITES];
+    list_t* sprites;
 } raycaster_map_t;
+
+/**
+ * Creates a new map.
+ *
+ * @return raycaster_map_t* Newly created map.
+ */
+raycaster_map_t* raycaster_map_new(void);
+
+/**
+ * Frees a map.
+ *
+ * @param map Map to free.
+ */
+void raycaster_map_free(raycaster_map_t* map);
+
+/**
+ * Adds a sprite to a map.
+ *
+ * @param map Map to add sprite to.
+ * @param sprite Sprite to add.
+ */
+void raycaster_map_add_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite);
+
+/**
+ * Removes a sprite from a map.
+ *
+ * @param map Map to remove sprite from.
+ * @param sprite Sprite to remove.
+ */
+void raycaster_map_remove_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite);
 
 /**
  * Renders given map
