@@ -237,13 +237,14 @@ static list_node_t* partition(list_t* list, int(comp)(const void*, const void*),
 static void quick_sort(list_t* list, int(comp)(const void*, const void*), list_node_t* begin, list_node_t* end) {
     if (!begin || !end) return;
     if (begin == end) return;
+    if (end->next == begin) return;
 
     list_node_t* left_bound = begin->prev;
     list_node_t* right_bound = end->next;
     list_node_t* pivot = partition(list, comp, begin, end);
 
-    quick_sort(list, comp, left_bound ? left_bound : list->head, pivot->prev);
-    quick_sort(list, comp, pivot->next, right_bound ? right_bound : list->tail);
+    quick_sort(list, comp, left_bound ? left_bound->next : list->head, pivot->prev);
+    quick_sort(list, comp, pivot->next, right_bound ? right_bound->prev : list->tail);
 }
 
 void list_sort(list_t* list, int(comp)(const void*, const void*)) {
