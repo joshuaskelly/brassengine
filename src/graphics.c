@@ -193,6 +193,10 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
         s_top = abs(dy) * y_step;
     }
 
+    // Sample source at pixel centers
+    s_top += 0.5f * y_step;
+    s_left += 0.5f * x_step;
+
     if (bottom > destination_texture->height) {
         bottom = destination_texture->height;
     }
