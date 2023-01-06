@@ -273,7 +273,7 @@ static color_t shade_pixel(color_t color, float brightness) {
     brightness = clamp(brightness, 0.0f, 1.0f);
     brightness = 1.0f - brightness;
 
-    int amount = brightness * (shade_table->width - 1);
+    const int amount = brightness * (shade_table->width - 1);
 
     return graphics_texture_get_pixel(
         shade_table,
@@ -305,11 +305,11 @@ static float get_distance_based_brightness(float distance) {
  */
 static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float brightness) {
     const int length = y1 - y0;
-    const int s = wall_texture->width * offset;
-    int start = y0 < 0 ? abs(y0) : 0;
+    const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    float t_step = wall_texture->height / (float)length;
+    const int s = wall_texture->width * offset;
+    const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
     for (int i = start; i < length; i++) {
