@@ -328,6 +328,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
 static float* depths = NULL;
 static int depths_width = 0;
 static int depths_offset = 0;
+static float depths_max = -1;
 
 /** Depth of currently rendering sprite. */
 static float sprite_depth = FLT_MAX;
@@ -425,6 +426,9 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
         depths_width = render_rect->width;
     }
 
+    depths_max = -1;
+
+
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
 
@@ -498,6 +502,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
 
         // Write to depth buffer
         depths[i] = corrected_distance;
+        depths_max = fmax(depths_max, corrected_distance);
 
         float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
         float half_wall_height = wall_height / 2.0f;
@@ -612,6 +617,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
         if (!sprite) continue;
         if (!sprite->texture) continue;
+        if (sprite->distance > depths_max) continue;
 
         mfloat_t dir[VEC2_SIZE];
         vec2_subtract(dir, sprite->position, position);
