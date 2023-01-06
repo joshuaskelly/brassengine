@@ -133,7 +133,6 @@ static void ray_cast(ray_t* ray, map_t* map) {
     if (ray->direction[1] != 0.0f)
     {
         float y_intercept;
-        float x_intercept;
         bool ray_facing_down = ray->direction[1] > 0;
         float distance;
         float inv_y = 1.0f / ray->direction[1];
@@ -146,10 +145,6 @@ static void ray_cast(ray_t* ray, map_t* map) {
 
         // Calculate ratio of y-components
         float ratio = (y_intercept - ray->position[1]) * inv_y;
-
-        // Use ratio to determine x-value of first horizontal intersection from
-        // ray origin
-        x_intercept = (ray->direction[0] * ratio) + ray->position[0];
 
         // This also happens to be the distance to the first intersection
         distance = ratio;
@@ -201,7 +196,6 @@ static void ray_cast(ray_t* ray, map_t* map) {
     if (ray->direction[0] != 0.0f)
     {
         float x_intercept;
-        float y_intercept;
         bool ray_facing_right = ray->direction[0] > 0;
         float distance;
         float inv_x = 1.0f / ray->direction[0];
@@ -214,10 +208,6 @@ static void ray_cast(ray_t* ray, map_t* map) {
 
         // Calculate ratio of x-components
         float ratio = (x_intercept - ray->position[0]) * inv_x;
-
-        // Use ratio to determine y-value of first vertical intersection from
-        // ray origin
-        y_intercept = (ray->direction[1] * ratio) + ray->position[1];
 
         // This also happens to be the distance to the first intersection
         distance = ratio;
