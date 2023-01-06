@@ -280,9 +280,7 @@ static color_t shade_pixel(color_t color, float brightness) {
     if (!shade_table) return color;
     if (color >= shade_table->height) return color;
 
-    if (brightness < 0.0f) brightness = 0;
-    if (brightness > 1.0f) brightness = 1.0f;
-
+    brightness = clamp(brightness, 0.0f, 1.0f);
     brightness = 1.0f - brightness;
 
     int amount = brightness * (shade_table->width - 1);
