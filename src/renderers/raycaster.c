@@ -394,14 +394,6 @@ static int sprite_compare(const void* a, const void* b) {
     return 0;
 }
 
-// #define SPRITE_COUNT 4
-// static raycaster_sprite_t sprites[SPRITE_COUNT] = {
-//     {"textures/barrel.gif", 31.5f, 57.5f, FLT_MAX},
-//     {"textures/barrel.gif", 32.5f, 57.5f, FLT_MAX},
-//     {"textures/barrel.gif", 33.5f, 57.5f, FLT_MAX},
-//     {"textures/barrel.gif", 34.5f, 57.5f, FLT_MAX},
-// };
-
 void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
     mfloat_t* position = camera->position;
     mfloat_t* direction = camera->direction;
