@@ -490,49 +490,6 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     mfloat_t floor_step[VEC2_SIZE];
     mfloat_t floor_next[VEC2_SIZE];
 
-    // TODO: Move this down in the scanline rendering and lookup actual texture
-    texture_t* f = assets_get_texture("textures/colorstone.gif");
-
-    // Draw floor/ceiling
-    for (int j = height / 2.0f; j < height; j++) {
-        // Calculate distance from render texture y-coordinate
-        float wall_height = 2.0f * j - height;
-        float distance = distance_to_projection_plane / wall_height;
-
-        // Distance at horizon line is
-        if (isinf(distance)) continue;
-
-        float scale = 1.0f / wall_height;
-
-        // Determine floor left bound
-        vec2_multiply_f(floor_next, left_bound, scale);
-        vec2_add(floor_next, floor_next, position);
-
-        // Determine floor horizontal step.
-        vec2_multiply_f(floor_step, step, scale);
-
-        float brightness = get_distance_based_brightness(distance);
-
-        // Draw current scanline for both floor and ceiling
-        for (int i = 0; i < width; i++) {
-            int x = frac(floor_next[0]) * f->width;
-            int y = frac(floor_next[1]) * f->height;
-            color_t color = graphics_texture_get_pixel(f, x, y);
-
-            // Floor
-            graphics_set_pixel(
-                render_rect->x + i, render_rect->y + j, shade_pixel(color, brightness)
-            );
-
-            // Ceiling
-            graphics_set_pixel(
-                render_rect->x + i, render_rect->y + height - j - 1, shade_pixel(color, brightness)
-            );
-
-            vec2_add(floor_next, floor_next, floor_step);
-        }
-    }
-
     // Draw walls
     for (int i = 0; i < width; i++) {
         ray_cast(&ray, map->walls);
@@ -577,8 +534,8 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
                 wall_texture,
                 render_texture,
                 render_rect->x + i,
-                render_rect->y + (height / 2.0f - half_wall_height),
-                render_rect->y + (height / 2.0f + half_wall_height),
+                render_rect->y + (height / 2.0f - half_wall_height - 0.5f),
+                render_rect->y + (height / 2.0f + half_wall_height + 1.5f),
                 offset,
                 brightness
             );
@@ -591,6 +548,52 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
 
         // Clear out hit info
         ray_hit_info_reset(&ray.hit_info);
+    }
+
+    // TODO: Move this down in the scanline rendering and lookup actual texture
+    texture_t* f = assets_get_texture("textures/colorstone.gif");
+
+    // Draw floor/ceiling
+    for (int j = height / 2.0f; j < height; j++) {
+        // Calculate distance from render texture y-coordinate
+        float wall_height = 2.0f * j - height;
+        float distance = distance_to_projection_plane / wall_height;
+
+        // Distance at horizon line is infinity
+        if (isinf(distance)) continue;
+
+        float scale = 1.0f / wall_height;
+
+        // Determine floor left bound
+        vec2_multiply_f(floor_next, left_bound, scale);
+        vec2_add(floor_next, floor_next, position);
+
+        // Determine floor horizontal step.
+        vec2_multiply_f(floor_step, step, scale);
+
+        float brightness = get_distance_based_brightness(distance);
+
+        // Draw current scanline for both floor and ceiling
+        for (int i = 0; i < width; i++) {
+
+            int x = frac(floor_next[0]) * f->width;
+            int y = frac(floor_next[1]) * f->height;
+            color_t color = graphics_texture_get_pixel(f, x, y);
+
+            if (depths[i] > distance) {
+                // Floor
+                graphics_set_pixel(
+                    render_rect->x + i, render_rect->y + j, shade_pixel(color, brightness)
+                );
+
+                // Ceiling
+                graphics_set_pixel(
+                    render_rect->x + i, render_rect->y + height - j - 1, shade_pixel(color, brightness)
+                );
+            }
+
+            vec2_add(floor_next, floor_next, floor_step);
+        }
     }
 
     // Calculate sprite projected distance
