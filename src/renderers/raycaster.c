@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -8,6 +7,7 @@
 #include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../math.h"
 #include "draw.h"
 
 #include "raycaster.h"
@@ -535,8 +535,8 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
 
         // Draw current scanline for both floor and ceiling
         for (int i = 0; i < width; i++) {
-            int x = fmodf(floor_next[0], 1.0f) * f->width;
-            int y = fmodf(floor_next[1], 1.0f) * f->height;
+            int x = frac(floor_next[0]) * f->width;
+            int y = frac(floor_next[1]) * f->height;
             color_t color = graphics_texture_get_pixel(f, x, y);
 
             // Floor
@@ -571,7 +571,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
         // Calculate the texture normalized horizontal offset (u-coordinate).
         float offset = 0.0f;
         if (ray.hit_info.was_vertical) {
-            offset = fmodf(ray.hit_info.position[1], 1.0f);
+            offset = frac(ray.hit_info.position[1]);
 
             // Flip texture to maintain correct orienation
             if (ray.direction[0] < 0) {
@@ -579,7 +579,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
             }
         }
         else {
-            offset = fmodf(ray.hit_info.position[0], 1.0f);
+            offset = frac(ray.hit_info.position[0]);
 
             // Flip texture to maintain correct orienation
             if (ray.direction[1] > 0) {
