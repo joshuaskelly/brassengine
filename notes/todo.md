@@ -1,6 +1,8 @@
 # TODO
 ## General
 - [ ] In engine console/repl.
+- [ ] Gamepad input
+- [ ] DOS platform?!
 - [x] Sounds.
 - [x] Fix issue with freeing of dynamically allocated textures.
 - [x] Audit texture module `luaL_checkinteger`. Should probably prefer `luaL_checknumber`
@@ -10,6 +12,7 @@
 
 ## Raycaster
 - [ ] Render targets
+- [ ] Ceiling/floor tile data
 - [x] Sprites
 - [x] Depth buffer
 - [x] Shading via color tables
