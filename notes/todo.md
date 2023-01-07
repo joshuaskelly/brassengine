@@ -3,6 +3,8 @@
 - [ ] In engine console/repl.
 - [ ] Gamepad input
 - [ ] DOS platform?!
+- [ ] Array struct.
+- [ ] Tag all structs?
 - [x] Sounds.
 - [x] Fix issue with freeing of dynamically allocated textures.
 - [x] Audit texture module `luaL_checkinteger`. Should probably prefer `luaL_checknumber`
