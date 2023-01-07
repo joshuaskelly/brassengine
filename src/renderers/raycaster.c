@@ -369,12 +369,8 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
  * @return 0 if they are equidistant.
  */
 static int sprite_compare(const void* a, const void* b) {
-    raycaster_sprite_t* l = (raycaster_sprite_t*)a;
-    raycaster_sprite_t* r = (raycaster_sprite_t*)b;
-
-    if (l && !r) return 1;
-    if (!l && r) return -1;
-    if (!l && !r) return 0;
+    raycaster_sprite_t* l = *(raycaster_sprite_t**)a;
+    raycaster_sprite_t* r = *(raycaster_sprite_t**)b;
 
     if (l->distance < r->distance) return 1;
     if (l->distance > r->distance) return -1;
@@ -610,11 +606,15 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     list_iterator_free(iter);
 
     // Sort sprites furthest to closest
-    list_sort(map->sprites, sprite_compare);
+    raycaster_sprite_t* sprs[map->sprites->count];
+
+    // Way faster to copy list to array and sort that, than sort the list.
+    list_to_array(map->sprites, sprs);
+    qsort(sprs, map->sprites->count, sizeof(raycaster_sprite_t*), sprite_compare);
 
     // Draw sprites
-    iter = list_iterator_new(map->sprites);
-    for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
+    for (int i = 0; i <  map->sprites->count; i++) {
+        raycaster_sprite_t* sprite = sprs[i];
         if (!sprite) continue;
         if (!sprite->texture) continue;
         if (sprite->distance > depths_max) continue;
@@ -658,7 +658,6 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
             sprite_depth_blit_func
         );
     }
-    list_iterator_free(iter);
 
     graphics_set_clipping_rectangle(NULL);
 }
