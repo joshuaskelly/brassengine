@@ -3,8 +3,6 @@
 #include "script.h"
 
 void test_init(void) {
-    log_info("test state init");
-
     script_setup();
 }
 
