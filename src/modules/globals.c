@@ -6,6 +6,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "../event.h"
 #include "../time.h"
 
 #include "globals.h"
@@ -48,8 +49,17 @@ static int api_get_time_since_init(lua_State* L) {
     return 1;
 }
 
+static int api_quit(lua_State* L) {
+    event_t event;
+    event.type = EVENT_QUIT;
+    event_post(&event);
+
+    return 0;
+}
+
 void luaL_openglobals(lua_State* L) {
     lua_register(L, "print", api_print);
     lua_register(L, "delta_time", api_get_delta_time);
     lua_register(L, "time", api_get_time_since_init);
+    lua_register(L, "quit", api_quit);
 }
