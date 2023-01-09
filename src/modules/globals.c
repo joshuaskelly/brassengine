@@ -49,6 +49,10 @@ static int api_get_time_since_init(lua_State* L) {
     return 1;
 }
 
+/**
+ * Quits app.
+ * @function quit
+ */
 static int api_quit(lua_State* L) {
     event_t event;
     event.type = EVENT_QUIT;
