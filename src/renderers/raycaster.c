@@ -618,8 +618,6 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     }
     list_iterator_free(iter);
 
-    // Sort sprites furthest to closest
-
     // Cull sprites outside near/far planes
     list_t* visible_sprites = list_filter(map->sprites, sprite_visible);
     const size_t count = visible_sprites->count;
@@ -627,6 +625,7 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     list_to_array(visible_sprites, sprite_array);
     list_free(visible_sprites);
 
+    // Sort sprites furthest to closest
     // Way faster to copy list to array and sort that, than sort the list.
     qsort(sprite_array, count, sizeof(raycaster_sprite_t*), sprite_compare);
 
