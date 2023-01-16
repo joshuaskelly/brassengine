@@ -91,6 +91,17 @@ void list_sort(list_t* list, int(comp)(const void*, const void*));
  */
 void list_to_array(list_t* list, void* array[]);
 
+/**
+ * Creates a new list from given list, filtered down to items that satisfy the
+ * given predicate.
+ *
+ * @param list List to filter.
+ * @param predicate Function to execute for each item in list. Return true if
+ * item should be included in result.
+ * @return list_t* List having all items that satisfy given predicate.
+ */
+list_t* list_filter(list_t* list, bool(predicate)(const void*));
+
 typedef struct list_iterator {
     list_t* list;
     list_node_t* current;

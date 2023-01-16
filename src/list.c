@@ -261,6 +261,22 @@ void list_to_array(list_t* list, void* array[]) {
     }
 }
 
+list_t* list_filter(list_t* list, bool(predicate)(const void*)) {
+    list_t* result = list_new();
+
+    list_iterator_t* iter = list_iterator_new(list);
+
+    for (void* item = list_iterator_begin(iter); list_iterator_done(iter); item = list_iterator_next(iter)) {
+        if (predicate(item)) {
+            list_add(result, item);
+        }
+    }
+
+    list_iterator_free(iter);
+
+    return result;
+}
+
 list_iterator_t* list_iterator_new(list_t* list) {
     list_iterator_t* iterator = (list_iterator_t*)malloc(sizeof(list_iterator_t));
     iterator->list = list;
