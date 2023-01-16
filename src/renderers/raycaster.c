@@ -378,6 +378,19 @@ static int sprite_compare(const void* a, const void* b) {
     return 0;
 }
 
+static bool sprite_visible(const void* s) {
+    raycaster_sprite_t* sprite = (raycaster_sprite_t*)s;
+
+    if (!sprite->texture) return false;
+
+    float distance = sprite->distance;
+    if (distance < 0) return false;
+    if (distance >= fog_distance) return false;
+    if (distance >= depths_max) return false;
+
+    return true;
+}
+
 void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_t* render_texture, rect_t* render_rect) {
     mfloat_t* position = camera->position;
     mfloat_t* direction = camera->direction;
@@ -606,18 +619,21 @@ void raycaster_render(raycaster_camera_t* camera, raycaster_map_t* map, texture_
     list_iterator_free(iter);
 
     // Sort sprites furthest to closest
-    raycaster_sprite_t* sprs[map->sprites->count];
+    raycaster_sprite_t* sprite_array[map->sprites->count];
+
+    // Cull sprites outside near/far planes
+    list_t* visible_sprites = list_filter(map->sprites, sprite_visible);
+    size_t count = visible_sprites->count;
+    list_to_array(visible_sprites, sprite_array);
+    list_free(visible_sprites);
 
     // Way faster to copy list to array and sort that, than sort the list.
-    list_to_array(map->sprites, sprs);
-    qsort(sprs, map->sprites->count, sizeof(raycaster_sprite_t*), sprite_compare);
+    qsort(sprite_array, count, sizeof(raycaster_sprite_t*), sprite_compare);
 
     // Draw sprites
-    for (int i = 0; i <  map->sprites->count; i++) {
-        raycaster_sprite_t* sprite = sprs[i];
+    for (int i = 0; i < count; i++) {
+        raycaster_sprite_t* sprite = sprite_array[i];
         if (!sprite) continue;
-        if (!sprite->texture) continue;
-        if (sprite->distance > depths_max) continue;
 
         mfloat_t dir[VEC2_SIZE];
         vec2_subtract(dir, sprite->position, position);
