@@ -11,6 +11,14 @@
 
 struct config* config = NULL;
 
+static void defaults_set(struct config* config) {
+    config->resolution.width = 320;
+    config->resolution.height = 200;
+    config->console.colors.foreground = 1;
+    config->console.colors.background = 0;
+    config->console.colors.cursor = 1;
+}
+
 static bool check_extension(const char* filename, const char* ext) {
     if (filename == NULL || ext == NULL) return false;
 
@@ -25,7 +33,6 @@ static bool check_extension(const char* filename, const char* ext) {
 
 static void set(cJSON* json) {
     cJSON* resolution = cJSON_GetObjectItemCaseSensitive(json, "resolution");
-
     if (resolution) {
         cJSON* width = cJSON_GetObjectItemCaseSensitive(resolution, "width");
         cJSON* height = cJSON_GetObjectItemCaseSensitive(resolution, "height");
@@ -33,6 +40,28 @@ static void set(cJSON* json) {
         if (cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
             config->resolution.width = width->valueint;
             config->resolution.height = height->valueint;
+        }
+    }
+
+    cJSON* console = cJSON_GetObjectItemCaseSensitive(json, "console");
+    if (console) {
+        cJSON* colors = cJSON_GetObjectItemCaseSensitive(console, "colors");
+        if (colors) {
+            cJSON* foreground = cJSON_GetObjectItemCaseSensitive(colors, "foreground");
+            cJSON* background = cJSON_GetObjectItemCaseSensitive(colors, "background");
+            cJSON* cursor = cJSON_GetObjectItemCaseSensitive(colors, "cursor");
+
+            if (cJSON_IsNumber(foreground)) {
+                config->console.colors.foreground = foreground->valueint;
+            }
+
+            if (cJSON_IsNumber(background)) {
+                config->console.colors.background = background->valueint;
+            }
+
+            if (cJSON_IsNumber(cursor)) {
+                config->console.colors.cursor = cursor->valueint;
+            }
         }
     }
 }
@@ -89,10 +118,7 @@ static void init_from_zip(const char* zip) {
 
 void configuration_init(void) {
     config = (struct config*)malloc(sizeof(struct config));
-
-    // Set defaults
-    config->resolution.width = 320;
-    config->resolution.height = 200;
+    defaults_set(config);
 
     // Check if user gave us a zip file or asset directory
     if (arguments_count() > 1) {

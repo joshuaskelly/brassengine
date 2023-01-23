@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "configuration.h"
 #include "console.h"
 #include "event.h"
 #include "graphics.h"
@@ -119,7 +120,11 @@ char get_char(key_event_t* key) {
             return shift_down ?  '?' :  '/';
         case ' ':
             return shift_down ?  ' ' :  ' ';
+        default:
+            break;
     }
+
+    return '\0';
 }
 
 bool handle_key_down(event_t* event) {
@@ -188,15 +193,30 @@ void console_update(void) {
 }
 
 void console_draw(void) {
-    texture_t* render_texture = graphics_get_render_texture();
-    graphics_texture_clear(render_texture, 0);
+    // Get palette
+    color_t* palette = graphics_draw_palette_get();
+    color_t background = palette[0];
+    color_t foreground = palette[1];
+    palette[0] = config->console.colors.background;
+    palette[1] = config->console.colors.foreground;
 
+    texture_t* render_texture = graphics_get_render_texture();
+    graphics_texture_clear(render_texture, config->console.colors.background);
+
+    // Draw prompt
     draw_text("> ", 0, 0);
+
+    // Draw input string
     draw_text(input, 16, 0);
 
     // Draw cursor
+    palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
     draw_text(show_cursor ? "\xdb" : " ", strlen(input) * 8 + 16, 0);
+
+    // Restore palette
+    palette[0] = background;
+    palette[1] = foreground;
 }
 
 static void execute(void) {
