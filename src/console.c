@@ -193,6 +193,10 @@ void console_draw(void) {
 
     draw_text("> ", 0, 0);
     draw_text(input, 16, 0);
+
+    // Draw cursor
+    bool show_cursor = (int)time_since_init() % 500 > 250;
+    draw_text(show_cursor ? "\xdb" : " ", strlen(input) * 8 + 16, 0);
 }
 
 static void execute(void) {

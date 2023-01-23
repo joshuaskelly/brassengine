@@ -285,7 +285,7 @@ void draw_text(const char* message, int x, int y) {
     int dest_x = x;
 
     for (int i = 0; i < strlen(message); i++) {
-        char c = message[i];
+        unsigned char c = message[i];
 
         if (c == '\n') {
             dest_x = x;
