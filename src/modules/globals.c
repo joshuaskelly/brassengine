@@ -6,7 +6,9 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "../console.h"
 #include "../event.h"
+#include "../log.h"
 #include "../time.h"
 
 #include "globals.h"
@@ -18,10 +20,15 @@
  */
 static int api_print(lua_State* L) {
     const char* message = luaL_tolstring(L, -1, NULL);
-    printf("%s\n", message);
+    log_info("%s\n", message);
 
     lua_pop(L, -1);
 
+    return 0;
+}
+
+static int api_clear(lua_State* L) {
+    console_buffer_clear();
     return 0;
 }
 
@@ -63,6 +70,7 @@ static int api_quit(lua_State* L) {
 
 void luaL_openglobals(lua_State* L) {
     lua_register(L, "print", api_print);
+    lua_register(L, "clear", api_clear);
     lua_register(L, "delta_time", api_get_delta_time);
     lua_register(L, "time", api_get_time_since_init);
     lua_register(L, "quit", api_quit);

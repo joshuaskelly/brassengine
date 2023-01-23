@@ -2,6 +2,7 @@
 
 #include "assets.h"
 #include "configuration.h"
+#include "console.h"
 #include "core.h"
 #include "event.h"
 #include "graphics.h"
@@ -28,12 +29,14 @@ void core_init(void) {
     assets_init();
     script_init();
     input_init();
+    console_init();
 
     // Set initial state
     core_set_state(&test_state);
 }
 
 void core_destroy(void) {
+    console_destroy();
     input_destroy();
     script_destroy();
     assets_destroy();

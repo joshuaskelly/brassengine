@@ -13,13 +13,22 @@
 #include "renderers/draw.h"
 
 static char input[2048] = "";
-static char last_key;
-static double last_time = 0;
+
+#define MAX_OUTPUT_BUFFER_HISTORY 80
+
+static char* output_buffer[MAX_OUTPUT_BUFFER_HISTORY];
+static int output_buffer_head = 0;
+static int output_buffer_tail = 0;
+
 static bool shift_down = false;
 
 static void execute(void);
 
 void console_init(void) {
+}
+
+void console_destroy(void) {
+    console_buffer_clear();
 }
 
 char get_char(key_event_t* key) {
@@ -203,20 +212,60 @@ void console_draw(void) {
     texture_t* render_texture = graphics_get_render_texture();
     graphics_texture_clear(render_texture, config->console.colors.background);
 
+    int line = 0;
+    const int max_lines = (200 / 8) - 1;
+
+    // Draw console history
+    if (output_buffer_head != output_buffer_tail) {
+        int lines_to_draw = output_buffer_head < output_buffer_tail ? output_buffer_head + MAX_OUTPUT_BUFFER_HISTORY - output_buffer_tail : output_buffer_head - output_buffer_tail;
+        if (lines_to_draw > max_lines) lines_to_draw = max_lines;
+
+        for (int i = lines_to_draw; i > 0; i--) {
+            draw_text(output_buffer[output_buffer_head - i], 0, line * 8);
+            line++;
+        }
+    }
+
     // Draw prompt
-    draw_text("> ", 0, 0);
+    draw_text("> ", 0, line * 8);
 
     // Draw input string
-    draw_text(input, 16, 0);
+    draw_text(input, 16, line * 8);
 
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
-    draw_text(show_cursor ? "\xdb" : " ", strlen(input) * 8 + 16, 0);
+    draw_text(show_cursor ? "\xdb" : " ", strlen(input) * 8 + 16, line * 8);
 
     // Restore palette
     palette[0] = background;
     palette[1] = foreground;
+}
+
+void console_buffer_write(const char* line) {
+    output_buffer[output_buffer_head] = (char*)malloc(sizeof(char) * strlen(line) + 1);
+    strncpy(output_buffer[output_buffer_head], line, strlen(line));
+    output_buffer[output_buffer_head][strlen(line)] = '\0';
+
+    int next = (output_buffer_head + 1) % MAX_OUTPUT_BUFFER_HISTORY;
+    if (next == output_buffer_tail) {
+        free(output_buffer[output_buffer_tail]);
+        output_buffer_tail = (output_buffer_tail + 1) % MAX_OUTPUT_BUFFER_HISTORY;
+    }
+
+    output_buffer_head = next;
+}
+
+void console_buffer_clear(void) {
+    for (int i = 0; i < MAX_OUTPUT_BUFFER_HISTORY; i++) {
+        if (output_buffer[i]) {
+            free(output_buffer[i]);
+            output_buffer[i] = NULL;
+        }
+    }
+
+    output_buffer_head = 0;
+    output_buffer_tail = 0;
 }
 
 static void execute(void) {
