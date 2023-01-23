@@ -220,6 +220,7 @@ void console_draw(void) {
 }
 
 static void execute(void) {
+    log_info("%s%s", "> ", input);
     script_evaluate(input);
     input[0] = '\0';
 }
