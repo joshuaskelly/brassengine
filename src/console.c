@@ -181,7 +181,7 @@ bool console_handle_event(event_t* event) {
             break;
     }
 
-    return false;
+    return true;
 }
 
 void console_update(void) {
