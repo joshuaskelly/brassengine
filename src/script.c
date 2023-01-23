@@ -183,10 +183,10 @@ int script_evaluate(const char* script) {
     char r[strlen(script)+9];
     sprintf(r, "return %s;", script);
 
-    int status = luaL_loadbuffer(L, r, strlen(r), "console");
+    int status = luaL_loadbuffer(L, r, strlen(r), "=console");
 
     if (status != LUA_OK) {
-        status = luaL_loadbuffer(L, script, strlen(script), "console");
+        status = luaL_loadbuffer(L, script, strlen(script), "=console");
     }
 
     if (status == LUA_OK) {
