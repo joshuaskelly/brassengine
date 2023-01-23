@@ -6,6 +6,7 @@
 #include "event.h"
 #include "graphics.h"
 #include "log.h"
+#include "script.h"
 #include "time.h"
 
 #include "renderers/draw.h"
@@ -53,6 +54,6 @@ void console_draw(void) {
 }
 
 static void execute(void) {
-    log_info(input);
+    script_evaluate(input);
     input[0] = '\0';
 }
