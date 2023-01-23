@@ -44,13 +44,13 @@ static void init_from_assets_directory(const char* directory) {
     strcat(config_path, directory);
     strcat(config_path, "/config.json");
 
-    // Open script file
+    // Open configuration file
     FILE* fp = fopen(config_path, "rb");
     if (!fp) {
         return;
     }
 
-    // Get script size
+    // Get configuration size
     fseek(fp, 0, SEEK_END);
     size_t size = ftell(fp);
     rewind(fp);
@@ -63,7 +63,7 @@ static void init_from_assets_directory(const char* directory) {
         return;
     }
 
-    // Read in script bytes
+    // Read in configuration bytes
     size_t ret_code = fread(data, 1, size, fp);
     if (ret_code != size) {
         if (feof(fp)) {
