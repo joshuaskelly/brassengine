@@ -154,7 +154,7 @@ bool handle_key_down(event_t* event) {
     }
 
     char c = get_char(&event->key);
-    strcat(input, &c);
+    strncat(input, &c, 1);
 
     return true;
 }
