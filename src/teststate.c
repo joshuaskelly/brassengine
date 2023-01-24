@@ -9,6 +9,13 @@ void test_init(void) {
 }
 
 bool test_handle_event(event_t* event) {
+    if (event->type == EVENT_KEYDOWN) {
+        if (event->key.code == KEYCODE_GRAVE) {
+            console_buffer_toggle();
+            return true;
+        }
+    }
+
     if (console_handle_event(event)) return true;
 
     return script_handle_event(event);

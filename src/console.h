@@ -12,5 +12,6 @@ void console_update(void);
 void console_draw(void);
 void console_buffer_write(const char* line);
 void console_buffer_clear(void);
+void console_buffer_toggle(void);
 
 #endif

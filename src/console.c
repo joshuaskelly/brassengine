@@ -21,6 +21,7 @@ static int output_buffer_head = 0;
 static int output_buffer_tail = 0;
 
 static bool shift_down = false;
+static bool visible = true;
 
 static void execute(void);
 
@@ -184,6 +185,8 @@ bool handle_key_up(event_t* event) {
 }
 
 bool console_handle_event(event_t* event) {
+    if (!visible) return false;
+
     switch (event->type) {
         case EVENT_KEYDOWN:
             return handle_key_down(event);
@@ -202,6 +205,8 @@ void console_update(void) {
 }
 
 void console_draw(void) {
+    if (!visible) return;
+
     // Get palette
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
@@ -209,11 +214,28 @@ void console_draw(void) {
     palette[0] = config->console.colors.background;
     palette[1] = config->console.colors.foreground;
 
-    texture_t* render_texture = graphics_get_render_texture();
-    graphics_texture_clear(render_texture, config->console.colors.background);
+    rect_t console_rect = {
+        0,
+        0,
+        config->resolution.width,
+        (config->resolution.height / 2) / 8 * 8
+    };
+
+    draw_filled_rectangle(
+        console_rect.x,
+        console_rect.y,
+        console_rect.width,
+        console_rect.height,
+        background
+    );
+
+    graphics_set_clipping_rectangle(&console_rect);
+
+    //texture_t* render_texture = graphics_get_render_texture();
+    //graphics_texture_clear(render_texture, config->console.colors.background);
 
     int line = 0;
-    const int max_lines = (200 / 8) - 1;
+    const int max_lines = (console_rect.height / 8) - 1;
 
     // Draw console history
     if (output_buffer_head != output_buffer_tail) {
@@ -244,6 +266,8 @@ void console_draw(void) {
     // Restore palette
     palette[0] = background;
     palette[1] = foreground;
+
+    graphics_set_clipping_rectangle(NULL);
 }
 
 void console_buffer_write(const char* line) {
@@ -271,6 +295,10 @@ void console_buffer_clear(void) {
 
     output_buffer_head = 0;
     output_buffer_tail = 0;
+}
+
+void console_buffer_toggle(void) {
+    visible = !visible;
 }
 
 static void execute(void) {
