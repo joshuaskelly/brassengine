@@ -221,7 +221,11 @@ void console_draw(void) {
         if (lines_to_draw > max_lines) lines_to_draw = max_lines;
 
         for (int i = lines_to_draw; i > 0; i--) {
-            draw_text(output_buffer[output_buffer_head - i], 0, line * 8);
+            // TODO: Clean this up
+            int p = output_buffer_head - i;
+            if (p < 0) p += MAX_OUTPUT_BUFFER_HISTORY;
+
+            draw_text(output_buffer[p], 0, line * 8);
             line++;
         }
     }
@@ -250,6 +254,7 @@ void console_buffer_write(const char* line) {
     int next = (output_buffer_head + 1) % MAX_OUTPUT_BUFFER_HISTORY;
     if (next == output_buffer_tail) {
         free(output_buffer[output_buffer_tail]);
+        output_buffer[output_buffer_tail] = NULL;
         output_buffer_tail = (output_buffer_tail + 1) % MAX_OUTPUT_BUFFER_HISTORY;
     }
 
