@@ -227,13 +227,10 @@ void console_draw(void) {
         console_rect.y,
         console_rect.width,
         console_rect.height,
-        background
+        config->console.colors.background
     );
 
     graphics_set_clipping_rectangle(&console_rect);
-
-    //texture_t* render_texture = graphics_get_render_texture();
-    //graphics_texture_clear(render_texture, config->console.colors.background);
 
     int line = 0;
     const int max_lines = (console_rect.height / 8) - 1;
