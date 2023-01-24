@@ -5,6 +5,7 @@
 #include "draw.h"
 #include "../assets.h"
 #include "../graphics.h"
+#include "../log.h"
 
 static int mod(int a, int b) {
     return a - floor(a / (float)b) * b;
@@ -279,6 +280,10 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
 
 void draw_text(const char* message, int x, int y) {
     texture_t* font_texture = assets_get_texture("font.gif");
+    if (!font_texture) {
+        log_fatal("Missing font.gif asset");
+    }
+
     rect_t source_rect = {0, 0, 8, 8};
     rect_t dest_rect = {0, y, 8, 8};
 
