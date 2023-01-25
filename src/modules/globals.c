@@ -19,10 +19,17 @@
  * @param arg Object to print to console
  */
 static int api_print(lua_State* L) {
-    const char* message = luaL_tolstring(L, -1, NULL);
-    log_info("%s\n", message);
+    int n = lua_gettop(L);
+    for (int i = 1; i <= n; i++) {
+        const char* message = luaL_tolstring(L, i, NULL);
 
-    lua_pop(L, -1);
+        if (i > 1) {
+            // TODO: Tabs?
+        }
+
+        log_info(message);
+        lua_pop(L, 1);
+    }
 
     return 0;
 }
