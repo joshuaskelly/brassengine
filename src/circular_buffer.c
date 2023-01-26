@@ -4,19 +4,6 @@
 
 #include "circular_buffer.h"
 
-void circular_buffer_clear(circular_buffer_t* buffer) {
-    buffer->head = 0;
-    buffer->tail = 0;
-    buffer->count = 0;
-
-    for (int i = 0; i < buffer->max_count; i++) {
-        if (buffer->data[i]) {
-            free(buffer->data[i]);
-        }
-        buffer->data[i] = NULL;
-    }
-}
-
 circular_buffer_t* circular_buffer_new(size_t count) {
     circular_buffer_t* buffer = malloc(sizeof(int) * 2 + sizeof(size_t) * 2 + sizeof(void*) * count);
     buffer->max_count = count;
@@ -30,6 +17,19 @@ void circular_buffer_free(circular_buffer_t* buffer) {
     circular_buffer_clear(buffer);
     free(buffer);
     buffer = NULL;
+}
+
+void circular_buffer_clear(circular_buffer_t* buffer) {
+    buffer->head = 0;
+    buffer->tail = 0;
+    buffer->count = 0;
+
+    for (int i = 0; i < buffer->max_count; i++) {
+        if (buffer->data[i]) {
+            free(buffer->data[i]);
+        }
+        buffer->data[i] = NULL;
+    }
 }
 
 void circular_buffer_add(circular_buffer_t* buffer, void* item) {
