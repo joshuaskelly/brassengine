@@ -8,6 +8,7 @@
 #include "console.h"
 #include "event.h"
 #include "graphics.h"
+#include "input.h"
 #include "log.h"
 #include "math.h"
 #include "script.h"
@@ -21,7 +22,6 @@ static circular_buffer_t* input;
 static circular_buffer_t* output;
 static int input_line = 0;
 
-static bool shift_down = false;
 static bool visible = true;
 
 static void execute(void);
@@ -37,6 +37,8 @@ void console_destroy(void) {
 }
 
 char get_char(key_event_t* key) {
+    bool shift_down = input_keyboard_is_key_code_down(KEYCODE_LSHIFT) || input_keyboard_is_key_code_down(KEYCODE_RSHIFT);
+
     switch (key->symbol) {
         case '`':
             return shift_down ?  '~' :  '`';
@@ -167,22 +169,16 @@ bool handle_key_down(event_t* event) {
             return true;
         }
 
-        case KEYCODE_LSHIFT:
-        case KEYCODE_RSHIFT: {
-            shift_down = true;
-            return true;
-        }
-
         case KEYCODE_UP: {
             input_line = min(input_line + 1, input->count);
             load_input_history();
-            break;
+            return true;
         }
 
         case KEYCODE_DOWN: {
             input_line = max(input_line - 1, 1);
             load_input_history();
-            break;
+            return true;
         }
 
         default:
@@ -196,17 +192,6 @@ bool handle_key_down(event_t* event) {
 }
 
 bool handle_key_up(event_t* event) {
-    switch (event->key.code) {
-        case KEYCODE_LSHIFT:
-        case KEYCODE_RSHIFT: {
-            shift_down = false;
-            return true;
-        }
-
-        default:
-            break;
-    }
-
     return false;
 }
 
