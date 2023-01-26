@@ -262,8 +262,7 @@ void console_draw(void) {
 
     // Draw console history
     if (output->count > 0) {
-        int lines_to_draw = output->count;
-        if (lines_to_draw > max_lines) lines_to_draw = max_lines;
+        int lines_to_draw = min(output->count, max_lines);
 
         for (int i = output->count - lines_to_draw; i < output->count; i++)  {
             char* s = circular_buffer_get(output, i);
