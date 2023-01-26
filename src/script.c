@@ -140,6 +140,9 @@ static void call_global_lua_function(lua_State* L, const char* function_name) {
         // Remove message handler
         lua_remove(L, base);
     }
+    else {
+        lua_pop(L, 1);;
+    }
 }
 
 /**
