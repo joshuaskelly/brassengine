@@ -16,11 +16,13 @@
 
 #include "renderers/draw.h"
 
-static char command[2048] = "";
+#define COMMAND_MAX_LENGTH 2048
+static char command[COMMAND_MAX_LENGTH + 1] = "";
 
 static circular_buffer_t* input;
 static circular_buffer_t* output;
 static int input_line = 0;
+static int cursor_offset = 0;
 
 static bool visible = true;
 
@@ -154,12 +156,14 @@ static void load_input_history(void) {
 }
 
 bool handle_key_down(event_t* event) {
+    size_t command_length = strlen(command);
+
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
-            size_t length = strlen(command);
-            if (length > 0) {
-                command[length - 1] = '\0';
-            }
+            if (command_length <= 0) return true;
+
+            int i = command_length + cursor_offset;
+            memmove(command + i - 1, command + i, -cursor_offset + 1);
 
             return true;
         }
@@ -179,9 +183,19 @@ bool handle_key_down(event_t* event) {
 
         case KEYCODE_DOWN: {
             if (input->count == 0) return true;
-            
+
             input_line = max(input_line - 1, 1);
             load_input_history();
+            return true;
+        }
+
+        case KEYCODE_LEFT: {
+            cursor_offset = max(cursor_offset - 1, -(int)command_length);
+            return true;
+        }
+
+        case KEYCODE_RIGHT: {
+            cursor_offset = min(cursor_offset + 1, 0);
             return true;
         }
 
@@ -189,8 +203,12 @@ bool handle_key_down(event_t* event) {
             break;
     }
 
-    char c = get_char(&event->key);
-    strncat(command, &c, 1);
+    if (command_length < COMMAND_MAX_LENGTH) {
+        char c = get_char(&event->key);
+        int i = command_length + cursor_offset;
+        memmove(command + i + 1, command + i, -cursor_offset + 1);
+        command[i] = c;
+    }
 
     return true;
 }
@@ -270,7 +288,9 @@ void console_draw(void) {
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
-    draw_text(show_cursor ? "\xdb" : " ", strlen(command) * 8 + prompt_length * 8, line * 8);
+    if (show_cursor) {
+        draw_text("\xdb", strlen(command) * 8 + prompt_length * 8 + cursor_offset * 8, line * 8);
+    }
 
     // Restore palette
     palette[0] = background;
