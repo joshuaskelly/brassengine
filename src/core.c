@@ -20,6 +20,8 @@ static bool is_running = true;
 static void handle_events(void);
 
 void core_init(void) {
+    console_init();
+
     log_info("%s\n", ENGINE_COPYRIGHT);
 
     configuration_init();
@@ -29,14 +31,12 @@ void core_init(void) {
     assets_init();
     script_init();
     input_init();
-    console_init();
 
     // Set initial state
     core_set_state(&test_state);
 }
 
 void core_destroy(void) {
-    console_destroy();
     input_destroy();
     script_destroy();
     assets_destroy();
@@ -44,6 +44,7 @@ void core_destroy(void) {
     platform_destroy();
     time_destroy();
     configuration_destroy();
+    console_destroy();
 }
 
 void core_run(void) {

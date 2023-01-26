@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "circular_buffer.h"
 #include "configuration.h"
 #include "console.h"
 #include "event.h"
@@ -17,9 +18,7 @@ static char input[2048] = "";
 
 #define MAX_OUTPUT_BUFFER_HISTORY 80
 
-static char* output_buffer[MAX_OUTPUT_BUFFER_HISTORY];
-static int output_buffer_head = 0;
-static int output_buffer_tail = 0;
+static circular_buffer_t* output;
 
 static bool shift_down = false;
 static bool visible = true;
@@ -27,10 +26,11 @@ static bool visible = true;
 static void execute(void);
 
 void console_init(void) {
+    output = circular_buffer_new(80);
 }
 
 void console_destroy(void) {
-    console_buffer_clear();
+    circular_buffer_free(output);
 }
 
 char get_char(key_event_t* key) {
@@ -236,16 +236,13 @@ void console_draw(void) {
     const int max_lines = (console_rect.height / 8) - 1;
 
     // Draw console history
-    if (output_buffer_head != output_buffer_tail) {
-        int lines_to_draw = output_buffer_head < output_buffer_tail ? output_buffer_head + MAX_OUTPUT_BUFFER_HISTORY - output_buffer_tail : output_buffer_head - output_buffer_tail;
+    if (output->count > 0) {
+        int lines_to_draw = output->count;
         if (lines_to_draw > max_lines) lines_to_draw = max_lines;
 
-        for (int i = lines_to_draw; i > 0; i--) {
-            // TODO: Clean this up
-            int p = output_buffer_head - i;
-            if (p < 0) p += MAX_OUTPUT_BUFFER_HISTORY;
-
-            draw_text(output_buffer[p], 0, line * 8);
+        for (int i = output->count - lines_to_draw; i < output->count; i++)  {
+            char* s = circular_buffer_get(output, i);
+            draw_text(s, 0, line * 8);
             line++;
         }
     }
@@ -269,30 +266,15 @@ void console_draw(void) {
 }
 
 void console_buffer_write(const char* line) {
-    output_buffer[output_buffer_head] = (char*)malloc(sizeof(char) * strlen(line) + 1);
-    strncpy(output_buffer[output_buffer_head], line, strlen(line));
-    output_buffer[output_buffer_head][strlen(line)] = '\0';
+    char* s = (char*)malloc(sizeof(char) * strlen(line) + 1);
+    strncpy(s, line, strlen(line));
+    s[strlen(line)] = '\0';
 
-    int next = (output_buffer_head + 1) % MAX_OUTPUT_BUFFER_HISTORY;
-    if (next == output_buffer_tail) {
-        free(output_buffer[output_buffer_tail]);
-        output_buffer[output_buffer_tail] = NULL;
-        output_buffer_tail = (output_buffer_tail + 1) % MAX_OUTPUT_BUFFER_HISTORY;
-    }
-
-    output_buffer_head = next;
+    circular_buffer_add(output, s);
 }
 
 void console_buffer_clear(void) {
-    for (int i = 0; i < MAX_OUTPUT_BUFFER_HISTORY; i++) {
-        if (output_buffer[i]) {
-            free(output_buffer[i]);
-            output_buffer[i] = NULL;
-        }
-    }
-
-    output_buffer_head = 0;
-    output_buffer_tail = 0;
+    circular_buffer_clear(output);
 }
 
 void console_buffer_toggle(void) {

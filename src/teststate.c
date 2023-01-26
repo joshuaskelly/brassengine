@@ -5,7 +5,6 @@
 
 void test_init(void) {
     script_setup();
-    console_init();
 }
 
 bool test_handle_event(event_t* event) {

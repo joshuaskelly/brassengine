@@ -14,6 +14,8 @@ typedef struct {
 
 circular_buffer_t* circular_buffer_new(size_t count);
 
+void circular_buffer_free(circular_buffer_t* buffer);
+
 void circular_buffer_clear(circular_buffer_t* buffer);
 
 void circular_buffer_add(circular_buffer_t* buffer, void* item);

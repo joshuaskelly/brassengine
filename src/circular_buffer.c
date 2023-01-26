@@ -26,6 +26,12 @@ circular_buffer_t* circular_buffer_new(size_t count) {
     return buffer;
 }
 
+void circular_buffer_free(circular_buffer_t* buffer) {
+    circular_buffer_clear(buffer);
+    free(buffer);
+    buffer = NULL;
+}
+
 void circular_buffer_add(circular_buffer_t* buffer, void* item) {
     buffer->data[buffer->tail] = item;
 
