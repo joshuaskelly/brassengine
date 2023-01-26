@@ -9,6 +9,7 @@
 #include "event.h"
 #include "graphics.h"
 #include "log.h"
+#include "math.h"
 #include "script.h"
 #include "time.h"
 
@@ -173,24 +174,14 @@ bool handle_key_down(event_t* event) {
         }
 
         case KEYCODE_UP: {
-            input_line++;
-            if (input_line > input->count) {
-                input_line = input->count;
-            }
-
+            input_line = min(input_line + 1, input->count);
             load_input_history();
-
             break;
         }
 
         case KEYCODE_DOWN: {
-            input_line--;
-            if (input_line < 1) {
-                input_line = 1;
-            }
-
+            input_line = max(input_line - 1, 1);
             load_input_history();
-
             break;
         }
 

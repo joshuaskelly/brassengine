@@ -19,4 +19,22 @@ float clamp(float f, float min, float max);
  */
 float frac(float f);
 
+/**
+ * Returns maximum of a or b.
+ *
+ * @param a Float value
+ * @param b Float value
+ * @return float Maximum value.
+ */
+float max(float a, float b);
+
+/**
+ * Returns minimum of a or b.
+ *
+ * @param a Float value
+ * @param b Float value
+ * @return float Minimum value.
+ */
+float min(float a, float b);
+
 #endif
