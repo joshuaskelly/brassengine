@@ -14,9 +14,7 @@
 
 #include "renderers/draw.h"
 
-static char input[2048] = "";
-
-#define MAX_OUTPUT_BUFFER_HISTORY 80
+static char command[2048] = "";
 
 static circular_buffer_t* output;
 
@@ -141,9 +139,9 @@ char get_char(key_event_t* key) {
 bool handle_key_down(event_t* event) {
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
-            size_t length = strlen(input);
+            size_t length = strlen(command);
             if (length > 0) {
-                input[length - 1] = '\0';
+                command[length - 1] = '\0';
             }
 
             return true;
@@ -165,7 +163,7 @@ bool handle_key_down(event_t* event) {
     }
 
     char c = get_char(&event->key);
-    strncat(input, &c, 1);
+    strncat(command, &c, 1);
 
     return true;
 }
@@ -251,12 +249,12 @@ void console_draw(void) {
     draw_text("> ", 0, line * 8);
 
     // Draw input string
-    draw_text(input, 16, line * 8);
+    draw_text(command, 16, line * 8);
 
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
-    draw_text(show_cursor ? "\xdb" : " ", strlen(input) * 8 + 16, line * 8);
+    draw_text(show_cursor ? "\xdb" : " ", strlen(command) * 8 + 16, line * 8);
 
     // Restore palette
     palette[0] = background;
@@ -282,7 +280,7 @@ void console_buffer_toggle(void) {
 }
 
 static void execute(void) {
-    log_info("%s%s", "> ", input);
-    script_evaluate(input);
-    input[0] = '\0';
+    log_info("%s%s", "> ", command);
+    script_evaluate(command);
+    command[0] = '\0';
 }
