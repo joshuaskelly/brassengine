@@ -257,15 +257,16 @@ void console_draw(void) {
     }
 
     // Draw prompt
-    draw_text("> ", 0, line * 8);
+    int prompt_length = strlen(config->console.prompt);
+    draw_text(config->console.prompt, 0, line * 8);
 
     // Draw input string
-    draw_text(command, 16, line * 8);
+    draw_text(command, prompt_length * 8, line * 8);
 
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
-    draw_text(show_cursor ? "\xdb" : " ", strlen(command) * 8 + 16, line * 8);
+    draw_text(show_cursor ? "\xdb" : " ", strlen(command) * 8 + prompt_length * 8, line * 8);
 
     // Restore palette
     palette[0] = background;

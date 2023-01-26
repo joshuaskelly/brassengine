@@ -63,6 +63,22 @@ static void set(cJSON* json) {
                 config->console.colors.cursor = cursor->valueint;
             }
         }
+
+        cJSON* prompt = cJSON_GetObjectItemCaseSensitive(console, "prompt");
+        if (prompt && cJSON_IsString(prompt)) {
+            char* s = prompt->valuestring;
+            char* prompt = malloc(sizeof(char) * (strlen(s) + 1));
+            strncpy(prompt, s, strlen(s));
+            prompt[strlen(s)] = '\0';
+            config->console.prompt = prompt;
+        }
+        else {
+            char* prompt = malloc(sizeof(char) * 3);
+            char* default_prompt = "> ";
+            strncpy(prompt, default_prompt, 3);
+            prompt[2] = '\0';
+            config->console.prompt = prompt;
+        }
     }
 }
 
@@ -139,5 +155,6 @@ void configuration_init(void) {
 
 
 void configuration_destroy(void) {
+    free(config->console.prompt);
     free(config);
 }

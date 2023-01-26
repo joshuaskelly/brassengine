@@ -18,6 +18,7 @@ extern struct config {
             int background;
             int cursor;
         } colors;
+        char* prompt;
     } console;
 }* config;
 
