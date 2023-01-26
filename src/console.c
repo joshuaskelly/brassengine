@@ -170,12 +170,16 @@ bool handle_key_down(event_t* event) {
         }
 
         case KEYCODE_UP: {
+            if (input->count == 0) return true;
+
             input_line = min(input_line + 1, input->count);
             load_input_history();
             return true;
         }
 
         case KEYCODE_DOWN: {
+            if (input->count == 0) return true;
+            
             input_line = max(input_line - 1, 1);
             load_input_history();
             return true;
