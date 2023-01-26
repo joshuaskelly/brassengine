@@ -2,6 +2,7 @@
 #define CIRCULAR_BUFFER
 
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct {
     int head;
@@ -17,6 +18,6 @@ void circular_buffer_clear(circular_buffer_t* buffer);
 
 void circular_buffer_add(circular_buffer_t* buffer, void* item);
 
-void circular_buffer_get(circular_buffer_t* buffer, int index);
+void* circular_buffer_get(circular_buffer_t* buffer, int index);
 
 #endif

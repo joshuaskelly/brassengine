@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "circular_buffer.h"
 
@@ -18,6 +20,7 @@ void circular_buffer_clear(circular_buffer_t* buffer) {
 circular_buffer_t* circular_buffer_new(size_t count) {
     circular_buffer_t* buffer = malloc(sizeof(int) * 2 + sizeof(size_t) * 2 + sizeof(void*) * count);
     buffer->max_count = count;
+    memset(buffer->data, 0, sizeof(void*) * count);
     circular_buffer_clear(buffer);
 
     return buffer;
@@ -26,7 +29,7 @@ circular_buffer_t* circular_buffer_new(size_t count) {
 void circular_buffer_add(circular_buffer_t* buffer, void* item) {
     buffer->data[buffer->tail] = item;
 
-    if (buffer->count <= buffer->max_count) {
+    if (buffer->count < buffer->max_count - 1) {
         buffer->count++;
     }
 
@@ -40,7 +43,7 @@ void circular_buffer_add(circular_buffer_t* buffer, void* item) {
     buffer->tail = next;
 }
 
-void circular_buffer_get(circular_buffer_t* buffer, int index) {
+void* circular_buffer_get(circular_buffer_t* buffer, int index) {
     int i = (buffer->head + index) % buffer->max_count;
     return buffer->data[i];
 }
