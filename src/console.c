@@ -290,15 +290,28 @@ void console_buffer_toggle(void) {
     visible = !visible;
 }
 
-static void execute(void) {
-    log_info("%s%s", "> ", command);
-    script_evaluate(command);
-
+static void save_command_to_input_buffer(void) {
     size_t size = strlen(command);
     char* s = malloc(sizeof(char) * (size + 1));
     strncpy(s, command, size);
     s[size] = '\0';
 
     circular_buffer_add(input, s);
+}
+
+static void execute(void) {
+    // Echo command
+    log_info("%s%s", "> ", command);
+
+    // Evaluate command
+    script_evaluate(command);
+
+    // Save command
+    save_command_to_input_buffer();
+
+    // Reset input history position
+    input_line = 0;
+
+    // Clear command
     command[0] = '\0';
 }
