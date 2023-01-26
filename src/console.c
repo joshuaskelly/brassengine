@@ -16,7 +16,9 @@
 
 static char command[2048] = "";
 
+static circular_buffer_t* input;
 static circular_buffer_t* output;
+static int input_line = 0;
 
 static bool shift_down = false;
 static bool visible = true;
@@ -25,9 +27,11 @@ static void execute(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
+    input = circular_buffer_new(10);
 }
 
 void console_destroy(void) {
+    circular_buffer_free(input);
     circular_buffer_free(output);
 }
 
@@ -136,6 +140,16 @@ char get_char(key_event_t* key) {
     return '\0';
 }
 
+static void load_input_history(void) {
+    char* s = circular_buffer_get(
+        input,
+        input->count - input_line
+    );
+
+    strncpy(command, s, strlen(s));
+    command[strlen(s)] = '\0';
+}
+
 bool handle_key_down(event_t* event) {
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
@@ -156,6 +170,28 @@ bool handle_key_down(event_t* event) {
         case KEYCODE_RSHIFT: {
             shift_down = true;
             return true;
+        }
+
+        case KEYCODE_UP: {
+            input_line++;
+            if (input_line > input->count) {
+                input_line = input->count;
+            }
+
+            load_input_history();
+
+            break;
+        }
+
+        case KEYCODE_DOWN: {
+            input_line--;
+            if (input_line < 1) {
+                input_line = 1;
+            }
+
+            load_input_history();
+
+            break;
         }
 
         default:
@@ -282,5 +318,12 @@ void console_buffer_toggle(void) {
 static void execute(void) {
     log_info("%s%s", "> ", command);
     script_evaluate(command);
+
+    size_t size = strlen(command);
+    char* s = malloc(sizeof(char) * (size + 1));
+    strncpy(s, command, size);
+    s[size] = '\0';
+
+    circular_buffer_add(input, s);
     command[0] = '\0';
 }

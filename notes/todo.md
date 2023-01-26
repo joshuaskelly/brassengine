@@ -20,7 +20,7 @@
 - [x] Shading via color tables
 
 ## Console
-- [ ] Input buffer. up / down
+- [x] Input buffer. up / down
 - [ ] Support move cursor left/right + insert (memmove)
 - [ ] Split on new lines
 - [ ] Remove implicit new line in log system
