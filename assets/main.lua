@@ -10,6 +10,6 @@ end
 
 -- Called once per frame
 function _draw()
-    --draw.clear(0)
-    --draw.text("hello world", 0, 0)
+    draw.clear(0)
+    draw.text("hello world", 0, 0)
 end
