@@ -20,7 +20,7 @@ BIN:=$(BIN_DIR)/$(BIN)
 SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(wildcard $(SRC_DIR)/modules/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-INC=-Ilibs
+INC=-Ilibs `sdl2-config --cflags`
 
 LUA_DIR=libs/lua
 LIBLUA=$(LUA_DIR)/liblua.a
@@ -38,7 +38,7 @@ MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) -lSDL2 -lSDL2_mixer -lm
+LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm
 
 default:help
 
