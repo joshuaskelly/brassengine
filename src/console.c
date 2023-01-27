@@ -351,7 +351,7 @@ static void save_command_to_input_buffer(void) {
 
 static void execute(void) {
     // Echo command
-    log_info("%s%s", "> ", command);
+    log_info("%s%s", config->console.prompt, command);
 
     // Evaluate command
     script_evaluate(command);
