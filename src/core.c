@@ -22,7 +22,7 @@ static void handle_events(void);
 void core_init(void) {
     console_init();
 
-    log_info("%s\n", ENGINE_COPYRIGHT);
+    log_info("%s", ENGINE_COPYRIGHT);
 
     configuration_init();
     time_init();
