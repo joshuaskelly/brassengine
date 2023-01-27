@@ -614,7 +614,7 @@ void assets_reload(void)  {
  * @return void* Asset for name if found, NULL otherwise
  */
 static void* asset_get(asset_entry_t* assets, int count, const char* name) {
-    for (int i = 0; i < count; i++) {
+    for (int i = count - 1; i >= 0; i--) {
         const char* asset_name = assets[i].name;
         if (strcmp(name, asset_name) == 0) {
             return assets[i].asset;
