@@ -20,10 +20,10 @@
 - [x] Shading via color tables
 
 ## Console
-- [ ] Page up/down through history. ctrl + shift + up/down
 - [ ] Split on new lines
-- [ ] Remove implicit new line in log system
+- [ ] Remove implicit new line in log system?
 - [ ] Refactor event handling. Right now the script system reaches directly into the event system and still gets event data when console is down.
+- [x] Page up/down through history. ctrl + shift + up/down
 - [x] Input buffer. up / down
 - [x] Support move cursor left/right + insert (memmove)
 - [x] Custom prompt
