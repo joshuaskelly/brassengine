@@ -23,6 +23,7 @@ static circular_buffer_t* input;
 static circular_buffer_t* output;
 static int input_line = 0;
 static int cursor_offset = 0;
+static int history_offset = 0;
 
 static bool visible = true;
 
@@ -156,7 +157,8 @@ static void load_input_history(void) {
 }
 
 bool handle_key_down(event_t* event) {
-    size_t command_length = strlen(command);
+    const size_t command_length = strlen(command);
+    const int max_lines = (config->resolution.height / 2) / 8 - 1;
 
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
@@ -171,6 +173,26 @@ bool handle_key_down(event_t* event) {
         case KEYCODE_RETURN: {
             execute();
             return true;
+        }
+
+        case KEYCODE_PAGEDOWN: {
+            if (output->count > max_lines) {
+                history_offset = min(history_offset + 1, 0);
+            }
+
+            return true;
+        }
+
+        case KEYCODE_PAGEUP: {
+            if (output->count > max_lines) {
+                history_offset--;
+
+                if (max_lines - history_offset > output->count) {
+                    history_offset = -(output->count - max_lines);
+                }
+            }
+
+           return true;
         }
 
         case KEYCODE_UP: {
@@ -271,7 +293,9 @@ void console_draw(void) {
     if (output->count > 0) {
         int lines_to_draw = min(output->count, max_lines);
 
-        for (int i = output->count - lines_to_draw; i < output->count; i++)  {
+        const int history_begin = output->count - lines_to_draw + history_offset;
+        const int history_end = output->count + history_offset;
+        for (int i = history_begin; i < history_end; i++)  {
             char* s = circular_buffer_get(output, i);
             draw_text(s, 0, line * 8);
             line++;
@@ -309,6 +333,7 @@ void console_buffer_write(const char* line) {
 
 void console_buffer_clear(void) {
     circular_buffer_clear(output);
+    history_offset = 0;
 }
 
 void console_buffer_toggle(void) {
@@ -336,6 +361,8 @@ static void execute(void) {
 
     // Reset input history position
     input_line = 0;
+    cursor_offset = 0;
+    history_offset = 0;
 
     // Clear command
     command[0] = '\0';
