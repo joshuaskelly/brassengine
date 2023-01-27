@@ -61,4 +61,6 @@ const char* assets_get_script(const char* filename);
  */
 sound_t* assets_get_sound(const char* filename);
 
+extern const uint8_t default_font_pixels[16384];
+
 #endif
