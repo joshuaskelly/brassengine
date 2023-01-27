@@ -20,6 +20,7 @@
 - [x] Shading via color tables
 
 ## Console
+- [ ] Need built-in font asset
 - [ ] Split on new lines
 - [ ] Remove implicit new line in log system?
 - [ ] Refactor event handling. Right now the script system reaches directly into the event system and still gets event data when console is down.
