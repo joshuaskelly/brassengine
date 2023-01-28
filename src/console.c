@@ -21,9 +21,9 @@ static char command[COMMAND_MAX_LENGTH + 1] = "";
 
 static circular_buffer_t* input;
 static circular_buffer_t* output;
-static int input_line = 0;
+static int input_buffer_offset = 0;
+static int output_buffer_offset = 0;
 static int cursor_offset = 0;
-static int history_offset = 0;
 
 static bool visible = true;
 
@@ -146,17 +146,26 @@ char get_char(key_event_t* key) {
     return '\0';
 }
 
+/**
+ * Update current user command from current input history offset
+ */
 static void load_input_history(void) {
     char* s = circular_buffer_get(
         input,
-        input->count - input_line
+        input->count - input_buffer_offset
     );
 
     strncpy(command, s, strlen(s));
     command[strlen(s)] = '\0';
 }
 
-bool handle_key_down(event_t* event) {
+/**
+ * Handle key down events.
+ *
+ * @param event Event to handle.
+ * @return true if handled, false otherwise
+ */
+static bool handle_key_down(event_t* event) {
     const size_t command_length = strlen(command);
     const int max_lines = (config->resolution.height / 2) / 8 - 1;
 
@@ -177,7 +186,7 @@ bool handle_key_down(event_t* event) {
 
         case KEYCODE_PAGEDOWN: {
             if (output->count > max_lines) {
-                history_offset = min(history_offset + 1, 0);
+                output_buffer_offset = min(output_buffer_offset + 1, 0);
             }
 
             return true;
@@ -185,10 +194,10 @@ bool handle_key_down(event_t* event) {
 
         case KEYCODE_PAGEUP: {
             if (output->count > max_lines) {
-                history_offset--;
+                output_buffer_offset--;
 
-                if (max_lines - history_offset > output->count) {
-                    history_offset = -(output->count - max_lines);
+                if (max_lines - output_buffer_offset > output->count) {
+                    output_buffer_offset = -(output->count - max_lines);
                 }
             }
 
@@ -198,7 +207,7 @@ bool handle_key_down(event_t* event) {
         case KEYCODE_UP: {
             if (input->count == 0) return true;
 
-            input_line = min(input_line + 1, input->count);
+            input_buffer_offset = min(input_buffer_offset + 1, input->count);
             load_input_history();
             return true;
         }
@@ -206,7 +215,7 @@ bool handle_key_down(event_t* event) {
         case KEYCODE_DOWN: {
             if (input->count == 0) return true;
 
-            input_line = max(input_line - 1, 1);
+            input_buffer_offset = max(input_buffer_offset - 1, 1);
             load_input_history();
             return true;
         }
@@ -235,7 +244,13 @@ bool handle_key_down(event_t* event) {
     return true;
 }
 
-bool handle_key_up(event_t* event) {
+/**
+ * Handle key up events.
+ *
+ * @param event Event to handle.
+ * @return true if handled, false otherwise
+ */
+static bool handle_key_up(event_t* event) {
     return false;
 }
 
@@ -293,8 +308,8 @@ void console_draw(void) {
     if (output->count > 0) {
         int lines_to_draw = min(output->count, max_lines);
 
-        const int history_begin = output->count - lines_to_draw + history_offset;
-        const int history_end = output->count + history_offset;
+        const int history_begin = output->count - lines_to_draw + output_buffer_offset;
+        const int history_end = output->count + output_buffer_offset;
         for (int i = history_begin; i < history_end; i++)  {
             char* s = circular_buffer_get(output, i);
             draw_text(s, 0, line * 8);
@@ -333,13 +348,16 @@ void console_buffer_write(const char* line) {
 
 void console_buffer_clear(void) {
     circular_buffer_clear(output);
-    history_offset = 0;
+    output_buffer_offset = 0;
 }
 
 void console_buffer_toggle(void) {
     visible = !visible;
 }
 
+/**
+ * Pushes current user command into input buffer.
+ */
 static void save_command_to_input_buffer(void) {
     size_t size = strlen(command);
     char* s = malloc(sizeof(char) * (size + 1));
@@ -349,6 +367,9 @@ static void save_command_to_input_buffer(void) {
     circular_buffer_add(input, s);
 }
 
+/**
+ * Executes current user command.
+ */
 static void execute(void) {
     // Echo command
     log_info("%s%s", config->console.prompt, command);
@@ -360,9 +381,9 @@ static void execute(void) {
     save_command_to_input_buffer();
 
     // Reset input history position
-    input_line = 0;
+    input_buffer_offset = 0;
     cursor_offset = 0;
-    history_offset = 0;
+    output_buffer_offset = 0;
 
     // Clear command
     command[0] = '\0';
