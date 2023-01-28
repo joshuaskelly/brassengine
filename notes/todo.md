@@ -1,11 +1,11 @@
 # TODO
 ## General
-- [ ] In engine console/repl.
 - [ ] Move reload to core and add Lua binding
 - [ ] Gamepad input
 - [ ] DOS platform?!
 - [ ] Array struct.
 - [ ] Tag all structs?
+- [x] In engine console/repl.
 - [x] Sounds.
 - [x] Fix issue with freeing of dynamically allocated textures.
 - [x] Audit texture module `luaL_checkinteger`. Should probably prefer `luaL_checknumber`
