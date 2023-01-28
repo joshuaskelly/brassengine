@@ -1,6 +1,7 @@
 # TODO
 ## General
 - [ ] In engine console/repl.
+- [ ] Move reload to core and add Lua binding
 - [ ] Gamepad input
 - [ ] DOS platform?!
 - [ ] Array struct.
