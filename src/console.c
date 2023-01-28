@@ -25,7 +25,7 @@ static int input_buffer_offset = 0;
 static int output_buffer_offset = 0;
 static int cursor_offset = 0;
 
-static bool visible = true;
+static bool visible = false;
 
 static void execute(void);
 
