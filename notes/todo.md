@@ -22,7 +22,7 @@
 
 ## Console
 - [ ] Remove implicit new line in log system?
-- [ ] Refactor event handling. Right now the script system reaches directly into the event system and still gets event data when console is down.
+- [ ] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Split on new lines
 - [x] Need built-in font asset
 - [x] Page up/down through history. ctrl + shift + up/down
