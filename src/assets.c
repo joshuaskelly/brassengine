@@ -373,7 +373,6 @@ static char* normalize_filename(const char* filename) {
  * Callback function to count assets.
  */
 static void count_assets(const char* filename) {
-    texture_asset_count = default_texture_asset_count;
     if (check_extension(filename, "gif")) {
         texture_asset_count++;
     }
@@ -517,6 +516,7 @@ static bool load_from_assets_directory(void) {
     gif_free(palette);
 
     // Count all assets
+    texture_asset_count = default_texture_asset_count;
     walk_directory(assets_directory, count_assets);
 
     // Load textures
