@@ -339,11 +339,23 @@ void console_draw(void) {
 }
 
 void console_buffer_write(const char* line) {
+    // Copy line because
     char* s = (char*)malloc(sizeof(char) * strlen(line) + 1);
     strncpy(s, line, strlen(line));
     s[strlen(line)] = '\0';
 
-    circular_buffer_add(output, s);
+    // Split on newlines
+    char* token = strtok(s, "\n");
+    while (token) {
+        char* l = (char*)malloc(sizeof(char) * strlen(token) + 1);
+        strncpy(l, token, strlen(token));
+        l[strlen(token)] = '\0';
+
+        circular_buffer_add(output, l);
+        token = strtok(NULL, "\n");
+    }
+
+    free(s);
 }
 
 void console_buffer_clear(void) {
