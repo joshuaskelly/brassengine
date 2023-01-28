@@ -40,7 +40,7 @@ static asset_entry_t assets_entry_new(const char* name, void* asset) {
 }
 
 static asset_entry_t* texture_assets = NULL;
-static int texture_asset_count = default_texture_asset_count;
+static int texture_asset_count = 0;
 static size_t texture_assets_total_bytes = 0;
 
 static asset_entry_t* script_assets = NULL;
@@ -165,6 +165,7 @@ static bool load_from_zip(void) {
     int total_zip_entries = zip_entries_total(zip);
 
     // Count assets
+    texture_asset_count = default_texture_asset_count;
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
         {
@@ -372,6 +373,7 @@ static char* normalize_filename(const char* filename) {
  * Callback function to count assets.
  */
 static void count_assets(const char* filename) {
+    texture_asset_count = default_texture_asset_count;
     if (check_extension(filename, "gif")) {
         texture_asset_count++;
     }
@@ -571,6 +573,7 @@ static void unload_assets(void) {
     // Free textures
     for (int i = 0; i < texture_asset_count; i++) {
         graphics_texture_free(texture_assets[i].asset);
+        texture_assets[i].asset = NULL;
         free((char*)texture_assets[i].name);
         texture_assets[i].name = NULL;
     }
