@@ -13,7 +13,7 @@ static int transparent_color = -1;
 
 static rect_t clip_rect;
 
-texture_t* graphics_texture_new(int width, int height, color_t* pixels) {
+texture_t* graphics_texture_new(int width, int height, const color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t) + width * height * sizeof(color_t));
 
     if (!texture) {

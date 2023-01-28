@@ -31,7 +31,7 @@ typedef struct {
  * @param pixels Pixel data to copy or NULL
  * @return New texture if successful, NULL otherwise
  */
-texture_t* graphics_texture_new(int width, int height, color_t* pixels);
+texture_t* graphics_texture_new(int width, int height, const color_t* pixels);
 
 /**
  * Frees a texture.

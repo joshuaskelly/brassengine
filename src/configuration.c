@@ -11,6 +11,20 @@
 
 struct config* config = NULL;
 
+static void defaults_set(struct config* config) {
+    config->resolution.width = 320;
+    config->resolution.height = 200;
+    config->console.colors.foreground = 1;
+    config->console.colors.background = 0;
+    config->console.colors.cursor = 1;
+
+    char* prompt = (char*)malloc(sizeof(char) * 3);
+    char* default_prompt = "> ";
+    strncpy(prompt, default_prompt, 3);
+
+    config->console.prompt = prompt;
+}
+
 static bool check_extension(const char* filename, const char* ext) {
     if (filename == NULL || ext == NULL) return false;
 
@@ -25,7 +39,6 @@ static bool check_extension(const char* filename, const char* ext) {
 
 static void set(cJSON* json) {
     cJSON* resolution = cJSON_GetObjectItemCaseSensitive(json, "resolution");
-
     if (resolution) {
         cJSON* width = cJSON_GetObjectItemCaseSensitive(resolution, "width");
         cJSON* height = cJSON_GetObjectItemCaseSensitive(resolution, "height");
@@ -33,6 +46,39 @@ static void set(cJSON* json) {
         if (cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
             config->resolution.width = width->valueint;
             config->resolution.height = height->valueint;
+        }
+    }
+
+    cJSON* console = cJSON_GetObjectItemCaseSensitive(json, "console");
+    if (console) {
+        cJSON* colors = cJSON_GetObjectItemCaseSensitive(console, "colors");
+        if (colors) {
+            cJSON* foreground = cJSON_GetObjectItemCaseSensitive(colors, "foreground");
+            cJSON* background = cJSON_GetObjectItemCaseSensitive(colors, "background");
+            cJSON* cursor = cJSON_GetObjectItemCaseSensitive(colors, "cursor");
+
+            if (cJSON_IsNumber(foreground)) {
+                config->console.colors.foreground = foreground->valueint;
+            }
+
+            if (cJSON_IsNumber(background)) {
+                config->console.colors.background = background->valueint;
+            }
+
+            if (cJSON_IsNumber(cursor)) {
+                config->console.colors.cursor = cursor->valueint;
+            }
+        }
+
+        cJSON* prompt = cJSON_GetObjectItemCaseSensitive(console, "prompt");
+        if (prompt && cJSON_IsString(prompt)) {
+            free(config->console.prompt);
+
+            char* s = prompt->valuestring;
+            char* prompt = malloc(sizeof(char) * (strlen(s) + 1));
+            strncpy(prompt, s, strlen(s));
+            prompt[strlen(s)] = '\0';
+            config->console.prompt = prompt;
         }
     }
 }
@@ -44,13 +90,13 @@ static void init_from_assets_directory(const char* directory) {
     strcat(config_path, directory);
     strcat(config_path, "/config.json");
 
-    // Open script file
+    // Open configuration file
     FILE* fp = fopen(config_path, "rb");
     if (!fp) {
         return;
     }
 
-    // Get script size
+    // Get configuration size
     fseek(fp, 0, SEEK_END);
     size_t size = ftell(fp);
     rewind(fp);
@@ -63,7 +109,7 @@ static void init_from_assets_directory(const char* directory) {
         return;
     }
 
-    // Read in script bytes
+    // Read in configuration bytes
     size_t ret_code = fread(data, 1, size, fp);
     if (ret_code != size) {
         if (feof(fp)) {
@@ -89,10 +135,7 @@ static void init_from_zip(const char* zip) {
 
 void configuration_init(void) {
     config = (struct config*)malloc(sizeof(struct config));
-
-    // Set defaults
-    config->resolution.width = 320;
-    config->resolution.height = 200;
+    defaults_set(config);
 
     // Check if user gave us a zip file or asset directory
     if (arguments_count() > 1) {
@@ -113,5 +156,6 @@ void configuration_init(void) {
 
 
 void configuration_destroy(void) {
+    free(config->console.prompt);
     free(config);
 }

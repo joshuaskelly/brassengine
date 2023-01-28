@@ -11,6 +11,15 @@ extern struct config {
         int width;
         int height;
     } resolution;
+
+    struct {
+        struct {
+            int foreground;
+            int background;
+            int cursor;
+        } colors;
+        char* prompt;
+    } console;
 }* config;
 
 /**

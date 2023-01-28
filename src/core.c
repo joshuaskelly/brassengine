@@ -2,6 +2,7 @@
 
 #include "assets.h"
 #include "configuration.h"
+#include "console.h"
 #include "core.h"
 #include "event.h"
 #include "graphics.h"
@@ -19,7 +20,9 @@ static bool is_running = true;
 static void handle_events(void);
 
 void core_init(void) {
-    log_info("%s\n", ENGINE_COPYRIGHT);
+    console_init();
+
+    log_info("%s", ENGINE_COPYRIGHT);
 
     configuration_init();
     time_init();
@@ -41,6 +44,7 @@ void core_destroy(void) {
     platform_destroy();
     time_destroy();
     configuration_destroy();
+    console_destroy();
 }
 
 void core_run(void) {

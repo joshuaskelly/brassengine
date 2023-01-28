@@ -48,4 +48,13 @@ void script_setup(void);
  */
 void script_reload(void);
 
+/**
+ * Evaluate given script
+ *
+ * @param script String representing a Lua expression, statement, or sequence
+ * of statements.
+ * @return 0 if successful, error code otherwise.
+ */
+int script_evaluate(const char* script);
+
 #endif

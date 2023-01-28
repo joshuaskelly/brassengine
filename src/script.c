@@ -69,8 +69,9 @@ static void init_lua_vm(void) {
     luaL_requiref(L, "raycaster", luaopen_raycaster, 0);
     luaL_requiref(L, "sound", luaopen_sound, 0);
     luaL_requiref(L, "vector2", luaopen_vector2, 0);
+    lua_pop(L, -1);
 
-    // Execute Lua script
+   // Execute Lua script
     int result = luaL_dostring(L, assets_get_script("main.lua"));
 
     if (result != LUA_OK) {
@@ -117,10 +118,10 @@ static int message_handler (lua_State *L) {
 static void call_global_lua_function(lua_State* L, const char* function_name) {
     if (is_in_error_state) return;
 
-    int base = lua_gettop(L);
-
     // Attempt to find the global object
     lua_getglobal(L, function_name);
+
+    int base = lua_gettop(L);
 
     // Invoke function
     if (lua_isfunction(L, -1)) {
@@ -139,6 +140,27 @@ static void call_global_lua_function(lua_State* L, const char* function_name) {
         // Remove message handler
         lua_remove(L, base);
     }
+    else {
+        lua_pop(L, 1);;
+    }
+}
+
+/**
+ * Call function on top of stack.
+ *
+ * @param L Lua VM
+ * @param narg Number of arguments on stack
+ * @param nresults Number of results to return, unless nresults is LUA_MULTRET.
+ * @return int Status of call
+ */
+int call(lua_State* L, int narg, int nresults) {
+    int base = lua_gettop(L);
+    lua_pushcfunction(L, message_handler);
+    lua_insert(L, base);
+    int status = lua_pcall(L, narg, nresults, base);
+    lua_remove(L, base);
+
+    return status;
 }
 
 void script_init(void) {
@@ -159,6 +181,41 @@ void script_reload(void) {
 
     init_lua_vm();
     call_global_lua_function(L, "_init");
+}
+
+int script_evaluate(const char* script) {
+    char r[strlen(script)+9];
+    sprintf(r, "return %s;", script);
+
+    // Try to evaluate wrapped in a return statement.
+    int status = luaL_loadbuffer(L, r, strlen(r), "=console");
+
+    if (status != LUA_OK) {
+        // Remove previous error message.
+        lua_pop(L, 1);
+
+        // Try to evaluate as is.
+        status = luaL_loadbuffer(L, script, strlen(script), "=console");
+    }
+
+    if (status == LUA_OK) {
+        int result = call(L, 0, LUA_MULTRET);
+
+        // Print any values on the stack
+        int n = lua_gettop(L);
+        if (n > 0) {
+            luaL_checkstack(L, LUA_MINSTACK, "too many results to print");
+            lua_getglobal(L, "print");
+            lua_insert(L, 1);
+            if (lua_pcall(L, n, 0, 0) != LUA_OK) {
+                log_error("error calling 'print'");
+            }
+        }
+
+        return result;
+    }
+
+    return status;
 }
 
 bool script_handle_event(event_t* event) {
