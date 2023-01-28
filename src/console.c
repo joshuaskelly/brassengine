@@ -313,7 +313,7 @@ void console_draw(void) {
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
     if (show_cursor) {
-        draw_text("\xdb", strlen(command) * 8 + prompt_length * 8 + cursor_offset * 8, line * 8);
+        draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
     }
 
     // Restore palette
