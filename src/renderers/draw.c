@@ -298,6 +298,11 @@ void draw_text(const char* message, int x, int y) {
             continue;
         }
 
+        if (c == '\t') {
+            dest_x += 16;
+            continue;
+        }
+
         int cx = c % (font_texture->width / 8) * 8;
         int cy = c / (font_texture->width / 8) * 8;
 
