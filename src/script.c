@@ -173,11 +173,7 @@ void script_destroy(void) {
 }
 
 void script_reload(void) {
-    log_info("script reload");
     lua_close(L);
-
-    time_reload();
-    assets_reload();
 
     init_lua_vm();
     call_global_lua_function(L, "_init");
@@ -219,18 +215,6 @@ int script_evaluate(const char* script) {
 }
 
 bool script_handle_event(event_t* event) {
-    switch (event->type) {
-        case EVENT_KEYUP:
-            if (event->key.code == KEYCODE_F5) {
-                script_reload();
-                return true;
-            }
-            break;
-
-        default:
-            break;
-    }
-
     return false;
 }
 

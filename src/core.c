@@ -62,6 +62,12 @@ void core_main_loop(void) {
     time_update();
 }
 
+void core_reload(void) {
+    time_reload();
+    assets_reload();
+    script_reload();
+}
+
 void core_set_state(state_t* state) {
     current_state = *state;
     current_state.init();
@@ -77,6 +83,11 @@ static void handle_events() {
         // Core handles quit event
         if (event.type == EVENT_QUIT) {
             is_running = false;
+            continue;
+        }
+
+        if (event.type == EVENT_RELOAD) {
+            core_reload();
             continue;
         }
 

@@ -37,6 +37,11 @@ void core_run(void);
 void core_main_loop(void);
 
 /**
+ * Reload engine systems
+ */
+void core_reload(void);
+
+/**
  * Set and initialize state
  *
  * @param state New state to set as current

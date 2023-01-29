@@ -13,12 +13,13 @@
 
 typedef enum {
     EVENT_UNSET = 0,
-    EVENT_QUIT = 1,
-    EVENT_KEYDOWN = 2,
-    EVENT_KEYUP = 3,
-    EVENT_MOUSEMOTION = 4,
-    EVENT_MOUSEDOWN = 5,
-    EVENT_MOUSEUP = 6
+    EVENT_QUIT,
+    EVENT_RELOAD,
+    EVENT_KEYDOWN,
+    EVENT_KEYUP,
+    EVENT_MOUSEMOTION,
+    EVENT_MOUSEDOWN,
+    EVENT_MOUSEUP
 } event_type_t;
 
 typedef struct {
