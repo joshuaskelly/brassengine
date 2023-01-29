@@ -1,10 +1,10 @@
 # TODO
 ## General
-- [ ] Move reload to core and add Lua binding
 - [ ] Gamepad input
 - [ ] DOS platform?!
 - [ ] Array struct.
 - [ ] Tag all structs?
+- [x] Move reload to core and add Lua binding
 - [x] In engine console/repl.
 - [x] Sounds.
 - [x] Fix issue with freeing of dynamically allocated textures.
