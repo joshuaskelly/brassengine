@@ -16,6 +16,7 @@
 ## Raycaster
 - [ ] Render targets
 - [ ] Ceiling/floor tile data
+- [ ] Depth buffer? Work on sprite perf.
 - [x] Sprites
 - [x] Depth buffer
 - [x] Shading via color tables
