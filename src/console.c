@@ -372,7 +372,7 @@ void console_buffer_toggle(void) {
  */
 static void save_command_to_input_buffer(void) {
     size_t size = strlen(command);
-    char* s = malloc(sizeof(char) * (size + 1));
+    char* s = (char*)malloc(sizeof(char) * (size + 1));
     strncpy(s, command, size);
     s[size] = '\0';
 

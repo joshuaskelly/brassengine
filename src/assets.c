@@ -85,7 +85,7 @@ void assets_destroy(void) {
 sound_t* sound_from_wav(drwav* wav) {
     size_t total_frames = wav->totalPCMFrameCount;
     size_t size = total_frames * wav->channels * sizeof(sample_t);
-    sample_t* pcm = malloc(size);
+    sample_t* pcm = (sample_t*)malloc(size);
     if (!pcm) {
         log_error("Failed to allocate memory for sound");
         return NULL;

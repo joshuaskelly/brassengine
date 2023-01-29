@@ -75,7 +75,7 @@ static void set(cJSON* json) {
             free(config->console.prompt);
 
             char* s = prompt->valuestring;
-            char* prompt = malloc(sizeof(char) * (strlen(s) + 1));
+            char* prompt = (char*)malloc(sizeof(char) * (strlen(s) + 1));
             strncpy(prompt, s, strlen(s));
             prompt[strlen(s)] = '\0';
             config->console.prompt = prompt;
