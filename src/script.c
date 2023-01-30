@@ -32,6 +32,7 @@ static bool is_in_error_state = false;
 
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
+static int call(lua_State* L, int narg, int nresults);
 
 /**
  * Create and configure Lua VM.
@@ -72,8 +73,19 @@ static void init_lua_vm(void) {
     lua_pop(L, -1);
 
    // Execute Lua script
-    int result = luaL_dostring(L, assets_get_script("main.lua"));
+    const char* main = assets_get_script("main.lua");
+    int status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
 
+    if (status != LUA_OK) {
+        const char* error_message = lua_tostring(L, -1);
+        log_error(error_message);
+        is_in_error_state = true;
+
+        lua_pop(L, -1);
+        return;
+    }
+
+    int result = call(L, 0, LUA_MULTRET);
     if (result != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
         log_error(error_message);
@@ -153,7 +165,7 @@ static void call_global_lua_function(lua_State* L, const char* function_name) {
  * @param nresults Number of results to return, unless nresults is LUA_MULTRET.
  * @return int Status of call
  */
-int call(lua_State* L, int narg, int nresults) {
+static int call(lua_State* L, int narg, int nresults) {
     int base = lua_gettop(L);
     lua_pushcfunction(L, message_handler);
     lua_insert(L, base);
