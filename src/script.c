@@ -147,13 +147,16 @@ static void call_global_lua_function(lua_State* L, const char* function_name) {
             const char* message = lua_tostring(L, -1);
             log_error(message);
             is_in_error_state = true;
+
+            lua_pop(L, -1);
+            return;
         }
 
         // Remove message handler
         lua_remove(L, base);
     }
     else {
-        lua_pop(L, 1);;
+        lua_pop(L, 1);
     }
 }
 
