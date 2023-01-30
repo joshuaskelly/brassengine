@@ -261,7 +261,10 @@ static int lua_package_searcher(lua_State* L) {
         lua_pop(L, 1);
 
         // Load script.
-        int result = luaL_loadbuffer(L, script, strlen(script), module_name);
+        size_t size = strlen(module_name) + 2;
+        char name[size];
+        snprintf(name, size, "=%s", module_name);
+        int result = luaL_loadbuffer(L, script, strlen(script), name);
         if (result != LUA_OK) {
             message_handler(L);
         }
