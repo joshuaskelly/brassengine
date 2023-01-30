@@ -1,10 +1,10 @@
 # TODO
 ## General
-- [ ] Audit loadbuffer usage for filename correctness.
 - [ ] Gamepad input
 - [ ] DOS platform?!
 - [ ] Array struct.
 - [ ] Tag all structs?
+- [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
 - [x] In engine console/repl.
 - [x] Sounds.
@@ -23,6 +23,7 @@
 - [x] Shading via color tables
 
 ## Console
+- [ ] Fix errors being output twice.
 - [ ] Remove implicit new line in log system?
 - [ ] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Split on new lines
