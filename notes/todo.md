@@ -1,5 +1,6 @@
 # TODO
 ## General
+- [ ] Audit loadbuffer usage for filename correctness.
 - [ ] Gamepad input
 - [ ] DOS platform?!
 - [ ] Array struct.
