@@ -8,7 +8,7 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
-#include "../list.h"
+#include "../collections/list.h"
 
 typedef struct {
     mfloat_t position[VEC2_SIZE];

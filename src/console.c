@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "circular_buffer.h"
 #include "configuration.h"
 #include "console.h"
 #include "event.h"
@@ -13,6 +12,7 @@
 #include "math.h"
 #include "script.h"
 #include "time.h"
+#include "collections/circular_buffer.h"
 
 #include "renderers/draw.h"
 
