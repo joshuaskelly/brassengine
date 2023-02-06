@@ -8,6 +8,8 @@
 
 #include <stdbool.h>
 
+#include "event.h"
+
 /**
  * Initialize scripting system. Called once during application start.
  */
@@ -56,5 +58,19 @@ void script_reload(void);
  * @return 0 if successful, error code otherwise.
  */
 int script_evaluate(const char* script);
+
+/**
+ * Gets time used by _update function call in milliseconds
+ *
+ * @return Time in milliseconds
+ */
+double script_update_time_get(void);
+
+/**
+ * Gets time used by _draw function call in milliseconds
+ *
+ * @return Time in milliseconds
+ */
+double script_draw_time_get(void);
 
 #endif

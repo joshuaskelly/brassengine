@@ -41,4 +41,6 @@ double time_delta_time(void);
  */
 double time_since_init(void);
 
+double time_millis_get(void);
+
 #endif

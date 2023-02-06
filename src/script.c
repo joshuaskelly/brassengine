@@ -24,11 +24,14 @@
 #include "modules/mouse.h"
 #include "modules/raycaster.h"
 #include "modules/sound.h"
+#include "modules/statistics.h"
 #include "modules/texture.h"
 #include "modules/vector2.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
+static double update_time;
+static double draw_time;
 
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
@@ -69,6 +72,7 @@ static void init_lua_vm(void) {
     luaL_requiref(L, "input.mouse", luaopen_mouse, 0);
     luaL_requiref(L, "raycaster", luaopen_raycaster, 0);
     luaL_requiref(L, "sound", luaopen_sound, 0);
+    luaL_requiref(L, "statistics", luaopen_statistics, 0);
     luaL_requiref(L, "vector2", luaopen_vector2, 0);
     lua_pop(L, -1);
 
@@ -229,12 +233,22 @@ int script_evaluate(const char* script) {
     return status;
 }
 
+double script_update_time_get(void) {
+    return update_time;
+}
+
+double script_draw_time_get(void) {
+    return draw_time;
+}
+
 bool script_handle_event(event_t* event) {
     return false;
 }
 
 void script_update(void) {
+    double start = time_millis_get();
     call_global_lua_function(L, "_update");
+    update_time = time_millis_get() - start;
 }
 
 void script_setup(void) {
@@ -242,7 +256,9 @@ void script_setup(void) {
 }
 
 void script_draw(void) {
+    double start = time_millis_get();
     call_global_lua_function(L, "_draw");
+    draw_time = time_millis_get() - start;
 }
 
 /**
