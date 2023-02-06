@@ -1,5 +1,5 @@
 /**
- * Module for getting .
+ * Module for getting information about the runtime environment.
  * @module statistics
  */
 
