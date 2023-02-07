@@ -8,6 +8,7 @@
 #include <lua/lualib.h>
 
 #include "../script.h"
+#include "../time.h"
 
 #include "statistics.h"
 
@@ -35,9 +36,22 @@ static int bindings_get_update_time(lua_State* L) {
     return 1;
 }
 
+/**
+ * Gets current fps
+ * @function fps
+ * @return Frames per second
+ */
+static int bindings_get_fps(lua_State* L) {
+    double fps = 1000.0 / time_delta_time();
+    lua_pushnumber(L, fps);
+
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"draw_time", bindings_get_draw_time},
     {"update_time", bindings_get_update_time},
+    {"fps", bindings_get_fps},
     {NULL, NULL}
 };
 
