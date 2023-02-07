@@ -236,9 +236,13 @@ static bool handle_key_down(event_t* event) {
 
     if (command_length < COMMAND_MAX_LENGTH) {
         char c = get_char(&event->key);
-        int i = command_length + cursor_offset;
-        memmove(command + i + 1, command + i, -cursor_offset + 1);
-        command[i] = c;
+
+        // Only insert printable characters into command
+        if (c != '\0') {
+            int i = command_length + cursor_offset;
+            memmove(command + i + 1, command + i, -cursor_offset + 1);
+            command[i] = c;
+        }
     }
 
     return true;
