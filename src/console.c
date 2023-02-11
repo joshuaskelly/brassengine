@@ -179,6 +179,17 @@ static bool handle_key_down(event_t* event) {
             return true;
         }
 
+        case KEYCODE_DELETE: {
+            if (command_length <= 0) return true;
+            if (cursor_offset == 0) return true;
+
+            int i = command_length + cursor_offset;
+            memmove(command + i, command + i + 1, -cursor_offset + 1);
+            cursor_offset += 1;
+
+            return true;
+        }
+
         case KEYCODE_RETURN: {
             execute();
             return true;
