@@ -241,6 +241,16 @@ static bool handle_key_down(event_t* event) {
             return true;
         }
 
+        case KEYCODE_HOME: {
+            cursor_offset = -strlen(command);
+            return true;
+        }
+
+        case KEYCODE_END: {
+            cursor_offset = 0;
+            return true;
+        }
+
         default:
             break;
     }
