@@ -411,11 +411,13 @@ static void execute(void) {
     // Echo command
     log_info("%s%s", config->console.prompt, command);
 
-    // Evaluate command
-    script_evaluate(command);
+    if (strlen(command) > 0) {
+        // Evaluate command
+        script_evaluate(command);
 
-    // Save command
-    save_command_to_input_buffer();
+        // Save command
+        save_command_to_input_buffer();
+    }
 
     // Reset input history position
     input_buffer_offset = 0;
