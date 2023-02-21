@@ -16,6 +16,7 @@
 #include "time.h"
 
 #include "modules/assets.h"
+#include "modules/display.h"
 #include "modules/draw.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
@@ -64,6 +65,7 @@ static void init_lua_vm(void) {
 
     // Set modules
     luaL_requiref(L, "assets", luaopen_assets, 0);
+    luaL_requiref(L, "display", luaopen_display, 0);
     luaL_requiref(L, "draw", luaopen_draw, 0);
     luaL_requiref(L, "json", luaopen_json, 0);
     luaL_requiref(L, "graphics", luaopen_graphics, 0);

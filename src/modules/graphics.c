@@ -192,6 +192,27 @@ static int bindings_graphics_set_palette_color(lua_State* L) {
     return 0;
 }
 
+/**
+ * Set render buffer resolution.
+ * @function set_resolution
+ * @param width Resolution width
+ * @param height Resolution height
+ */
+static int bindings_graphics_set_resolution(lua_State* L) {
+    int width = (int)luaL_checknumber(L, 1);
+    int height = (int)luaL_checknumber(L, 2);
+
+    lua_pop(L, -1);
+
+    config->resolution.width = width;
+    config->resolution.height = height;
+
+    graphics_set_resolution(width, height);
+    platform_display_set_resolution(width, height);
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"set_pixel", bindings_graphics_set_pixel},
     {"blit", bindings_graphics_blit},
@@ -200,6 +221,7 @@ static const struct luaL_Reg module_functions[] = {
     {"set_palette_color", bindings_graphics_set_draw_palette_color},
     {"set_transparent_color", bindings_graphics_set_transparent_color},
     {"set_global_palette_color", bindings_graphics_set_palette_color},
+    {"set_resolution", bindings_graphics_set_resolution},
     {NULL, NULL}
 };
 

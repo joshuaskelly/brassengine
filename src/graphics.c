@@ -212,6 +212,25 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
     }
 }
 
+void graphics_set_resolution(int width, int height) {
+    graphics_texture_free(render_texture);
+
+    render_texture = graphics_texture_new(
+        config->resolution.width,
+        config->resolution.height,
+        NULL
+    );
+
+    if (!render_texture) {
+        log_fatal("Failed to create frame buffer");
+    }
+
+    clip_rect.x = 0;
+    clip_rect.y = 0;
+    clip_rect.width = config->resolution.width;
+    clip_rect.height = config->resolution.height;
+}
+
 void graphics_set_clipping_rectangle(rect_t* rect) {
     rect_t default_rect = {0, 0, render_texture->width, render_texture->height};
 

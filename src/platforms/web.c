@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <emscripten.h>
@@ -242,4 +244,39 @@ static void sdl_handle_events(void) {
 void platform_play_sound(sound_t* sound) {
     Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
     Mix_PlayChannel(-1, chunk, 0);
+}
+
+void platform_display_set_resolution(int width, int height) {
+    SDL_DestroyTexture(render_buffer_texture);
+    free(render_buffer);
+
+    render_buffer = calloc(width * height, sizeof(uint32_t));
+
+    if (!render_buffer) {
+        log_fatal("Error creating frame buffer.");
+    }
+
+    render_buffer_texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_STREAMING,
+        width,
+        height
+    );
+
+    if (!render_buffer_texture) {
+        log_fatal("Error creating SDL frame buffer texture");
+    }
+}
+
+void platform_display_set_size(int width, int height) {
+    SDL_SetWindowSize(window, width, height);
+}
+
+void platform_display_set_fullscreen(bool fullscreen) {
+    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+}
+
+void platform_display_set_title(const char* title) {
+    SDL_SetWindowTitle(window, title);
 }

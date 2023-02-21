@@ -10,6 +10,8 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#include <stdbool.h>
+
 #include "sounds.h"
 
 /**
@@ -44,5 +46,29 @@ void platform_draw(void);
  * Plays given sound.
  */
 void platform_play_sound(sound_t* sound);
+
+void platform_display_set_resolution(int width, int height);
+
+/**
+ * Set display size.
+ *
+ * @param width Display width.
+ * @param height Display height.
+ */
+void platform_display_set_size(int width, int height);
+
+/**
+ * Set display fullscreen.
+ *
+ * @param fullscreen True to set to fullscreen, False for windowed.
+ */
+void platform_display_set_fullscreen(bool fullscreen);
+
+/**
+ * Set display title.
+ *
+ * @param title Text to set as title.
+ */
+void platform_display_set_title(const char* title);
 
 #endif
