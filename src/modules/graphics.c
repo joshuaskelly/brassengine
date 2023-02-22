@@ -14,6 +14,7 @@
 #include "../configuration.h"
 #include "../assets.h"
 #include "../graphics.h"
+#include "../platform.h"
 
 /**
  * Draw a pixel at given position and color.
