@@ -1,5 +1,6 @@
 # TODO
 ## General
+- [ ] Error on missing main.lua instead of segfaulting.
 - [ ] Gamepad input
 - [ ] Array struct.
 - [ ] Tag all structs?
