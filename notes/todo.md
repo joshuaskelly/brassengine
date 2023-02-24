@@ -1,10 +1,11 @@
 # TODO
 ## General
 - [ ] Gamepad input
-- [ ] DOS platform?!
 - [ ] Array struct.
 - [ ] Tag all structs?
 - [ ] Default palette?
+- [ ] DOS platform?!
+- [ ] Dreamcast platform?!
 - [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
 - [x] In engine console/repl.
