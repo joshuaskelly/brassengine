@@ -1,6 +1,6 @@
 /**
  * Module for interacting with the display.
- * @module assets
+ * @module display
  */
 #include <stddef.h>
 
