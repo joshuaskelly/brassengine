@@ -27,7 +27,7 @@ static int bindings_assets_get_texture(lua_State* L) {
         lua_pushtexture(L, texture);
     }
     else {
-        lua_pushnil(L);
+        luaL_error(L, "missing asset: %s", texture_name);
     }
 
     return 1;
@@ -47,7 +47,7 @@ static int bindings_assets_get_sound(lua_State* L) {
         lua_pushsound(L, sound);
     }
     else {
-        lua_pushnil(L);
+        luaL_error(L, "missing asset: %s", sound_name);
     }
 
     return 1;
