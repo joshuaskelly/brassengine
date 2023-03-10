@@ -28,6 +28,7 @@ static int cursor_offset = 0;
 static bool visible = false;
 
 static void execute(void);
+static void clear_input(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
@@ -192,6 +193,11 @@ static bool handle_key_down(event_t* event) {
 
         case KEYCODE_RETURN: {
             execute();
+            return true;
+        }
+
+        case KEYCODE_ESCAPE: {
+            clear_input();
             return true;
         }
 
@@ -419,6 +425,13 @@ static void execute(void) {
         save_command_to_input_buffer();
     }
 
+    clear_input();
+}
+
+/**
+ * Clears user input.
+ */
+static void clear_input(void) {
     // Reset input history position
     input_buffer_offset = 0;
     cursor_offset = 0;
