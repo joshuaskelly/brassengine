@@ -1,6 +1,7 @@
 -- MADX demo
 
 local assets = require("assets")
+local display = require("display")
 local draw = require("draw")
 local graphics = require("graphics")
 local keyboard = require("input.keyboard")
@@ -11,14 +12,22 @@ local generate = require("generator")
 
 -- Called once at startup
 function _init()
-    print("lua init")
+    resolution = {
+        width = 176,
+        height = 160
+    }
+
+    --graphics.set_resolution(resolution.width, resolution.height)
+    display.set_size(resolution.width * 4, resolution.height * 4)
 
     textures = assets.get_texture("textures.gif")
 
     p_x = 0
     p_y = 0
 
-    map = Map.new(36, 21)
+    show_grid = false
+
+    map = Map.new(22 - 4, 20 - 4)
     generate:Noise(map)
     generate:Threshold(map, 0.85)
 end
@@ -67,38 +76,41 @@ end
 
 function frame(name)
     -- Draw name
-    draw.text(name, 16, 8)
 
     local s = 398
 
     -- Draw top + bottom frame
-    for x = 2, (320 - 24) // 8 do
-        if x > #name + 2 then
+    for x = 2, (resolution.width - 24) // 8 do
+        if x > #name + 1 then
             sprite(s, x * 8, 8)
         end
 
-        sprite(s, x * 8, 200 - 16)
+        sprite(s, x * 8, resolution.height - 16)
     end
 
     -- Draw left + right frame
-    for y = 2, (200 - 24) // 8 do
+    for y = 2, (resolution.height - 24) // 8 do
         if y > 1 then
             sprite(s + 32, 8, y * 8)
         end
 
-        sprite(s + 32, 320 - 16, y * 8)
+        sprite(s + 32, resolution.width - 16, y * 8)
     end
 
     -- Draw corners
     sprite(s + 62, 8, 8)
-    sprite(s + 63, 320 - 16, 8)
-    sprite(s + 63 + 31, 8, 200 - 16)
-    sprite(s + 63 + 32, 320 - 16, 200 - 16)
+    sprite(s + 63, resolution.width - 16, 8)
+    sprite(s + 63 + 31, 8, resolution.height - 16)
+    sprite(s + 63 + 32, resolution.width - 16, resolution.height - 16)
+
+    draw.text(name, 8, 8)
 end
 
 function grid()
-    for y = 2, (200 // 8) - 3 do
-        for x = 2, (320 // 8) - 3 do
+    if not show_grid then return end
+
+    for y = 2, (resolution.height // 8) - 3 do
+        for x = 2, (resolution.width // 8) - 3 do
             draw.rectangle(x * 8, y * 8, 8, 8, 4)
         end
     end
