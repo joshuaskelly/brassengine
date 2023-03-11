@@ -80,6 +80,11 @@ static void init_lua_vm(void) {
 
    // Execute Lua script
     const char* main = assets_get_script("main.lua");
+    if (!main) {
+        log_error("Failed to load main.lua file.");
+        return;
+    }
+
     int status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
 
     if (status != LUA_OK) {
