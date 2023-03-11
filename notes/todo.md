@@ -1,12 +1,12 @@
 # TODO
 ## General
-- [ ] Error on missing main.lua instead of segfaulting.
 - [ ] Gamepad input
 - [ ] Array struct.
 - [ ] Tag all structs?
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [x] Error on missing main.lua instead of segfaulting.
 - [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
 - [x] In engine console/repl.
