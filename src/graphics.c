@@ -70,6 +70,45 @@ void graphics_texture_blit(texture_t* source_texture, texture_t* destination_tex
     graphics_blit(source_texture, destination_texture, source_rect, destination_rect, texture_blit_func);
 }
 
+float_buffer_t* graphics_float_buffer_new(int width, int height, const float* data) {
+    float_buffer_t* buffer = (float_buffer_t*)malloc(sizeof(float_buffer_t) + width * height * sizeof(float));
+
+    if (!buffer) {
+        log_error("Failed to create float buffer");
+        return NULL;
+    }
+
+    buffer->width = width;
+    buffer->height = height;
+    memset(buffer->data, 0, width * height);
+
+    if (data) {
+        size_t size = width * height * sizeof(float);
+        memmove(buffer->data, data, size);
+    }
+
+    return buffer;
+}
+
+void graphics_float_buffer_free(texture_t* buffer) {
+    free(buffer);
+    buffer = NULL;
+}
+
+void graphics_float_buffer_set(float_buffer_t* buffer, int x, int y, float value) {
+    if (x < 0 || x >= buffer->width) return;
+    if (y < 0 || y >= buffer->height) return;
+
+    buffer->data[y * buffer->width + x] = value;
+}
+
+float graphics_float_buffer_get_pixel(float_buffer_t* buffer, int x, int y) {
+    if (x < 0 || x >= buffer->width) return 0;
+    if (y < 0 || y >= buffer->height) return 0;
+
+    return buffer->data[y * buffer->width + x];
+}
+
 void graphics_init(void) {
     log_info("graphics init");
 
