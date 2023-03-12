@@ -86,6 +86,54 @@ color_t graphics_texture_get_pixel(texture_t* texture, int x, int y);
  */
 void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect);
 
+typedef struct {
+    int width;
+    int height;
+    float* data;
+} float_buffer_t;
+
+/**
+ * Create a new float buffer.
+ *
+ * @param width Width of buffer
+ * @param height Height of buffer
+ * @param data Data to copy or NULL
+ * @return New texture if successful, NULL otherwise
+ */
+float_buffer_t* graphics_float_buffer_new(int width, int height, const float* data);
+
+/**
+ * Frees a float buffer.
+ *
+ * @param buffer Float buffer to free
+ */
+void graphics_float_buffer_free(texture_t* buffer);
+
+/**
+ * Set value at given coordinates.
+ *
+ * @param buffer Float buffer to set value
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @param value Float value
+ */
+void graphics_float_buffer_set(float_buffer_t* buffer, int x, int y, float value);
+
+/**
+ * Get value at given coordinates.
+ *
+ * @param buffer Float buffer to retrieve value from
+ * @param x X-coordinate
+ * @param y Y-coordinate
+ * @return Value at given coordinates
+ */
+float graphics_float_buffer_get_pixel(float_buffer_t* buffer, int x, int y);
+
+typedef struct {
+    texture_t* color;
+    float_buffer_t* depth;
+} render_buffer_t;
+
 /**
  * Initialize graphics system.
  */
