@@ -74,7 +74,7 @@ static void triangle_fill(vector2_t* v0, vector2_t* v1, vector2_t* v2, vector2_t
     float bias1 = is_top_left(v2, v0) ? 1.0f : 0.0f;
     float bias2 = is_top_left(v0, v1) ? 1.0f : 0.0f;
 
-    float area = edge_function(v1, v2, v0);
+    float inverse_area = 1.0f / edge_function(v1, v2, v0);
 
     texture_t* tex = assets_get_texture("texture.gif");
 
@@ -90,8 +90,8 @@ static void triangle_fill(vector2_t* v0, vector2_t* v1, vector2_t* v2, vector2_t
             if (w0 < bias0 || w1 < bias1 || w2 < bias2) continue;
 
             // Calculate barycentric coords
-            float alpha = w0 / area;
-            float beta = w1 / area;
+            float alpha = w0 * inverse_area;
+            float beta = w1 * inverse_area;
             float gamma = 1 - (alpha + beta);
 
             // Calculate st coords
