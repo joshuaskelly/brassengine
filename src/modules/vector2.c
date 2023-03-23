@@ -366,7 +366,7 @@ static int vector2_clamp(lua_State* L) {
  * Returns a vector in the direction of v0 with magnitude 1.
  * @function normalize
  * @param v0
- * @return vector
+ * @return vector2
  */
 static int vector2_normalize(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -441,7 +441,7 @@ static int vector2_slide(lua_State* L) {
  * @function reflect
  * @param v0
  * @param normal Plane normal
- * @return int
+ * @return vector2
  */
 static int vector2_reflect(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
