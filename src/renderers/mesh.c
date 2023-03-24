@@ -91,12 +91,12 @@ void mesh_render(void) {
 static void render(mesh_t* mesh) {
     for (int i = 0; i < mesh->index_count; i += 3) {
         triangle_t t = {
-            .v0 = mesh->vertices + mesh->indices[i + 0] * 2,
-            .v1 = mesh->vertices + mesh->indices[i + 1] * 2,
-            .v2 = mesh->vertices + mesh->indices[i + 2] * 2,
-            .uv0 = mesh->uvs + mesh->indices[i + 0] * 2,
-            .uv1 = mesh->uvs + mesh->indices[i + 1] * 2,
-            .uv2 = mesh->uvs + mesh->indices[i + 2] * 2
+            .v0 = mesh->vertices + mesh->indices[i + 0] * VEC2_SIZE,
+            .v1 = mesh->vertices + mesh->indices[i + 1] * VEC2_SIZE,
+            .v2 = mesh->vertices + mesh->indices[i + 2] * VEC2_SIZE,
+            .uv0 = mesh->uvs + mesh->indices[i + 0] * VEC2_SIZE,
+            .uv1 = mesh->uvs + mesh->indices[i + 1] * VEC2_SIZE,
+            .uv2 = mesh->uvs + mesh->indices[i + 2] * VEC2_SIZE
         };
 
         rasterize(&t);
