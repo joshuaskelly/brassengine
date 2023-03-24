@@ -13,6 +13,13 @@
 #include "mesh.h"
 
 typedef struct {
+    mfloat_t* vertices;
+    mfloat_t* uvs;
+    int* indices;
+    size_t index_count;
+} mesh_t;
+
+typedef struct {
     mfloat_t *v0;
     mfloat_t *v1;
     mfloat_t *v2;
@@ -22,49 +29,78 @@ typedef struct {
 } triangle_t;
 
 static void rasterize(triangle_t* triangle);
+static void render(mesh_t* mesh);
 static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f);
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1);
 
 void mesh_render(void) {
-    mfloat_t v0[VEC2_SIZE] = {20, 20};
-    mfloat_t v1[VEC2_SIZE] = {100, 20};
-    mfloat_t v2[VEC2_SIZE] = {20, 100};
-    mfloat_t v3[VEC2_SIZE] = {100, 100};
+    // mfloat_t v0[VEC2_SIZE] = {20, 20};
+    // mfloat_t v1[VEC2_SIZE] = {100, 20};
+    // mfloat_t v2[VEC2_SIZE] = {20, 100};
+    // mfloat_t v3[VEC2_SIZE] = {100, 100};
 
-    mfloat_t uv0[VEC2_SIZE] = {0, 0};
-    mfloat_t uv1[VEC2_SIZE] = {1, 0};
-    mfloat_t uv2[VEC2_SIZE] = {0, 1};
-    mfloat_t uv3[VEC2_SIZE] = {1, 1};
+    // mfloat_t uv0[VEC2_SIZE] = {0, 0};
+    // mfloat_t uv1[VEC2_SIZE] = {1, 0};
+    // mfloat_t uv2[VEC2_SIZE] = {0, 1};
+    // mfloat_t uv3[VEC2_SIZE] = {1, 1};
 
-    triangle_t t0 = {
-        .v0 = v0,
-        .v1 = v1,
-        .v2 = v2,
-        .uv0 = uv0,
-        .uv1 = uv1,
-        .uv2 = uv2
+    // triangle_t t0 = {
+    //     .v0 = v0,
+    //     .v1 = v1,
+    //     .v2 = v2,
+    //     .uv0 = uv0,
+    //     .uv1 = uv1,
+    //     .uv2 = uv2
+    // };
+
+    // triangle_t t1 = {
+    //     .v0 = v3,
+    //     .v1 = v2,
+    //     .v2 = v1,
+    //     .uv0 = uv3,
+    //     .uv1 = uv2,
+    //     .uv2 = uv1
+    // };
+
+    // mfloat_t c[VEC2_SIZE] = {64, 64};
+
+    // float angle = time_since_init() / 1000.0f * 0.2f;
+
+    // vec2_rotate_around(v0, v0, c, angle);
+    // vec2_rotate_around(v1, v1, c, angle);
+    // vec2_rotate_around(v2, v2, c, angle);
+    // vec2_rotate_around(v3, v3, c, angle);
+
+    // rasterize(&t0);
+    // rasterize(&t1);
+
+    mfloat_t vertices[] = {20, 20, 100, 20, 20, 100, 100, 100};
+    mfloat_t uvs[] = {0, 0, 1, 0, 0, 1, 1, 1};
+    int indices[] = {0, 1, 2, 3, 2, 1};
+
+    mesh_t m1 = {
+        .vertices = vertices,
+        .uvs = uvs,
+        .indices = indices,
+        .index_count = 6
     };
 
-    triangle_t t1 = {
-        .v0 = v3,
-        .v1 = v2,
-        .v2 = v1,
-        .uv0 = uv3,
-        .uv1 = uv2,
-        .uv2 = uv1
-    };
+    render(&m1);
+}
 
-    mfloat_t c[VEC2_SIZE] = {64, 64};
+static void render(mesh_t* mesh) {
+    for (int i = 0; i < mesh->index_count; i += 3) {
+        triangle_t t = {
+            .v0 = mesh->vertices + mesh->indices[i + 0] * 2,
+            .v1 = mesh->vertices + mesh->indices[i + 1] * 2,
+            .v2 = mesh->vertices + mesh->indices[i + 2] * 2,
+            .uv0 = mesh->uvs + mesh->indices[i + 0] * 2,
+            .uv1 = mesh->uvs + mesh->indices[i + 1] * 2,
+            .uv2 = mesh->uvs + mesh->indices[i + 2] * 2
+        };
 
-    float angle = time_since_init() / 1000.0f * 0.2f;
-
-    vec2_rotate_around(v0, v0, c, angle);
-    vec2_rotate_around(v1, v1, c, angle);
-    vec2_rotate_around(v2, v2, c, angle);
-    vec2_rotate_around(v3, v3, c, angle);
-
-    rasterize(&t0);
-    rasterize(&t1);
+        rasterize(&t);
+    }
 }
 
 static int edge_function(mfloat_t* a, mfloat_t* b, mfloat_t* p) {
