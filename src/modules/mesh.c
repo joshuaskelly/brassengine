@@ -11,6 +11,8 @@
 
 #include "mesh.h"
 
+#include "../assets.h"
+#include "../graphics.h"
 #include "../renderers/mesh.h"
 
 // Temp data
@@ -26,7 +28,8 @@ static mesh_t m1 = {
 };
 
 static int module_mesh_render(lua_State* L) {
-    mesh_render(&m1);
+    texture_t* tex = assets_get_texture("texture.gif");
+    mesh_render(&m1, tex);
     return 0;
 }
 

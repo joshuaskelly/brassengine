@@ -51,15 +51,15 @@ static triangle_t* mesh_get_triangle(mesh_t* mesh, triangle_t* triangle, int ind
     return triangle;
 }
 
-static void rasterize(triangle_t* triangle);
+static void rasterize(triangle_t* triangle, texture_t* texture);
 static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f);
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1);
 
-void mesh_render(mesh_t* mesh) {
+void mesh_render(mesh_t* mesh, texture_t* texture) {
     for (int i = 0; i < mesh_triangle_count(mesh); i++) {
         triangle_t t;
         mesh_get_triangle(mesh, &t, i);
-        rasterize(&t);
+        rasterize(&t, texture);
     }
 }
 
@@ -88,7 +88,7 @@ static bool is_top_left(mfloat_t* a, mfloat_t* b) {
  *
  * @param triangle
  */
-static void rasterize(triangle_t* triangle) {
+static void rasterize(triangle_t* triangle, texture_t* texture) {
     mfloat_t* v0 = triangle->v0;
     mfloat_t* v1 = triangle->v1;
     mfloat_t* v2 = triangle->v2;
@@ -109,8 +109,6 @@ static void rasterize(triangle_t* triangle) {
 
     float inverse_area = 1.0f / edge_function(v1, v2, v0);
 
-    texture_t* tex = assets_get_texture("texture.gif");
-
     for (int y = y_min; y <= y_max; y++) {
         for (int x = x_min; x <= x_max; x++) {
             mfloat_t p[2] = { x + 0.5f, y + 0.5f };
@@ -128,10 +126,10 @@ static void rasterize(triangle_t* triangle) {
             float gamma = 1 - (alpha + beta);
 
             // Calculate st coords
-            int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * tex->width;
-            int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * tex->height;
+            int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
+            int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
 
-            color_t c = graphics_texture_get_pixel(tex, s, t);
+            color_t c = graphics_texture_get_pixel(texture, s, t);
 
             graphics_set_pixel(x, y, c);
         }
