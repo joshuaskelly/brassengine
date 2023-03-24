@@ -52,31 +52,10 @@ static triangle_t* mesh_get_triangle(mesh_t* mesh, triangle_t* triangle, int ind
 }
 
 static void rasterize(triangle_t* triangle);
-static void render(mesh_t* mesh);
 static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f);
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1);
 
-void mesh_render(void) {
-    mfloat_t vertices[] = {20, 20, 100, 20, 20, 100, 100, 100};
-    mfloat_t uvs[] = {0, 0, 1, 0, 0, 1, 1, 1};
-    int indices[] = {0, 1, 2, 3, 2, 1};
-
-    mesh_t m1 = {
-        .vertices = vertices,
-        .uvs = uvs,
-        .indices = indices,
-        .index_count = 6
-    };
-
-    render(&m1);
-}
-
-/**
- * Renders a mesh.
- *
- * @param mesh
- */
-static void render(mesh_t* mesh) {
+void mesh_render(mesh_t* mesh) {
     for (int i = 0; i < mesh_triangle_count(mesh); i++) {
         triangle_t t;
         mesh_get_triangle(mesh, &t, i);

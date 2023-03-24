@@ -8,6 +8,6 @@ typedef struct {
     size_t index_count;
 } mesh_t;
 
-void mesh_render(void);
+void mesh_render(mesh_t* mesh);
 
 #endif
