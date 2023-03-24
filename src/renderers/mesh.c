@@ -21,13 +21,6 @@ typedef struct {
     mfloat_t uv2[VEC2_SIZE];
 } triangle_t;
 
-typedef struct {
-    mfloat_t* vertices;
-    mfloat_t* uvs;
-    int* indices;
-    size_t index_count;
-} mesh_t;
-
 static int mesh_triangle_count(mesh_t* mesh) {
     return mesh->index_count / 3;
 }
