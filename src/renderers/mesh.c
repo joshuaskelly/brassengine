@@ -14,7 +14,16 @@
 
 typedef mfloat_t vector2_t;
 
-static void triangle_fill(vector2_t* v0, vector2_t* v1, vector2_t* v2, vector2_t* uv0, vector2_t* uv1, vector2_t* uv2);
+typedef struct {
+    vector2_t *v0;
+    vector2_t *v1;
+    vector2_t *v2;
+    vector2_t *uv0;
+    vector2_t *uv1;
+    vector2_t *uv2;
+} triangle_t;
+
+static void rasterize(triangle_t* triangle);
 static vector2_t* vec2_rotate_around(vector2_t* result, vector2_t* v0, vector2_t* v1, float f);
 static mfloat_t vec2_cross(vector2_t* v0, vector2_t* v1);
 
@@ -29,6 +38,24 @@ void mesh_render(void) {
     vector2_t uv2[VEC2_SIZE] = {0, 1};
     vector2_t uv3[VEC2_SIZE] = {1, 1};
 
+    triangle_t t0 = {
+        .v0 = v0,
+        .v1 = v1,
+        .v2 = v2,
+        .uv0 = uv0,
+        .uv1 = uv1,
+        .uv2 = uv2
+    };
+
+    triangle_t t1 = {
+        .v0 = v3,
+        .v1 = v2,
+        .v2 = v1,
+        .uv0 = uv3,
+        .uv1 = uv2,
+        .uv2 = uv1
+    };
+
     vector2_t c[VEC2_SIZE] = {64, 64};
 
     float angle = time_since_init() / 1000.0f * 0.2f;
@@ -38,8 +65,8 @@ void mesh_render(void) {
     vec2_rotate_around(v2, v2, c, angle);
     vec2_rotate_around(v3, v3, c, angle);
 
-    triangle_fill(&v0, &v1, &v2, &uv0, &uv1, &uv2);
-    triangle_fill(&v3, &v2, &v1, &uv3, &uv2, &uv1);
+    rasterize(&t0);
+    rasterize(&t1);
 }
 
 static int edge_function(vector2_t* a, vector2_t* b, vector2_t* p) {
@@ -62,7 +89,19 @@ static bool is_top_left(vector2_t* a, vector2_t* b) {
     return is_top || is_left;
 }
 
-static void triangle_fill(vector2_t* v0, vector2_t* v1, vector2_t* v2, vector2_t* uv0, vector2_t* uv1, vector2_t* uv2) {
+/**
+ * Rasterize triangle.
+ *
+ * @param triangle
+ */
+static void rasterize(triangle_t* triangle) {
+    vector2_t* v0 = triangle->v0;
+    vector2_t* v1 = triangle->v1;
+    vector2_t* v2 = triangle->v2;
+    vector2_t* uv0 = triangle->uv0;
+    vector2_t* uv1 = triangle->uv1;
+    vector2_t* uv2 = triangle->uv2;
+
     // Find triangle
     int x_min = min(min(v0[0], v1[0]), v2[0]);
     int y_min = min(min(v0[1], v1[1]), v2[1]);
