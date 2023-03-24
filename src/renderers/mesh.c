@@ -12,31 +12,29 @@
 
 #include "mesh.h"
 
-typedef mfloat_t vector2_t;
-
 typedef struct {
-    vector2_t *v0;
-    vector2_t *v1;
-    vector2_t *v2;
-    vector2_t *uv0;
-    vector2_t *uv1;
-    vector2_t *uv2;
+    mfloat_t *v0;
+    mfloat_t *v1;
+    mfloat_t *v2;
+    mfloat_t *uv0;
+    mfloat_t *uv1;
+    mfloat_t *uv2;
 } triangle_t;
 
 static void rasterize(triangle_t* triangle);
-static vector2_t* vec2_rotate_around(vector2_t* result, vector2_t* v0, vector2_t* v1, float f);
-static mfloat_t vec2_cross(vector2_t* v0, vector2_t* v1);
+static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f);
+static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1);
 
 void mesh_render(void) {
-    vector2_t v0[VEC2_SIZE] = {20, 20};
-    vector2_t v1[VEC2_SIZE] = {100, 20};
-    vector2_t v2[VEC2_SIZE] = {20, 100};
-    vector2_t v3[VEC2_SIZE] = {100, 100};
+    mfloat_t v0[VEC2_SIZE] = {20, 20};
+    mfloat_t v1[VEC2_SIZE] = {100, 20};
+    mfloat_t v2[VEC2_SIZE] = {20, 100};
+    mfloat_t v3[VEC2_SIZE] = {100, 100};
 
-    vector2_t uv0[VEC2_SIZE] = {0, 0};
-    vector2_t uv1[VEC2_SIZE] = {1, 0};
-    vector2_t uv2[VEC2_SIZE] = {0, 1};
-    vector2_t uv3[VEC2_SIZE] = {1, 1};
+    mfloat_t uv0[VEC2_SIZE] = {0, 0};
+    mfloat_t uv1[VEC2_SIZE] = {1, 0};
+    mfloat_t uv2[VEC2_SIZE] = {0, 1};
+    mfloat_t uv3[VEC2_SIZE] = {1, 1};
 
     triangle_t t0 = {
         .v0 = v0,
@@ -56,7 +54,7 @@ void mesh_render(void) {
         .uv2 = uv1
     };
 
-    vector2_t c[VEC2_SIZE] = {64, 64};
+    mfloat_t c[VEC2_SIZE] = {64, 64};
 
     float angle = time_since_init() / 1000.0f * 0.2f;
 
@@ -69,19 +67,19 @@ void mesh_render(void) {
     rasterize(&t1);
 }
 
-static int edge_function(vector2_t* a, vector2_t* b, vector2_t* p) {
-    vector2_t ab[VEC2_SIZE];
+static int edge_function(mfloat_t* a, mfloat_t* b, mfloat_t* p) {
+    mfloat_t ab[VEC2_SIZE];
     vec2_subtract(ab, b, a);
 
-    vector2_t ap[VEC2_SIZE];
+    mfloat_t ap[VEC2_SIZE];
     vec2_subtract(ap, p, a);
 
     return vec2_cross(ab, ap);
 }
 
-static bool is_top_left(vector2_t* a, vector2_t* b) {
-    vector2_t edge[VEC2_SIZE];
-    vec2_subtract(&edge, b, a);
+static bool is_top_left(mfloat_t* a, mfloat_t* b) {
+    mfloat_t edge[VEC2_SIZE];
+    vec2_subtract(edge, b, a);
 
     bool is_top = edge[1] == 0 && edge[0] > 0;
     bool is_left = edge[1] < 0;
@@ -95,12 +93,12 @@ static bool is_top_left(vector2_t* a, vector2_t* b) {
  * @param triangle
  */
 static void rasterize(triangle_t* triangle) {
-    vector2_t* v0 = triangle->v0;
-    vector2_t* v1 = triangle->v1;
-    vector2_t* v2 = triangle->v2;
-    vector2_t* uv0 = triangle->uv0;
-    vector2_t* uv1 = triangle->uv1;
-    vector2_t* uv2 = triangle->uv2;
+    mfloat_t* v0 = triangle->v0;
+    mfloat_t* v1 = triangle->v1;
+    mfloat_t* v2 = triangle->v2;
+    mfloat_t* uv0 = triangle->uv0;
+    mfloat_t* uv1 = triangle->uv1;
+    mfloat_t* uv2 = triangle->uv2;
 
     // Find triangle
     int x_min = min(min(v0[0], v1[0]), v2[0]);
@@ -119,11 +117,11 @@ static void rasterize(triangle_t* triangle) {
 
     for (int y = y_min; y <= y_max; y++) {
         for (int x = x_min; x <= x_max; x++) {
-            vector2_t p[2] = { x + 0.5f, y + 0.5f };
+            mfloat_t p[2] = { x + 0.5f, y + 0.5f };
 
-            float w0 = edge_function(v1, v2, &p);
-            float w1 = edge_function(v2, v0, &p);
-            float w2 = edge_function(v0, v1, &p);
+            float w0 = edge_function(v1, v2, p);
+            float w1 = edge_function(v2, v0, p);
+            float w2 = edge_function(v0, v1, p);
 
             // Check if p is contained within the triangle
             if (w0 < bias0 || w1 < bias1 || w2 < bias2) continue;
@@ -144,7 +142,7 @@ static void rasterize(triangle_t* triangle) {
     }
 }
 
-static vector2_t* vec2_rotate_around(vector2_t* result, vector2_t* v0, vector2_t* v1, float f) {
+static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f) {
     mfloat_t cs = MCOS(f);
 	mfloat_t sn = MSIN(f);
 	mfloat_t x = v0[0] - v1[0];
@@ -155,6 +153,6 @@ static vector2_t* vec2_rotate_around(vector2_t* result, vector2_t* v0, vector2_t
 	return result;
 }
 
-static mfloat_t vec2_cross(vector2_t* v0, vector2_t* v1) {
+static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1) {
     return v0[0] * v1[1] - v0[1] * v1[0];
 }
