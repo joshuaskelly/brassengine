@@ -109,9 +109,9 @@ static void rasterize(triangle_t* triangle) {
     int y_max = max(max(v0[1], v1[1]), v2[1]);
 
     // Biases for fill rule
-    float bias0 = is_top_left(v1, v2) ? 1.0f : 0.0f;
-    float bias1 = is_top_left(v2, v0) ? 1.0f : 0.0f;
-    float bias2 = is_top_left(v0, v1) ? 1.0f : 0.0f;
+    float bias0 = is_top_left(v1, v2) ? 0.0f : 0.0001f;
+    float bias1 = is_top_left(v2, v0) ? 0.0f : 0.0001f;
+    float bias2 = is_top_left(v0, v1) ? 0.0f : 0.0001f;
 
     float inverse_area = 1.0f / edge_function(v1, v2, v0);
 
