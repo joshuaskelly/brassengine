@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <math.h>
 
@@ -20,6 +21,38 @@ typedef struct {
     mfloat_t uv1[VEC2_SIZE];
     mfloat_t uv2[VEC2_SIZE];
 } triangle_t;
+
+mesh_t* mesh_mesh_new(void) {
+    mesh_t* mesh;
+
+    mesh = malloc(sizeof(mesh_t));
+    mesh->vertices = NULL;
+    mesh->uvs = NULL;
+    mesh->indices = NULL;
+    mesh->index_count = 0;
+
+    return mesh;
+}
+
+void mesh_mesh_free(mesh_t* mesh) {
+    if (mesh->vertices != NULL) {
+        free(mesh->vertices);
+        mesh->vertices = NULL;
+    }
+
+    if (mesh->uvs != NULL) {
+        free(mesh->uvs);
+        mesh->uvs = NULL;
+    }
+
+    if (mesh->indices != NULL) {
+        free(mesh->indices);
+        mesh->indices = NULL;
+    }
+
+    mesh->index_count = 0;
+    mesh = NULL;
+}
 
 static int mesh_triangle_count(mesh_t* mesh) {
     return mesh->index_count / 3;
