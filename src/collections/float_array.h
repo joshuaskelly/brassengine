@@ -18,4 +18,6 @@ void float_array_set(float_array_t* array, int index, float value);
 
 void float_array_add(float_array_t* array, float value);
 
+void float_array_resize(float_array_t* array, size_t size);
+
 #endif
