@@ -18,6 +18,7 @@
 #include "modules/assets.h"
 #include "modules/display.h"
 #include "modules/draw.h"
+#include "modules/float_array.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
 #include "modules/json.h"
@@ -47,6 +48,7 @@ static const luaL_Reg modules[] = {
     {"display", luaopen_display},
     {"draw", luaopen_draw},
     {"json", luaopen_json},
+    {"floatarray", luaopen_floatarray},
     {"graphics", luaopen_graphics},
     {"texture", luaopen_texture},
     {"keyboard", luaopen_keyboard},
