@@ -21,13 +21,14 @@ end
 -- Called once per frame
 function _update()
     local t =  0.01
+    local cs = math.cos(t)
+    local sn = math.sin(t)
+
     for i = 1, #m.vertices, 2 do
-        local cs = math.cos(t)
-        local sn = math.sin(t)
         local x = m.vertices[i] - 64
         local y = m.vertices[i + 1] - 64
         m.vertices[i] = (x * cs - y * sn) + 64
-        m.vertices[i+1] = (x * sn + y * cs) + 64
+        m.vertices[i + 1] = (x * sn + y * cs) + 64
     end
 end
 
