@@ -1,14 +1,13 @@
 #ifndef RENDERERS_MESH_H
 #define RENDERERS_MESH_H
 
-#include <mathc/mathc.h>
-
+#include "../collections/float_array.h"
 #include "../graphics.h"
 
 typedef struct {
-    mfloat_t* vertices;
-    mfloat_t* uvs;
-    int* indices;
+    float_array_t* vertices;
+    float_array_t* uvs;
+    float_array_t* indices;
     size_t index_count;
 } mesh_t;
 

@@ -3,6 +3,7 @@
  * @module mesh
  */
 #include <stdlib.h>
+#include <string.h>
 
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
@@ -10,7 +11,9 @@
 
 #include <mathc/mathc.h>
 
+#include "float_array.h"
 #include "mesh.h"
+#include "texture.h"
 
 #include "../assets.h"
 #include "../graphics.h"
@@ -58,11 +61,18 @@ static int mesh_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    // if (strcmp(key, "position") == 0) {
-    // }
-    // else {
-    //     lua_pushnil(L);
-    // }
+    if (strcmp(key, "vertices") == 0) {
+        lua_pushfloatarray(L, mesh->vertices);
+    }
+    else if (strcmp(key, "uvs") == 0) {
+        lua_pushfloatarray(L, mesh->uvs);
+    }
+    else if (strcmp(key, "indices") == 0) {
+        lua_pushfloatarray(L, mesh->indices);
+    }
+    else {
+        lua_pushnil(L);
+    }
 
     return 1;
 }
@@ -71,11 +81,50 @@ static int mesh_meta_newindex(lua_State* L) {
     mesh_t* mesh = luaL_checkmesh(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    // if (strncmp(key, "position", 8) == 0) {
-    // }
-    // else {
-    //     luaL_error(L, "attempt to index a mesh value");
-    // }
+    if (strcmp(key, "vertices") == 0) {
+        if (lua_istable(L, 3)) {
+            int size = lua_rawlen(L, 3);
+
+            float_array_resize(mesh->vertices, size);
+
+            for (int i = 1; i <= size; i++) {
+                lua_pushinteger(L, i);
+                lua_gettable(L, 3);
+                mesh->vertices->data[i - 1] = luaL_checknumber(L, -1);
+            }
+        }
+    }
+    else if (strcmp(key, "uvs") == 0) {
+        if (lua_istable(L, 3)) {
+            int size = lua_rawlen(L, 3);
+
+            float_array_resize(mesh->uvs, size);
+
+            for (int i = 1; i <= size; i++) {
+                lua_pushinteger(L, i);
+                lua_gettable(L, 3);
+                mesh->uvs->data[i - 1] = luaL_checknumber(L, -1);
+            }
+        }
+    }
+    else if (strcmp(key, "indices") == 0) {
+        if (lua_istable(L, 3)) {
+            int size = lua_rawlen(L, 3);
+
+            float_array_resize(mesh->indices, size);
+
+            for (int i = 1; i <= size; i++) {
+                lua_pushinteger(L, i);
+                lua_gettable(L, 3);
+                mesh->indices->data[i - 1] = (int)luaL_checknumber(L, -1);
+            }
+
+            mesh->index_count = size;
+        }
+    }
+    else {
+        luaL_error(L, "attempt to index a mesh value");
+    }
 
     lua_pop(L, -1);
 
@@ -88,21 +137,10 @@ static const struct luaL_Reg mesh_meta_functions[] = {
     {NULL, NULL}
 };
 
-// Temp data
-static mfloat_t vertices[] = {20, 20, 100, 20, 20, 100, 100, 100};
-static mfloat_t uvs[] = {0, 0, 1, 0, 0, 1, 1, 1};
-static int indices[] = {0, 1, 2, 3, 2, 1};
-
-static mesh_t m1 = {
-    .vertices = vertices,
-    .uvs = uvs,
-    .indices = indices,
-    .index_count = 6
-};
-
 static int module_mesh_render(lua_State* L) {
-    texture_t* tex = assets_get_texture("texture.gif");
-    mesh_render(&m1, tex);
+    mesh_t* mesh = luaL_checkmesh(L, 1);
+    texture_t* texture = luaL_checktexture(L, 2);
+    mesh_render(mesh, texture);
     return 0;
 }
 
@@ -116,8 +154,7 @@ int luaopen_mesh(lua_State* L) {
     luaL_newlib(L, module_functions);
 
     luaL_newmetatable(L, "mesh");
-    luaL_newlib(L, mesh_meta_functions);
-    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, mesh_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, mesh_gc);

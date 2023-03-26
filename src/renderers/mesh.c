@@ -7,6 +7,7 @@
 #include <mathc/mathc.h>
 
 #include "../assets.h"
+#include "../collections/float_array.h"
 #include "../graphics.h"
 #include "../math.h"
 #include "../time.h"
@@ -26,29 +27,18 @@ mesh_t* mesh_mesh_new(void) {
     mesh_t* mesh;
 
     mesh = malloc(sizeof(mesh_t));
-    mesh->vertices = NULL;
-    mesh->uvs = NULL;
-    mesh->indices = NULL;
+    mesh->vertices = float_array_new(0);
+    mesh->uvs = float_array_new(0);
+    mesh->indices = float_array_new(0);
     mesh->index_count = 0;
 
     return mesh;
 }
 
 void mesh_mesh_free(mesh_t* mesh) {
-    if (mesh->vertices != NULL) {
-        free(mesh->vertices);
-        mesh->vertices = NULL;
-    }
-
-    if (mesh->uvs != NULL) {
-        free(mesh->uvs);
-        mesh->uvs = NULL;
-    }
-
-    if (mesh->indices != NULL) {
-        free(mesh->indices);
-        mesh->indices = NULL;
-    }
+    float_array_free(mesh->vertices);
+    float_array_free(mesh->uvs);
+    float_array_free(mesh->indices);
 
     mesh->index_count = 0;
     mesh = NULL;
@@ -61,12 +51,16 @@ static int mesh_triangle_count(mesh_t* mesh) {
 static triangle_t* mesh_get_triangle(mesh_t* mesh, triangle_t* triangle, int index) {
     int i = index * 3;
 
-    mfloat_t* v0 = &(mesh->vertices[mesh->indices[i + 0] * VEC2_SIZE]);
-    mfloat_t* v1 = &(mesh->vertices[mesh->indices[i + 1] * VEC2_SIZE]);
-    mfloat_t* v2 = &(mesh->vertices[mesh->indices[i + 2] * VEC2_SIZE]);
-    mfloat_t* uv0 = &(mesh->uvs[mesh->indices[i + 0] * VEC2_SIZE]);
-    mfloat_t* uv1 = &(mesh->uvs[mesh->indices[i + 1] * VEC2_SIZE]);
-    mfloat_t* uv2 = &(mesh->uvs[mesh->indices[i + 2] * VEC2_SIZE]);
+    float* vertices = mesh->vertices->data;
+    float* uvs = mesh->uvs->data;
+    float* indices = mesh->indices->data;
+
+    mfloat_t* v0 = &(vertices[(int)(indices[i + 0]) * VEC2_SIZE]);
+    mfloat_t* v1 = &(vertices[(int)(indices[i + 1]) * VEC2_SIZE]);
+    mfloat_t* v2 = &(vertices[(int)(indices[i + 2]) * VEC2_SIZE]);
+    mfloat_t* uv0 = &(uvs[(int)(indices[i + 0]) * VEC2_SIZE]);
+    mfloat_t* uv1 = &(uvs[(int)(indices[i + 1]) * VEC2_SIZE]);
+    mfloat_t* uv2 = &(uvs[(int)(indices[i + 2]) * VEC2_SIZE]);
 
     triangle->v0[0] = v0[0];
     triangle->v0[1] = v0[1];
@@ -85,7 +79,6 @@ static triangle_t* mesh_get_triangle(mesh_t* mesh, triangle_t* triangle, int ind
 }
 
 static void rasterize(triangle_t* triangle, texture_t* texture);
-static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f);
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1);
 
 void mesh_render(mesh_t* mesh, texture_t* texture) {
@@ -167,17 +160,6 @@ static void rasterize(triangle_t* triangle, texture_t* texture) {
             graphics_set_pixel(x, y, c);
         }
     }
-}
-
-static mfloat_t* vec2_rotate_around(mfloat_t* result, mfloat_t* v0, mfloat_t* v1, float f) {
-    mfloat_t cs = MCOS(f);
-	mfloat_t sn = MSIN(f);
-	mfloat_t x = v0[0] - v1[0];
-	mfloat_t y = v0[1] - v1[1];
-	result[0] = (x * cs - y * sn) + v1[0];
-	result[1] = (x * sn + y * cs) + v1[1];
-
-	return result;
 }
 
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1) {
