@@ -36,6 +36,23 @@ void float_array_add(float_array_t* array, float value) {
         array->size += 1;
     }
     else {
+        log_error("Failed to add value to float array");
+    }
+}
+
+void float_array_resize(float_array_t* array, size_t size) {
+    float* a = (float*)realloc(array->data, sizeof(float) * size);
+
+    if (a != NULL) {
+        array->data = a;
+
+        for (int i = array->size; i < size; i++) {
+            array->data[i] = 0.0f;
+        }
+
+        array->size = size;
+    }
+    else {
         log_error("Failed to resize float array");
     }
 }
