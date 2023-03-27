@@ -132,36 +132,55 @@ static void rasterize(triangle_t* triangle, texture_t* texture) {
     int y_max = max(max(v0[1], v1[1]), v2[1]);
 
     // Biases for fill rule
-    float bias0 = is_top_left(v1, v2) ? 0.0f : 0.0001f;
-    float bias1 = is_top_left(v2, v0) ? 0.0f : 0.0001f;
-    float bias2 = is_top_left(v0, v1) ? 0.0f : 0.0001f;
+    float bias0 = is_top_left(v1, v2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(v2, v0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(v0, v1) ? 0.0f : -0.001f;
 
-    float inverse_area = 1.0f / edge_function(v1, v2, v0);
+    float delta_w0_col = v1[1] - v2[1];
+    float delta_w1_col = v2[1] - v0[1];
+    float delta_w2_col = v0[1] - v1[1];
+    float delta_w0_row = v2[0] - v1[0];
+    float delta_w1_row = v0[0] - v2[0];
+    float delta_w2_row = v1[0] - v0[0];
+
+    float area = edge_function(v1, v2, v0);
+    float inverse_area = 1.0f / area;
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(v1, v2, p) + bias0;
+    float w1_row = edge_function(v2, v0, p) + bias1;
+    float w2_row = edge_function(v0, v1, p) + bias2;
 
     for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
         for (int x = x_min; x <= x_max; x++) {
-            mfloat_t p[2] = { x + 0.5f, y + 0.5f };
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                // Calculate barycentric coords
+                float alpha = w0 * inverse_area;
+                float beta = w1 * inverse_area;
+                float gamma = w2 * inverse_area;
 
-            float w0 = edge_function(v1, v2, p);
-            float w1 = edge_function(v2, v0, p);
-            float w2 = edge_function(v0, v1, p);
+                // Calculate st coords
+                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
+                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
 
-            // Check if p is contained within the triangle
-            if (w0 < bias0 || w1 < bias1 || w2 < bias2) continue;
+                color_t c = graphics_texture_get_pixel(texture, s, t);
 
-            // Calculate barycentric coords
-            float alpha = w0 * inverse_area;
-            float beta = w1 * inverse_area;
-            float gamma = 1 - (alpha + beta);
+                graphics_set_pixel(x, y, c);
+            }
 
-            // Calculate st coords
-            int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
-            int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
-
-            color_t c = graphics_texture_get_pixel(texture, s, t);
-
-            graphics_set_pixel(x, y, c);
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
         }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
     }
 }
 
