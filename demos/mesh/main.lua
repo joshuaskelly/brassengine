@@ -11,15 +11,26 @@ function _init()
     display.set_size(128 * scale, 128 * scale)
 
     m = mesh.new_mesh()
-    m.vertices = {20, 20, 108, 20, 20, 108, 108, 108}
-    m.uvs = {0, 0, 1, 0, 0, 1, 1, 1}
-    m.indices = {0, 1, 2, 3, 2, 1}
+    m.vertices = {
+        20, 20,  -- 0
+        108, 20, -- 1
+        20, 108, -- 2
+        108, 108,-- 3
+    }
+    m.uvs = {
+        0, 0, -- 0
+        1, 0, -- 1
+        0, 1, -- 2
+        1, 1, -- 3
+    }
+    m.indices = { 0, 1, 2, 3, 2, 1 }
 
     t = assets.get_texture("texture.gif")
 end
 
 -- Called once per frame
 function _update()
+    ---[[
     local t =  0.01
     local cs = math.cos(t)
     local sn = math.sin(t)
@@ -30,6 +41,7 @@ function _update()
         m.vertices[i] = (x * cs - y * sn) + 64
         m.vertices[i + 1] = (x * sn + y * cs) + 64
     end
+    --]]
 end
 
 function stat()
