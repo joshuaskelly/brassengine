@@ -172,7 +172,8 @@ static bool handle_key_down(event_t* event) {
 
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
-            if (command_length <= 0) return true;
+            // Don't allow backspacing beyond beginning of command
+            if (command_length + cursor_offset <= 0) return true;
 
             int i = command_length + cursor_offset;
             memmove(command + i - 1, command + i, -cursor_offset + 1);
