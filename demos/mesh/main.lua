@@ -5,12 +5,52 @@ local graphics = require("graphics")
 local mesh = require("mesh")
 local statistics = require("statistics")
 
+local obj_loader = require("obj_loader")
+
 -- Called once at startup
 function _init()
     local scale = 8
-    display.set_size(128 * scale, 128 * scale)
+    --display.set_size(128 * scale, 128 * scale)
+
+    obj = obj_loader.load("plane.obj")
+
+    vertices = {}
+
+    for i = 1, #obj.v do
+        table.insert(vertices, obj.v[i].x)
+        table.insert(vertices, obj.v[i].y)
+        --table.insert(vertices, obj.v[i].z)
+    end
+
+    uvs = {}
+
+    for i = 1, #obj.vt do
+        table.insert(uvs, obj.vt[i].u)
+        table.insert(uvs, obj.vt[i].v)
+    end
+
+    indices = {}
+
+    local stop = #obj.f
+    stop = 16
+
+    for i = 1, stop do
+        table.insert(indices, obj.f[i][1].v - 1)
+        table.insert(indices, obj.f[i][2].v - 1)
+        table.insert(indices, obj.f[i][3].v - 1)
+        table.insert(indices, obj.f[i][1].vt - 1)
+        table.insert(indices, obj.f[i][2].vt - 1)
+        table.insert(indices, obj.f[i][3].vt - 1)
+    end
 
     m = mesh.new_mesh()
+    ---[[
+    m.vertices = vertices
+    m.uvs = uvs
+    m.indices = indices
+    --]]
+
+    --[[
     m.vertices = {
         20, 20,  -- 0
         108, 20, -- 1
@@ -23,7 +63,8 @@ function _init()
         0, 1, -- 2
         1, 1, -- 3
     }
-    m.indices = { 0, 1, 2, 3, 2, 1 }
+    m.indices = { 0, 1, 2, 0, 1, 2, 3, 2, 1, 3, 2, 1 }
+    --]]
 
     t = assets.get_texture("texture.gif")
 end

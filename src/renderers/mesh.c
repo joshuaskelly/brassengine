@@ -53,17 +53,20 @@ static triangle_t* mesh_get_triangle(mesh_t* mesh, triangle_t* triangle, int ind
     float* uvs = mesh->uvs->data;
     float* indices = mesh->indices->data;
 
-    int i = index * 3;
+    int i = index * 6;
     int i0 = (int)(indices[i + 0]) * VEC2_SIZE;
     int i1 = (int)(indices[i + 1]) * VEC2_SIZE;
     int i2 = (int)(indices[i + 2]) * VEC2_SIZE;
+    int i3 = (int)(indices[i + 3]) * VEC2_SIZE;
+    int i4 = (int)(indices[i + 4]) * VEC2_SIZE;
+    int i5 = (int)(indices[i + 5]) * VEC2_SIZE;
 
     mfloat_t* v0 = &vertices[i0];
     mfloat_t* v1 = &vertices[i1];
     mfloat_t* v2 = &vertices[i2];
-    mfloat_t* uv0 = &uvs[i0];
-    mfloat_t* uv1 = &uvs[i1];
-    mfloat_t* uv2 = &uvs[i2];
+    mfloat_t* uv0 = &uvs[i3];
+    mfloat_t* uv1 = &uvs[i4];
+    mfloat_t* uv2 = &uvs[i5];
 
     triangle->v0[0] = v0[0];
     triangle->v0[1] = v0[1];
