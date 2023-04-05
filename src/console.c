@@ -156,7 +156,7 @@ static void load_input_history(void) {
         input->count - input_buffer_offset
     );
 
-    strncpy(command, s, strlen(s));
+    strcpy(command, s);
     command[strlen(s)] = '\0';
 }
 
@@ -373,14 +373,14 @@ void console_draw(void) {
 void console_buffer_write(const char* line) {
     // Copy line because
     char* s = (char*)malloc(sizeof(char) * strlen(line) + 1);
-    strncpy(s, line, strlen(line));
+    strcpy(s, line);
     s[strlen(line)] = '\0';
 
     // Split on newlines
     char* token = strtok(s, "\n");
     while (token) {
         char* l = (char*)malloc(sizeof(char) * strlen(token) + 1);
-        strncpy(l, token, strlen(token));
+        strcpy(l, token);
         l[strlen(token)] = '\0';
 
         circular_buffer_add(output, l);
@@ -405,7 +405,7 @@ void console_buffer_toggle(void) {
 static void save_command_to_input_buffer(void) {
     size_t size = strlen(command);
     char* s = (char*)malloc(sizeof(char) * (size + 1));
-    strncpy(s, command, size);
+    strcpy(s, command);
     s[size] = '\0';
 
     circular_buffer_add(input, s);
