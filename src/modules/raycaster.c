@@ -35,13 +35,13 @@ static int modules_raycaster_camera_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         lua_newvector2(L, camera->position[0], camera->position[1]);
     }
-    else if (strncmp(key, "direction", 9) == 0) {
+    else if (strcmp(key, "direction") == 0) {
         lua_newvector2(L, camera->direction[0], camera->direction[1]);
     }
-    else if (strncmp(key, "fov", 3) == 0) {
+    else if (strcmp(key, "fov") == 0) {
         lua_pushnumber(L, camera->fov);
     }
     else {
@@ -55,15 +55,15 @@ static int modules_raycaster_camera_meta_newindex(lua_State* L) {
     raycaster_camera_t* camera = luaL_checkraycastercamera(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(camera->position, vector);
     }
-    else if (strncmp(key, "direction", 9) == 0) {
+    else if (strcmp(key, "direction") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(camera->direction, vector);
     }
-    else if (strncmp(key, "fov", 3) == 0) {
+    else if (strcmp(key, "fov") == 0) {
         float number = luaL_checknumber(L, 3);
         camera->fov = number;
     }
@@ -111,10 +111,10 @@ static int modules_raycaster_sprite_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         lua_newvector2(L, sprite->position[0], sprite->position[1]);
     }
-    else if (strncmp(key, "texture", 7) == 0) {
+    else if (strcmp(key, "texture") == 0) {
         lua_pushtexture(L, sprite->texture);
     }
     else {
@@ -128,11 +128,11 @@ static int modules_raycaster_sprite_meta_newindex(lua_State* L) {
     raycaster_sprite_t* sprite = luaL_checkraycastersprite(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(sprite->position, vector);
     }
-    else if (strncmp(key, "texture", 7) == 0) {
+    else if (strcmp(key, "texture") == 0) {
         texture_t* texture = luaL_checktexture(L, 3);
         sprite->texture = texture;
     }
@@ -187,13 +187,13 @@ static int modules_raycaster_map_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "walls", 5) == 0) {
+    if (strcmp(key, "walls") == 0) {
         lua_pushtexture(L, map->walls);
     }
-    else if (strncmp(key, "add_sprite", 10) == 0) {
+    else if (strcmp(key, "add_sprite") == 0) {
         lua_pushcfunction(L, modules_raycaster_map_add_sprite);
     }
-    else if (strncmp(key, "remove_sprite", 13) == 0) {
+    else if (strcmp(key, "remove_sprite") == 0) {
         lua_pushcfunction(L, modules_raycaster_map_remove_sprite);
     }
     else {
