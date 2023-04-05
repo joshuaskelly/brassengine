@@ -34,7 +34,7 @@ typedef struct {
 static asset_entry_t assets_entry_new(const char* name, void* asset) {
     int n = strlen(name);
     char* asset_name = (char*)calloc(n + 1, sizeof(char));
-    strncpy(asset_name, name, n);
+    memcpy(asset_name, name, n);
 
     return (asset_entry_t) {asset_name, asset};
 }
