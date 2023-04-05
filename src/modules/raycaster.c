@@ -235,6 +235,11 @@ static const struct luaL_Reg raycaster_map_meta_functions[] = {
     {NULL, NULL}
 };
 
+/**
+ * Create a new raycaster_map object.
+ * @function map_new
+ * @return raycaster_map
+ */
 static int modules_raycaster_map_new(lua_State* L) {
     raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
     *handle = raycaster_map_new();
@@ -243,6 +248,11 @@ static int modules_raycaster_map_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Create a new raycaster_camera object.
+ * @function camera_new
+ * @return raycaster_camera
+ */
 static int modules_raycaster_camera_new(lua_State* L) {
     raycaster_camera_t* camera = (raycaster_camera_t*)lua_newuserdata(L, sizeof(raycaster_camera_t));
     camera->position[0] = 0;
@@ -255,6 +265,11 @@ static int modules_raycaster_camera_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Create a new raycaster_sprite object.
+ * @function sprite_new
+ * @return raycaster_sprite
+ */
 static int modules_raycaster_sprite_new(lua_State* L) {
     lua_newraycastersprite(L);
 
@@ -347,6 +362,63 @@ static int module_raycaster_fog_distance_set(lua_State* L) {
 
     return 0;
 }
+
+/**
+ * Map for rendering a raycaster scene.
+ * @type raycaster_map
+ */
+
+/**
+ * Map walls.
+ * @field walls A texture userdata representing wall positions and textures.
+ */
+
+/**
+ * Add given sprite to map.
+ * @function add_sprite
+ * @param sprite A raycaster_sprite
+ */
+
+/**
+ * Remove given sprite from map.
+ * @function remove_sprite
+ * @param sprite A raycaster_sprite
+ */
+
+/**
+ * Camera for rendering a raycaster scene.
+ * @type raycaster_camera
+ */
+
+/**
+ * Camera position.
+ * @field position A vector2 userdata representing camera position.
+ */
+
+/**
+ * Camera direction.
+ * @field direction A vector2 userdata representing camera direction.
+ */
+
+/**
+ * Camera field of view.
+ * @field fov Camera field of view in degrees.
+ */
+
+/**
+ * Sprite for rendering in a raycaster scene.
+ * @type raycaster_sprite
+ */
+
+/**
+ * Sprite position.
+ * @field position A vector2 userdata representing sprite position.
+ */
+
+/**
+ * Sprite texture.
+ * @field texture
+ */
 
 static const struct luaL_Reg module_functions[] = {
     {"render", module_raycaster_render},
