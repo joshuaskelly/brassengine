@@ -32,7 +32,7 @@ static void clear_input(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
-    input = circular_buffer_new(10);
+    input = circular_buffer_new(20);
 }
 
 void console_destroy(void) {
