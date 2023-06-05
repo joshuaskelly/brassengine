@@ -66,11 +66,9 @@ typedef struct {
 /* Initialise */
 static strbuf_t *strbuf_new(int len);
 static void strbuf_init(strbuf_t *s, int len);
-static void strbuf_set_increment(strbuf_t *s, int increment);
 
 /* Release */
 static void strbuf_free(strbuf_t *s);
-static char *strbuf_free_to_string(strbuf_t *s, int *len);
 
 /* Management */
 static void strbuf_resize(strbuf_t *s, int len);
@@ -81,8 +79,6 @@ static char *strbuf_empty_ptr(strbuf_t *s);
 static void strbuf_extend_length(strbuf_t *s, int len);
 
 /* Update */
-static void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...);
-static void strbuf_append_fmt_retry(strbuf_t *s, const char *format, ...);
 static void strbuf_append_mem(strbuf_t *s, const char *c, int len);
 static void strbuf_append_string(strbuf_t *s, const char *str);
 static void strbuf_append_char(strbuf_t *s, const char c);
@@ -230,21 +226,11 @@ static strbuf_t *strbuf_new(int len)
     return s;
 }
 
-static void strbuf_set_increment(strbuf_t *s, int increment)
-{
-    /* Increment > 0:  Linear buffer growth rate
-     * Increment < -1: Exponential buffer growth rate */
-    if (increment == 0 || increment == -1)
-        die("BUG: Invalid string increment");
-
-    s->increment = increment;
-}
-
 static inline void debug_stats(strbuf_t *s)
 {
     if (s->debug) {
-        fprintf(stderr, "strbuf(%lx) reallocs: %d, length: %d, size: %d\n",
-                (long)s, s->reallocs, s->length, s->size);
+        fprintf(stderr, "strbuf(%p) reallocs: %d, length: %d, size: %d\n",
+                s, s->reallocs, s->length, s->size);
     }
 }
 
@@ -260,24 +246,6 @@ static void strbuf_free(strbuf_t *s)
     }
     if (s->dynamic)
         free(s);
-}
-
-static char *strbuf_free_to_string(strbuf_t *s, int *len)
-{
-    char *buf;
-
-    debug_stats(s);
-
-    strbuf_ensure_null(s);
-
-    buf = s->buf;
-    if (len)
-        *len = s->length;
-
-    if (s->dynamic)
-        free(s);
-
-    return buf;
 }
 
 static int calculate_new_size(strbuf_t *s, int len)
@@ -316,8 +284,8 @@ static void strbuf_resize(strbuf_t *s, int len)
     newsize = calculate_new_size(s, len);
 
     if (s->debug > 1) {
-        fprintf(stderr, "strbuf(%lx) resize: %d => %d\n",
-                (long)s, s->size, newsize);
+        fprintf(stderr, "strbuf(%p) resize: %d => %d\n",
+                s, s->size, newsize);
     }
 
     s->size = newsize;
@@ -343,57 +311,6 @@ static void strbuf_append_string(strbuf_t *s, const char *str)
         s->length++;
         space--;
     }
-}
-
-/* strbuf_append_fmt() should only be used when an upper bound
- * is known for the output string. */
-static void strbuf_append_fmt(strbuf_t *s, int len, const char *fmt, ...)
-{
-    va_list arg;
-    int fmt_len;
-
-    strbuf_ensure_empty_length(s, len);
-
-    va_start(arg, fmt);
-    fmt_len = vsnprintf(s->buf + s->length, len, fmt, arg);
-    va_end(arg);
-
-    if (fmt_len < 0)
-        die("BUG: Unable to convert number");  /* This should never happen.. */
-
-    s->length += fmt_len;
-}
-
-/* strbuf_append_fmt_retry() can be used when the there is no known
- * upper bound for the output string. */
-static void strbuf_append_fmt_retry(strbuf_t *s, const char *fmt, ...)
-{
-    va_list arg;
-    int fmt_len;
-    int empty_len;
-    int t;
-
-    /* If the first attempt to append fails, resize the buffer appropriately
-     * and try again */
-    for (t = 0; ; t++) {
-        va_start(arg, fmt);
-        /* Append the new formatted string */
-        /* fmt_len is the length of the string required, excluding the
-         * trailing NULL */
-        empty_len = strbuf_empty_length(s);
-        /* Add 1 since there is also space to store the terminating NULL. */
-        fmt_len = vsnprintf(s->buf + s->length, empty_len + 1, fmt, arg);
-        va_end(arg);
-
-        if (fmt_len <= empty_len)
-            break;  /* SUCCESS */
-        if (t > 0)
-            die("BUG: length of formatted string changed");
-
-        strbuf_resize(s, s->length + fmt_len);
-    }
-
-    s->length += fmt_len;
 }
 
 /* Lua CJSON floating point conversion routines */
@@ -1933,34 +1850,6 @@ static void luaL_setfuncs (lua_State *l, const luaL_Reg *reg, int nup)
 }
 #endif
 
-/* Call target function in protected mode with all supplied args.
- * Assumes target function only returns a single non-nil value.
- * Convert and return thrown errors as: nil, "error message" */
-static int json_protect_conversion(lua_State *l)
-{
-    int err;
-
-    /* Deliberately throw an error for invalid arguments */
-    luaL_argcheck(l, lua_gettop(l) == 1, 1, "expected 1 argument");
-
-    /* pcall() the function stored as upvalue(1) */
-    lua_pushvalue(l, lua_upvalueindex(1));
-    lua_insert(l, 1);
-    err = lua_pcall(l, 1, 1, 0);
-    if (!err)
-        return 1;
-
-    if (err == LUA_ERRRUN) {
-        lua_pushnil(l);
-        lua_insert(l, -2);
-        return 2;
-    }
-
-    /* Since we are not using a custom error handler, the only remaining
-     * errors are memory related */
-    return luaL_error(l, "Memory allocation error in CJSON protected call");
-}
-
 /* Return cjson module table */
 static int lua_cjson_new(lua_State *l)
 {
@@ -2001,40 +1890,11 @@ static int lua_cjson_new(lua_State *l)
     return 1;
 }
 
-/* Return cjson.safe module table */
-static int lua_cjson_safe_new(lua_State *l)
-{
-    const char *func[] = { "decode", "encode", NULL };
-    int i;
-
-    lua_cjson_new(l);
-
-    /* Fix new() method */
-    lua_pushcfunction(l, lua_cjson_safe_new);
-    lua_setfield(l, -2, "new");
-
-    for (i = 0; func[i]; i++) {
-        lua_getfield(l, -1, func[i]);
-        lua_pushcclosure(l, json_protect_conversion, 1);
-        lua_setfield(l, -2, func[i]);
-    }
-
-    return 1;
-}
-
 static int luaopen_cjson(lua_State *l)
 {
     lua_cjson_new(l);
 
     /* Return cjson table */
-    return 1;
-}
-
-static int luaopen_cjson_safe(lua_State *l)
-{
-    lua_cjson_safe_new(l);
-
-    /* Return cjson.safe table */
     return 1;
 }
 

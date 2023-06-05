@@ -199,8 +199,6 @@ static void sdl_handle_events(void) {
     float aspect_width = config->resolution.width / (float)display_rect.w;
     float aspect_height = config->resolution.height / (float)display_rect.h;
 
-    char* filename;
-
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
             case SDL_QUIT:
@@ -252,15 +250,6 @@ static void sdl_handle_events(void) {
                 event.button.type = EVENT_MOUSEUP;
                 event.button.button = sdl_event.button.button;
                 event_post(&event);
-                break;
-
-            case SDL_DROPFILE:
-                filename = sdl_event.drop.file;
-
-                // TODO: Handle drag and drop
-
-                SDL_free(filename);
-
                 break;
         }
     }

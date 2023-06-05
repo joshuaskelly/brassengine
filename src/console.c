@@ -32,7 +32,7 @@ static void clear_input(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
-    input = circular_buffer_new(10);
+    input = circular_buffer_new(20);
 }
 
 void console_destroy(void) {
@@ -156,7 +156,7 @@ static void load_input_history(void) {
         input->count - input_buffer_offset
     );
 
-    strncpy(command, s, strlen(s));
+    strcpy(command, s);
     command[strlen(s)] = '\0';
 }
 
@@ -172,7 +172,8 @@ static bool handle_key_down(event_t* event) {
 
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
-            if (command_length <= 0) return true;
+            // Don't allow backspacing beyond beginning of command
+            if (command_length + cursor_offset <= 0) return true;
 
             int i = command_length + cursor_offset;
             memmove(command + i - 1, command + i, -cursor_offset + 1);
@@ -372,14 +373,14 @@ void console_draw(void) {
 void console_buffer_write(const char* line) {
     // Copy line because
     char* s = (char*)malloc(sizeof(char) * strlen(line) + 1);
-    strncpy(s, line, strlen(line));
+    strcpy(s, line);
     s[strlen(line)] = '\0';
 
     // Split on newlines
     char* token = strtok(s, "\n");
     while (token) {
         char* l = (char*)malloc(sizeof(char) * strlen(token) + 1);
-        strncpy(l, token, strlen(token));
+        strcpy(l, token);
         l[strlen(token)] = '\0';
 
         circular_buffer_add(output, l);
@@ -404,7 +405,7 @@ void console_buffer_toggle(void) {
 static void save_command_to_input_buffer(void) {
     size_t size = strlen(command);
     char* s = (char*)malloc(sizeof(char) * (size + 1));
-    strncpy(s, command, size);
+    strcpy(s, command);
     s[size] = '\0';
 
     circular_buffer_add(input, s);

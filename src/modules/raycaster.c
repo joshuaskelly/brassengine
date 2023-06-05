@@ -35,13 +35,13 @@ static int modules_raycaster_camera_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         lua_newvector2(L, camera->position[0], camera->position[1]);
     }
-    else if (strncmp(key, "direction", 9) == 0) {
+    else if (strcmp(key, "direction") == 0) {
         lua_newvector2(L, camera->direction[0], camera->direction[1]);
     }
-    else if (strncmp(key, "fov", 3) == 0) {
+    else if (strcmp(key, "fov") == 0) {
         lua_pushnumber(L, camera->fov);
     }
     else {
@@ -55,15 +55,15 @@ static int modules_raycaster_camera_meta_newindex(lua_State* L) {
     raycaster_camera_t* camera = luaL_checkraycastercamera(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(camera->position, vector);
     }
-    else if (strncmp(key, "direction", 9) == 0) {
+    else if (strcmp(key, "direction") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(camera->direction, vector);
     }
-    else if (strncmp(key, "fov", 3) == 0) {
+    else if (strcmp(key, "fov") == 0) {
         float number = luaL_checknumber(L, 3);
         camera->fov = number;
     }
@@ -111,10 +111,10 @@ static int modules_raycaster_sprite_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         lua_newvector2(L, sprite->position[0], sprite->position[1]);
     }
-    else if (strncmp(key, "texture", 7) == 0) {
+    else if (strcmp(key, "texture") == 0) {
         lua_pushtexture(L, sprite->texture);
     }
     else {
@@ -128,11 +128,11 @@ static int modules_raycaster_sprite_meta_newindex(lua_State* L) {
     raycaster_sprite_t* sprite = luaL_checkraycastersprite(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    if (strncmp(key, "position", 8) == 0) {
+    if (strcmp(key, "position") == 0) {
         mfloat_t* vector = luaL_checkvector2(L, 3);
         vec2_assign(sprite->position, vector);
     }
-    else if (strncmp(key, "texture", 7) == 0) {
+    else if (strcmp(key, "texture") == 0) {
         texture_t* texture = luaL_checktexture(L, 3);
         sprite->texture = texture;
     }
@@ -187,13 +187,13 @@ static int modules_raycaster_map_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
-    if (strncmp(key, "walls", 5) == 0) {
+    if (strcmp(key, "walls") == 0) {
         lua_pushtexture(L, map->walls);
     }
-    else if (strncmp(key, "add_sprite", 10) == 0) {
+    else if (strcmp(key, "add_sprite") == 0) {
         lua_pushcfunction(L, modules_raycaster_map_add_sprite);
     }
-    else if (strncmp(key, "remove_sprite", 13) == 0) {
+    else if (strcmp(key, "remove_sprite") == 0) {
         lua_pushcfunction(L, modules_raycaster_map_remove_sprite);
     }
     else {
@@ -235,6 +235,11 @@ static const struct luaL_Reg raycaster_map_meta_functions[] = {
     {NULL, NULL}
 };
 
+/**
+ * Create a new raycaster_map object.
+ * @function map_new
+ * @return raycaster_map
+ */
 static int modules_raycaster_map_new(lua_State* L) {
     raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
     *handle = raycaster_map_new();
@@ -243,6 +248,11 @@ static int modules_raycaster_map_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Create a new raycaster_camera object.
+ * @function camera_new
+ * @return raycaster_camera
+ */
 static int modules_raycaster_camera_new(lua_State* L) {
     raycaster_camera_t* camera = (raycaster_camera_t*)lua_newuserdata(L, sizeof(raycaster_camera_t));
     camera->position[0] = 0;
@@ -255,6 +265,11 @@ static int modules_raycaster_camera_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Create a new raycaster_sprite object.
+ * @function sprite_new
+ * @return raycaster_sprite
+ */
 static int modules_raycaster_sprite_new(lua_State* L) {
     lua_newraycastersprite(L);
 
@@ -347,6 +362,63 @@ static int module_raycaster_fog_distance_set(lua_State* L) {
 
     return 0;
 }
+
+/**
+ * Map for rendering a raycaster scene.
+ * @type raycaster_map
+ */
+
+/**
+ * Map walls.
+ * @field walls A texture userdata representing wall positions and textures.
+ */
+
+/**
+ * Add given sprite to map.
+ * @function add_sprite
+ * @param sprite A raycaster_sprite
+ */
+
+/**
+ * Remove given sprite from map.
+ * @function remove_sprite
+ * @param sprite A raycaster_sprite
+ */
+
+/**
+ * Camera for rendering a raycaster scene.
+ * @type raycaster_camera
+ */
+
+/**
+ * Camera position.
+ * @field position A vector2 userdata representing camera position.
+ */
+
+/**
+ * Camera direction.
+ * @field direction A vector2 userdata representing camera direction.
+ */
+
+/**
+ * Camera field of view.
+ * @field fov Camera field of view in degrees.
+ */
+
+/**
+ * Sprite for rendering in a raycaster scene.
+ * @type raycaster_sprite
+ */
+
+/**
+ * Sprite position.
+ * @field position A vector2 userdata representing sprite position.
+ */
+
+/**
+ * Sprite texture.
+ * @field texture
+ */
 
 static const struct luaL_Reg module_functions[] = {
     {"render", module_raycaster_render},

@@ -1,10 +1,10 @@
-# toyengine
+# Brass Engine
 
 ## Install
 
 ###  Clone
 
-`$ git clone https://github.com/joshuaskelly/toyengine.git`
+`$ git clone https://github.com/joshuaskelly/brassengine.git`
 
 ### Init Submodules
 
@@ -28,7 +28,7 @@ Build:
 
 Run:
 
-`$ ./build/bin/toy`
+`$ ./build/bin/brass`
 
 ### Web
 
@@ -48,10 +48,10 @@ Run:
 
 ![Lines Demo](.media/3d-dot-party.gif)
 
-`$ ./build/bin/toy demos/3d_dot_party`
+`$ ./build/bin/brass demos/3d_dot_party`
 
 Lines Demo
 
 ![Lines Demo](.media/lines-demo.gif)
 
-`$ ./build/bin/toy demos/lines`
+`$ ./build/bin/brass demos/lines`

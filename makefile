@@ -1,7 +1,7 @@
 CC=gcc
 AR='ar rcs'
 RANLIB=ranlib
-BIN=toy
+BIN=brass
 
 CFLAGS=-Wall -std=c99 -O3
 DFLAGS=-Wall -std=c99 -DDEBUG -g
@@ -83,7 +83,7 @@ $(LIBMATHC):
 	cd $(MATHC_DIR) && make CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 docs: ## Generate API documentation
-	ldoc src/modules -d docs -p toyengine
+	ldoc src/modules -d docs -p brassengine
 
 docsclean: ## Delete generated API documentation
 	rm -rf docs
