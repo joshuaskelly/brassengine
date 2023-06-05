@@ -27,7 +27,7 @@ mfloat_t* luaL_checkvector3(lua_State* L, int index) {
 
 int lua_newvector3(lua_State* L, float x, float y, float z) {
     mfloat_t** handle = (mfloat_t**)lua_newuserdata(L, sizeof(mfloat_t*));
-    mfloat_t* vector = (mfloat_t*)malloc(sizeof(mfloat_t) * 3);
+    mfloat_t* vector = (mfloat_t*)malloc(sizeof(mfloat_t) * VEC3_SIZE);
     vector[0] = x;
     vector[1] = y;
     vector[2] = z;
