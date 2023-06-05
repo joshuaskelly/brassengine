@@ -79,6 +79,22 @@ static int vector3_equal(lua_State* L) {
     return 1;
 }
 
+static int vector3_zero(lua_State* L) {
+    lua_newvector3(L, 0, 0, 0);
+    mfloat_t* vector = luaL_checkvector3(L, 1);
+    vec3_zero(vector);
+
+    return 1;
+}
+
+static int vector3_one(lua_State* L) {
+    lua_newvector3(L, 0, 0, 0);
+    mfloat_t* vector = luaL_checkvector3(L, 1);
+    vec3_one(vector);
+
+    return 1;
+}
+
 static int vector3_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
     mfloat_t* v1 = luaL_checkvector3(L, 2);
@@ -649,6 +665,8 @@ static int vector3_distance_squared(lua_State* L) {
 
 static const struct luaL_Reg module_functions[] = {
     {"new", vector3_new},
+    {"zero", vector3_zero},
+    {"one", vector3_one},
     {"add", vector3_add},
     {"subtract", vector3_subtract},
     {"multiply", vector3_multiply},
