@@ -286,7 +286,7 @@ static int matrix4_scale(lua_State* L) {
  */
 
 /**
- * Creates a matrix4
+ * Returns a new matrix4
  * @function new
  * @return @{matrix4}
  */

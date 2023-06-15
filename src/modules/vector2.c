@@ -53,6 +53,36 @@ static int vector2_gc(lua_State* L) {
     return 0;
 }
 
+/**
+ * Vector2 class
+ * @type vector2
+ */
+
+/**
+ * Length of the vector.
+ * @field length
+ */
+
+/**
+ * X component of the vector
+ * @field x
+ */
+
+/**
+ * Y component of the vector
+ * @field y
+ */
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
+ * Returns a new vector2
+ * @function new
+ * @return @{vector2}
+ */
 static int vector2_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
     float y = (float)luaL_optnumber(L, 2, 0);
@@ -656,7 +686,14 @@ static int vector2_meta_index(lua_State* L) {
         lua_pushnumber(L, vec2_length(vector));
     }
     else {
-        lua_pushnil(L);
+        // Check module fields. This enables usage of the colon operator.
+        luaL_requiref(L, "vector2", NULL, false);
+        if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_getfield(L, -1, key);
+        }
+        else {
+            lua_pushnil(L);
+        }
     }
 
     return 1;

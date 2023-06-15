@@ -54,6 +54,41 @@ static int vector3_gc(lua_State* L) {
     return 0;
 }
 
+/**
+ * Vector3 class
+ * @type vector3
+ */
+
+/**
+ * Length of the vector.
+ * @field length
+ */
+
+/**
+ * X component of the vector
+ * @field x
+ */
+
+/**
+ * Y component of the vector
+ * @field y
+ */
+
+/**
+ * Z component of the vector
+ * @field z
+ */
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
+ * Returns a new vector3
+ * @function new
+ * @return @{vector3}
+ */
 static int vector3_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
     float y = (float)luaL_optnumber(L, 2, 0);
@@ -716,7 +751,14 @@ static int vector3_meta_index(lua_State* L) {
         lua_pushnumber(L, vec3_length(vector));
     }
     else {
-        lua_pushnil(L);
+        // Check module fields. This enables usage of the colon operator.
+        luaL_requiref(L, "vector3", NULL, false);
+        if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_getfield(L, -1, key);
+        }
+        else {
+            lua_pushnil(L);
+        }
     }
 
     return 1;
