@@ -97,6 +97,199 @@ static int matrix4_gc(lua_State* L) {
     return 0;
 }
 
+/**
+ * Matrix4 class
+ * @type matrix4
+ */
+
+/**
+ * Determinant of matrix.
+ * @function determinant
+ * @return float
+ */
+static int matrix4_determinant(lua_State* L) {
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+    float determinant = mat4_determinant(m0);
+
+    lua_settop(L, 0);
+
+    lua_pushnumber(L, determinant);
+
+    return 1;
+}
+
+/**
+ * Negates a matrix.
+ * @function negative
+ * @return @{matrix4}
+ */
+static int matrix4_negative(lua_State* L) {
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[MAT4_SIZE];
+    mat4_negative(result, m0);
+
+    lua_newmatrix4_from_matrix(L, result);
+
+    return 1;
+}
+
+/**
+ * Transpose of matrix.
+ * @function transpose
+ * @return @{matrix4}
+ */
+static int matrix4_transpose(lua_State* L) {
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[MAT4_SIZE];
+    mat4_transpose(result, m0);
+
+    lua_newmatrix4_from_matrix(L, result);
+
+    return 1;
+}
+
+/**
+ * Cofactor of matrix.
+ * @function cofactor
+ * @return @{matrix4}
+ */
+static int matrix4_cofactor(lua_State* L) {
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[MAT4_SIZE];
+    mat4_cofactor(result, m0);
+
+    lua_newmatrix4_from_matrix(L, result);
+
+    return 1;
+}
+
+/**
+ * Inverse of matrix.
+ * @function inverse
+ * @return @{matrix4}
+ */
+static int matrix4_inverse(lua_State* L) {
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[MAT4_SIZE];
+    mat4_inverse(result, m0);
+
+    lua_newmatrix4_from_matrix(L, result);
+
+    return 1;
+}
+
+/**
+ * Translates matrix in-place.
+ * @function translate
+ * @param v0
+ * @return @{matrix4}
+ */
+
+/**
+ * Translates matrix in-place.
+ * @function translate
+ * @param x
+ * @param y
+ * @param z
+ * @return @{matrix4}
+ */
+static int matrix4_translate(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
+    mfloat_t* v0 = NULL;
+    mfloat_t v1[VEC3_SIZE];
+
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    if (arg_count == 2) {
+        v0 = luaL_checkvector3(L, 2);
+    }
+    else {
+        int x = luaL_checknumber(L, 2);
+        int y = luaL_checknumber(L, 3);
+        int z = luaL_checknumber(L, 4);
+
+        v1[0] = x;
+        v1[1] = y;
+        v1[2] = z;
+
+        v0 = v1;
+    }
+
+    lua_settop(L, 1);
+
+    mat4_translate(m0, m0, v0);
+
+    return 1;
+}
+
+/**
+ * Scales matrix in-place.
+ * @function translate
+ * @param v0
+ * @return @{matrix4}
+ */
+
+/**
+ * Scales matrix in-place.
+ * @function translate
+ * @param x
+ * @param y
+ * @param z
+ * @return @{matrix4}
+ */
+static int matrix4_scale(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
+    mfloat_t* v0 = NULL;
+    mfloat_t v1[VEC3_SIZE];
+
+    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
+
+    if (arg_count == 2) {
+        v0 = luaL_checkvector3(L, 2);
+    }
+    else {
+        int x = luaL_checknumber(L, 2);
+        int y = luaL_checknumber(L, 3);
+        int z = luaL_checknumber(L, 4);
+
+        v1[0] = x;
+        v1[1] = y;
+        v1[2] = z;
+
+        v0 = v1;
+    }
+
+    lua_settop(L, 1);
+
+    mat4_scale(m0, m0, v0);
+
+    return 1;
+}
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
+ * Creates a matrix4
+ * @function new
+ * @return @{matrix4}
+ */
 static int matrix4_new(lua_State* L) {
     float m11 = (float)luaL_optnumber(L, 1, 0);
     float m21 = (float)luaL_optnumber(L, 2, 0);
@@ -122,6 +315,11 @@ static int matrix4_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns a matrix with all elements set to zero.
+ * @function zero
+ * @return @{matrix4}
+ */
 static int matrix4_zero(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -130,78 +328,15 @@ static int matrix4_zero(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns an identity matrix.
+ * @function identity
+ * @return @{matrix4}
+ */
 static int matrix4_identity(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mat4_identity(m0);
-
-    return 1;
-}
-
-/**
- * Determinant of matrix.
- * @function determinant
- * @param m0
- * @return float
- */
-static int matrix4_determinant(lua_State* L) {
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-    float determinant = mat4_determinant(m0);
-
-    lua_settop(L, 0);
-
-    lua_pushnumber(L, determinant);
-
-    return 1;
-}
-
-/**
- * Negates a matrix.
- * @function negative
- * @param m0
- * @return matrix4
- */
-static int matrix4_negative(lua_State* L) {
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[MAT4_SIZE];
-    mat4_negative(result, m0);
-
-    lua_newmatrix4_from_matrix(L, result);
-
-    return 1;
-}
-
-/**
- * Transpose of matrix.
- * @function transpose
- * @param m0
- * @return matrix4
- */
-static int matrix4_transpose(lua_State* L) {
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[MAT4_SIZE];
-    mat4_transpose(result, m0);
-
-    lua_newmatrix4_from_matrix(L, result);
-
-    return 1;
-}
-
-static int matrix4_cofactor(lua_State* L) {
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[MAT4_SIZE];
-    mat4_cofactor(result, m0);
-
-    lua_newmatrix4_from_matrix(L, result);
 
     return 1;
 }
@@ -313,38 +448,21 @@ static int matrix4_translation(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates a scaling matrix
+ * @function scaling
+ * @param v0
+ * @return matrix4
+ */
 
-static int matrix4_translate(lua_State* L) {
-    int arg_count = lua_gettop(L);
-
-    mfloat_t* v0 = NULL;
-    mfloat_t v1[VEC3_SIZE];
-
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    if (arg_count == 2) {
-        v0 = luaL_checkvector3(L, 2);
-    }
-    else {
-        int x = luaL_checknumber(L, 2);
-        int y = luaL_checknumber(L, 3);
-        int z = luaL_checknumber(L, 4);
-
-        v1[0] = x;
-        v1[1] = y;
-        v1[2] = z;
-
-        v0 = v1;
-    }
-
-    lua_settop(L, 1);
-
-    mat4_translate(m0, m0, v0);
-
-    return 1;
-}
-
-
+/**
+ * Creates a scaling matrix
+ * @function scaling
+ * @param x
+ * @param y
+ * @param z
+ * @return matrix4
+ */
 static int matrix4_scaling(lua_State* L) {
     int arg_count = lua_gettop(L);
 
@@ -376,36 +494,6 @@ static int matrix4_scaling(lua_State* L) {
     return 1;
 }
 
-static int matrix4_scale(lua_State* L) {
-    int arg_count = lua_gettop(L);
-
-    mfloat_t* v0 = NULL;
-    mfloat_t v1[VEC3_SIZE];
-
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    if (arg_count == 2) {
-        v0 = luaL_checkvector3(L, 2);
-    }
-    else {
-        int x = luaL_checknumber(L, 2);
-        int y = luaL_checknumber(L, 3);
-        int z = luaL_checknumber(L, 4);
-
-        v1[0] = x;
-        v1[1] = y;
-        v1[2] = z;
-
-        v0 = v1;
-    }
-
-    lua_settop(L, 1);
-
-    mat4_scale(m0, m0, v0);
-
-    return 1;
-}
-
 static int matrix4_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t* m1 = luaL_checkmatrix4(L, 2);
@@ -420,19 +508,14 @@ static int matrix4_multiply(lua_State* L) {
     return 1;
 }
 
-static int matrix4_inverse(lua_State* L) {
-    mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[MAT4_SIZE];
-    mat4_inverse(result, m0);
-
-    lua_newmatrix4_from_matrix(L, result);
-
-    return 1;
-}
-
+/**
+ * Linearly interpolate two matrices.
+ * @function lerp
+ * @param m0
+ * @param m1
+ * @param f
+ * @return @{matrix4}
+ */
 static int matrix4_lerp(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t* m1 = luaL_checkmatrix4(L, 2);
@@ -448,6 +531,14 @@ static int matrix4_lerp(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates a look at transformation.
+ * @function look_at
+ * @param position
+ * @param target
+ * @param up
+ * @return @{matrix4}
+ */
 static int matrix4_look_at(lua_State* L) {
     mfloat_t* position = luaL_checkvector3(L, 1);
     mfloat_t* target = luaL_checkvector3(L, 2);
@@ -463,6 +554,17 @@ static int matrix4_look_at(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates an orthographic view transformation.
+ * @function ortho
+ * @param l
+ * @param r
+ * @param b
+ * @param t
+ * @param n
+ * @param f
+ * @return @{matrix4}
+ */
 static int matrix4_ortho(lua_State* L) {
     mfloat_t l = luaL_checknumber(L, 1);
     mfloat_t r = luaL_checknumber(L, 2);
@@ -478,6 +580,15 @@ static int matrix4_ortho(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates an perspective view transformation.
+ * @function perspective
+ * @param fov_y
+ * @param aspect
+ * @param n
+ * @param f
+ * @return @{matrix4}
+ */
 static int matrix4_perspective(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t aspect = luaL_checknumber(L, 2);
@@ -491,6 +602,16 @@ static int matrix4_perspective(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates an perspective view transformation.
+ * @function perspective_fov
+ * @param fov
+ * @param w
+ * @param h
+ * @param n
+ * @param f
+ * @return @{matrix4}
+ */
 static int matrix4_perspective_fov(lua_State* L) {
     mfloat_t fov = luaL_checknumber(L, 1);
     mfloat_t w = luaL_checknumber(L, 2);
@@ -505,6 +626,14 @@ static int matrix4_perspective_fov(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates an perspective view transformation.
+ * @function perspective_infinite
+ * @param fov_y
+ * @param aspect
+ * @param n
+ * @return @{matrix4}
+ */
 static int matrix4_perspective_infinite(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t aspect = luaL_checknumber(L, 2);
@@ -518,21 +647,23 @@ static int matrix4_perspective_infinite(lua_State* L) {
 }
 
 static const struct luaL_Reg module_functions[] = {
+    // Class functions
+    {"cofactor", matrix4_cofactor},
+    {"determinant", matrix4_determinant},
+    {"scale", matrix4_scale},
+    {"translate", matrix4_translate},
+    {"transpose", matrix4_transpose},
+    // Module functions
     {"new", matrix4_new},
     {"zero", matrix4_zero},
     {"identity", matrix4_identity},
-    {"determinant", matrix4_determinant},
-    {"transpose", matrix4_transpose},
-    {"cofactor", matrix4_cofactor},
     {"rotate_x_axis", matrix4_rotate_x_axis},
     {"rotate_y_axis", matrix4_rotate_y_axis},
     {"rotate_z_axis", matrix4_rotate_z_axis},
     {"rotate_around_axis", matrix4_rotate_around_axis},
     //{"rotate", matrix4_rotate},
     {"translation", matrix4_translation},
-    {"translate", matrix4_translate},
     {"scaling", matrix4_scaling},
-    {"scale", matrix4_scale},
     {"inverse", matrix4_inverse},
     {"lerp", matrix4_lerp},
     {"look_at", matrix4_look_at},
