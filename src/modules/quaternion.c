@@ -407,6 +407,48 @@ static int quaternion_from_matrix4(lua_State* L) {
 }
 
 /**
+ * Create a rotation from a euler angles.
+ * @function from_euler
+ * @param x
+ * @param y
+ * @param z
+ * @return @{quaternion}
+ */
+static int quaternion_from_euler(lua_State* L) {
+    mfloat_t x_angle = luaL_checknumber(L, 1);
+    mfloat_t y_angle = luaL_checknumber(L, 2);
+    mfloat_t z_angle = luaL_checknumber(L, 3);
+
+    lua_settop(L, 0);
+
+    mfloat_t hx = x_angle * MFLOAT_C(0.5);
+    mfloat_t sx = MSIN(hx);
+    mfloat_t cx = MCOS(hx);
+    mfloat_t hy = y_angle * MFLOAT_C(0.5);
+    mfloat_t sy = MSIN(hy);
+    mfloat_t cy = MCOS(hy);
+    mfloat_t hz = z_angle * MFLOAT_C(0.5);
+    mfloat_t sz = MSIN(hz);
+    mfloat_t cz = MCOS(hz);
+
+    mfloat_t cy_sx = cy * sx;
+    mfloat_t sy_cx = sy * cx;
+    mfloat_t cy_cx = cy * cx;
+    mfloat_t sy_sx = sy * sx;
+
+    mfloat_t result[QUAT_SIZE];
+
+    result[0] = (cy_sx * cz) + (sy_cx * sz);
+    result[1] = (sy_cx * cz) - (cy_sx * sz);
+    result[2] = (cy_cx * sz) - (sy_sx * cz);
+    result[3] = (cy_cx * cz) + (sy_sx * sz);
+
+    lua_newquaternion(L, result[0], result[1], result[2], result[3]);
+
+    return 1;
+}
+
+/**
  * Linearly interpolate between q0 and q1.
  * @function lerp
  * @param q0 @{quaternion}
@@ -487,6 +529,7 @@ static const struct luaL_Reg module_functions[] = {
     {"from_axis_angle", quaternion_from_axis_angle},
     {"from_vector3", quaternion_from_vector3},
     {"from_matrix4", quaternion_from_matrix4},
+    {"from_euler", quaternion_from_euler},
     {"lerp", quaternion_lerp},
     {"slerp", quaternion_slerp},
     {"angle", quaternion_angle},
