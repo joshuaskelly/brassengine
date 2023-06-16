@@ -12,6 +12,7 @@
 #include <mathc/mathc.h>
 
 #include "matrix4.h"
+#include "quaternion.h"
 #include "vector3.h"
 
 mfloat_t* luaL_checkmatrix4(lua_State* L, int index) {
@@ -403,6 +404,25 @@ static int matrix4_rotate_around_axis(lua_State* L) {
 }
 
 /**
+ * Creates a rotation matrix
+ * @function rotation
+ * @param q0 @{quaternion}
+ * @return @{matrix4}
+ */
+static int matrix4_rotation_quaternion(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[MAT4_SIZE];
+    mat4_rotation_quat(result, q0);
+
+    lua_newmatrix4_from_matrix(L, result);
+
+    return 1;
+}
+
+/**
  * Creates a translation matrix
  * @function translation
  * @param v0 @{vector3}
@@ -661,7 +681,7 @@ static const struct luaL_Reg module_functions[] = {
     {"rotate_y_axis", matrix4_rotate_y_axis},
     {"rotate_z_axis", matrix4_rotate_z_axis},
     {"rotate_around_axis", matrix4_rotate_around_axis},
-    //{"rotate", matrix4_rotate},
+    {"rotation", matrix4_rotation_quaternion},
     {"translation", matrix4_translation},
     {"scaling", matrix4_scaling},
     {"inverse", matrix4_inverse},
