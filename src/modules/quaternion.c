@@ -415,9 +415,23 @@ static int quaternion_from_matrix4(lua_State* L) {
  * @return @{quaternion}
  */
 static int quaternion_from_euler(lua_State* L) {
-    mfloat_t x_angle = luaL_checknumber(L, 1);
-    mfloat_t y_angle = luaL_checknumber(L, 2);
-    mfloat_t z_angle = luaL_checknumber(L, 3);
+    int arg_count = lua_gettop(L);
+
+    mfloat_t x_angle = 0.0f;
+    mfloat_t y_angle = 0.0f;
+    mfloat_t z_angle = 0.0f;
+
+    if (arg_count == 1) {
+        mfloat_t* v0 = luaL_checkvector3(L, 1);
+        x_angle = v0[0];
+        y_angle = v0[1];
+        z_angle = v0[2];
+    }
+    else {
+        x_angle = luaL_checknumber(L, 1);
+        y_angle = luaL_checknumber(L, 2);
+        z_angle = luaL_checknumber(L, 3);
+    }
 
     lua_settop(L, 0);
 
@@ -476,14 +490,14 @@ static int quaternion_to_euler(lua_State* L) {
     mfloat_t z_angle = 0.0f;
 
     if (pole == 0) {
-        x_angle = asinf(clampf(2.0f * (q0[3] * q0[0] - q0[2] * q0[1]), -1.0f, 1.0f));
-        y_angle = atan2f(2.0f * (q0[1] * q0[3] + q0[0] * q0[2]), 1.0f - 2.0f * (q0[1] * q0[1] + q0[0] * q0[0]));
-        z_angle = atan2f(2.0f * (q0[3] * q0[2] + q0[1] * q0[0]), 1.0f - 2.0f * (q0[0] * q0[0] + q0[2] * q0[2]));
+        x_angle = MASIN(clampf(2.0f * (q0[3] * q0[0] - q0[2] * q0[1]), -1.0f, 1.0f));
+        y_angle = MATAN2(2.0f * (q0[1] * q0[3] + q0[0] * q0[2]), 1.0f - 2.0f * (q0[1] * q0[1] + q0[0] * q0[0]));
+        z_angle = MATAN2(2.0f * (q0[3] * q0[2] + q0[1] * q0[0]), 1.0f - 2.0f * (q0[0] * q0[0] + q0[2] * q0[2]));
     }
     else {
         x_angle = pole * MPI_2;
         y_angle = 0.0f;
-        z_angle = pole * 2.0f * atan2f(q0[1], q0[3]);
+        z_angle = pole * 2.0f * MATAN2(q0[1], q0[3]);
     }
 
     lua_newvector3(L, x_angle, y_angle, z_angle);
