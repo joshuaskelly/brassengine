@@ -61,7 +61,107 @@ static int quaternion_gc(lua_State* L) {
 }
 
 /**
- * Resturns a new quaternion.
+ * Quaternion class
+ * @type quaternion
+ */
+
+/**
+ * Conjugate of quaternion.
+ * @function conjugate
+ * @return @{quaternion}
+ */
+static int quaternion_conjugate(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[QUAT_SIZE];
+    quat_conjugate(result, q0);
+
+    lua_newquaternion(L, result[0], result[1], result[2], result[3]);
+
+    return 1;
+}
+
+/**
+ * Inverse of quaternion.
+ * @function inverse
+ * @return @{quaternion}
+ */
+static int quaternion_inverse(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[QUAT_SIZE];
+    quat_inverse(result, q0);
+
+    lua_newquaternion(L, result[0], result[1], result[2], result[3]);
+
+    return 1;
+}
+
+/**
+ * Get quaternion magnitude
+ * @function length
+ * @return float
+ */
+static int quaternion_length(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t length = quat_length(q0);
+
+    lua_pushnumber(L, length);
+
+    return 1;
+}
+
+/**
+ * Get quaternion squared magnitude
+ * @function length_squared
+ * @return float
+ */
+static int quaternion_length_squared(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t length = quat_length_squared(q0);
+
+    lua_pushnumber(L, length);
+
+    return 1;
+}
+
+/**
+ * X component of the quaternion
+ * @field x
+ */
+
+/**
+ * Y component of the quaternion
+ * @field y
+ */
+
+/**
+ * Z component of the quaternion
+ * @field z
+ */
+
+/**
+ * W component of the quaternion
+ * @field w
+ */
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
+ * Returns a new quaternion.
  * @function new
  * @param x
  * @param y
@@ -82,10 +182,26 @@ static int quaternion_new(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns a quaternion with all components set to zero.
+ * @return @{quaternion}
+ */
 static int quaternion_zero(lua_State* L) {
     lua_newquaternion(L, 0, 0, 0, 0);
     mfloat_t* result = luaL_checkquaternion(L, 1);
     quat_zero(result);
+
+    return 1;
+}
+
+/**
+ * Returns a quaternion representing no rotation.
+ * @return @{quaternion}
+ */
+static int quaternion_identity(lua_State* L) {
+    lua_newquaternion(L, 0, 0, 0, 0);
+    mfloat_t* result = luaL_checkquaternion(L, 1);
+    quat_identity(result);
 
     return 1;
 }
@@ -176,32 +292,12 @@ static int quaternion_equal(lua_State* L) {
     return 1;
 }
 
-static int quaternion_conjugate(lua_State* L) {
-    mfloat_t* q0 = luaL_checkquaternion(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[QUAT_SIZE];
-    quat_conjugate(result, q0);
-
-    lua_newquaternion(L, result[0], result[1], result[2], result[3]);
-
-    return 1;
-}
-
-static int quaternion_inverse(lua_State* L) {
-    mfloat_t* q0 = luaL_checkquaternion(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t result[QUAT_SIZE];
-    quat_inverse(result, q0);
-
-    lua_newquaternion(L, result[0], result[1], result[2], result[3]);
-
-    return 1;
-}
-
+/**
+ * Creates quaternion with same rotation, but magnitude of 1.
+ * @function normalize
+ * @param q0
+ * @return @{quaternion}
+ */
 static int quaternion_normalize(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
@@ -215,6 +311,13 @@ static int quaternion_normalize(lua_State* L) {
     return 1;
 }
 
+/**
+ * Dot product of two quaternions.
+ * @function normalize
+ * @param q0
+ * @param q1
+ * @return float
+ */
 static int quaternion_dot(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
@@ -242,6 +345,13 @@ static int quaternion_power(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates a rotation from a unit vector and angle to rotate around the vector.
+ * @function from_axis_angle
+ * @param v0
+ * @param angle
+ * @return @{quaternion}
+ */
 static int quaternion_from_axis_angle(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
     mfloat_t angle = luaL_checknumber(L, 2);
@@ -256,6 +366,13 @@ static int quaternion_from_axis_angle(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates a rotation from v0 to v1.
+ * @function from_vector3
+ * @param v0
+ * @param v1
+ * @return @{quaternion}
+ */
 static int quaternion_from_vector3(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
     mfloat_t* v1 = luaL_checkvector3(L, 2);
@@ -270,6 +387,12 @@ static int quaternion_from_vector3(lua_State* L) {
     return 1;
 }
 
+/**
+ * Create a rotation from a rotation matrix.
+ * @function from_matrix4
+ * @param m0
+ * @return @{quaternion}
+ */
 static int quaternion_from_matrix4(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
@@ -283,6 +406,14 @@ static int quaternion_from_matrix4(lua_State* L) {
     return 1;
 }
 
+/**
+ * Linearly interpolate between q0 and q1.
+ * @function lerp
+ * @param q0
+ * @param q1
+ * @param t Value used to interpolate between q0 and q1.
+ * @return @{quaternion}
+ */
 static int quaternion_lerp(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
@@ -298,6 +429,14 @@ static int quaternion_lerp(lua_State* L) {
     return 1;
 }
 
+/**
+ * Linearly interpolate between q0 and q1, using spherical linear interpolation.
+ * @function slerp
+ * @param q0
+ * @param q1
+ * @param t Value used to interpolate between q0 and q1.
+ * @return @{quaternion}
+ */
 static int quaternion_slerp(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
@@ -313,30 +452,13 @@ static int quaternion_slerp(lua_State* L) {
     return 1;
 }
 
-static int quaternion_length(lua_State* L) {
-    mfloat_t* q0 = luaL_checkquaternion(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t length = quat_length(q0);
-
-    lua_pushnumber(L, length);
-
-    return 1;
-}
-
-static int quaternion_length_squared(lua_State* L) {
-    mfloat_t* q0 = luaL_checkquaternion(L, 1);
-
-    lua_settop(L, 0);
-
-    mfloat_t length = quat_length_squared(q0);
-
-    lua_pushnumber(L, length);
-
-    return 1;
-}
-
+/**
+ * Get angle between two rotations
+ * @function angle
+ * @param q0
+ * @param q1
+ * @return float
+ */
 static int quaternion_angle(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
@@ -351,19 +473,22 @@ static int quaternion_angle(lua_State* L) {
 }
 
 static const struct luaL_Reg module_functions[] = {
-    {"new", quaternion_new},
-    {"zero", quaternion_zero},
+    // Class functions
     {"conjugate", quaternion_conjugate},
     {"inverse", quaternion_inverse},
     {"normalize", quaternion_normalize},
+    {"length", quaternion_length},
+    {"length_squared", quaternion_length_squared},
+    // Module functions
+    {"new", quaternion_new},
+    {"zero", quaternion_zero},
+    {"identity", quaternion_identity},
     {"dot", quaternion_dot},
     {"from_axis_angle", quaternion_from_axis_angle},
     {"from_vector3", quaternion_from_vector3},
     {"from_matrix4", quaternion_from_matrix4},
     {"lerp", quaternion_lerp},
     {"slerp", quaternion_slerp},
-    {"length", quaternion_length},
-    {"length_squared", quaternion_length_squared},
     {"angle", quaternion_angle},
     {NULL, NULL}
 };
