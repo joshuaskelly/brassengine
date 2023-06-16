@@ -778,7 +778,7 @@ static int vector3_meta_newindex(lua_State* L) {
     }
     else if (strcmp(key, "z") == 0) {
         float value = (float)luaL_checknumber(L, 3);
-        vector[1] = value;
+        vector[2] = value;
     }
     else {
         luaL_error(L, "attempt to index a vector3 value");
