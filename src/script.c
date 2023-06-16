@@ -24,6 +24,7 @@
 #include "modules/keyboard.h"
 #include "modules/matrix4.h"
 #include "modules/mouse.h"
+#include "modules/quaternion.h"
 #include "modules/raycaster.h"
 #include "modules/sound.h"
 #include "modules/statistics.h"
@@ -50,6 +51,7 @@ static const luaL_Reg modules[] = {
     {"input.keyboard", luaopen_keyboard},
     {"matrix4", luaopen_matrix4},
     {"input.mouse", luaopen_mouse},
+    {"quaternion", luaopen_quaternion},
     {"raycaster", luaopen_raycaster},
     {"sound", luaopen_sound},
     {"statistics", luaopen_statistics},
