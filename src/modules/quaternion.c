@@ -295,7 +295,7 @@ static int quaternion_equal(lua_State* L) {
 /**
  * Creates quaternion with same rotation, but magnitude of 1.
  * @function normalize
- * @param q0
+ * @param q0 @{quaternion}
  * @return @{quaternion}
  */
 static int quaternion_normalize(lua_State* L) {
@@ -314,8 +314,8 @@ static int quaternion_normalize(lua_State* L) {
 /**
  * Dot product of two quaternions.
  * @function normalize
- * @param q0
- * @param q1
+ * @param q0 @{quaternion}
+ * @param q1 @{quaternion}
  * @return float
  */
 static int quaternion_dot(lua_State* L) {
@@ -348,7 +348,7 @@ static int quaternion_power(lua_State* L) {
 /**
  * Creates a rotation from a unit vector and angle to rotate around the vector.
  * @function from_axis_angle
- * @param v0
+ * @param v0 @{vector3}
  * @param angle
  * @return @{quaternion}
  */
@@ -369,8 +369,8 @@ static int quaternion_from_axis_angle(lua_State* L) {
 /**
  * Creates a rotation from v0 to v1.
  * @function from_vector3
- * @param v0
- * @param v1
+ * @param v0 @{vector3}
+ * @param v1 @{vector3}
  * @return @{quaternion}
  */
 static int quaternion_from_vector3(lua_State* L) {
@@ -390,7 +390,7 @@ static int quaternion_from_vector3(lua_State* L) {
 /**
  * Create a rotation from a rotation matrix.
  * @function from_matrix4
- * @param m0
+ * @param m0 @{matrix4}
  * @return @{quaternion}
  */
 static int quaternion_from_matrix4(lua_State* L) {
@@ -409,8 +409,8 @@ static int quaternion_from_matrix4(lua_State* L) {
 /**
  * Linearly interpolate between q0 and q1.
  * @function lerp
- * @param q0
- * @param q1
+ * @param q0 @{quaternion}
+ * @param q1 @{quaternion}
  * @param t Value used to interpolate between q0 and q1.
  * @return @{quaternion}
  */
@@ -432,8 +432,8 @@ static int quaternion_lerp(lua_State* L) {
 /**
  * Linearly interpolate between q0 and q1, using spherical linear interpolation.
  * @function slerp
- * @param q0
- * @param q1
+ * @param q0 @{quaternion}
+ * @param q1 @{quaternion}
  * @param t Value used to interpolate between q0 and q1.
  * @return @{quaternion}
  */
@@ -455,8 +455,8 @@ static int quaternion_slerp(lua_State* L) {
 /**
  * Get angle between two rotations
  * @function angle
- * @param q0
- * @param q1
+ * @param q0 @{quaternion}
+ * @param q1 @{quaternion}
  * @return float
  */
 static int quaternion_angle(lua_State* L) {

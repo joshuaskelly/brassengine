@@ -193,7 +193,7 @@ static int matrix4_inverse(lua_State* L) {
 /**
  * Translates matrix in-place.
  * @function translate
- * @param v0
+ * @param v0 @{vector3}
  * @return @{matrix4}
  */
 
@@ -238,7 +238,7 @@ static int matrix4_translate(lua_State* L) {
 /**
  * Scales matrix in-place.
  * @function translate
- * @param v0
+ * @param v0 @{vector3}
  * @return @{matrix4}
  */
 
@@ -405,8 +405,8 @@ static int matrix4_rotate_around_axis(lua_State* L) {
 /**
  * Creates a translation matrix
  * @function translation
- * @param v0
- * @return matrix4
+ * @param v0 @{vector3}
+ * @return @{matrix4}
  */
 
 /**
@@ -415,7 +415,7 @@ static int matrix4_rotate_around_axis(lua_State* L) {
  * @param x
  * @param y
  * @param z
- * @return matrix4
+ * @return @{matrix4}
  */
 static int matrix4_translation(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -451,8 +451,8 @@ static int matrix4_translation(lua_State* L) {
 /**
  * Creates a scaling matrix
  * @function scaling
- * @param v0
- * @return matrix4
+ * @param v0 @{vector3}
+ * @return @{matrix4}
  */
 
 /**
@@ -461,7 +461,7 @@ static int matrix4_translation(lua_State* L) {
  * @param x
  * @param y
  * @param z
- * @return matrix4
+ * @return @{matrix4}
  */
 static int matrix4_scaling(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -511,8 +511,8 @@ static int matrix4_multiply(lua_State* L) {
 /**
  * Linearly interpolate two matrices.
  * @function lerp
- * @param m0
- * @param m1
+ * @param m0 @{matrix4}
+ * @param m1 @{matrix4}
  * @param f
  * @return @{matrix4}
  */
@@ -534,9 +534,9 @@ static int matrix4_lerp(lua_State* L) {
 /**
  * Creates a look at transformation.
  * @function look_at
- * @param position
- * @param target
- * @param up
+ * @param position @{vector3}
+ * @param target @{vector3}
+ * @param up @{vector3}
  * @return @{matrix4}
  */
 static int matrix4_look_at(lua_State* L) {
