@@ -409,6 +409,13 @@ static int quaternion_from_matrix4(lua_State* L) {
 /**
  * Create a rotation from Euler angles.
  * @function from_euler
+ * @param v0 @{vector3}
+ * @return @{quaternion}
+ */
+
+/**
+ * Create a rotation from Euler angles.
+ * @function from_euler
  * @param x
  * @param y
  * @param z
