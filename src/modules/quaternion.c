@@ -201,7 +201,7 @@ static int quaternion_zero(lua_State* L) {
 static int quaternion_identity(lua_State* L) {
     lua_newquaternion(L, 0, 0, 0, 0);
     mfloat_t* result = luaL_checkquaternion(L, 1);
-    quat_identity(result);
+    quat_null(result);
 
     return 1;
 }
