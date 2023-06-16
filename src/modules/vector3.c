@@ -137,7 +137,7 @@ static int vector3_add(lua_State* L) {
     lua_pop(L, -1);
 
     mfloat_t result[VEC3_SIZE];
-    vec3_add(&result, v0, v1);
+    vec3_add(result, v0, v1);
 
     lua_newvector3(L, result[0], result[1], result[2]);
 
@@ -151,7 +151,7 @@ static int vector3_subtract(lua_State* L) {
     lua_pop(L, -1);
 
     mfloat_t result[VEC3_SIZE];
-    vec3_subtract(&result, v0, v1);
+    vec3_subtract(result, v0, v1);
 
     lua_newvector3(L, result[0], result[1], result[2]);
 
