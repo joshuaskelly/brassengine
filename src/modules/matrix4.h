@@ -1,9 +1,14 @@
 #ifndef MODULES_MATRIX4_H
 #define MODULES_MATRIX4_H
 
+#include <stdbool.h>
+
 #include <lua/lua.h>
 
 #include <mathc/mathc.h>
+
+/* Checks if given arg is a matrix4 userdata. */
+bool lua_ismatrix4(lua_State*L, int index);
 
 /* Checks whether the function argument arg is a matrix4 and returns a mfloat_t*. */
 mfloat_t* luaL_checkmatrix4(lua_State* L, int index);

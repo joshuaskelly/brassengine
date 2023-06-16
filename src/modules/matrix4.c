@@ -15,6 +15,15 @@
 #include "quaternion.h"
 #include "vector3.h"
 
+bool lua_ismatrix4(lua_State*L, int index) {
+    void* p = luaL_testudata(L, index, "matrix4");
+    if (p == NULL) {
+        p = luaL_testudata(L, index, "matrix4_nogc");
+    }
+
+    return p != NULL;
+}
+
 mfloat_t* luaL_checkmatrix4(lua_State* L, int index) {
     mfloat_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -516,14 +525,29 @@ static int matrix4_scaling(lua_State* L) {
 
 static int matrix4_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
-    mfloat_t* m1 = luaL_checkmatrix4(L, 2);
 
-    lua_settop(L, 0);
+    // Vector multiplication
+    if (lua_isvector3(L, 2)) {
+        mfloat_t* v0 = luaL_checkvector3(L, 2);
 
-    mfloat_t result[MAT4_SIZE];
-    mat4_multiply(result, m0, m1);
+        lua_settop(L, 0);
 
-    lua_newmatrix4_from_matrix(L, result);
+        mfloat_t v1[VEC4_SIZE] = { v0[0], v0[1], v0[2], 1.0f };
+        vec4_multiply_mat4(v1, v1, m0);
+
+        lua_newvector3(L, v1[0], v1[1], v1[2]);
+    }
+    // Matrix multiplication
+    else {
+        mfloat_t* m1 = luaL_checkmatrix4(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[MAT4_SIZE];
+        mat4_multiply(result, m0, m1);
+
+        lua_newmatrix4_from_matrix(L, result);
+    }
 
     return 1;
 }

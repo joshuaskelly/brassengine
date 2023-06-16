@@ -1,11 +1,16 @@
 #ifndef MODULES_VECTOR3_H
 #define MODULES_VECTOR3_H
 
+#include <stdbool.h>
+
 #include <lua/lua.h>
 
 #include <mathc/mathc.h>
 
-/* Checks whether the function argument arg is a vector3 and returns a mfloat_t*. */
+/* Checks if given arg is a vector3 userdata. */
+bool lua_isvector3(lua_State* L, int index);
+
+/* Checks whether given arg is a vector3 and returns a mfloat_t*. */
 mfloat_t* luaL_checkvector3(lua_State* L, int index);
 
 /* Creates and pushes on the stack a new vector3 userdata. */

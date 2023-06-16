@@ -2,6 +2,7 @@
  * Module for working with vector3 data.
  * @module vector3
  */
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,6 +13,15 @@
 #include <mathc/mathc.h>
 
 #include "vector3.h"
+
+bool lua_isvector3(lua_State*L, int index) {
+    void* p = luaL_testudata(L, index, "vector3");
+    if (p == NULL) {
+        p = luaL_testudata(L, index, "vector3_nogc");
+    }
+
+    return p != NULL;
+}
 
 mfloat_t* luaL_checkvector3(lua_State* L, int index) {
     mfloat_t** handle = NULL;
