@@ -407,7 +407,7 @@ static int quaternion_from_matrix4(lua_State* L) {
 }
 
 /**
- * Create a rotation from a euler angles.
+ * Create a rotation from Euler angles.
  * @function from_euler
  * @param x
  * @param y
@@ -444,6 +444,49 @@ static int quaternion_from_euler(lua_State* L) {
     result[3] = (cy_cx * cz) + (sy_sx * sz);
 
     lua_newquaternion(L, result[0], result[1], result[2], result[3]);
+
+    return 1;
+}
+
+/**
+ * Return Euler angle representation of rotation.
+ * @function to_euler
+ * @param q0 @{quaternion}
+ * @return @{vector3}
+ */
+static int quaternion_to_euler(lua_State* L) {
+    mfloat_t* q0 = luaL_checkquaternion(L, 1);
+
+    lua_settop(L, 0);
+
+    mfloat_t pole = q0[1] * q0[0] + q0[2] * q0[3];
+
+    if (pole > 0.499f) {
+        pole = 1.0f;
+    }
+    else if (pole < -0.499f) {
+        pole = -1.0f;
+    }
+    else {
+        pole = 0.0f;
+    }
+
+    mfloat_t x_angle = 0.0f;
+    mfloat_t y_angle = 0.0f;
+    mfloat_t z_angle = 0.0f;
+
+    if (pole == 0) {
+        x_angle = asinf(clampf(2.0f * (q0[3] * q0[0] - q0[2] * q0[1]), -1.0f, 1.0f));
+        y_angle = atan2f(2.0f * (q0[1] * q0[3] + q0[0] * q0[2]), 1.0f - 2.0f * (q0[1] * q0[1] + q0[0] * q0[0]));
+        z_angle = atan2f(2.0f * (q0[3] * q0[2] + q0[1] * q0[0]), 1.0f - 2.0f * (q0[0] * q0[0] + q0[2] * q0[2]));
+    }
+    else {
+        x_angle = pole * MPI_2;
+        y_angle = 0.0f;
+        z_angle = pole * 2.0f * atan2f(q0[1], q0[3]);
+    }
+
+    lua_newvector3(L, x_angle, y_angle, z_angle);
 
     return 1;
 }
@@ -530,6 +573,7 @@ static const struct luaL_Reg module_functions[] = {
     {"from_vector3", quaternion_from_vector3},
     {"from_matrix4", quaternion_from_matrix4},
     {"from_euler", quaternion_from_euler},
+    {"to_euler", quaternion_to_euler},
     {"lerp", quaternion_lerp},
     {"slerp", quaternion_slerp},
     {"angle", quaternion_angle},
