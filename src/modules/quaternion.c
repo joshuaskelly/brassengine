@@ -213,7 +213,7 @@ static int quaternion_multiply(lua_State* L) {
     if (lua_isnumber(L, 2)) {
         float f = luaL_checknumber(L, 2);
 
-        lua_pop(L, -1);
+        lua_settop(L, 0);
 
         mfloat_t result[QUAT_SIZE];
         quat_multiply_f(result, q0, f);
@@ -243,7 +243,7 @@ static int quaternion_divide(lua_State* L) {
     if (lua_isnumber(L, 2)) {
         float f = luaL_checknumber(L, 2);
 
-        lua_pop(L, -1);
+        lua_settop(L, 0);
 
         mfloat_t result[QUAT_SIZE];
         quat_divide_f(result, q0, f);
@@ -598,7 +598,7 @@ static int quaternion_meta_index(lua_State* L) {
     mfloat_t* quaternion = luaL_checkquaternion(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     if (strcmp(key, "x") == 0) {
         lua_pushnumber(L, quaternion[0]);
@@ -650,7 +650,7 @@ static int quaternion_meta_newindex(lua_State* L) {
         luaL_error(L, "attempt to index a quaternion value");
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
