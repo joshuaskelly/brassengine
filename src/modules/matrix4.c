@@ -227,9 +227,9 @@ static int matrix4_translate(lua_State* L) {
         v0 = luaL_checkvector3(L, 2);
     }
     else {
-        int x = luaL_checknumber(L, 2);
-        int y = luaL_checknumber(L, 3);
-        int z = luaL_checknumber(L, 4);
+        mfloat_t x = luaL_checknumber(L, 2);
+        mfloat_t y = luaL_checknumber(L, 3);
+        mfloat_t z = luaL_checknumber(L, 4);
 
         v1[0] = x;
         v1[1] = y;
@@ -272,9 +272,9 @@ static int matrix4_scale(lua_State* L) {
         v0 = luaL_checkvector3(L, 2);
     }
     else {
-        int x = luaL_checknumber(L, 2);
-        int y = luaL_checknumber(L, 3);
-        int z = luaL_checknumber(L, 4);
+        mfloat_t x = luaL_checknumber(L, 2);
+        mfloat_t y = luaL_checknumber(L, 3);
+        mfloat_t z = luaL_checknumber(L, 4);
 
         v1[0] = x;
         v1[1] = y;
@@ -456,9 +456,9 @@ static int matrix4_translation(lua_State* L) {
         v0 = luaL_checkvector3(L, 1);
     }
     else {
-        int x = luaL_checknumber(L, 1);
-        int y = luaL_checknumber(L, 2);
-        int z = luaL_checknumber(L, 3);
+        mfloat_t x = luaL_checknumber(L, 1);
+        mfloat_t y = luaL_checknumber(L, 2);
+        mfloat_t z = luaL_checknumber(L, 3);
 
         v1[0] = x;
         v1[1] = y;
@@ -502,9 +502,9 @@ static int matrix4_scaling(lua_State* L) {
         v0 = luaL_checkvector3(L, 1);
     }
     else {
-        int x = luaL_checknumber(L, 1);
-        int y = luaL_checknumber(L, 2);
-        int z = luaL_checknumber(L, 3);
+        mfloat_t x = luaL_checknumber(L, 1);
+        mfloat_t y = luaL_checknumber(L, 2);
+        mfloat_t z = luaL_checknumber(L, 3);
 
         v1[0] = x;
         v1[1] = y;
