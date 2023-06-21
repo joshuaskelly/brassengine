@@ -14,6 +14,7 @@
 #include "matrix4.h"
 #include "quaternion.h"
 #include "vector3.h"
+#include "vector4.h"
 
 bool lua_ismatrix4(lua_State*L, int index) {
     void* p = luaL_testudata(L, index, "matrix4");
@@ -527,7 +528,17 @@ static int matrix4_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     // Vector multiplication
-    if (lua_isvector3(L, 2)) {
+    if (lua_isvector4(L, 2)) {
+        mfloat_t* v0 = luaL_checkvector4(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC4_SIZE] = { 0.0f, 0.0f, 0.0f, 1.0f };
+        vec4_multiply_mat4(result, v0, m0);
+
+        lua_newvector4(L, result[0], result[1], result[2], result[3]);
+    }
+    else if (lua_isvector3(L, 2)) {
         mfloat_t* v0 = luaL_checkvector3(L, 2);
 
         lua_settop(L, 0);

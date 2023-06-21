@@ -31,6 +31,7 @@
 #include "modules/texture.h"
 #include "modules/vector2.h"
 #include "modules/vector3.h"
+#include "modules/vector4.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
@@ -57,6 +58,7 @@ static const luaL_Reg modules[] = {
     {"statistics", luaopen_statistics},
     {"vector2", luaopen_vector2},
     {"vector3", luaopen_vector3},
+    {"vector4", luaopen_vector4},
     {NULL, NULL}
 };
 
