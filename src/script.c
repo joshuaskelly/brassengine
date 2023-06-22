@@ -22,12 +22,16 @@
 #include "modules/graphics.h"
 #include "modules/json.h"
 #include "modules/keyboard.h"
+#include "modules/matrix4.h"
 #include "modules/mouse.h"
+#include "modules/quaternion.h"
 #include "modules/raycaster.h"
 #include "modules/sound.h"
 #include "modules/statistics.h"
 #include "modules/texture.h"
 #include "modules/vector2.h"
+#include "modules/vector3.h"
+#include "modules/vector4.h"
 
 static lua_State* L = NULL;
 static bool is_in_error_state = false;
@@ -37,6 +41,34 @@ static double draw_time;
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 static int call(lua_State* L, int narg, int nresults);
+
+static const luaL_Reg modules[] = {
+    {"assets", luaopen_assets},
+    {"display", luaopen_display},
+    {"draw", luaopen_draw},
+    {"json", luaopen_json},
+    {"graphics", luaopen_graphics},
+    {"graphics.texture", luaopen_texture},
+    {"input.keyboard", luaopen_keyboard},
+    {"matrix4", luaopen_matrix4},
+    {"input.mouse", luaopen_mouse},
+    {"quaternion", luaopen_quaternion},
+    {"raycaster", luaopen_raycaster},
+    {"sound", luaopen_sound},
+    {"statistics", luaopen_statistics},
+    {"vector2", luaopen_vector2},
+    {"vector3", luaopen_vector3},
+    {"vector4", luaopen_vector4},
+    {NULL, NULL}
+};
+
+static void luaL_openenginemodules(lua_State* L) {
+    const luaL_Reg *module;
+    for (module = modules; module->func; module++) {
+        luaL_requiref(L, module->name, module->func, 0);
+        lua_pop(L, 1);
+    }
+}
 
 /**
  * Create and configure Lua VM.
@@ -78,23 +110,11 @@ static void init_lua_vm(void) {
         return;
     }
 
-    // Set globals
+    // Load globals
     luaL_openglobals(L);
 
-    // Set modules
-    luaL_requiref(L, "assets", luaopen_assets, 0);
-    luaL_requiref(L, "display", luaopen_display, 0);
-    luaL_requiref(L, "draw", luaopen_draw, 0);
-    luaL_requiref(L, "json", luaopen_json, 0);
-    luaL_requiref(L, "graphics", luaopen_graphics, 0);
-    luaL_requiref(L, "graphics.texture", luaopen_texture, 0);
-    luaL_requiref(L, "input.keyboard", luaopen_keyboard, 0);
-    luaL_requiref(L, "input.mouse", luaopen_mouse, 0);
-    luaL_requiref(L, "raycaster", luaopen_raycaster, 0);
-    luaL_requiref(L, "sound", luaopen_sound, 0);
-    luaL_requiref(L, "statistics", luaopen_statistics, 0);
-    luaL_requiref(L, "vector2", luaopen_vector2, 0);
-    lua_pop(L, -1);
+    // Load modules
+    luaL_openenginemodules(L);
 
    // Execute Lua script
     const char* main = assets_get_script("main.lua");
