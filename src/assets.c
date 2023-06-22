@@ -51,7 +51,7 @@ static asset_entry_t* sound_assets = NULL;
 static int sound_asset_count = 0;
 static size_t sound_assets_total_bytes = 0;
 
-static char* assets_directory = "assets";
+char* assets_directory = "assets";
 
 typedef struct {
     int frame_count;

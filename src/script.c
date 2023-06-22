@@ -70,6 +70,21 @@ static void luaL_openenginemodules(lua_State* L) {
     }
 }
 
+static bool do_string(lua_State*L, char* str) {
+    int status = luaL_dostring(L, str);
+
+    if (status != LUA_OK) {
+        const char* error_message = lua_tostring(L, -1);
+        log_error(error_message);
+        is_in_error_state = true;
+
+        lua_pop(L, -1);
+        return false;
+    }
+
+    return true;
+}
+
 /**
  * Create and configure Lua VM.
  */
@@ -86,29 +101,23 @@ static void init_lua_vm(void) {
 
     // Add package searcher
     lua_register(L, "_lua_package_searcher", lua_package_searcher);
-    int status = luaL_dostring(L, "table.insert(package.searchers, 2, _lua_package_searcher)");
-
-    if (status != LUA_OK) {
-        const char* error_message = lua_tostring(L, -1);
-        log_error(error_message);
-        is_in_error_state = true;
-
-        lua_pop(L, -1);
-        return;
-    }
+    if (!do_string(L, "table.insert(package.searchers, 2, _lua_package_searcher)")) return;
 
     // Override default io.open behavior
     lua_register(L, "_io_open", io_open);
-    status = luaL_dostring(L, "io.open = _io_open");
+    if (!do_string(L, "io.open = _io_open")) return;
 
-    if (status != LUA_OK) {
-        const char* error_message = lua_tostring(L, -1);
-        log_error(error_message);
-        is_in_error_state = true;
+    char buffer[1024];
 
-        lua_pop(L, -1);
-        return;
-    }
+    sprintf(buffer, "package.path = \"./%s/?.lua;./%s/?/init.lua\"", assets_directory, assets_directory);
+    if (!do_string(L, buffer)) return;
+
+#if defined(_WIN32)
+    sprintf(buffer, "package.cpath = \"./%s/?.dll\"", assets_directory);
+#else
+    sprintf(buffer, "package.cpath = \"./%s/?.so\"", assets_directory);
+#endif
+    if (!do_string(L, buffer)) return;
 
     // Load globals
     luaL_openglobals(L);
@@ -123,7 +132,7 @@ static void init_lua_vm(void) {
         return;
     }
 
-    status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
+    int status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
 
     if (status != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
