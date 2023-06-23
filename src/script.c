@@ -108,7 +108,7 @@ static void init_lua_vm(void) {
     if (!do_string(L, "io.open = _io_open")) return;
 
     char buffer[1024];
-    const char version[] = LUA_VERSION_MAJOR "." LUA_VERSION_MINOR;
+    const char* version = LUA_VERSION_MAJOR "." LUA_VERSION_MINOR;
 
     // Set Lua package.path field.
     sprintf(
