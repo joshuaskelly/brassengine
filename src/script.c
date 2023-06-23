@@ -110,12 +110,14 @@ static void init_lua_vm(void) {
     char buffer[1024];
     const char version[] = LUA_VERSION_MAJOR "." LUA_VERSION_MINOR;
 
+    // Set Lua package.path field.
     sprintf(
         buffer,
         "package.path = \""
         "./%s/lua_modules/share/lua/%s/?.lua;"
         "./%s/lua_modules/share/lua/%s/?/init.lua;"
-        "./%s/?.lua;./%s/?/init.lua"
+        "./%s/?.lua;"
+        "./%s/?/init.lua"
         "\"",
         assets_directory,
         version,
@@ -133,6 +135,7 @@ static void init_lua_vm(void) {
     const char extension[] = "so";
 #endif
 
+    // Set Lua package.cpath field.
     sprintf(
         buffer,
         "package.cpath = \""
