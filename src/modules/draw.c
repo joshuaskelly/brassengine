@@ -219,6 +219,42 @@ static int bindings_draw_text(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw triangle.
+ *
+ * @function triangle
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param color Line color
+ */
+static int bindings_draw_triangle(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int x2 = (int)luaL_checknumber(L, 5);
+    int y2 = (int)luaL_checknumber(L, 6);
+
+    if (lua_isnumber(L, 7)) {
+        int color = (int)luaL_checknumber(L, 7);
+        draw_triangle(x0, y0, x1, y1, x2, y2, color);
+    }
+    else {
+        texture_t* pattern = luaL_checktexture(L, 7);
+        int offset_x = (int)luaL_optnumber(L, 8, 0);
+        int offset_y = (int)luaL_optnumber(L, 9, 0);
+        draw_pattern_triangle(x0, y0, x1, y1, x2, y2, pattern, offset_x, offset_y);
+    }
+
+    lua_settop(L, 0);
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
@@ -228,6 +264,7 @@ static const struct luaL_Reg module_functions[] = {
     {"filled_circle", bindings_draw_filled_circle},
     {"clear", bindings_clear_screen},
     {"text", bindings_draw_text},
+    {"triangle", bindings_draw_triangle},
     {NULL, NULL}
 };
 

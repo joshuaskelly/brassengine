@@ -128,4 +128,32 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
  */
 void draw_text(const char* message, int x, int y);
 
+/**
+ * Draw triangle.
+ *
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param color Line color
+ */
+void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
+
+/**
+ * Draw triangle with given pattern.
+ *
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param pattern Texture to use as a pattern
+ * @param offset_x Pattern x-axis offset
+ * @param offset_y Pattern y-axis offset
+ */
+void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+
 #endif

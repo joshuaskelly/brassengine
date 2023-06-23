@@ -321,3 +321,15 @@ void draw_text(const char* message, int x, int y) {
         );
     }
 }
+
+void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+    draw_line(x0, y0, x1, y1, color);
+    draw_line(x1, y1, x2, y2, color);
+    draw_line(x2, y2, x0, y0, color);
+}
+
+void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    draw_pattern_line(x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    draw_pattern_line(x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
+    draw_pattern_line(x2, y2, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+}
