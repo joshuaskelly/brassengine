@@ -62,6 +62,11 @@ static const luaL_Reg modules[] = {
     {NULL, NULL}
 };
 
+/**
+ * Opens all engine modules.
+ *
+ * @param L Lua VM
+ */
 static void luaL_openenginemodules(lua_State* L) {
     const luaL_Reg *module;
     for (module = modules; module->func; module++) {
@@ -70,6 +75,14 @@ static void luaL_openenginemodules(lua_State* L) {
     }
 }
 
+/**
+ * Executes given string as a Lua chunk. Will set error state if execution
+ * fails.
+ *
+ * @param L Lua VM
+ * @param str Lua code to execute.
+ * @return true if sucessful. false otherwise.
+ */
 static bool do_string(lua_State*L, char* str) {
     int status = luaL_dostring(L, str);
 
