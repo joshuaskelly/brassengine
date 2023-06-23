@@ -62,12 +62,40 @@ static const luaL_Reg modules[] = {
     {NULL, NULL}
 };
 
+/**
+ * Opens all engine modules.
+ *
+ * @param L Lua VM
+ */
 static void luaL_openenginemodules(lua_State* L) {
     const luaL_Reg *module;
     for (module = modules; module->func; module++) {
         luaL_requiref(L, module->name, module->func, 0);
         lua_pop(L, 1);
     }
+}
+
+/**
+ * Executes given string as a Lua chunk. Will set error state if execution
+ * fails.
+ *
+ * @param L Lua VM
+ * @param str Lua code to execute.
+ * @return true if sucessful. false otherwise.
+ */
+static bool do_string(lua_State*L, char* str) {
+    int status = luaL_dostring(L, str);
+
+    if (status != LUA_OK) {
+        const char* error_message = lua_tostring(L, -1);
+        log_error(error_message);
+        is_in_error_state = true;
+
+        lua_pop(L, -1);
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -86,29 +114,55 @@ static void init_lua_vm(void) {
 
     // Add package searcher
     lua_register(L, "_lua_package_searcher", lua_package_searcher);
-    int status = luaL_dostring(L, "table.insert(package.searchers, 2, _lua_package_searcher)");
-
-    if (status != LUA_OK) {
-        const char* error_message = lua_tostring(L, -1);
-        log_error(error_message);
-        is_in_error_state = true;
-
-        lua_pop(L, -1);
-        return;
-    }
+    if (!do_string(L, "table.insert(package.searchers, 2, _lua_package_searcher)")) return;
 
     // Override default io.open behavior
     lua_register(L, "_io_open", io_open);
-    status = luaL_dostring(L, "io.open = _io_open");
+    if (!do_string(L, "io.open = _io_open")) return;
 
-    if (status != LUA_OK) {
-        const char* error_message = lua_tostring(L, -1);
-        log_error(error_message);
-        is_in_error_state = true;
+    char buffer[1024];
+    const char* version = LUA_VERSION_MAJOR "." LUA_VERSION_MINOR;
 
-        lua_pop(L, -1);
-        return;
-    }
+    // Set Lua package.path field.
+    sprintf(
+        buffer,
+        "package.path = \""
+        "./%s/lua_modules/share/lua/%s/?.lua;"
+        "./%s/lua_modules/share/lua/%s/?/init.lua;"
+        "./%s/?.lua;"
+        "./%s/?/init.lua"
+        "\"",
+        assets_directory,
+        version,
+        assets_directory,
+        version,
+        assets_directory,
+        assets_directory
+    );
+
+    if (!do_string(L, buffer)) return;
+
+#if defined(_WIN32)
+    const char* extension = "dll";
+#else
+    const char* extension = "so";
+#endif
+
+    // Set Lua package.cpath field.
+    sprintf(
+        buffer,
+        "package.cpath = \""
+        "./%s/lua_modules/lib/lua/%s/?.%s;"
+        "./%s/?.%s"
+        "\"",
+        assets_directory,
+        version,
+        extension,
+        assets_directory,
+        extension
+    );
+
+    if (!do_string(L, buffer)) return;
 
     // Load globals
     luaL_openglobals(L);
@@ -123,7 +177,7 @@ static void init_lua_vm(void) {
         return;
     }
 
-    status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
+    int status = luaL_loadbuffer(L, main, strlen(main), "=main.lua");
 
     if (status != LUA_OK) {
         const char* error_message = lua_tostring(L, -1);
