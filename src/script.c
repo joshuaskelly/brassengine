@@ -108,15 +108,44 @@ static void init_lua_vm(void) {
     if (!do_string(L, "io.open = _io_open")) return;
 
     char buffer[1024];
+    const char version[] = LUA_VERSION_MAJOR "." LUA_VERSION_MINOR;
 
-    sprintf(buffer, "package.path = \"./%s/?.lua;./%s/?/init.lua\"", assets_directory, assets_directory);
+    sprintf(
+        buffer,
+        "package.path = \""
+        "./%s/lua_modules/share/lua/%s/?.lua;"
+        "./%s/lua_modules/share/lua/%s/?/init.lua;"
+        "./%s/?.lua;./%s/?/init.lua"
+        "\"",
+        assets_directory,
+        version,
+        assets_directory,
+        version,
+        assets_directory,
+        assets_directory
+    );
+
     if (!do_string(L, buffer)) return;
 
 #if defined(_WIN32)
-    sprintf(buffer, "package.cpath = \"./%s/?.dll\"", assets_directory);
+    const char extension[] = "dll";
 #else
-    sprintf(buffer, "package.cpath = \"./%s/?.so\"", assets_directory);
+    const char extension[] = "so";
 #endif
+
+    sprintf(
+        buffer,
+        "package.cpath = \""
+        "./%s/lua_modules/lib/lua/%s/?.%s;"
+        "./%s/?.%s"
+        "\"",
+        assets_directory,
+        version,
+        extension,
+        assets_directory,
+        extension
+    );
+
     if (!do_string(L, buffer)) return;
 
     // Load globals
