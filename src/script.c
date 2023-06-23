@@ -130,9 +130,9 @@ static void init_lua_vm(void) {
     if (!do_string(L, buffer)) return;
 
 #if defined(_WIN32)
-    const static char* extension = "dll";
+    const char* extension = "dll";
 #else
-    const static char* extension = "so";
+    const char* extension = "so";
 #endif
 
     // Set Lua package.cpath field.
