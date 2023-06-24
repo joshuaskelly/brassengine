@@ -156,4 +156,23 @@ void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color
  */
 void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
+/**
+ * Draw textured triangle using affine texture mapping.
+ *
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param u0 UV 0 u-coordinate
+ * @param v0 UV 0 v-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param u1 UV 1 u-coordinate
+ * @param v1 UV 1 v-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param u2 UV 2 u-coordinate
+ * @param v2 UV 2 v-coordinate
+ * @param texture Texture to
+ */
+void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture);
+
 #endif

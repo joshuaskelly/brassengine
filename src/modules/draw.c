@@ -255,6 +255,44 @@ static int bindings_draw_triangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw triangle using affine texture mapping.
+ *
+ * @function textured_triangle
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param u0 UV 0 u-coordinate
+ * @param v0 UV 0 v-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param u1 UV 1 u-coordinate
+ * @param v1 UV 1 v-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param u2 UV 2 u-coordinate
+ * @param v2 UV 2 v-coordinate
+ * @param texture Texture to
+ */
+static int bindings_draw_textured_triangle(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    float u0 = luaL_checknumber(L, 3);
+    float v0 = luaL_checknumber(L, 4);
+    int x1 = (int)luaL_checknumber(L, 5);
+    int y1 = (int)luaL_checknumber(L, 6);
+    float u1 = luaL_checknumber(L, 7);
+    float v1 = luaL_checknumber(L, 8);
+    int x2 = (int)luaL_checknumber(L, 9);
+    int y2 = (int)luaL_checknumber(L, 10);
+    float u2 = luaL_checknumber(L, 11);
+    float v2 = luaL_checknumber(L, 12);
+    texture_t* texture = luaL_checktexture(L, 13);
+
+    lua_settop(L, 0);
+
+    draw_textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
@@ -265,6 +303,7 @@ static const struct luaL_Reg module_functions[] = {
     {"clear", bindings_clear_screen},
     {"text", bindings_draw_text},
     {"triangle", bindings_draw_triangle},
+    {"textured_triangle", bindings_draw_textured_triangle},
     {NULL, NULL}
 };
 
