@@ -363,6 +363,106 @@ static bool is_top_left(mfloat_t* a, mfloat_t* b) {
     return is_top || is_left;
 }
 
+void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+    mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
+    mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
+    mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
+
+    // Find triangle
+    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+
+    // Biases for fill rule
+    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
+
+    float delta_w0_col = vertex1[1] - vertex2[1];
+    float delta_w1_col = vertex2[1] - vertex0[1];
+    float delta_w2_col = vertex0[1] - vertex1[1];
+    float delta_w0_row = vertex2[0] - vertex1[0];
+    float delta_w1_row = vertex0[0] - vertex2[0];
+    float delta_w2_row = vertex1[0] - vertex0[0];
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
+    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
+    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+
+    for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
+        for (int x = x_min; x <= x_max; x++) {
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                graphics_set_pixel(x, y, color);
+            }
+
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
+        }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
+    }
+}
+
+void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
+    mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
+    mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
+
+    // Find triangle
+    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+
+    // Biases for fill rule
+    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
+
+    float delta_w0_col = vertex1[1] - vertex2[1];
+    float delta_w1_col = vertex2[1] - vertex0[1];
+    float delta_w2_col = vertex0[1] - vertex1[1];
+    float delta_w0_row = vertex2[0] - vertex1[0];
+    float delta_w1_row = vertex0[0] - vertex2[0];
+    float delta_w2_row = vertex1[0] - vertex0[0];
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
+    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
+    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+
+    for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
+        for (int x = x_min; x <= x_max; x++) {
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                pattern_set_pixel(x, y, pattern, pattern_offset_x, pattern_offset_y);
+            }
+
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
+        }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
+    }
+}
+
 void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
