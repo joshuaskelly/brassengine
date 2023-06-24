@@ -25,7 +25,7 @@ static int bindings_draw_pixel(lua_State* L) {
     int y = (int)luaL_checknumber(L, 2);
     int color = (int)luaL_checknumber(L, 3);
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     texture_t* render_texture = graphics_get_render_texture();
     graphics_texture_set_pixel(render_texture, x, y, color);
@@ -59,7 +59,7 @@ static int bindings_draw_line(lua_State* L) {
         draw_pattern_line(x0, y0, x1, y1, pattern, offset_x, offset_y);
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
@@ -90,7 +90,7 @@ static int bindings_draw_rectangle(lua_State* L) {
         draw_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
@@ -121,7 +121,7 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
         draw_filled_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
@@ -150,7 +150,7 @@ static int bindings_draw_circle(lua_State* L) {
         draw_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
@@ -179,7 +179,7 @@ static int bindings_draw_filled_circle(lua_State* L) {
         draw_filled_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
     }
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     return 0;
 }
@@ -192,7 +192,7 @@ static int bindings_draw_filled_circle(lua_State* L) {
 static int bindings_clear_screen(lua_State* L) {
     int color = (int)luaL_checknumber(L, 1);
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     texture_t* render_texture = graphics_get_render_texture();
     graphics_texture_clear(render_texture, color);
@@ -212,7 +212,7 @@ static int bindings_draw_text(lua_State* L) {
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
 
-    lua_pop(L, -1);
+    lua_settop(L, 0);
 
     draw_text(message, x, y);
 
@@ -291,6 +291,8 @@ static int bindings_draw_textured_triangle(lua_State* L) {
     lua_settop(L, 0);
 
     draw_textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
+
+    return 0;
 }
 
 static const struct luaL_Reg module_functions[] = {
