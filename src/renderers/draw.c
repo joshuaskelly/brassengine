@@ -71,7 +71,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
-    int longest_side = fmax(abs(delta_x), abs(delta_y)) - 1;
+    int longest_side = fmax(abs(delta_x), abs(delta_y));
 
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
@@ -86,7 +86,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
-    float st_longest_side = fmax(abs(delta_s), abs(delta_t)) - 1;
+    float st_longest_side = fmax(abs(delta_s), abs(delta_t));
 
     float r = st_longest_side / longest_side;
 
