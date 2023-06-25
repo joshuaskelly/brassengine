@@ -39,6 +39,7 @@ LIBMATHC=$(MATHC_DIR)/libmathc.a
 
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
 LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm
+DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm
 
 default:help
 
@@ -47,6 +48,7 @@ all:$(BIN)
 desktop:all ## Build desktop platform
 
 debug:CFLAGS=$(DFLAGS)
+debug:LDLIBS=$(DLDLIBS)
 debug:all
 
 desktop-run: ## Run desktop build
