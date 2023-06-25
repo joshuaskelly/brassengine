@@ -67,6 +67,47 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
     }
 }
 
+void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture) {
+    // DDA based line drawing algorithm
+    int delta_x = x1 - x0;
+    int delta_y = y1 - y0;
+    int longest_side = fmax(abs(delta_x), abs(delta_y)) - 1;
+
+    float x_inc = delta_x / (float)longest_side;
+    float y_inc = delta_y / (float)longest_side;
+
+    float current_x = x0;
+    float current_y = y0;
+
+    float s0 = u0 * texture->width;
+    float t0 = v0 * texture->height;
+    float s1 = u1 * texture->width;
+    float t1 = v1 * texture->height;
+
+    float delta_s = s1 - s0;
+    float delta_t = t1 - t0;
+    float st_longest_side = fmax(abs(delta_s), abs(delta_t)) - 1;
+
+    float r = st_longest_side / longest_side;
+
+    float s_inc = delta_s / st_longest_side * r;
+    float t_inc = delta_t / st_longest_side * r;
+
+    float current_s = s0;
+    float current_t = t0;
+
+    for (int i = 0; i <= longest_side; i++) {
+        color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
+
+        graphics_set_pixel(current_x, current_y, c);
+
+        current_x += x_inc;
+        current_y += y_inc;
+        current_s += s_inc;
+        current_t += t_inc;
+    }
+}
+
 void draw_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int y0 = y;

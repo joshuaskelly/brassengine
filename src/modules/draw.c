@@ -65,6 +65,37 @@ static int bindings_draw_line(lua_State* L) {
 }
 
 /**
+ * Draw line using affine texture mapping.
+ * @function textured_line
+ * @param x0 Start x-coordinate
+ * @param y0 Start y-coordinate
+ * @param u0 Start 0 u-coordinate
+ * @param v0 Start 0 v-coordinate
+ * @param x1 End x-coordinate
+ * @param y1 End y-coordinate
+ * @param u1 End u-coordinate
+ * @param v1 End v-coordinate
+ * @param texture Texture to map
+ */
+static int bindings_draw_textured_line(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    float u0 = luaL_checknumber(L, 3);
+    float v0 = luaL_checknumber(L, 4);
+    int x1 = (int)luaL_checknumber(L, 5);
+    int y1 = (int)luaL_checknumber(L, 6);
+    float u1 = luaL_checknumber(L, 7);
+    float v1 = luaL_checknumber(L, 8);
+    texture_t* texture = luaL_checktexture(L, 9);
+
+    lua_settop(L, 0);
+
+    draw_textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture);
+
+    return 0;
+}
+
+/**
  * Draw rectangle.
  * @function rectangle
  * @param x Rect top left x-coordinate
@@ -221,7 +252,6 @@ static int bindings_draw_text(lua_State* L) {
 
 /**
  * Draw triangle.
- *
  * @function triangle
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
@@ -257,7 +287,6 @@ static int bindings_draw_triangle(lua_State* L) {
 
 /**
  * Draw filled triangle.
- *
  * @function filled_triangle
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
@@ -293,7 +322,6 @@ static int bindings_draw_filled_triangle(lua_State* L) {
 
 /**
  * Draw triangle using affine texture mapping.
- *
  * @function textured_triangle
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
@@ -307,7 +335,7 @@ static int bindings_draw_filled_triangle(lua_State* L) {
  * @param y2 Vertex 2 y-coordinate
  * @param u2 UV 2 u-coordinate
  * @param v2 UV 2 v-coordinate
- * @param texture Texture to
+ * @param texture Texture to map
  */
 static int bindings_draw_textured_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -334,6 +362,7 @@ static int bindings_draw_textured_triangle(lua_State* L) {
 static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
+    {"textured_line", bindings_draw_textured_line},
     {"rectangle", bindings_draw_rectangle},
     {"filled_rectangle", bindings_draw_filled_rectangle},
     {"circle", bindings_draw_circle},

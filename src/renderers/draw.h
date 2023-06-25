@@ -28,6 +28,21 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color);
 void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
+ * Draw line using affine texture mapping.
+ *
+ * @param x0 Start x-coordinate
+ * @param y0 Start y-coordinate
+ * @param u0 Start 0 u-coordinate
+ * @param v0 Start 0 v-coordinate
+ * @param x1 End x-coordinate
+ * @param y1 End y-coordinate
+ * @param u1 End u-coordinate
+ * @param v1 End v-coordinate
+ * @param texture Texture to map
+ */
+void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture);
+
+/**
  * Draw rectangle.
  *
  * @param x Rect top left x-coordinate
