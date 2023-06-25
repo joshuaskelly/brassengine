@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <math.h>
+
+#include <mathc/mathc.h>
+
 #include "draw.h"
 #include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../math.h"
 
 static int mod(int a, int b) {
     return a - floor(a / (float)b) * b;
@@ -59,6 +64,47 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
         pattern_set_pixel(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
         current_x += x_inc;
         current_y += y_inc;
+    }
+}
+
+void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture) {
+    // DDA based line drawing algorithm
+    int delta_x = x1 - x0;
+    int delta_y = y1 - y0;
+    int longest_side = fmax(abs(delta_x), abs(delta_y));
+
+    float x_inc = delta_x / (float)longest_side;
+    float y_inc = delta_y / (float)longest_side;
+
+    float current_x = x0;
+    float current_y = y0;
+
+    float s0 = u0 * texture->width;
+    float t0 = v0 * texture->height;
+    float s1 = u1 * texture->width;
+    float t1 = v1 * texture->height;
+
+    float delta_s = s1 - s0;
+    float delta_t = t1 - t0;
+    float st_longest_side = fmax(abs(delta_s), abs(delta_t));
+
+    float r = st_longest_side / longest_side;
+
+    float s_inc = delta_s / st_longest_side * r;
+    float t_inc = delta_t / st_longest_side * r;
+
+    float current_s = s0;
+    float current_t = t0;
+
+    for (int i = 0; i <= longest_side; i++) {
+        color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
+
+        graphics_set_pixel(current_x, current_y, c);
+
+        current_x += x_inc;
+        current_y += y_inc;
+        current_s += s_inc;
+        current_t += t_inc;
     }
 }
 
@@ -319,5 +365,208 @@ void draw_text(const char* message, int x, int y) {
             &dest_rect,
             NULL
         );
+    }
+}
+
+void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+    draw_line(x0, y0, x1, y1, color);
+    draw_line(x1, y1, x2, y2, color);
+    draw_line(x2, y2, x0, y0, color);
+}
+
+void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    draw_pattern_line(x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    draw_pattern_line(x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
+    draw_pattern_line(x2, y2, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+}
+
+static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1) {
+    return v0[0] * v1[1] - v0[1] * v1[0];
+}
+
+static int edge_function(mfloat_t* a, mfloat_t* b, mfloat_t* p) {
+    mfloat_t ab[VEC2_SIZE];
+    vec2_subtract(ab, b, a);
+
+    mfloat_t ap[VEC2_SIZE];
+    vec2_subtract(ap, p, a);
+
+    return vec2_cross(ab, ap);
+}
+
+static bool is_top_left(mfloat_t* a, mfloat_t* b) {
+    mfloat_t edge[VEC2_SIZE];
+    vec2_subtract(edge, b, a);
+
+    bool is_top = edge[1] == 0 && edge[0] > 0;
+    bool is_left = edge[1] < 0;
+
+    return is_top || is_left;
+}
+
+void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+    mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
+    mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
+    mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
+
+    // Find triangle
+    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+
+    // Biases for fill rule
+    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
+
+    float delta_w0_col = vertex1[1] - vertex2[1];
+    float delta_w1_col = vertex2[1] - vertex0[1];
+    float delta_w2_col = vertex0[1] - vertex1[1];
+    float delta_w0_row = vertex2[0] - vertex1[0];
+    float delta_w1_row = vertex0[0] - vertex2[0];
+    float delta_w2_row = vertex1[0] - vertex0[0];
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
+    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
+    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+
+    for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
+        for (int x = x_min; x <= x_max; x++) {
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                graphics_set_pixel(x, y, color);
+            }
+
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
+        }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
+    }
+}
+
+void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
+    mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
+    mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
+
+    // Find triangle
+    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+
+    // Biases for fill rule
+    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
+
+    float delta_w0_col = vertex1[1] - vertex2[1];
+    float delta_w1_col = vertex2[1] - vertex0[1];
+    float delta_w2_col = vertex0[1] - vertex1[1];
+    float delta_w0_row = vertex2[0] - vertex1[0];
+    float delta_w1_row = vertex0[0] - vertex2[0];
+    float delta_w2_row = vertex1[0] - vertex0[0];
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
+    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
+    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+
+    for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
+        for (int x = x_min; x <= x_max; x++) {
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                pattern_set_pixel(x, y, pattern, pattern_offset_x, pattern_offset_y);
+            }
+
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
+        }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
+    }
+}
+
+void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture) {
+    mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
+    mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
+    mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
+    mfloat_t uv0[VEC2_SIZE] = {u0, v0};
+    mfloat_t uv1[VEC2_SIZE] = {u1, v1};
+    mfloat_t uv2[VEC2_SIZE] = {u2, v2};
+
+    // Find triangle
+    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+
+    // Biases for fill rule
+    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
+    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
+    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
+
+    float delta_w0_col = vertex1[1] - vertex2[1];
+    float delta_w1_col = vertex2[1] - vertex0[1];
+    float delta_w2_col = vertex0[1] - vertex1[1];
+    float delta_w0_row = vertex2[0] - vertex1[0];
+    float delta_w1_row = vertex0[0] - vertex2[0];
+    float delta_w2_row = vertex1[0] - vertex0[0];
+
+    float area = edge_function(vertex1, vertex2, vertex0);
+    float inverse_area = 1.0f / area;
+
+    mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
+    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
+    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
+    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+
+    for (int y = y_min; y <= y_max; y++) {
+        float w0 = w0_row;
+        float w1 = w1_row;
+        float w2 = w2_row;
+
+        for (int x = x_min; x <= x_max; x++) {
+            // Check if inside the triangle
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                // Calculate barycentric coords
+                float alpha = w0 * inverse_area;
+                float beta = w1 * inverse_area;
+                float gamma = w2 * inverse_area;
+
+                // Calculate st coords
+                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
+                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
+
+                color_t c = graphics_texture_get_pixel(texture, s, t);
+
+                graphics_set_pixel(x, y, c);
+            }
+
+            w0 += delta_w0_col;
+            w1 += delta_w1_col;
+            w2 += delta_w2_col;
+        }
+
+        w0_row += delta_w0_row;
+        w1_row += delta_w1_row;
+        w2_row += delta_w2_row;
     }
 }
