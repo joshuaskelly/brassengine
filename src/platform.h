@@ -71,8 +71,18 @@ void platform_display_set_fullscreen(bool fullscreen);
  */
 void platform_display_set_title(const char* title);
 
+/**
+ * Set mouse grab state. If true, mouse will be constrained to window.
+ *
+ * @param grabbed
+ */
 void platform_mouse_set_grabbed(bool grabbed);
 
+/**
+ * Get mouse grab state.
+ *
+ * @return bool Is mouse grabbed?
+ */
 bool platform_mouse_get_grabbed(void);
 
 #endif

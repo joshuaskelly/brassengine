@@ -48,6 +48,11 @@ static int bindings_get_mouse_position(lua_State* L) {
     return 2;
 }
 
+/**
+ * Set mouse grab state.
+ * @function set_grabbed
+ * @param grabbed True if mouse should be constrained to window.
+ */
 static int bindings_set_mouse_grabbed(lua_State* L) {
     bool grabbed = lua_toboolean(L, 1);
 
@@ -58,6 +63,11 @@ static int bindings_set_mouse_grabbed(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get mouse grab state.
+ *
+ * @return True if mouse is grabbed, false otherwise.
+ */
 static int bindings_get_mouse_grabbed(lua_State* L) {
     bool grabbed = platform_mouse_get_grabbed();
 
