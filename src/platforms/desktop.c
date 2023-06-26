@@ -303,9 +303,9 @@ void platform_display_set_title(const char* title) {
 }
 
 void platform_mouse_set_grabbed(bool grabbed) {
-    SDL_SetWindowMouseGrab(window, grabbed);
+    SDL_SetRelativeMouseMode(grabbed);
 }
 
 bool platform_mouse_get_grabbed(void) {
-    return SDL_GetWindowMouseGrab(window);
+    return SDL_GetRelativeMouseMode();
 }
