@@ -71,4 +71,8 @@ void platform_display_set_fullscreen(bool fullscreen);
  */
 void platform_display_set_title(const char* title);
 
+void platform_mouse_set_grabbed(bool grabbed);
+
+bool platform_mouse_get_grabbed(void);
+
 #endif

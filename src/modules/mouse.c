@@ -11,6 +11,7 @@
 #include "mouse.h"
 
 #include "../input.h"
+#include "../platform.h"
 
 /**
  * Check if given button is down.
@@ -47,9 +48,29 @@ static int bindings_get_mouse_position(lua_State* L) {
     return 2;
 }
 
+static int bindings_set_mouse_grabbed(lua_State* L) {
+    bool grabbed = lua_toboolean(L, 1);
+
+    lua_settop(L, 0);
+
+    platform_mouse_set_grabbed(grabbed);
+
+    return 0;
+}
+
+static int bindings_get_mouse_grabbed(lua_State* L) {
+    bool grabbed = platform_mouse_get_grabbed();
+
+    lua_pushboolean(L, grabbed);
+
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"button", bindings_get_mouse_button},
     {"position", bindings_get_mouse_position},
+    {"set_grabbed", bindings_set_mouse_grabbed},
+    {"get_grabbed", bindings_get_mouse_grabbed},
     {NULL, NULL}
 };
 

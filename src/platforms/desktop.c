@@ -303,3 +303,11 @@ void platform_display_set_fullscreen(bool fullscreen) {
 void platform_display_set_title(const char* title) {
     SDL_SetWindowTitle(window, title);
 }
+
+void platform_mouse_set_grabbed(bool grabbed) {
+    SDL_SetWindowMouseGrab(window, grabbed);
+}
+
+bool platform_mouse_get_grabbed(void) {
+    return SDL_GetWindowMouseGrab(window);
+}
