@@ -10,6 +10,8 @@ static uint8_t keyboard_symbols[KEYSYMBOL_NUM_SYMBOLS];
 static struct {
     int x;
     int y;
+    int motion_x;
+    int motion_y;
     uint32_t buttons;
 } mouse_state;
 
@@ -20,6 +22,8 @@ void input_init(void) {
 
     mouse_state.x = 0;
     mouse_state.y = 0;
+    mouse_state.motion_x = 0;
+    mouse_state.motion_y = 0;
     mouse_state.buttons = 0;
 }
 
@@ -47,6 +51,8 @@ void input_handle_event(event_t* event) {
     else if (event->type == EVENT_MOUSEMOTION) {
         mouse_state.x = event->motion.x;
         mouse_state.y = event->motion.y;
+        mouse_state.motion_x = event->motion.motion_x;
+        mouse_state.motion_y = event->motion.motion_y;
     }
     else if (event->type == EVENT_MOUSEDOWN) {
         mouse_state.buttons |= (1 << event->button.button);
@@ -77,4 +83,9 @@ bool input_mouse_is_button_pressed(int button) {
 void input_mouse_position(int* x, int* y) {
     *x = mouse_state.x;
     *y = mouse_state.y;
+}
+
+void input_mouse_motion(int* x, int* y) {
+    *x = mouse_state.motion_x;
+    *y = mouse_state.motion_y;
 }

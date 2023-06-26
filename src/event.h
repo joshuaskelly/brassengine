@@ -357,8 +357,8 @@ typedef struct {
     event_type_t type;
     int x;
     int y;
-    int rel_x;
-    int rel_y;
+    int motion_x;
+    int motion_y;
 } mouse_motion_event_t;
 
 typedef struct {

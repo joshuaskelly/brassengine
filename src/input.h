@@ -60,4 +60,12 @@ bool input_mouse_is_button_pressed(int button);
  */
 void input_mouse_position(int* x, int* y);
 
+/**
+ * Get mouse relative motion.
+ *
+ * @param x Mouse delta x as reference
+ * @param y Mouse delta y as reference
+ */
+void input_mouse_motion(int* x, int* y);
+
 #endif

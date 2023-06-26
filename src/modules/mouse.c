@@ -49,6 +49,23 @@ static int bindings_get_mouse_position(lua_State* L) {
 }
 
 /**
+ * Get mouse relative motion.
+ * @function motion
+ * @return Motion as x, y pair
+ */
+static int bindings_get_mouse_motion(lua_State* L) {
+    int rel_x;
+    int rel_y;
+
+    input_mouse_motion(&rel_x, &rel_y);
+
+    lua_pushnumber(L, rel_x);
+    lua_pushnumber(L, rel_y);
+
+    return 2;
+}
+
+/**
  * Set mouse grab state.
  * @function set_grabbed
  * @param grabbed True if mouse should be constrained to window.
@@ -79,6 +96,7 @@ static int bindings_get_mouse_grabbed(lua_State* L) {
 static const struct luaL_Reg module_functions[] = {
     {"button", bindings_get_mouse_button},
     {"position", bindings_get_mouse_position},
+    {"motion", bindings_get_mouse_motion},
     {"set_grabbed", bindings_set_mouse_grabbed},
     {"get_grabbed", bindings_get_mouse_grabbed},
     {NULL, NULL}
