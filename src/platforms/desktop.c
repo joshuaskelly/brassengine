@@ -227,8 +227,8 @@ static void sdl_handle_events(void) {
                 event.motion.type = EVENT_MOUSEMOTION;
                 event.motion.x = (sdl_event.motion.x - display_rect.x) * aspect_width;
                 event.motion.y = (sdl_event.motion.y - display_rect.y) * aspect_height;
-                event.motion.motion_x = (sdl_event.motion.xrel - display_rect.x) * aspect_width;
-                event.motion.motion_y = (sdl_event.motion.yrel - display_rect.y) * aspect_height;
+                event.motion.motion_x = (sdl_event.motion.xrel) * aspect_width;
+                event.motion.motion_y = (sdl_event.motion.yrel) * aspect_height;
 
                 event.motion.x = clamp(event.motion.x, 0, config->resolution.width - 1);
                 event.motion.y = clamp(event.motion.y, 0, config->resolution.height - 1);
@@ -248,6 +248,12 @@ static void sdl_handle_events(void) {
                 event.button.type = EVENT_MOUSEUP;
                 event.button.button = sdl_event.button.button;
                 event_post(&event);
+                break;
+
+            case SDL_WINDOWEVENT_RESIZED:
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+                display_rect.w = sdl_event.window.data1;
+                display_rect.h = sdl_event.window.data2;
                 break;
         }
     }
