@@ -21,6 +21,11 @@ void input_init(void);
 void input_destroy(void);
 
 /**
+ * Update system. Called at the beginning of an engine update cycle.
+ */
+void input_update(void);
+
+/**
  * Handle given event.
  *
  * @param event Event to handle.

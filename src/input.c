@@ -31,6 +31,11 @@ void input_destroy(void) {
 
 }
 
+void input_update(void) {
+    mouse_state.motion_x = 0;
+    mouse_state.motion_y = 0;
+}
+
 void input_handle_event(event_t* event) {
     if (event->type == EVENT_KEYDOWN) {
         if (event->key.code < KEYCODE_NUM_CODES) {

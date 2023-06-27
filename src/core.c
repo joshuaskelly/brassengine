@@ -55,6 +55,7 @@ void core_run(void) {
 
 void core_main_loop(void) {
     platform_update();
+    input_update();
     handle_events();
     current_state.update();
     current_state.draw();
