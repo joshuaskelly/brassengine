@@ -3,7 +3,7 @@
 
 local draw = require("draw")
 local graphics = require("graphics")
-local keyboard = require("input.keyboard")
+local keyboard = require("keyboard")
 
 -- Graphics API
 

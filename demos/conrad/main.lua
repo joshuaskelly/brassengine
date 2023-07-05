@@ -1,5 +1,5 @@
 local draw = require("draw")
-local mouse = require("input.mouse")
+local mouse = require("mouse")
 
 function _init()
     black = 0
