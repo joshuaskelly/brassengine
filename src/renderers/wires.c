@@ -111,7 +111,7 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
         vec3_assign(line.b, b);
         line.b[3] = 1.0f;
 
-        line.color = lines->colors[i / 2];
+        line.color = lines->colors[i];
 
         // Model view transformation
         vec4_multiply_mat4(line.a, line.a, model_view_matrix);
