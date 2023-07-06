@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdbool.h>
 
 #include <mathc/mathc.h>
@@ -16,6 +17,72 @@ typedef struct {
 static bool clip(wires_renderer_t* renderer, line_t* line);
 static bool clip_line_plane(line_t* line, mfloat_t* point, mfloat_t* normal);
 
+wires_line_buffer_t* wires_line_buffer_new(int line_count, int vertex_count) {
+    wires_line_buffer_t* line_buffer = (wires_line_buffer_t*)malloc(sizeof(wires_line_buffer_t));
+
+    line_buffer->line_count = line_count;
+    line_buffer->vertex_count = vertex_count;
+
+    line_buffer->indices = (int*)malloc(sizeof(int) * line_count * 2);
+    line_buffer->colors = (color_t*)malloc(sizeof(color_t) * line_count);
+    line_buffer->vertices = malloc(sizeof(mfloat_t) * VEC3_SIZE * vertex_count);
+
+    return line_buffer;
+}
+
+wires_renderer_t* wires_renderer_new(void) {
+    wires_renderer_t* renderer = (wires_renderer_t*)malloc(sizeof(wires_renderer_t));
+
+    renderer->clip_planes.near.point[0] = 0.0f;
+    renderer->clip_planes.near.point[1] = 0.0f;
+    renderer->clip_planes.near.point[2] = 0.0f;
+    renderer->clip_planes.near.normal[0] = 0.0f;
+    renderer->clip_planes.near.normal[1] = 0.0f;
+    renderer->clip_planes.near.normal[2] = 1.0f;
+
+    renderer->clip_planes.far.point[0] = 0.0f;
+    renderer->clip_planes.far.point[1] = 0.0f;
+    renderer->clip_planes.far.point[2] = 0.0f;
+    renderer->clip_planes.far.normal[0] = 0.0f;
+    renderer->clip_planes.far.normal[1] = 0.0f;
+    renderer->clip_planes.far.normal[2] = -1.0f;
+
+    renderer->clip_planes.left.point[0] = 0.0f;
+    renderer->clip_planes.left.point[1] = 0.0f;
+    renderer->clip_planes.left.point[2] = 0.0f;
+    renderer->clip_planes.left.normal[0] = 0.0f;
+    renderer->clip_planes.left.normal[1] = 0.0f;
+    renderer->clip_planes.left.normal[2] = 0.0f;
+
+    renderer->clip_planes.right.point[0] = 0.0f;
+    renderer->clip_planes.right.point[1] = 0.0f;
+    renderer->clip_planes.right.point[2] = 0.0f;
+    renderer->clip_planes.right.normal[0] = 0.0f;
+    renderer->clip_planes.right.normal[1] = 0.0f;
+    renderer->clip_planes.right.normal[2] = 0.0f;
+
+    renderer->clip_planes.top.point[0] = 0.0f;
+    renderer->clip_planes.top.point[1] = 0.0f;
+    renderer->clip_planes.top.point[2] = 0.0f;
+    renderer->clip_planes.top.normal[0] = 0.0f;
+    renderer->clip_planes.top.normal[1] = 0.0f;
+    renderer->clip_planes.top.normal[2] = 0.0f;
+
+    renderer->clip_planes.bottom.point[0] = 0.0f;
+    renderer->clip_planes.bottom.point[1] = 0.0f;
+    renderer->clip_planes.bottom.point[2] = 0.0f;
+    renderer->clip_planes.bottom.normal[0] = 0.0f;
+    renderer->clip_planes.bottom.normal[1] = 0.0f;
+    renderer->clip_planes.bottom.normal[2] = 0.0f;
+
+    return renderer;
+}
+
+void wires_renderer_free(wires_renderer_t* renderer) {
+    free(renderer);
+    renderer = NULL;
+}
+
 void wires_renderer_start(wires_renderer_t* renderer) {
     renderer->statistics.lines_rendered = 0;
 }
@@ -32,11 +99,11 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
     mfloat_t model_view_matrix[MAT4_SIZE];
     mat4_multiply(model_view_matrix, renderer->view_matrix, model_matrix);
 
-    for (int i = 0; i < lines->line_count; i += 2) {
+    for (int i = 0; i < lines->line_count; i++) {
         line_t line;
 
-        mfloat_t* a = lines->vertices[lines->indices[i + 0]];
-        mfloat_t* b = lines->vertices[lines->indices[i + 1]];
+        mfloat_t* a = &lines->vertices[lines->indices[(i * 2 + 0)] * VEC3_SIZE];
+        mfloat_t* b = &lines->vertices[lines->indices[(i * 2 + 1)] * VEC3_SIZE];
 
         vec3_assign(line.a, a);
         line.a[3] = 1.0f;
@@ -46,14 +113,17 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
 
         line.color = lines->colors[i / 2];
 
+        // Model view transformation
         vec4_multiply_mat4(line.a, line.a, model_view_matrix);
         vec4_multiply_mat4(line.b, line.b, model_view_matrix);
 
         if (!clip(renderer, &line)) continue;
 
+        // Projection
         vec4_multiply_mat4(line.a, line.a, renderer->projection_matrix);
         vec4_multiply_mat4(line.b, line.b, renderer->projection_matrix);
 
+        // Perspective divide
         float w = line.a[3];
         vec4_divide_f(line.a, line.a, w);
         line.a[3] = w;

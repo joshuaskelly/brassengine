@@ -10,8 +10,10 @@ typedef struct {
     int* indices;
     color_t* colors;
     size_t vertex_count;
-    mfloat_t* vertices[VEC3_SIZE];
+    mfloat_t* vertices;
 } wires_line_buffer_t;
+
+wires_line_buffer_t* wires_line_buffer_new(int line_count, int vertex_count);
 
 struct plane {
     mfloat_t point[VEC3_SIZE];
@@ -33,6 +35,10 @@ typedef struct {
         int lines_rendered;
     } statistics;
 } wires_renderer_t;
+
+wires_renderer_t* wires_renderer_new(void);
+
+void wires_renderer_free(wires_renderer_t* renderer);
 
 void wires_renderer_start(wires_renderer_t* renderer);
 
