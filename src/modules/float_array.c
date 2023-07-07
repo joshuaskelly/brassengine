@@ -93,6 +93,8 @@ static int module_float_array_resize(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     int size = (int)luaL_checkinteger(L, 2);
 
+    luaL_argcheck(L, size >= 0, 2, "invalid size");
+
     lua_settop(L, 0);
 
     float_array_resize(array, size);
