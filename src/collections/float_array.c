@@ -43,7 +43,7 @@ void float_array_add(float_array_t* array, float value) {
 void float_array_resize(float_array_t* array, size_t size) {
     float* a = (float*)realloc(array->data, sizeof(float) * size);
 
-    if (a != NULL) {
+    if (a != NULL || size == 0) {
         array->data = a;
 
         for (int i = array->size; i < size; i++) {
