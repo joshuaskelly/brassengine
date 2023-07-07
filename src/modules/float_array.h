@@ -10,7 +10,7 @@
 /* Checks whether the function argument arg is a float array and returns a float_array_t*. */
 float_array_t* luaL_checkfloatarray(lua_State* L, int index);
 
-/* Creates and pushes on the stack a new texture userdata. */
+/* Creates and pushes on the stack a new floatarray userdata. */
 int lua_newfloatarray(lua_State* L, size_t size);
 
 /* Pushes a float aray onto the stack. Created userdata will not be garbage collected. */
