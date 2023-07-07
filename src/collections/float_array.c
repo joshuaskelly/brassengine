@@ -45,6 +45,8 @@ void float_array_add(float_array_t* array, float value) {
 void float_array_resize(float_array_t* array, size_t size) {
     float* a = (float*)realloc(array->data, sizeof(float) * size);
 
+    // Realloc to zero is implementation defined. So if we resize to zero and
+    // get back a NULL pointer, that is okay.
     if (a != NULL || size == 0) {
         array->data = a;
 
