@@ -56,6 +56,28 @@ static int module_float_array_new(lua_State* L) {
     return 1;
 }
 
+static int module_float_array_add(lua_State* L) {
+    float_array_t* array = luaL_checkfloatarray(L, 1);
+    float value = (float)luaL_checknumber(L, 2);
+
+    lua_settop(L, 0);
+
+    float_array_add(array, value);
+
+    return 0;
+}
+
+static int module_float_array_resize(lua_State* L) {
+    float_array_t* array = luaL_checkfloatarray(L, 1);
+    int size = (int)luaL_checkinteger(L, 2);
+
+    lua_settop(L, 0);
+
+    float_array_resize(array, size);
+
+    return 0;
+}
+
 static int module_float_array_get(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     int index = luaL_checkinteger(L, 2);
@@ -96,6 +118,8 @@ static const struct luaL_Reg module_float_array_meta_functions[] = {
 
 static const struct luaL_Reg module_functions[] = {
     {"new", module_float_array_new},
+    {"add", module_float_array_add},
+    {"resize", module_float_array_resize},
     {NULL, NULL}
 };
 
