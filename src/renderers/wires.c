@@ -30,6 +30,17 @@ wires_line_buffer_t* wires_line_buffer_new(int line_count, int vertex_count) {
     return line_buffer;
 }
 
+void wires_line_buffer_free(wires_line_buffer_t* lines) {
+    free(lines->vertices);
+    lines->vertices = NULL;
+    free(lines->colors);
+    lines->colors = NULL;
+    free(lines->indices);
+    lines->indices = NULL;
+    free(lines);
+    lines = NULL;
+}
+
 wires_renderer_t* wires_renderer_new(void) {
     wires_renderer_t* renderer = (wires_renderer_t*)malloc(sizeof(wires_renderer_t));
 

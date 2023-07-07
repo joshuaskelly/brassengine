@@ -111,6 +111,13 @@ static int module_wires_line_buffer_new(lua_State* L) {
     return 1;
 }
 
+static void modules_wires_line_buffer_meta_gc(lua_State* L) {
+    wires_line_buffer_t* lines = luaL_checkwireslinebuffer(L, 1);
+    wires_line_buffer_free(lines);
+
+    return 0;
+}
+
 static wires_renderer_t* luaL_checkwiresrenderer(lua_State* L, int index) {
     wires_renderer_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -200,6 +207,7 @@ static int module_wires_renderer_meta_index(lua_State* L) {
 }
 
 static const struct luaL_Reg wires_line_buffer_meta_functions[] = {
+    {"__gc", modules_wires_line_buffer_meta_gc},
     {NULL, NULL}
 };
 
