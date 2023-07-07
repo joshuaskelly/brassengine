@@ -87,6 +87,13 @@ static int module_float_array_size(lua_State* L) {
     return 1;
 }
 
+static const struct luaL_Reg module_float_array_meta_functions[] = {
+    {"__index", module_float_array_get},
+    {"__newindex", module_float_array_set},
+    {"__len", module_float_array_size},
+    {NULL, NULL}
+};
+
 static const struct luaL_Reg module_functions[] = {
     {"new", module_float_array_new},
     {NULL, NULL}
@@ -97,12 +104,7 @@ int luaopen_floatarray(lua_State* L) {
 
     // Push floatarray userdata metatable
     luaL_newmetatable(L, "floatarray");
-    lua_pushcfunction(L, module_float_array_get);
-    lua_setfield(L, -2, "__index");
-    lua_pushcfunction(L, module_float_array_set);
-    lua_setfield(L, -2, "__newindex");
-    lua_pushcfunction(L, module_float_array_size);
-    lua_setfield(L, -2, "__len");
+    luaL_setfuncs(L, module_float_array_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, float_array_gc);
@@ -112,12 +114,7 @@ int luaopen_floatarray(lua_State* L) {
 
     // Push floatarray_nogc userdata metatable
     luaL_newmetatable(L, "floatarray_nogc");
-    lua_pushcfunction(L, module_float_array_get);
-    lua_setfield(L, -2, "__index");
-    lua_pushcfunction(L, module_float_array_set);
-    lua_setfield(L, -2, "__newindex");
-    lua_pushcfunction(L, module_float_array_size);
-    lua_setfield(L, -2, "__len");
+    luaL_setfuncs(L, module_float_array_meta_functions, 0);
 
     lua_pop(L, 1);
 
