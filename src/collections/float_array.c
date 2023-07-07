@@ -15,6 +15,8 @@ float_array_t* float_array_new(size_t size) {
 }
 
 void float_array_free(float_array_t* array) {
+    free(array->data);
+    array->data = NULL;
     free(array);
     array = NULL;
 }
