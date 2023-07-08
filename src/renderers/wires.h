@@ -4,13 +4,13 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
+#include "../collections/float_array.h"
+#include "../collections/int_array.h"
 
 typedef struct {
-    size_t line_count;
-    int* indices;
-    color_t* colors;
-    size_t vertex_count;
-    mfloat_t* vertices;
+    int_array_t* indices;
+    int_array_t* colors;
+    float_array_t* vertices;
 } wires_line_buffer_t;
 
 /**

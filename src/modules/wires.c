@@ -1,9 +1,12 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "int_array.h"
+#include "float_array.h"
 #include "matrix4.h"
 #include "wires.h"
 
@@ -97,21 +100,43 @@ static int module_wires_line_buffer_new(lua_State* L) {
     wires_line_buffer_t* line_buffer = luaL_checkwireslinebuffer(L, 1);
 
     for (int i = 0; i < index_count; i++) {
-        line_buffer->indices[i] = indices[i];
+        line_buffer->indices->data[i] = indices[i];
     }
 
     for (int i = 0; i < color_count; i++) {
-        line_buffer->colors[i] = colors[i];
+        line_buffer->colors->data[i] = colors[i];
     }
 
     for (int i = 0; i < vertex_count; i++) {
-        line_buffer->vertices[i] = vertices[i];
+        line_buffer->vertices->data[i] = vertices[i];
     }
 
     return 1;
 }
 
-static void modules_wires_line_buffer_meta_gc(lua_State* L) {
+static int modules_wires_line_buffer_meta_index(lua_State* L) {
+    wires_line_buffer_t* lines = luaL_checkwireslinebuffer(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_settop(L, 0);
+
+    if (strcmp(key, "indices") == 0) {
+        lua_pushintarray(L, lines->indices);
+    }
+    else if (strcmp(key, "colors") == 0) {
+        lua_pushintarray(L, lines->colors);
+    }
+    else if (strcmp(key, "vertices") == 0) {
+        lua_pushfloatarray(L, lines->vertices);
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static int modules_wires_line_buffer_meta_gc(lua_State* L) {
     wires_line_buffer_t* lines = luaL_checkwireslinebuffer(L, 1);
     wires_line_buffer_free(lines);
 
@@ -207,6 +232,7 @@ static int module_wires_renderer_meta_index(lua_State* L) {
 }
 
 static const struct luaL_Reg wires_line_buffer_meta_functions[] = {
+    {"__index", modules_wires_line_buffer_meta_index},
     {"__gc", modules_wires_line_buffer_meta_gc},
     {NULL, NULL}
 };

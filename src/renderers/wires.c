@@ -4,6 +4,8 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
+#include "../collections/float_array.h"
+#include "../collections/int_array.h"
 #include "../renderers/draw.h"
 
 #include "wires.h"
@@ -20,22 +22,19 @@ static bool clip_line_plane(line_t* line, mfloat_t* point, mfloat_t* normal);
 wires_line_buffer_t* wires_line_buffer_new(int line_count, int vertex_count) {
     wires_line_buffer_t* line_buffer = (wires_line_buffer_t*)malloc(sizeof(wires_line_buffer_t));
 
-    line_buffer->line_count = line_count;
-    line_buffer->vertex_count = vertex_count;
-
-    line_buffer->indices = (int*)malloc(sizeof(int) * line_count * 2);
-    line_buffer->colors = (color_t*)malloc(sizeof(color_t) * line_count);
-    line_buffer->vertices = malloc(sizeof(mfloat_t) * VEC3_SIZE * vertex_count);
+    line_buffer->indices = int_array_new(line_count * 2);
+    line_buffer->colors = int_array_new(line_count);
+    line_buffer->vertices = float_array_new(VEC3_SIZE * vertex_count);
 
     return line_buffer;
 }
 
 void wires_line_buffer_free(wires_line_buffer_t* lines) {
-    free(lines->vertices);
+    float_array_free(lines->vertices);
     lines->vertices = NULL;
-    free(lines->colors);
+    int_array_free(lines->colors);
     lines->colors = NULL;
-    free(lines->indices);
+    int_array_free(lines->indices);
     lines->indices = NULL;
     free(lines);
     lines = NULL;
@@ -110,11 +109,13 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
     mfloat_t model_view_matrix[MAT4_SIZE];
     mat4_multiply(model_view_matrix, renderer->view_matrix, model_matrix);
 
-    for (int i = 0; i < lines->line_count; i++) {
+    int line_count = lines->indices->size / 2;
+
+    for (int i = 0; i < line_count; i++) {
         line_t line;
 
-        mfloat_t* a = &lines->vertices[lines->indices[(i * 2 + 0)] * VEC3_SIZE];
-        mfloat_t* b = &lines->vertices[lines->indices[(i * 2 + 1)] * VEC3_SIZE];
+        mfloat_t* a = &lines->vertices->data[lines->indices->data[(i * 2 + 0)] * VEC3_SIZE];
+        mfloat_t* b = &lines->vertices->data[lines->indices->data[(i * 2 + 1)] * VEC3_SIZE];
 
         vec3_assign(line.a, a);
         line.a[3] = 1.0f;
@@ -122,7 +123,7 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
         vec3_assign(line.b, b);
         line.b[3] = 1.0f;
 
-        line.color = lines->colors[i];
+        line.color = lines->colors->data[i];
 
         // Model view transformation
         vec4_multiply_mat4(line.a, line.a, model_view_matrix);
