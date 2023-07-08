@@ -21,6 +21,7 @@
 #include "modules/float_array.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
+#include "modules/int_array.h"
 #include "modules/json.h"
 #include "modules/keyboard.h"
 #include "modules/matrix4.h"
@@ -50,6 +51,7 @@ static const luaL_Reg modules[] = {
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
     {"graphics", luaopen_graphics},
+    {"intarray", luaopen_intarray},
     {"texture", luaopen_texture},
     {"keyboard", luaopen_keyboard},
     {"matrix4", luaopen_matrix4},
