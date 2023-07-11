@@ -10,6 +10,7 @@
 
 #include "texture.h"
 
+#include "../assets.h"
 #include "../graphics.h"
 
 texture_t* luaL_checktexture(lua_State* L, int index) {
@@ -178,6 +179,17 @@ static int bindings_texture_blit(lua_State* L) {
     return 0;
 }
 
+static int bindings_texture_save(lua_State* L) {
+    const char* filename = luaL_checkstring(L, 1);
+    texture_t* texture = luaL_checktexture(L, 2);
+
+    lua_settop(L, 0);
+
+    assets_gif_save(filename, texture);
+
+    return 0;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"new", bindings_texture_new},
     {"copy", bindings_texture_copy},
@@ -185,6 +197,7 @@ static const struct luaL_Reg module_functions[] = {
     {"set_pixel", bindings_texture_set_pixel},
     {"get_pixel", bindings_texture_get_pixel},
     {"blit", bindings_texture_blit},
+    {"save", bindings_texture_save},
     {NULL, NULL}
 };
 

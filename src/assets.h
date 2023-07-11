@@ -61,6 +61,8 @@ const char* assets_get_script(const char* filename);
  */
 sound_t* assets_get_sound(const char* filename);
 
+void assets_gif_save(const char* filename, texture_t* texture);
+
 extern char* assets_directory;
 
 extern const uint8_t default_font_pixels[16384];
