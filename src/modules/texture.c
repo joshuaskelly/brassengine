@@ -181,11 +181,40 @@ static int bindings_texture_blit(lua_State* L) {
 
 static int bindings_texture_save(lua_State* L) {
     const char* filename = luaL_checkstring(L, 1);
-    texture_t* texture = luaL_checktexture(L, 2);
 
-    lua_settop(L, 0);
+    // Array of textures
+    if (lua_istable(L, 2)) {
+        size_t texture_count = lua_rawlen(L, 2);
+        texture_t* textures[texture_count];
 
-    assets_gif_save(filename, texture);
+        for (int i = 0; i < texture_count; i++) {
+            int index = i + 1;
+            lua_pushinteger(L, index);
+            lua_gettable(L, 2);
+
+            if (lua_type(L, -1) == LUA_TNIL) break;
+
+            textures[i] = luaL_checktexture(L, -1);
+
+            lua_pop(L, 1);
+        }
+
+        lua_settop(L, 0);
+
+        assets_gif_save(filename, texture_count, textures);
+    }
+    // Single texture
+    else {
+        texture_t* texture = luaL_checktexture(L, 2);
+
+        texture_t* textures[] = {
+            texture
+        };
+
+        lua_settop(L, 0);
+
+        assets_gif_save(filename, 1, textures);
+    }
 
     return 0;
 }

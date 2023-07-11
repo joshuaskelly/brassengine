@@ -922,7 +922,7 @@ static void gif_free(gif_t* gif) {
     gif = NULL;
 }
 
-void assets_gif_save(const char* filename, texture_t* texture) {
+void assets_gif_save(const char* filename, int texture_count, texture_t** textures) {
     int error;
     GifFileType* gif_file = EGifOpenFileName(filename, false, &error);
 
@@ -930,6 +930,8 @@ void assets_gif_save(const char* filename, texture_t* texture) {
         log_error("Failed to open: %s", filename);
         return;
     }
+
+    texture_t* texture = textures[0];
 
     gif_file->SWidth = texture->width;
     gif_file->SHeight = texture->height;
@@ -940,14 +942,14 @@ void assets_gif_save(const char* filename, texture_t* texture) {
 
     for (int i = 0; i < 256; i++) {
         uint32_t rgba = palette[i];
-        color_map[i].Red = rgba & 255;
-        color_map[i].Green = (rgba >> 8) & 255;
-        color_map[i].Blue = (rgba >> 16) & 255;
+        color_map[i].Red = rgba & 0xff;
+        color_map[i].Green = (rgba >> 8) & 0xff;
+        color_map[i].Blue = (rgba >> 16) & 0xff;
     }
 
     gif_file->SColorMap = GifMakeMapObject(256, color_map);
 
-    // Write out all frames
+    // Write out first frame
     SavedImage saved_image;
 
     saved_image.ImageDesc.Left = 0;
@@ -961,10 +963,84 @@ void assets_gif_save(const char* filename, texture_t* texture) {
     saved_image.RasterBits = malloc(size);
     memcpy(saved_image.RasterBits, texture->pixels, size);
 
-    saved_image.ExtensionBlockCount = 0;
-    saved_image.ExtensionBlocks = NULL;
+    int extension_block_count = 0;
+    ExtensionBlock* extension_blocks = NULL;
+
+    // Netscape loop
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        APPLICATION_EXT_FUNC_CODE,
+        11,
+        (unsigned char *)"NETSCAPE2.0"
+    );
+
+    if (error == GIF_ERROR) {
+        log_error("Failed to save: %s - %i", filename, gif_file->Error);
+    }
+
+    int params[] = {1, 0, 0};
+    int value = 1;
+    params[1] = value & 0xff;
+    params[2] = (value >> 8) & 0xff;
+
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        0,
+        sizeof(params),
+        params
+    );
+
+    // Graphics control block
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        GRAPHICS_EXT_FUNC_CODE,
+        4,
+        (unsigned char *)"\b\n"
+    );
+
+    saved_image.ExtensionBlockCount = extension_block_count;
+    saved_image.ExtensionBlocks = extension_blocks;
 
     GifMakeSavedImage(gif_file, &saved_image);
+
+    // Write out additional frames
+    for (int i = 1; i < texture_count; i++) {
+        extension_block_count = 0;
+        extension_blocks = NULL;
+
+        texture = textures[i];
+
+        // Write out all frames
+        SavedImage saved_image;
+
+        saved_image.ImageDesc.Left = 0;
+        saved_image.ImageDesc.Top = 0;
+        saved_image.ImageDesc.Width = texture->width;
+        saved_image.ImageDesc.Height = texture->height;
+        saved_image.ImageDesc.Interlace = false;
+        saved_image.ImageDesc.ColorMap = NULL;
+
+        size_t size = sizeof(color_t) * texture->width * texture->height;
+        saved_image.RasterBits = malloc(size);
+        memcpy(saved_image.RasterBits, texture->pixels, size);
+
+        // Graphics control block
+        error = GifAddExtensionBlock(
+            &extension_block_count,
+            &extension_blocks,
+            GRAPHICS_EXT_FUNC_CODE,
+            4,
+            (unsigned char *)"\b\n"
+        );
+
+        saved_image.ExtensionBlockCount = extension_block_count;
+        saved_image.ExtensionBlocks = extension_blocks;
+
+        GifMakeSavedImage(gif_file, &saved_image);
+    }
 
     error = EGifSpew(gif_file);
 

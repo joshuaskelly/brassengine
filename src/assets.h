@@ -61,7 +61,7 @@ const char* assets_get_script(const char* filename);
  */
 sound_t* assets_get_sound(const char* filename);
 
-void assets_gif_save(const char* filename, texture_t* texture);
+void assets_gif_save(const char* filename, int texture_count, texture_t** textures);
 
 extern char* assets_directory;
 
