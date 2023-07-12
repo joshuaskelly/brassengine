@@ -935,6 +935,8 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
 
     gif_file->SWidth = texture->width;
     gif_file->SHeight = texture->height;
+    gif_file->SBackGroundColor = 0;
+    gif_file->SColorResolution = 8;
 
     // Make palette
     GifColorType color_map[256];
@@ -979,10 +981,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
         log_error("Failed to save: %s - %i", filename, gif_file->Error);
     }
 
-    int params[] = {1, 0, 0};
-    int value = 1;
-    params[1] = value & 0xff;
-    params[2] = (value >> 8) & 0xff;
+    unsigned char params[] = {1, 0, 0};
 
     error = GifAddExtensionBlock(
         &extension_block_count,
