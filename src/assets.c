@@ -997,7 +997,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
         &extension_blocks,
         GRAPHICS_EXT_FUNC_CODE,
         4,
-        (unsigned char *)"\b\n"
+        (unsigned char*)"\b\001"
     );
 
     saved_image.ExtensionBlockCount = extension_block_count;
@@ -1032,7 +1032,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
             &extension_blocks,
             GRAPHICS_EXT_FUNC_CODE,
             4,
-            (unsigned char *)"\b\n"
+            (unsigned char*)"\b\001"
         );
 
         saved_image.ExtensionBlockCount = extension_block_count;
