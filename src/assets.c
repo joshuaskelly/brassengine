@@ -997,7 +997,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
 
     gcb.DisposalMode = DISPOSE_DO_NOT;
     gcb.UserInputFlag = false;
-    gcb.DelayTime = 1;
+    gcb.DelayTime = 2;
     gcb.TransparentColor = NO_TRANSPARENT_COLOR;
 
     GifByteType extension[4];
@@ -1042,7 +1042,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
 
         gcb.DisposalMode = DISPOSE_DO_NOT;
         gcb.UserInputFlag = false;
-        gcb.DelayTime = 1;
+        gcb.DelayTime = 2;
         gcb.TransparentColor = NO_TRANSPARENT_COLOR;
 
         GifByteType extension[4];
