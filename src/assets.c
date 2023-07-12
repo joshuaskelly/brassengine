@@ -992,12 +992,23 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
     );
 
     // Graphics control block
+    GraphicsControlBlock gcb;
+    memset(&gcb, '\0', 4);
+
+    gcb.DisposalMode = DISPOSE_DO_NOT;
+    gcb.UserInputFlag = false;
+    gcb.DelayTime = 1;
+    gcb.TransparentColor = NO_TRANSPARENT_COLOR;
+
+    GifByteType extension[4];
+    EGifGCBToExtension(&gcb, (GifByteType*)extension);
+
     error = GifAddExtensionBlock(
         &extension_block_count,
         &extension_blocks,
         GRAPHICS_EXT_FUNC_CODE,
         4,
-        (unsigned char*)"\b\001"
+        (unsigned char*)extension
     );
 
     saved_image.ExtensionBlockCount = extension_block_count;
@@ -1012,7 +1023,6 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
 
         texture = textures[i];
 
-        // Write out all frames
         SavedImage saved_image;
 
         saved_image.ImageDesc.Left = 0;
@@ -1027,12 +1037,23 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
         memcpy(saved_image.RasterBits, texture->pixels, size);
 
         // Graphics control block
+        GraphicsControlBlock gcb;
+        memset(&gcb, '\0', 4);
+
+        gcb.DisposalMode = DISPOSE_DO_NOT;
+        gcb.UserInputFlag = false;
+        gcb.DelayTime = 1;
+        gcb.TransparentColor = NO_TRANSPARENT_COLOR;
+
+        GifByteType extension[4];
+        EGifGCBToExtension(&gcb, (GifByteType*)extension);
+
         error = GifAddExtensionBlock(
             &extension_block_count,
             &extension_blocks,
             GRAPHICS_EXT_FUNC_CODE,
             4,
-            (unsigned char*)"\b\001"
+            (unsigned char*)extension
         );
 
         saved_image.ExtensionBlockCount = extension_block_count;
