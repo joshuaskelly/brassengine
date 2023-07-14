@@ -1,8 +1,4 @@
-## Goals
-1. Moddable
-2. Scriptable
-3. Web build
-4. Networking
+# Notes
 
 ## References
 - [Lua 5.4 Reference Manual](https://www.lua.org/manual/5.4/manual.html)
@@ -19,3 +15,8 @@
 
 ## Sandboxing Lua io.open()
 - [Stack Overflow Question](https://stackoverflow.com/questions/20715652/how-to-wrap-the-io-functions-in-lua-to-prevent-the-user-from-leaving-x-directory)
+
+## Line Rasterization
+- [How to Draw Ugly Lines Really Fast](https://cohost.org/tomforsyth/post/648716-how-to-draw-ugly-lin)
+- [Drawing Thick Lines](http://kt8216.unixcab.org/murphy/index.html)
+- [The Beauty of Bresenham's Algorithm](https://zingl.github.io/bresenham.html)
