@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <mathc/mathc.h>
 
@@ -18,6 +19,8 @@ typedef struct {
 
 static bool clip(wires_renderer_t* renderer, line_t* line);
 static bool clip_line_plane(line_t* line, mfloat_t* point, mfloat_t* normal);
+static void wires_texture_set_depth_pixel(wires_renderer_t* renderer, int x, int y, float w, color_t color);
+static void wires_draw_line(wires_renderer_t* renderer, int x0, int y0, float w0, int x1, int y1, float w1, color_t color);
 
 wires_line_buffer_t* wires_line_buffer_new(int line_count, int vertex_count) {
     wires_line_buffer_t* line_buffer = (wires_line_buffer_t*)malloc(sizeof(wires_line_buffer_t));
@@ -85,10 +88,18 @@ wires_renderer_t* wires_renderer_new(void) {
     renderer->clip_planes.bottom.normal[1] = 0.0f;
     renderer->clip_planes.bottom.normal[2] = 0.0f;
 
+    texture_t* render_texture = graphics_get_render_texture();
+    size_t size = render_texture->width * render_texture->height;
+
+    renderer->depth_buffer = (float*)malloc(sizeof(float) * size);
+    memset(renderer->depth_buffer, 0, sizeof(float) * size);
+
     return renderer;
 }
 
 void wires_renderer_free(wires_renderer_t* renderer) {
+    free(renderer->depth_buffer);
+    renderer->depth_buffer = NULL;
     free(renderer);
     renderer = NULL;
 }
@@ -99,6 +110,20 @@ void wires_renderer_start(wires_renderer_t* renderer) {
 
 void wires_renderer_stop(wires_renderer_t* renderer) {
 
+}
+
+void wires_renderer_clear_color(wires_renderer_t* renderer, color_t color) {
+    texture_t* render_texture = graphics_get_render_texture();
+    graphics_texture_clear(render_texture, color);
+}
+
+void wires_renderer_clear_depth(wires_renderer_t* renderer, float depth) {
+    texture_t* render_texture = graphics_get_render_texture();
+    size_t size = render_texture->width * render_texture->height;
+
+    for (int i = 0; i < size; i++) {
+        renderer->depth_buffer[i] = depth;
+    }
 }
 
 void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, wires_line_buffer_t* lines) {
@@ -149,7 +174,16 @@ void wires_renderer_render(wires_renderer_t* renderer, mfloat_t* model_matrix, w
         line.b[0] = (line.b[0] + 1) * 0.5 * (width - 1);
         line.b[1] = (line.b[1] + 1) * 0.5 * (height - 1);
 
-        draw_line(line.a[0], line.a[1], line.b[0], line.b[1], line.color);
+        wires_draw_line(
+            renderer,
+            line.a[0],
+            line.a[1],
+            line.a[3],
+            line.b[0],
+            line.b[1],
+            line.b[3],
+            line.color
+        );
 
         renderer->statistics.lines_rendered++;
     }
@@ -231,4 +265,41 @@ static bool clip_line_plane(line_t* line, mfloat_t* point, mfloat_t* normal) {
     }
 
     return true;
+}
+
+static void wires_texture_set_depth_pixel(wires_renderer_t* renderer, int x, int y, float w, color_t color) {
+    texture_t* texture = graphics_get_render_texture();
+    if (x < 0 || x >= texture->width) return;
+    if (y < 0 || y >= texture->height) return;
+
+    float far = renderer->clip_planes.far.point[2];
+    float depth = -w / far;
+
+    if (renderer->depth_buffer[y * texture->width + x] < depth) return;
+
+    texture->pixels[y * texture->width + x] = color;
+    renderer->depth_buffer[y * texture->width + x] = depth;
+}
+
+static void wires_draw_line(wires_renderer_t* renderer, int x0, int y0, float w0, int x1, int y1, float w1, color_t color) {
+    // DDA based line drawing algorithm
+    int delta_x = x1 - x0;
+    int delta_y = y1 - y0;
+    int delta_w = w1 - w0;
+    int longest_side = fmax(abs(delta_x), abs(delta_y));
+
+    float x_inc = delta_x / (float)longest_side;
+    float y_inc = delta_y / (float)longest_side;
+    float w_inc = delta_w / (float)longest_side;
+
+    float current_x = x0;
+    float current_y = y0;
+    float current_w = w0;
+
+    for (int i = 0; i <= longest_side; i++) {
+        wires_texture_set_depth_pixel(renderer, current_x, current_y, current_w, color);
+        current_x += x_inc;
+        current_y += y_inc;
+        current_w += w_inc;
+    }
 }

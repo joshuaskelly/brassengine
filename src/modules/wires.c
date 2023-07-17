@@ -185,6 +185,28 @@ static int module_wires_renderer_stop(lua_State* L) {
     return 0;
 }
 
+static int module_wires_renderer_clear(lua_State* L) {
+    wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
+
+    const char* name = luaL_optstring(L, 2, "all");
+
+    if (strcmp(name, "all") == 0) {
+        wires_renderer_clear_color(renderer, 0);
+        wires_renderer_clear_depth(renderer, 1.0f);
+    }
+    else if (strcmp(name, "depth") == 0) {
+        wires_renderer_clear_depth(renderer, 1.0f);
+    }
+    else if (strcmp(name, "color") == 0) {
+        wires_renderer_clear_color(renderer, 0);
+    }
+    else {
+        luaL_argerror(L, 2, lua_pushfstring(L, "invalid option '%s'", name));
+    }
+
+    return 0;
+}
+
 static int module_wires_renderer_render(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
     mfloat_t* model_matrix = luaL_checkmatrix4(L, 2);
@@ -214,7 +236,7 @@ static int module_wires_renderer_camera(lua_State* L) {
 }
 
 static int module_wires_renderer_meta_index(lua_State* L) {
-    wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
+    luaL_checkwiresrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
     lua_settop(L, 0);
@@ -251,6 +273,7 @@ static const struct luaL_Reg wires_renderer_functions[] = {
     {"new", module_wires_renderer_new},
     {"start", module_wires_renderer_start},
     {"stop", module_wires_renderer_stop},
+    {"clear", module_wires_renderer_clear},
     {"render", module_wires_renderer_render},
     {"camera", module_wires_renderer_camera},
     {NULL, NULL}

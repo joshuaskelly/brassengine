@@ -35,8 +35,10 @@ struct plane {
 };
 
 typedef struct {
+    float* depth_buffer;
     mfloat_t view_matrix[MAT4_SIZE];
     mfloat_t projection_matrix[MAT4_SIZE];
+
     struct {
         struct plane near;
         struct plane far;
@@ -45,6 +47,7 @@ typedef struct {
         struct plane top;
         struct plane bottom;
     } clip_planes;
+
     struct {
         int lines_rendered;
     } statistics;
@@ -77,6 +80,22 @@ void wires_renderer_start(wires_renderer_t* renderer);
  * @param renderer
  */
 void wires_renderer_stop(wires_renderer_t* renderer);
+
+/**
+ * Set color buffer to given color.
+ *
+ * @param renderer
+ * @param color
+ */
+void wires_renderer_clear_color(wires_renderer_t* renderer, color_t color);
+
+/**
+ * Set depth buffer to given depth.
+ *
+ * @param renderer
+ * @param depth
+ */
+void wires_renderer_clear_depth(wires_renderer_t* renderer, float depth);
 
 /**
  * Render given line buffer.
