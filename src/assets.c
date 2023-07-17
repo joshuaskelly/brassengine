@@ -922,7 +922,7 @@ static void gif_free(gif_t* gif) {
     gif = NULL;
 }
 
-void assets_gif_save(const char* filename, int texture_count, texture_t** textures) {
+void assets_gif_save(const char* filename, int frame_count, texture_t** frames) {
     int error;
     GifFileType* gif_file = EGifOpenFileName(filename, false, &error);
 
@@ -931,7 +931,7 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
         return;
     }
 
-    texture_t* texture = textures[0];
+    texture_t* texture = frames[0];
 
     gif_file->SWidth = texture->width;
     gif_file->SHeight = texture->height;
@@ -1017,11 +1017,11 @@ void assets_gif_save(const char* filename, int texture_count, texture_t** textur
     GifMakeSavedImage(gif_file, &saved_image);
 
     // Write out additional frames
-    for (int i = 1; i < texture_count; i++) {
+    for (int i = 1; i < frame_count; i++) {
         extension_block_count = 0;
         extension_blocks = NULL;
 
-        texture = textures[i];
+        texture = frames[i];
 
         SavedImage saved_image;
 
