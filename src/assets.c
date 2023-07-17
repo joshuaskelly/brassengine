@@ -19,7 +19,7 @@
 
 const int default_texture_asset_count = 1;
 
-const int GIF_DELAY_50_FPS = 2;
+static const int GIF_DELAY_50_FPS = 2;
 
 typedef struct {
     const char* name;
