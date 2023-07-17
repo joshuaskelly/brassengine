@@ -7,11 +7,9 @@
 #ifndef CORE_H
 #define CORE_H
 
-#include "state.h"
-
 #define ENGINE_VERSION_MAJOR "0"
 #define ENGINE_VERSION_MINOR "16"
-#define ENGINE_VERSION_PATCH "0"
+#define ENGINE_VERSION_PATCH "1"
 
 #define ENGINE_VERSION "Brass Engine " ENGINE_VERSION_MAJOR "." ENGINE_VERSION_MINOR "." ENGINE_VERSION_PATCH
 #define ENGINE_COPYRIGHT ENGINE_VERSION "  Copyright (C) 2023 Joshua Skelton"
@@ -40,12 +38,5 @@ void core_main_loop(void);
  * Reload engine systems
  */
 void core_reload(void);
-
-/**
- * Set and initialize state
- *
- * @param state New state to set as current
- */
-void core_set_state(state_t* state);
 
 #endif
