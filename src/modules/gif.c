@@ -12,7 +12,7 @@
 #include "../assets.h"
 
 /**
- * Save frames as an animated GIF.
+ * Save frames as an animated GIF. Result will be encoded at 50 fps.
  * @function save
  * @param filename Name of GIF to save.
  * @param frames Array of texture userdata.

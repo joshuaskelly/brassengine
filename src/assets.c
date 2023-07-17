@@ -19,6 +19,8 @@
 
 const int default_texture_asset_count = 1;
 
+const int GIF_DELAY_50_FPS = 2;
+
 typedef struct {
     const char* name;
     void* asset;
@@ -997,7 +999,7 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
 
     gcb.DisposalMode = DISPOSE_DO_NOT;
     gcb.UserInputFlag = false;
-    gcb.DelayTime = 2;
+    gcb.DelayTime = GIF_DELAY_50_FPS;
     gcb.TransparentColor = NO_TRANSPARENT_COLOR;
 
     GifByteType extension[4];
@@ -1042,7 +1044,7 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
 
         gcb.DisposalMode = DISPOSE_DO_NOT;
         gcb.UserInputFlag = false;
-        gcb.DelayTime = 2;
+        gcb.DelayTime = GIF_DELAY_50_FPS;
         gcb.TransparentColor = NO_TRANSPARENT_COLOR;
 
         GifByteType extension[4];
