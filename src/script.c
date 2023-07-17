@@ -19,6 +19,7 @@
 #include "modules/display.h"
 #include "modules/draw.h"
 #include "modules/float_array.h"
+#include "modules/gif.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
 #include "modules/int_array.h"
@@ -50,6 +51,7 @@ static const luaL_Reg modules[] = {
     {"draw", luaopen_draw},
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
+    {"gif", luaopen_gif},
     {"graphics", luaopen_graphics},
     {"intarray", luaopen_intarray},
     {"texture", luaopen_texture},
