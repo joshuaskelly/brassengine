@@ -1,3 +1,25 @@
+/**
+ * Module for wireframe renderer
+ *
+ * @usage
+ * wires = require('wires')
+ *
+ * indices = {0, 1}
+ * colors = {1}
+ * vertices = {0, 0, 10, 10}
+ *
+ * lines = wires.Lines:new(indices, colors, vertices)
+ * renderer = wires.Renderer:new()
+ *
+ * renderer:start()
+ * renderer:clear()
+ * renderer:camera(0.01, 100, math.rad(90), view_matrix)
+ * renderer:render(lines)
+ * renderer:stop()
+ *
+ * @module wires
+ */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,6 +50,19 @@ static int lua_newwireslinebuffer(lua_State* L, int line_count, int vertex_count
     return 1;
 }
 
+/**
+ * Submodule Lines
+ * @section Lines
+ */
+
+/**
+ * Creates a wires_lines object.
+ * @function Lines.new
+ * @param indices Array of integer index pairs.
+ * @param colors Array of integer colors.
+ * @param vertices Array of interlaced float x, y, z coordinates.
+ * @return @{wires_lines}
+ */
 static int module_wires_line_buffer_new(lua_State* L) {
     // Indices
     if (!lua_istable(L, 1)) {
@@ -143,6 +178,25 @@ static int modules_wires_line_buffer_meta_gc(lua_State* L) {
     return 0;
 }
 
+/**
+ * @type wires_lines
+ */
+
+/**
+ * Flattened array of index pairs.
+ * @field indices @{intarray}
+ */
+
+/**
+ * Array of color indices.
+ * @field colors @{intarray}
+ */
+
+/**
+ * Flattened array of vertex x, y, z coordinates.
+ * @field vertices @{floatarray}
+ */
+
 static wires_renderer_t* luaL_checkwiresrenderer(lua_State* L, int index) {
     wires_renderer_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -163,12 +217,31 @@ static int lua_newwiresrenderer(lua_State* L) {
     return 1;
 }
 
+/**
+ * Submodule Renderer
+ * @section Renderer
+ */
+
+/**
+ * Creates a wires_renderer object.
+ * @within Submodule Renderer
+ * @function Renderer.new
+ * @return @{wires_renderer}
+ */
 static int module_wires_renderer_new(lua_State* L) {
     lua_newwiresrenderer(L);
 
     return 1;
 }
 
+/**
+ * @type wires_renderer
+ */
+
+/**
+ * Start rendering.
+ * @function start
+ */
 static int module_wires_renderer_start(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
 
@@ -177,6 +250,10 @@ static int module_wires_renderer_start(lua_State* L) {
     return 0;
 }
 
+/**
+ * Stop rendering.
+ * @function stop
+ */
 static int module_wires_renderer_stop(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
 
@@ -185,6 +262,11 @@ static int module_wires_renderer_stop(lua_State* L) {
     return 0;
 }
 
+/**
+ * Clears renderer's internal buffers.
+ * @function clear
+ * @param option Which buffer to clear. 'color' to clear the color buffer. 'depth' to clear the depth buffer. 'all' to clear both.
+ */
 static int module_wires_renderer_clear(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
 
@@ -207,6 +289,11 @@ static int module_wires_renderer_clear(lua_State* L) {
     return 0;
 }
 
+/**
+ * Renders a wires_line object.
+ * @function render
+ * @param lines @{wires_lines}
+ */
 static int module_wires_renderer_render(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
     mfloat_t* model_matrix = luaL_checkmatrix4(L, 2);
@@ -217,6 +304,14 @@ static int module_wires_renderer_render(lua_State* L) {
     return 0;
 }
 
+/**
+ * Set renderer's camera data.
+ * @function camera
+ * @param near Near clipping plane distance.
+ * @param far Far clipping plane distance.
+ * @param fov Field of view in radians.
+ * @param view_matrix @{matrix4} View matrix.
+ */
 static int module_wires_renderer_camera(lua_State* L) {
     wires_renderer_t* renderer = luaL_checkwiresrenderer(L, 1);
     float near = luaL_checknumber(L, 2);
