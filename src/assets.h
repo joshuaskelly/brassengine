@@ -57,9 +57,18 @@ const char* assets_get_script(const char* filename);
  * Get sound for given filename.
  *
  * @param filename Name to search for.
- * @return sound_tt* sound if found, NULL otherwise
+ * @return sound_t* sound if found, NULL otherwise
  */
 sound_t* assets_get_sound(const char* filename);
+
+/**
+ * Save sequence of textures as an animated GIF.
+ *
+ * @param filename Name of file to save.
+ * @param frame_count Frame count.
+ * @param frames Array of frames.
+ */
+void assets_gif_save(const char* filename, int frame_count, texture_t** frames);
 
 extern char* assets_directory;
 

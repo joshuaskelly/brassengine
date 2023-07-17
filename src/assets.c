@@ -19,6 +19,8 @@
 
 const int default_texture_asset_count = 1;
 
+static const int GIF_DELAY_50_FPS = 2;
+
 typedef struct {
     const char* name;
     void* asset;
@@ -920,6 +922,153 @@ static void gif_free(gif_t* gif) {
     gif->frames = NULL;
     free(gif);
     gif = NULL;
+}
+
+void assets_gif_save(const char* filename, int frame_count, texture_t** frames) {
+    int error;
+    GifFileType* gif_file = EGifOpenFileName(filename, false, &error);
+
+    if (!gif_file) {
+        log_error("Failed to open: %s", filename);
+        return;
+    }
+
+    texture_t* texture = frames[0];
+
+    gif_file->SWidth = texture->width;
+    gif_file->SHeight = texture->height;
+    gif_file->SBackGroundColor = 0;
+    gif_file->SColorResolution = 8;
+
+    // Make palette
+    GifColorType color_map[256];
+    uint32_t* palette = graphics_palette_get();
+
+    for (int i = 0; i < 256; i++) {
+        uint32_t rgba = palette[i];
+        color_map[i].Red = rgba & 0xff;
+        color_map[i].Green = (rgba >> 8) & 0xff;
+        color_map[i].Blue = (rgba >> 16) & 0xff;
+    }
+
+    gif_file->SColorMap = GifMakeMapObject(256, color_map);
+
+    // Write out first frame
+    SavedImage saved_image;
+
+    saved_image.ImageDesc.Left = 0;
+    saved_image.ImageDesc.Top = 0;
+    saved_image.ImageDesc.Width = texture->width;
+    saved_image.ImageDesc.Height = texture->height;
+    saved_image.ImageDesc.Interlace = false;
+    saved_image.ImageDesc.ColorMap = NULL;
+
+    size_t size = sizeof(color_t) * texture->width * texture->height;
+    saved_image.RasterBits = malloc(size);
+    memcpy(saved_image.RasterBits, texture->pixels, size);
+
+    int extension_block_count = 0;
+    ExtensionBlock* extension_blocks = NULL;
+
+    // Netscape loop
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        APPLICATION_EXT_FUNC_CODE,
+        11,
+        (unsigned char *)"NETSCAPE2.0"
+    );
+
+    if (error == GIF_ERROR) {
+        log_error("Failed to save: %s - %i", filename, gif_file->Error);
+    }
+
+    unsigned char params[] = {1, 0, 0};
+
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        0,
+        sizeof(params),
+        params
+    );
+
+    // Graphics control block
+    GraphicsControlBlock gcb;
+    memset(&gcb, '\0', 4);
+
+    gcb.DisposalMode = DISPOSE_DO_NOT;
+    gcb.UserInputFlag = false;
+    gcb.DelayTime = GIF_DELAY_50_FPS;
+    gcb.TransparentColor = NO_TRANSPARENT_COLOR;
+
+    GifByteType extension[4];
+    EGifGCBToExtension(&gcb, (GifByteType*)extension);
+
+    error = GifAddExtensionBlock(
+        &extension_block_count,
+        &extension_blocks,
+        GRAPHICS_EXT_FUNC_CODE,
+        4,
+        (unsigned char*)extension
+    );
+
+    saved_image.ExtensionBlockCount = extension_block_count;
+    saved_image.ExtensionBlocks = extension_blocks;
+
+    GifMakeSavedImage(gif_file, &saved_image);
+
+    // Write out additional frames
+    for (int i = 1; i < frame_count; i++) {
+        extension_block_count = 0;
+        extension_blocks = NULL;
+
+        texture = frames[i];
+
+        SavedImage saved_image;
+
+        saved_image.ImageDesc.Left = 0;
+        saved_image.ImageDesc.Top = 0;
+        saved_image.ImageDesc.Width = texture->width;
+        saved_image.ImageDesc.Height = texture->height;
+        saved_image.ImageDesc.Interlace = false;
+        saved_image.ImageDesc.ColorMap = NULL;
+
+        size_t size = sizeof(color_t) * texture->width * texture->height;
+        saved_image.RasterBits = malloc(size);
+        memcpy(saved_image.RasterBits, texture->pixels, size);
+
+        // Graphics control block
+        GraphicsControlBlock gcb;
+        memset(&gcb, '\0', 4);
+
+        gcb.DisposalMode = DISPOSE_DO_NOT;
+        gcb.UserInputFlag = false;
+        gcb.DelayTime = GIF_DELAY_50_FPS;
+        gcb.TransparentColor = NO_TRANSPARENT_COLOR;
+
+        GifByteType extension[4];
+        EGifGCBToExtension(&gcb, (GifByteType*)extension);
+
+        error = GifAddExtensionBlock(
+            &extension_block_count,
+            &extension_blocks,
+            GRAPHICS_EXT_FUNC_CODE,
+            4,
+            (unsigned char*)extension
+        );
+
+        saved_image.ExtensionBlockCount = extension_block_count;
+        saved_image.ExtensionBlocks = extension_blocks;
+
+        GifMakeSavedImage(gif_file, &saved_image);
+    }
+
+    error = EGifSpew(gif_file);
+
+    if (error == GIF_ERROR) {
+        log_error("Failed to save: %s - %i", filename, gif_file->Error);
+    }
 }
 
 // Default font 256 x 64 pixels
