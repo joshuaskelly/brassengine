@@ -10,6 +10,7 @@
 
 #include "texture.h"
 
+#include "../assets.h"
 #include "../graphics.h"
 
 texture_t* luaL_checktexture(lua_State* L, int index) {
