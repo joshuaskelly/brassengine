@@ -40,12 +40,6 @@ void script_draw(void);
 bool script_handle_event(event_t* event);
 
 /**
- * Invoke _init() global in Lua VM after all engine systems are ready.
- * @note Do we still need this?
- */
-void script_setup(void);
-
-/**
  * Reload current script and reset VM state.
  */
 void script_reload(void);

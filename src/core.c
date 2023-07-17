@@ -10,11 +10,8 @@
 #include "log.h"
 #include "platform.h"
 #include "script.h"
-#include "state.h"
-#include "teststate.h"
 #include "time.h"
 
-static state_t current_state;
 static bool is_running = true;
 
 static void handle_events(void);
@@ -29,11 +26,8 @@ void core_init(void) {
     platform_init();
     graphics_init();
     assets_init();
-    script_init();
     input_init();
-
-    // Set initial state
-    core_set_state(&test_state);
+    script_init();
 }
 
 void core_destroy(void) {
@@ -57,9 +51,13 @@ void core_main_loop(void) {
     platform_update();
     input_update();
     handle_events();
-    current_state.update();
-    current_state.draw();
+    script_update();
+    console_update();
+
+    script_draw();
+    console_draw();
     platform_draw();
+
     time_update();
 }
 
@@ -67,11 +65,6 @@ void core_reload(void) {
     time_reload();
     assets_reload();
     script_reload();
-}
-
-void core_set_state(state_t* state) {
-    current_state = *state;
-    current_state.init();
 }
 
 /**
@@ -94,7 +87,15 @@ static void handle_events() {
 
         input_handle_event(&event);
 
-        // Current state handles all others
-        current_state.handle_event(&event);
+        if (event.type == EVENT_KEYDOWN) {
+            if (event.key.code == KEYCODE_GRAVE) {
+                console_buffer_toggle();
+                return;
+            }
+        }
+
+        if (console_handle_event(&event)) return;
+
+        script_handle_event(&event);
     }
 }

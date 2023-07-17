@@ -290,6 +290,7 @@ static int call(lua_State* L, int narg, int nresults) {
 void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
+    call_global_lua_function(L, "_init");
 }
 
 void script_destroy(void) {
@@ -354,10 +355,6 @@ void script_update(void) {
     double start = time_millis_get();
     call_global_lua_function(L, "_update");
     update_time = time_millis_get() - start;
-}
-
-void script_setup(void) {
-    call_global_lua_function(L, "_init");
 }
 
 void script_draw(void) {
