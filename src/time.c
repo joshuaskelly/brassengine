@@ -8,6 +8,7 @@ static double startup_time = 0;
 static double current_time = 0;
 static double previous_time = 0;
 static double delta_time = 0;
+static size_t frames = 0;
 
 double time_millis_get(void) {
     struct timeval ts;
@@ -15,9 +16,14 @@ double time_millis_get(void) {
     return (ts.tv_sec * 1000) + ((double)ts.tv_usec / 1000.0f);
 }
 
+size_t time_frames_get(void) {
+    return frames;
+}
+
 void time_init(void) {
     startup_time = time_millis_get();
     current_time = time_millis_get();
+    frames = 0;
 }
 
 void time_destroy(void) {
@@ -28,11 +34,13 @@ void time_update(void) {
     previous_time = current_time;
     current_time = time_millis_get();
     delta_time = current_time - previous_time;
+    frames++;
 }
 
 void time_reload(void) {
     startup_time = time_millis_get();
     current_time = time_millis_get();
+    frames = 0;
 }
 
 double time_delta_time(void) {
