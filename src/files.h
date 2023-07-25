@@ -9,7 +9,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-FILE* files_get(const char* filename);
+/**
+ * Opens a file from inside asset directory or zip file.
+ *
+ * @param filename Name of file to open
+ * @param mode File access mode
+ * @return FILE* File stream pointer if successful, NULL otherwise.
+ */
+FILE* files_open_file(const char* filename, const char* mode);
 
 const char* files_read(const char* filename);
 

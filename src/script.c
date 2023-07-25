@@ -9,6 +9,7 @@
 
 #include "assets.h"
 #include "event.h"
+#include "files.h"
 #include "graphics.h"
 #include "input.h"
 #include "log.h"
@@ -448,7 +449,7 @@ static int io_open(lua_State* L) {
     const char *md = mode;  /* to traverse/check mode */
     luaL_argcheck(L, l_checkmode(md), 2, "invalid mode");
 
-    p->f = assets_open_file(filename, mode);
+    p->f = files_open_file(filename, mode);
 
     return (p->f == NULL) ? luaL_fileresult(L, 0, filename) : 1;
 }

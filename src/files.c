@@ -14,11 +14,8 @@
 #include "files.h"
 #include "log.h"
 
-static FILE* get_from_zip(const char* filename);
-static FILE* get_from_assets_directory(const char* filename);
-
 const char* files_read(const char* filename) {
-    FILE* file = files_get(filename);
+    FILE* file = files_open_file(filename, "rb");
     if (!file) {
         return NULL;
     }
@@ -52,21 +49,7 @@ const char* files_read(const char* filename) {
     return data;
 }
 
-FILE* files_get(const char* filename) {
-    // Check if user gave us a zip file or asset directory
-    if (arguments_count() > 1) {
-        const char* zip_or_directory = arguments_last();
-
-        // If we are given a zip file, load it
-        if (files_check_extension(zip_or_directory, "zip")) {
-            return get_from_zip(filename);
-        }
-    }
-
-    return get_from_assets_directory(filename);
-}
-
-static FILE* get_from_zip(const char* filename) {
+static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
     errno = 0;
 
     // Get a temp file to write to
@@ -114,7 +97,11 @@ static FILE* get_from_zip(const char* filename) {
     return temp_file;
 }
 
-static FILE* get_from_assets_directory(const char* filename) {
+FILE* files_open_file(const char* filename, const char* mode) {
+    if (files_check_extension(arguments_last(), "zip")) {
+        return open_zip_entry_as_file(filename, mode);
+    }
+
     char asset_path[1024];
     snprintf(
         asset_path,
@@ -124,7 +111,14 @@ static FILE* get_from_assets_directory(const char* filename) {
         filename
     );
 
-    return fopen(asset_path, "rb");
+    FILE* fp = fopen(asset_path, mode);
+
+    if (!fp) {
+        log_error("Failed to open file: %s", strerror(errno));
+        return NULL;
+    }
+
+    return fp;
 }
 
 bool files_check_extension(const char* filename, const char* ext) {
