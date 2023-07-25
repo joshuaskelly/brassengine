@@ -64,6 +64,7 @@ void core_main_loop(void) {
 void core_reload(void) {
     time_reload();
     assets_reload();
+    platform_reload();
     script_reload();
 }
 

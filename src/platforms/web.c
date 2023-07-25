@@ -120,6 +120,9 @@ void platform_destroy(void) {
     SDL_Quit();
 }
 
+void platform_reload(void) {
+}
+
 void platform_update(void) {
     sdl_handle_events();
 }

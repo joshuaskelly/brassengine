@@ -47,6 +47,8 @@ const char* files_read(const char* filename) {
         }
     }
 
+    fclose(file);
+
     return data;
 }
 

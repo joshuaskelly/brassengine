@@ -41,6 +41,7 @@ static GLuint texture = 0;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
+static void load_shader_program(void);
 
 static const char default_shader[] = "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}";
 
@@ -122,62 +123,7 @@ void platform_init(void) {
         log_fatal("Error initializing GLEW");
     }
 
-    shader_program = glCreateProgram();
-    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-
-    const GLchar* vertex_shader_source[] = {
-        "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}"
-    };
-
-    glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
-
-    glCompileShader(vertex_shader);
-
-    GLint compile_success = GL_FALSE;
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_success);
-    if (compile_success != GL_TRUE) {
-        log_fatal("Error compiling vertex shader");
-    }
-
-    glAttachShader(shader_program, vertex_shader);
-
-    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    shader_source = (char*)files_read("shader.frag");
-    if (!shader_source) {
-        shader_source = calloc(sizeof(default_shader), sizeof(char));
-        strcpy(shader_source, default_shader);
-    }
-
-    const GLchar* fragment_shader_source[] = {
-        shader_source
-    };
-
-    glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
-
-    glCompileShader(fragment_shader);
-
-    compile_success = GL_FALSE;
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
-    if (compile_success != GL_TRUE) {
-        log_fatal("Error compiling fragment shader");
-    }
-
-    glAttachShader(shader_program, fragment_shader);
-
-    glLinkProgram(shader_program);
-
-    compile_success = GL_FALSE;
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &compile_success);
-    if (compile_success != GL_TRUE) {
-        log_fatal("Error linking program");
-    }
-
-    position = glGetAttribLocation(shader_program, "position");
-    texture_coordinates = glGetAttribLocation(shader_program, "texture_coordinates");
-    screen_texture = glGetUniformLocation(shader_program, "screen_texture");
-    output_size = glGetUniformLocation(shader_program, "output_size");
-    frame_count = glGetUniformLocation(shader_program, "frame_count");
+    load_shader_program();
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -221,6 +167,12 @@ void platform_destroy(void) {
     SDL_DestroyWindow(window);
     Mix_Quit();
     SDL_Quit();
+}
+
+void platform_reload(void) {
+    glDeleteProgram(shader_program);
+    free(shader_source);
+    load_shader_program();
 }
 
 void platform_update(void) {
@@ -392,6 +344,65 @@ static void sdl_fix_frame_rate(void) {
 void platform_play_sound(sound_t* sound) {
     Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
     Mix_PlayChannel(-1, chunk, 0);
+}
+
+static void load_shader_program(void) {
+    shader_program = glCreateProgram();
+    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+
+    const GLchar* vertex_shader_source[] = {
+        "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}"
+    };
+
+    glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
+
+    glCompileShader(vertex_shader);
+
+    GLint compile_success = GL_FALSE;
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_success);
+    if (compile_success != GL_TRUE) {
+        log_fatal("Error compiling vertex shader");
+    }
+
+    glAttachShader(shader_program, vertex_shader);
+
+    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    shader_source = (char*)files_read("shader.frag");
+    if (!shader_source) {
+        shader_source = calloc(sizeof(default_shader), sizeof(char));
+        strcpy(shader_source, default_shader);
+    }
+
+    const GLchar* fragment_shader_source[] = {
+        shader_source
+    };
+
+    glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
+
+    glCompileShader(fragment_shader);
+
+    compile_success = GL_FALSE;
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
+    if (compile_success != GL_TRUE) {
+        log_fatal("Error compiling fragment shader");
+    }
+
+    glAttachShader(shader_program, fragment_shader);
+
+    glLinkProgram(shader_program);
+
+    compile_success = GL_FALSE;
+    glGetProgramiv(shader_program, GL_LINK_STATUS, &compile_success);
+    if (compile_success != GL_TRUE) {
+        log_fatal("Error linking program");
+    }
+
+    position = glGetAttribLocation(shader_program, "position");
+    texture_coordinates = glGetAttribLocation(shader_program, "texture_coordinates");
+    screen_texture = glGetUniformLocation(shader_program, "screen_texture");
+    output_size = glGetUniformLocation(shader_program, "output_size");
+    frame_count = glGetUniformLocation(shader_program, "frame_count");
 }
 
 void platform_display_set_resolution(int width, int height) {
