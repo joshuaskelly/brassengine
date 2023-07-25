@@ -271,7 +271,7 @@ void platform_draw(void) {
 
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glUniform1i(screen_texture, 0 );
+    glUniform1i(screen_texture, 0);
     glUniform1i(frame_count, 0);
     glUniform2f(output_size, window_width, window_height);
 
