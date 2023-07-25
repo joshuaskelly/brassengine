@@ -3,22 +3,18 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <dirent.h>
-#include <errno.h>
-#include <sys/stat.h>
-
 #include <drwav/dr_wav.h>
 #include <giflib/gif_lib.h>
 #include <zip/zip.h>
 
 #include "arguments.h"
 #include "assets.h"
+#include "files.h"
 #include "graphics.h"
 #include "log.h"
 #include "sounds.h"
 
 const int default_texture_asset_count = 1;
-const int default_shader_asset_count = 1;
 
 static const int GIF_DELAY_50_FPS = 2;
 
@@ -54,10 +50,6 @@ static asset_entry_t* sound_assets = NULL;
 static int sound_asset_count = 0;
 static size_t sound_assets_total_bytes = 0;
 
-static asset_entry_t* shader_assets = NULL;
-static int shader_asset_count = 0;
-static size_t shader_assets_total_bytes = 0;
-
 char* assets_directory = "assets";
 
 typedef struct {
@@ -81,7 +73,6 @@ void assets_init(void) {
     }
 
     log_info("scripts:  %iB", script_assets_total_bytes);
-    log_info("shaders:  %iB", shader_assets_total_bytes);
     log_info("sounds:   %iB", sound_assets_total_bytes);
     log_info("textures: %iB", texture_assets_total_bytes);
 }
@@ -121,25 +112,6 @@ sound_t* sound_from_wav(drwav* wav) {
 }
 
 /**
- * Check filename extension.
- *
- * @param filename Filename to check
- * @param ext Extension to look for
- * @return true if match, false otherwise
- */
-static bool check_extension(const char* filename, const char* ext) {
-    if (filename == NULL || ext == NULL) return false;
-
-    const char* dot = strrchr(filename, '.');
-
-    if (!dot) return false;
-
-    int n = strlen(ext);
-
-    return strncmp(dot + 1, ext, n) == 0;
-}
-
-/**
  * Load assets from zip file.
  *
  * @return true if successful, false otherwise.
@@ -174,7 +146,6 @@ static bool load_from_zip(void) {
 
     // Count assets
     texture_asset_count = default_texture_asset_count;
-    shader_asset_count = default_shader_asset_count;
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
         {
@@ -185,17 +156,14 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (check_extension(name, "gif")) {
+            if (files_check_extension(name, "gif")) {
                 texture_asset_count++;
             }
-            else if (check_extension(name, "lua")) {
+            else if (files_check_extension(name, "lua")) {
                 script_asset_count++;
             }
-            else if (check_extension(name, "wav")) {
+            else if (files_check_extension(name, "wav")) {
                 sound_asset_count++;
-            }
-            else if (check_extension(name, "frag")) {
-                shader_asset_count++;
             }
         }
         zip_entry_close(zip);
@@ -221,7 +189,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "gif")) {
+            if (!files_check_extension(name, "gif")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -256,7 +224,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "lua")) {
+            if (!files_check_extension(name, "lua")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -287,7 +255,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "wav")) {
+            if (!files_check_extension(name, "wav")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -316,80 +284,9 @@ static bool load_from_zip(void) {
         zip_entry_close(zip);
     }
 
-    // Load shaders
-    shader_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * shader_asset_count);
-    asset_index = 0;
-
-    // Load default shader
-    shader_assets[asset_index++] = assets_entry_new("shader.frag", (void*)default_shader);
-    shader_assets_total_bytes += sizeof(default_shader);
-
-    for (int i = 0; i < total_zip_entries; i++) {
-        zip_entry_openbyindex(zip, i);
-        {
-            if (zip_entry_isdir(zip)) {
-                zip_entry_close(zip);
-                continue;
-            }
-
-            const char* name = zip_entry_name(zip);
-
-            if (!check_extension(name, "frag")) {
-                zip_entry_close(zip);
-                continue;
-            }
-
-            size_t buffer_size = zip_entry_size(zip);
-            char* shader = calloc(buffer_size + 1, sizeof(char));
-            shader_assets_total_bytes += buffer_size + 1;
-
-            zip_entry_noallocread(zip, shader, buffer_size);
-
-            // Add shader asset
-            shader_assets[asset_index++] = assets_entry_new(name, shader);
-        }
-        zip_entry_close(zip);
-    }
-
     zip_close(zip);
 
     return true;
-}
-
-/**
- * Recursively walk given directory and invoke callback on all files.
- *
- * @param directory Directory to walk
- * @param callback Callback function to invoke on files
- */
-static void walk_directory(char* directory, void(callback)(const char*)) {
-    DIR* dir = opendir(directory);
-    if (!dir) return;
-
-    struct dirent* entry;
-    struct stat s;
-    char fullpath[512];
-    memset(fullpath, 0, 512);
-
-    // Iterate over directory contents
-    while ((entry = readdir(dir))) {
-        // Ignore current directory and parent directory
-        if (!strcmp(entry->d_name, ".\0")) continue;
-        if (!strcmp(entry->d_name, "..\0")) continue;
-
-        // Update fullpath
-        snprintf(fullpath, sizeof(fullpath), "%s/%s", directory, entry->d_name);
-        stat(fullpath, &s);
-
-        if (S_ISDIR(s.st_mode)) {
-            walk_directory(fullpath, callback);
-        }
-        else {
-            callback(fullpath);
-        }
-    }
-
-    closedir(dir);
 }
 
 /**
@@ -420,17 +317,14 @@ static char* normalize_filename(const char* filename) {
  * Callback function to count assets.
  */
 static void count_assets(const char* filename) {
-    if (check_extension(filename, "gif")) {
+    if (files_check_extension(filename, "gif")) {
         texture_asset_count++;
     }
-    else if (check_extension(filename, "lua")) {
+    else if (files_check_extension(filename, "lua")) {
         script_asset_count++;
     }
-    else if (check_extension(filename, "wav")) {
+    else if (files_check_extension(filename, "wav")) {
         sound_asset_count++;
-    }
-    else if (check_extension(filename, "frag")) {
-        shader_asset_count++;
     }
 }
 
@@ -442,7 +336,7 @@ static int asset_count;
  * @param filename Texture filename
  */
 static void add_textures(const char* filename) {
-    if (!check_extension(filename, "gif")) return;
+    if (!files_check_extension(filename, "gif")) return;
 
     // Load gif file
     gif_t* gif = gif_load(filename);
@@ -470,7 +364,7 @@ static void add_textures(const char* filename) {
  * @param filename Script filename
  */
 static void add_scripts(const char* filename) {
-    if (!check_extension(filename, "lua")) return;
+    if (!files_check_extension(filename, "lua")) return;
 
     // Open script file
     FILE* fp = fopen(filename, "rb");
@@ -520,7 +414,7 @@ static void add_scripts(const char* filename) {
  * @param filename Sound filename
  */
 static void add_sounds(const char* filename) {
-    if (!check_extension(filename, "wav")) return;
+    if (!files_check_extension(filename, "wav")) return;
 
     drwav wav;
     if (!drwav_init_file(&wav, filename, NULL)) {
@@ -539,56 +433,6 @@ static void add_sounds(const char* filename) {
     }
 
     drwav_uninit(&wav);
-}
-
-/**
- * Callback function to add shader assets.
- *
- * @param filename Sound filename
- */
-static void add_shaders(const char* filename) {
-    if (!check_extension(filename, "frag")) return;
-
-    // Open shader file
-    FILE* fp = fopen(filename, "rb");
-    if (!fp) {
-        log_error("Failed to open shader: %s", filename);
-        return;
-    }
-
-    // Get shader size
-    fseek(fp, 0, SEEK_END);
-    size_t size = ftell(fp);
-    rewind(fp);
-
-    // Allocate memory
-    char* shader = calloc(size + 1, sizeof(char));
-    if (!shader) {
-        log_error("Failed to allocate memory for shader.");
-        fclose(fp);
-        return;
-    }
-
-    // Read in shader bytes
-    size_t ret_code = fread(shader, 1, size, fp);
-    if (ret_code != size) {
-        if (feof(fp)) {
-            log_error("Error reading %s: unexpected end of file\n", filename);
-        }
-        else if (ferror(fp)) {
-            log_error("Error reading %s", filename);
-        }
-    }
-
-    shader_assets_total_bytes += size;
-
-    // Normalize filename
-    char* asset_name = normalize_filename(filename);
-
-    // Add shader asset
-    shader_assets[asset_count++] = assets_entry_new(asset_name, shader);
-
-    fclose(fp);
 }
 
 /**
@@ -617,8 +461,7 @@ static bool load_from_assets_directory(void) {
 
     // Count all assets
     texture_asset_count = default_texture_asset_count;
-    shader_asset_count = default_shader_asset_count;
-    walk_directory(assets_directory, count_assets);
+    files_walk_directory(assets_directory, count_assets);
 
     // Load textures
     asset_count = 0;
@@ -630,28 +473,17 @@ static bool load_from_assets_directory(void) {
     texture_assets[asset_count++] = assets_entry_new("font.gif", texture);
 
     // Load asset textures
-    walk_directory(assets_directory, add_textures);
+    files_walk_directory(assets_directory, add_textures);
 
     // Load scripts
     asset_count = 0;
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    walk_directory(assets_directory, add_scripts);
+    files_walk_directory(assets_directory, add_scripts);
 
     // Load sounds
     asset_count = 0;
     sound_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * sound_asset_count);
-    walk_directory(assets_directory, add_sounds);
-
-    // Load shaders
-    asset_count = 0;
-    shader_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * shader_asset_count);
-
-    // Load default shader
-    shader_assets[asset_count++] = assets_entry_new("shader.frag", (void*)default_shader);
-    shader_assets_total_bytes += sizeof(default_shader);
-
-    // Load asset shaders
-    walk_directory(assets_directory, add_shaders);
+    files_walk_directory(assets_directory, add_sounds);
 
     return true;
 }
@@ -667,7 +499,7 @@ static bool load_assets(void) {
         const char* zip_or_directory = arguments_last();
 
         // If we are given a zip file, load it
-        if (check_extension(zip_or_directory, "zip")) {
+        if (files_check_extension(zip_or_directory, "zip")) {
             return load_from_zip();
         }
 
@@ -713,17 +545,6 @@ static void unload_assets(void) {
     free(sound_assets);
     sound_assets = NULL;
     sound_asset_count = 0;
-
-    // Free shaders
-    for (int i = 0; i < shader_asset_count; i++) {
-        free((char*)shader_assets[i].asset);
-        shader_assets[i].asset = NULL;
-        free((char*)shader_assets[i].name);
-        shader_assets[i].name = NULL;
-    }
-    free(shader_assets);
-    shader_assets = NULL;
-    shader_asset_count = 0;
 }
 
 void assets_reload(void)  {
@@ -799,7 +620,7 @@ static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
 }
 
 FILE* assets_open_file(const char* filename, const char* mode) {
-    if (check_extension(arguments_last(), "zip")) {
+    if (files_check_extension(arguments_last(), "zip")) {
         return open_zip_entry_as_file(filename, mode);
     }
 
@@ -831,10 +652,6 @@ const char* assets_get_script(const char* filename) {
 
 sound_t* assets_get_sound(const char* filename) {
     return(sound_t*)asset_get(sound_assets, sound_asset_count, filename);
-}
-
-const char* assets_get_shader(const char* filename) {
-    return(const char*)asset_get(shader_assets, shader_asset_count, filename);
 }
 
 /**
@@ -1195,8 +1012,6 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
         log_error("Failed to save: %s - %i", filename, gif_file->Error);
     }
 }
-
-const char* default_shader = "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}";
 
 // Default font 256 x 64 pixels
 const uint8_t default_font_pixels[16384] = (const uint8_t [16384]){

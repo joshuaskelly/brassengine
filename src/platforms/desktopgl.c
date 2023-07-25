@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -7,10 +8,10 @@
 #include <gl\glu.h>
 
 #include "../arguments.h"
-#include "../assets.h"
 #include "../configuration.h"
 #include "../core.h"
 #include "../event.h"
+#include "../files.h"
 #include "../graphics.h"
 #include "../log.h"
 #include "../platform.h"
@@ -25,6 +26,8 @@ static uint32_t* render_buffer = NULL;
 static int ticks_last_frame;
 static SDL_Rect display_rect;
 
+static char* shader_source = NULL;
+
 static GLuint shader_program;
 static GLint position = -1;
 static GLint texture_coordinates = -1;
@@ -38,6 +41,8 @@ static GLuint texture = 0;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
+
+static const char default_shader[] = "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}";
 
 int platform_main(int argc, char* argv[]) {
     if (arguments_check("-v") || arguments_check("--version")) {
@@ -138,8 +143,14 @@ void platform_init(void) {
 
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
+    shader_source = (char*)files_read("shader.frag");
+    if (!shader_source) {
+        shader_source = calloc(sizeof(default_shader), sizeof(char));
+        strcpy(shader_source, default_shader);
+    }
+
     const GLchar* fragment_shader_source[] = {
-        assets_get_shader("shader.frag")
+        shader_source
     };
 
     glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
@@ -205,6 +216,7 @@ void platform_init(void) {
 
 void platform_destroy(void) {
     glDeleteProgram(shader_program);
+    free(shader_source);
     free(render_buffer);
     SDL_DestroyWindow(window);
     Mix_Quit();
