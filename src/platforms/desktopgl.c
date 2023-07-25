@@ -250,6 +250,13 @@ void platform_draw(void) {
     display_rect.x = (window_width - display_rect.w) / 2;
     display_rect.y = (window_height - display_rect.h) / 2;
 
+    glViewport(
+        display_rect.x,
+        display_rect.y,
+        display_rect.w,
+        display_rect.h
+    );
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shader_program);
