@@ -20,8 +20,6 @@
 #define FRAME_TIME_LENGTH (1000 / FPS)
 
 static SDL_Window* window = NULL;
-//static SDL_Renderer* renderer = NULL;
-//static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t* render_buffer = NULL;
 static int ticks_last_frame;
 static SDL_Rect display_rect;
@@ -206,9 +204,7 @@ void platform_init(void) {
 
 void platform_destroy(void) {
     glDeleteProgram(shader_program);
-    //SDL_DestroyTexture(render_buffer_texture);
     free(render_buffer);
-    //SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     Mix_Quit();
     SDL_Quit();
