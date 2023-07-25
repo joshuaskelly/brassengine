@@ -62,6 +62,14 @@ const char* assets_get_script(const char* filename);
 sound_t* assets_get_sound(const char* filename);
 
 /**
+ * Get shader for given filename.
+ *
+ * @param filename Name to search for.
+ * @return const char* shader if found, NULL otherwise
+ */
+const char* assets_get_shader(const char* filename);
+
+/**
  * Save sequence of textures as an animated GIF.
  *
  * @param filename Name of file to save.
@@ -73,5 +81,6 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames);
 extern char* assets_directory;
 
 extern const uint8_t default_font_pixels[16384];
+extern const char* default_shader;
 
 #endif

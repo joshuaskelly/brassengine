@@ -15,6 +15,7 @@
 #include "../log.h"
 #include "../platform.h"
 #include "../sounds.h"
+#include "../time.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
@@ -138,7 +139,7 @@ void platform_init(void) {
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     const GLchar* fragment_shader_source[] = {
-        "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}"
+        assets_get_shader("shader.frag")
     };
 
     glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
@@ -272,7 +273,7 @@ void platform_draw(void) {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     glUniform1i(screen_texture, 0);
-    glUniform1i(frame_count, 0);
+    glUniform1i(frame_count, time_frames_get());
     glUniform2f(output_size, window_width, window_height);
 
     glEnableVertexAttribArray(texture_coordinates);

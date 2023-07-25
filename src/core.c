@@ -23,9 +23,9 @@ void core_init(void) {
 
     configuration_init();
     time_init();
+    assets_init();
     platform_init();
     graphics_init();
-    assets_init();
     input_init();
     script_init();
 }

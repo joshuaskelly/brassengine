@@ -18,6 +18,7 @@
 #include "sounds.h"
 
 const int default_texture_asset_count = 1;
+const int default_shader_asset_count = 1;
 
 static const int GIF_DELAY_50_FPS = 2;
 
@@ -53,6 +54,10 @@ static asset_entry_t* sound_assets = NULL;
 static int sound_asset_count = 0;
 static size_t sound_assets_total_bytes = 0;
 
+static asset_entry_t* shader_assets = NULL;
+static int shader_asset_count = 0;
+static size_t shader_assets_total_bytes = 0;
+
 char* assets_directory = "assets";
 
 typedef struct {
@@ -76,6 +81,7 @@ void assets_init(void) {
     }
 
     log_info("scripts:  %iB", script_assets_total_bytes);
+    log_info("shaders:  %iB", shader_assets_total_bytes);
     log_info("sounds:   %iB", sound_assets_total_bytes);
     log_info("textures: %iB", texture_assets_total_bytes);
 }
@@ -168,6 +174,7 @@ static bool load_from_zip(void) {
 
     // Count assets
     texture_asset_count = default_texture_asset_count;
+    shader_asset_count = default_shader_asset_count;
     for (int i = 0; i < total_zip_entries; i++) {
         zip_entry_openbyindex(zip, i);
         {
@@ -186,6 +193,9 @@ static bool load_from_zip(void) {
             }
             else if (check_extension(name, "wav")) {
                 sound_asset_count++;
+            }
+            else if (check_extension(name, "frag")) {
+                shader_asset_count++;
             }
         }
         zip_entry_close(zip);
@@ -306,6 +316,41 @@ static bool load_from_zip(void) {
         zip_entry_close(zip);
     }
 
+    // Load shaders
+    shader_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * shader_asset_count);
+    asset_index = 0;
+
+    // Load default shader
+    shader_assets[asset_index++] = assets_entry_new("shader.frag", (void*)default_shader);
+    shader_assets_total_bytes += sizeof(default_shader);
+
+    for (int i = 0; i < total_zip_entries; i++) {
+        zip_entry_openbyindex(zip, i);
+        {
+            if (zip_entry_isdir(zip)) {
+                zip_entry_close(zip);
+                continue;
+            }
+
+            const char* name = zip_entry_name(zip);
+
+            if (!check_extension(name, "frag")) {
+                zip_entry_close(zip);
+                continue;
+            }
+
+            size_t buffer_size = zip_entry_size(zip);
+            char* shader = calloc(buffer_size + 1, sizeof(char));
+            shader_assets_total_bytes += buffer_size + 1;
+
+            zip_entry_noallocread(zip, shader, buffer_size);
+
+            // Add shader asset
+            shader_assets[asset_index++] = assets_entry_new(name, shader);
+        }
+        zip_entry_close(zip);
+    }
+
     zip_close(zip);
 
     return true;
@@ -383,6 +428,9 @@ static void count_assets(const char* filename) {
     }
     else if (check_extension(filename, "wav")) {
         sound_asset_count++;
+    }
+    else if (check_extension(filename, "frag")) {
+        shader_asset_count++;
     }
 }
 
@@ -494,6 +542,56 @@ static void add_sounds(const char* filename) {
 }
 
 /**
+ * Callback function to add shader assets.
+ *
+ * @param filename Sound filename
+ */
+static void add_shaders(const char* filename) {
+    if (!check_extension(filename, "frag")) return;
+
+    // Open shader file
+    FILE* fp = fopen(filename, "rb");
+    if (!fp) {
+        log_error("Failed to open shader: %s", filename);
+        return;
+    }
+
+    // Get shader size
+    fseek(fp, 0, SEEK_END);
+    size_t size = ftell(fp);
+    rewind(fp);
+
+    // Allocate memory
+    char* shader = calloc(size + 1, sizeof(char));
+    if (!shader) {
+        log_error("Failed to allocate memory for shader.");
+        fclose(fp);
+        return;
+    }
+
+    // Read in shader bytes
+    size_t ret_code = fread(shader, 1, size, fp);
+    if (ret_code != size) {
+        if (feof(fp)) {
+            log_error("Error reading %s: unexpected end of file\n", filename);
+        }
+        else if (ferror(fp)) {
+            log_error("Error reading %s", filename);
+        }
+    }
+
+    shader_assets_total_bytes += size;
+
+    // Normalize filename
+    char* asset_name = normalize_filename(filename);
+
+    // Add shader asset
+    shader_assets[asset_count++] = assets_entry_new(asset_name, shader);
+
+    fclose(fp);
+}
+
+/**
  * Load assets from assets directory.
  *
  * @return true If successful, false otherwise.
@@ -519,6 +617,7 @@ static bool load_from_assets_directory(void) {
 
     // Count all assets
     texture_asset_count = default_texture_asset_count;
+    shader_asset_count = default_shader_asset_count;
     walk_directory(assets_directory, count_assets);
 
     // Load textures
@@ -542,6 +641,17 @@ static bool load_from_assets_directory(void) {
     asset_count = 0;
     sound_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * sound_asset_count);
     walk_directory(assets_directory, add_sounds);
+
+    // Load shaders
+    asset_count = 0;
+    shader_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * shader_asset_count);
+
+    // Load default shader
+    shader_assets[asset_count++] = assets_entry_new("shader.frag", (void*)default_shader);
+    shader_assets_total_bytes += sizeof(default_shader);
+
+    // Load asset shaders
+    walk_directory(assets_directory, add_shaders);
 
     return true;
 }
@@ -603,6 +713,17 @@ static void unload_assets(void) {
     free(sound_assets);
     sound_assets = NULL;
     sound_asset_count = 0;
+
+    // Free shaders
+    for (int i = 0; i < shader_asset_count; i++) {
+        free((char*)shader_assets[i].asset);
+        shader_assets[i].asset = NULL;
+        free((char*)shader_assets[i].name);
+        shader_assets[i].name = NULL;
+    }
+    free(shader_assets);
+    shader_assets = NULL;
+    shader_asset_count = 0;
 }
 
 void assets_reload(void)  {
@@ -710,6 +831,10 @@ const char* assets_get_script(const char* filename) {
 
 sound_t* assets_get_sound(const char* filename) {
     return(sound_t*)asset_get(sound_assets, sound_asset_count, filename);
+}
+
+const char* assets_get_shader(const char* filename) {
+    return(const char*)asset_get(shader_assets, shader_asset_count, filename);
 }
 
 /**
@@ -1070,6 +1195,8 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
         log_error("Failed to save: %s - %i", filename, gif_file->Error);
     }
 }
+
+const char* default_shader = "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}";
 
 // Default font 256 x 64 pixels
 const uint8_t default_font_pixels[16384] = (const uint8_t [16384]){
