@@ -1,6 +1,7 @@
 /**
  * @file files.h
- * Time module.
+ * File module. Responsible for file access. Knows how to work with zip files
+ * and asset directories.
  */
 
 #ifndef FILES_H
@@ -18,6 +19,12 @@
  */
 FILE* files_open_file(const char* filename, const char* mode);
 
+/**
+ * Opens and reads entire file as a string.
+ *
+ * @param filename Name of file to open
+ * @return const char* File content if successful, NULL otherwise.
+ */
 const char* files_read(const char* filename);
 
 /**
