@@ -13,7 +13,7 @@ BIN_DIR:=$(BUILD_DIR)/bin
 WEB_DIR:=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
-PLATFORMS=desktop web
+PLATFORMS=desktop web desktopgl
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
@@ -38,14 +38,15 @@ MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm
-DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm
+LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm -lglew32 -lopengl32 -lglu32
+DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm -lglew32 -lopengl32 -lglu32
 
 default:help
 
 all:$(BIN)
 
 desktop:all ## Build desktop platform
+desktopgl:all
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
