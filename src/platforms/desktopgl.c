@@ -412,22 +412,41 @@ static void log_program_info(GLuint program) {
     free(log);
 }
 
+/**
+ * Compile given shader and log diagnostic info if fails
+ *
+ * @param shader Shader object
+ * @param source Source
+ * @return true If compile was successful, false otherwise
+ */
+static bool compile_shader(GLuint shader, const GLchar* source) {
+    const GLchar* source_array[] = {
+        source
+    };
+
+    glShaderSource(shader, 1, source_array, NULL);
+    glCompileShader(shader);
+
+    GLint compile_success = GL_FALSE;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_success);
+    if (compile_success != GL_TRUE) {
+        log_error("Error compiling shader");
+        log_shader_info(shader);
+
+        return false;
+    }
+
+    return true;
+}
+
 static void load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
     // Vertex shader
-    const GLchar* vertex_shader_source[] = {
-        "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}"
-    };
+    const GLchar* vertex_shader_source = "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}";
 
-    glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
-    glCompileShader(vertex_shader);
-
-    GLint compile_success = GL_FALSE;
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_success);
-    if (compile_success != GL_TRUE) {
-        log_shader_info(vertex_shader);
+    if (!compile_shader(vertex_shader, vertex_shader_source)) {
         log_fatal("Error compiling vertex shader");
     }
 
@@ -442,37 +461,16 @@ static void load_shader_program(void) {
         strcpy(shader_source, default_shader);
     }
 
-    const GLchar* fragment_shader_source[] = {
-        shader_source
-    };
-
-    glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
-    glCompileShader(fragment_shader);
-
     bool fallback_to_default_fragment_shader = false;
-    compile_success = GL_FALSE;
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
-    if (compile_success != GL_TRUE) {
-        log_error("Error compiling fragment shader");
-        log_shader_info(fragment_shader);
+    if (!compile_shader(fragment_shader, shader_source)) {
         fallback_to_default_fragment_shader = true;
     }
 
     // If we fail to compile fragment shader, attempt to use the default
     if (fallback_to_default_fragment_shader) {
-        log_info("Using default fragment shader");
+        log_info("Using default shader");
 
-        const GLchar* default_fragment_shader_source[] = {
-            default_shader
-        };
-
-        glShaderSource(fragment_shader, 1, default_fragment_shader_source, NULL);
-        glCompileShader(fragment_shader);
-
-        compile_success = GL_FALSE;
-        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
-        if (compile_success != GL_TRUE) {
-            log_shader_info(fragment_shader);
+        if (!compile_shader(fragment_shader, default_shader)) {
             log_fatal("Error compiling default fragment shader");
         }
     }
@@ -481,7 +479,7 @@ static void load_shader_program(void) {
 
     glLinkProgram(shader_program);
 
-    compile_success = GL_FALSE;
+    GLint compile_success = GL_FALSE;
     glGetProgramiv(shader_program, GL_LINK_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
         log_program_info(shader_program);
