@@ -10,6 +10,7 @@ extern struct config {
     struct {
         int width;
         int height;
+        float aspect;
     } resolution;
 
     struct {
