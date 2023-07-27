@@ -28,6 +28,9 @@ static SDL_Rect display_rect;
 
 static char* shader_source = NULL;
 
+#define OPENGL_VERSION_MAJOR 3
+#define OPENGL_VERSION_MINOR 1
+
 static GLuint shader_program;
 static GLint position = -1;
 static GLint texture_coordinates = -1;
@@ -71,9 +74,10 @@ void platform_init(void) {
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i)",
+        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL %i.%i)",
         version.major, version.minor, version.patch,
-        mix_version->major, mix_version->minor, mix_version->patch
+        mix_version->major, mix_version->minor, mix_version->patch,
+        OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR
     );
 
     log_info(buffer);
@@ -89,9 +93,9 @@ void platform_init(void) {
         log_fatal("Error intializing SDL Mixer");
     }
 
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     window = SDL_CreateWindow(
         NULL,
