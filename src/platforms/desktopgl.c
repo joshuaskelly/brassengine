@@ -461,7 +461,6 @@ static void load_shader_program(void) {
         use_default = !compile_shader(fragment_shader, fragment_shader_source);
     }
 
-    // If we fail to compile fragment shader, attempt to use the default
     if (use_default) {
         log_info("Using default shader");
 
