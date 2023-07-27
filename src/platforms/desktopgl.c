@@ -28,8 +28,8 @@ static SDL_Rect display_rect;
 
 static char* fragment_shader_source = NULL;
 
-#define OPENGL_VERSION_MAJOR 3
-#define OPENGL_VERSION_MINOR 1
+#define OPENGL_VERSION_MAJOR 2
+#define OPENGL_VERSION_MINOR 0
 
 static GLuint shader_program;
 static GLint position = -1;
@@ -46,7 +46,7 @@ static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
 static void load_shader_program(void);
 
-static const char default_shader[] = "#version 140\nuniform sampler2D screen_texture;in vec2 uv;out vec4 color;void main() {color = texture(screen_texture, uv);}";
+static const char default_shader[] = "#version 100\nprecision mediump float;uniform sampler2D screen_texture;in vec2 uv;void main() {gl_FragColor = texture2D(screen_texture, uv);}";
 
 int platform_main(int argc, char* argv[]) {
     if (arguments_check("-v") || arguments_check("--version")) {
@@ -74,7 +74,7 @@ void platform_init(void) {
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL %i.%i)",
+        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL ES %i.%i)",
         version.major, version.minor, version.patch,
         mix_version->major, mix_version->minor, mix_version->patch,
         OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR
@@ -95,7 +95,7 @@ void platform_init(void) {
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
     window = SDL_CreateWindow(
         NULL,
@@ -444,7 +444,7 @@ static void load_shader_program(void) {
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
     // Vertex shader
-    const GLchar* vertex_shader_source = "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}";
+    const GLchar* vertex_shader_source = "#version 100\nattribute vec2 position;attribute vec2 texture_coordinates;varying vec2 uv;void main(){uv=texture_coordinates;gl_Position=vec4(position.x,position.y,0,1);}";
 
     if (!compile_shader(vertex_shader, vertex_shader_source)) {
         log_fatal("Error compiling vertex shader");
