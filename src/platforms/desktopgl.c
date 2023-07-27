@@ -350,6 +350,68 @@ void platform_play_sound(sound_t* sound) {
     Mix_PlayChannel(-1, chunk, 0);
 }
 
+/**
+ * Log any diagnostic info for given shader.
+ *
+ * @param shader Shader object to get info for
+ */
+static void log_shader_info(GLuint shader) {
+    if (!glIsShader(shader)) {
+        return;
+    }
+
+    // Get log length
+    GLint max_length = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
+
+    // Get log data
+    char* log = (char*)malloc(sizeof(char) * max_length);
+    GLint length = 0;
+    glGetShaderInfoLog(shader, max_length, &length, log);
+
+    if (length > 0) {
+        // Trim extra newline
+        if (log[length - 1] == '\n') {
+            log[length - 1] = '\0';
+        }
+
+        log_error(log);
+    }
+
+    free(log);
+}
+
+/**
+ * Log any diagnostic info for given program.
+ *
+ * @param program Program object to get info for
+ */
+static void log_program_info(GLuint program) {
+    if (glIsProgram(program)) {
+        return;
+    }
+
+    // Get log length
+    GLint max_length = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &max_length);
+
+    // Get log data
+    char* log = (char*)malloc(sizeof(char) * max_length);
+    GLint length = 0;
+    glGetProgramInfoLog(program, max_length, &length, log);
+
+    if (length > 0) {
+        // Trim extra newline
+        if (log[length - 1] == '\n') {
+            log[length - 1] = '\0';
+        }
+
+        log_error(log);
+    }
+
+    free(log);
+}
+
 static void load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -365,6 +427,7 @@ static void load_shader_program(void) {
     GLint compile_success = GL_FALSE;
     glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
+        log_shader_info(vertex_shader);
         log_fatal("Error compiling vertex shader");
     }
 
@@ -389,6 +452,7 @@ static void load_shader_program(void) {
     compile_success = GL_FALSE;
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
+        log_shader_info(fragment_shader);
         log_fatal("Error compiling fragment shader");
     }
 
@@ -399,6 +463,7 @@ static void load_shader_program(void) {
     compile_success = GL_FALSE;
     glGetProgramiv(shader_program, GL_LINK_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
+        log_program_info(shader_program);
         log_fatal("Error linking program");
     }
 
