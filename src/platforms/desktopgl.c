@@ -166,7 +166,7 @@ void platform_init(void) {
 
 void platform_destroy(void) {
     glDeleteProgram(shader_program);
-    free(fragment_shader_source);
+    if (fragment_shader_source) free(fragment_shader_source);
     free(render_buffer);
     SDL_DestroyWindow(window);
     Mix_Quit();
@@ -175,7 +175,7 @@ void platform_destroy(void) {
 
 void platform_reload(void) {
     glDeleteProgram(shader_program);
-    free(fragment_shader_source);
+    if (fragment_shader_source) free(fragment_shader_source);
     load_shader_program();
 }
 
@@ -455,19 +455,14 @@ static void load_shader_program(void) {
     // Fragment shader
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
+    bool use_default = true;
     fragment_shader_source = (char*)files_read("shader.frag");
-    if (!fragment_shader_source) {
-        fragment_shader_source = calloc(sizeof(default_shader), sizeof(char));
-        strcpy(fragment_shader_source, default_shader);
-    }
-
-    bool fallback_to_default_fragment_shader = false;
-    if (!compile_shader(fragment_shader, fragment_shader_source)) {
-        fallback_to_default_fragment_shader = true;
+    if (fragment_shader_source) {
+        use_default = !compile_shader(fragment_shader, fragment_shader_source);
     }
 
     // If we fail to compile fragment shader, attempt to use the default
-    if (fallback_to_default_fragment_shader) {
+    if (use_default) {
         log_info("Using default shader");
 
         if (!compile_shader(fragment_shader, default_shader)) {
