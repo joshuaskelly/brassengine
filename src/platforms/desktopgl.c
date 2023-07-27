@@ -416,12 +416,12 @@ static void load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
+    // Vertex shader
     const GLchar* vertex_shader_source[] = {
         "#version 140\nin vec2 position;in vec2 texture_coordinates;out vec2 uv;void main() {uv = texture_coordinates;gl_Position = vec4(position.x, position.y, 0, 1);}"
     };
 
     glShaderSource(vertex_shader, 1, vertex_shader_source, NULL);
-
     glCompileShader(vertex_shader);
 
     GLint compile_success = GL_FALSE;
@@ -433,6 +433,7 @@ static void load_shader_program(void) {
 
     glAttachShader(shader_program, vertex_shader);
 
+    // Fragment shader
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     shader_source = (char*)files_read("shader.frag");
@@ -446,14 +447,34 @@ static void load_shader_program(void) {
     };
 
     glShaderSource(fragment_shader, 1, fragment_shader_source, NULL);
-
     glCompileShader(fragment_shader);
 
+    bool fallback_to_default_fragment_shader = false;
     compile_success = GL_FALSE;
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
+        log_error("Error compiling fragment shader");
         log_shader_info(fragment_shader);
-        log_fatal("Error compiling fragment shader");
+        fallback_to_default_fragment_shader = true;
+    }
+
+    // If we fail to compile fragment shader, attempt to use the default
+    if (fallback_to_default_fragment_shader) {
+        log_info("Using default fragment shader");
+
+        const GLchar* default_fragment_shader_source[] = {
+            default_shader
+        };
+
+        glShaderSource(fragment_shader, 1, default_fragment_shader_source, NULL);
+        glCompileShader(fragment_shader);
+
+        compile_success = GL_FALSE;
+        glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &compile_success);
+        if (compile_success != GL_TRUE) {
+            log_shader_info(fragment_shader);
+            log_fatal("Error compiling default fragment shader");
+        }
     }
 
     glAttachShader(shader_program, fragment_shader);
