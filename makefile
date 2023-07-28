@@ -13,7 +13,7 @@ BIN_DIR:=$(BUILD_DIR)/bin
 WEB_DIR:=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
-PLATFORMS=desktop web desktopgl
+PLATFORMS=desktop web desktop-opengles
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
@@ -37,16 +37,24 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
+ifeq ($(PLATFORM),desktop-opengles)
+ifeq ($(OS),Windows_NT)
+XLIBS=-lglew32 -lopengl32
+else
+XLIBS=-lGLEW -lGL
+endif
+endif
+
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm -lglew32 -lopengl32
-DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm -lglew32 -lopengl32
+LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS)
+DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm $(XLIBS)
 
 default:help
 
 all:$(BIN)
 
 desktop:all ## Build desktop platform
-desktopgl:all
+desktop-opengl32:all
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
