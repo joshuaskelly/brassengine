@@ -38,8 +38,8 @@ MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm -lglew32 -lopengl32 -lglu32
-DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm -lglew32 -lopengl32 -lglu32
+LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm -lglew32 -lopengl32
+DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm -lglew32 -lopengl32
 
 default:help
 

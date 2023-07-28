@@ -5,7 +5,6 @@
 #include <SDL_mixer.h>
 #include <gl\glew.h>
 #include <SDL_opengl.h>
-#include <gl\glu.h>
 
 #include "../arguments.h"
 #include "../configuration.h"
