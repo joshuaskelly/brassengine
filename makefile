@@ -45,16 +45,21 @@ XLIBS=-lGLEW -lGL
 endif
 endif
 
+ifeq ($(OS),Windows_NT)
+DLIBS=-mconsole
+endif
+
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
 LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS)
-DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm $(XLIBS)
+DLDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS) $(DLIBS)
 
 default:help
 
 all:$(BIN)
 
 desktop:all ## Build desktop platform
-desktop-opengl32:all
+
+desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
