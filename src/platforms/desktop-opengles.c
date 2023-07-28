@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <gl/glew.h>
+#include <GL/glew.h>
 #include <SDL_opengl.h>
 
 #include "../arguments.h"
@@ -45,7 +45,7 @@ static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
 static void load_shader_program(void);
 
-static const char default_shader[] = "#version 100\nprecision mediump float;uniform sampler2D screen_texture;in vec2 uv;void main() {gl_FragColor = texture2D(screen_texture, uv);}";
+static const char default_shader[] = "#version 100\nprecision mediump float;uniform sampler2D screen_texture;varying mediump vec2 uv;void main() {gl_FragColor = texture2D(screen_texture, uv);}";
 
 int platform_main(int argc, char* argv[]) {
     if (arguments_check("-v") || arguments_check("--version")) {

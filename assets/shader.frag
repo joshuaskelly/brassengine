@@ -10,7 +10,7 @@ uniform sampler2D screen_texture;
 uniform vec2 output_size;
 uniform int frame_count;
 
-in vec2 uv;
+varying mediump vec2 uv;
 
 #define vTexCoord uv.xy
 #define iChannel0 screen_texture
