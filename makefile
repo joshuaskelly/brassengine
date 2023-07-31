@@ -59,7 +59,7 @@ all:$(BIN)
 
 desktop:all ## Build desktop platform
 
-desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
+desktop-opengles:all ## Build desktop OpenGL ES 2.0 platform
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
