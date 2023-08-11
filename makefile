@@ -13,7 +13,7 @@ BIN_DIR:=$(BUILD_DIR)/bin
 WEB_DIR:=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
-PLATFORMS=desktop web desktop-opengles
+PLATFORMS=desktop web desktop-opengl
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
@@ -37,7 +37,7 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
-ifeq ($(PLATFORM),desktop-opengles)
+ifeq ($(PLATFORM),desktop-opengl)
 ifeq ($(OS),Windows_NT)
 XLIBS=-lglew32 -lopengl32
 else
@@ -59,7 +59,7 @@ all:$(BIN)
 
 desktop:all ## Build desktop platform
 
-desktop-opengles:all ## Build desktop OpenGL ES 2.0 platform
+desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
