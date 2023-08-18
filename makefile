@@ -13,7 +13,7 @@ BIN_DIR:=$(BUILD_DIR)/bin
 WEB_DIR:=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
-PLATFORMS=desktop web desktop-opengl
+PLATFORMS=desktop web desktop-opengl web-opengl
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
@@ -76,6 +76,8 @@ web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
+
+web-opengl:web ## Build web OpenGL ES 2.0 platform
 
 $(BIN): $(OBJS) | $(BIN_DIR) $(LIBS)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
