@@ -33,6 +33,11 @@ void platform_init(void);
 void platform_destroy(void);
 
 /**
+ * Reload system.
+ */
+void platform_reload(void);
+
+/**
  * Update system. Called at the beginning of an engine update cycle.
  */
 void platform_update(void);

@@ -13,6 +13,10 @@ extern struct config {
     } resolution;
 
     struct {
+        float aspect;
+    } display;
+
+    struct {
         struct {
             int foreground;
             int background;

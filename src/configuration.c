@@ -14,6 +14,7 @@ struct config* config = NULL;
 static void defaults_set(struct config* config) {
     config->resolution.width = 320;
     config->resolution.height = 200;
+    config->display.aspect = 1.0f;
     config->console.colors.foreground = 1;
     config->console.colors.background = 0;
     config->console.colors.cursor = 1;
@@ -46,6 +47,14 @@ static void set(cJSON* json) {
         if (cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
             config->resolution.width = width->valueint;
             config->resolution.height = height->valueint;
+        }
+    }
+
+    cJSON* display = cJSON_GetObjectItemCaseSensitive(json, "resolution");
+    if (display) {
+        cJSON* aspect = cJSON_GetObjectItemCaseSensitive(resolution, "aspect");
+        if (cJSON_IsNumber(aspect)) {
+            config->display.aspect = aspect->valuedouble;
         }
     }
 

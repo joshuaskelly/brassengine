@@ -32,6 +32,21 @@ static int bindings_display_set_window_size(lua_State* L) {
 }
 
 /**
+ * Set display aspect ratio.
+ * @function set_aspect
+ * @param aspect Pixel aspect ratio
+ */
+static int bindings_display_set_aspect(lua_State* L) {
+    float aspect = (float)luaL_checknumber(L, 1);
+
+    lua_pop(L, -1);
+
+    config->display.aspect = aspect;
+
+    return 0;
+}
+
+/**
  * Set display fullscreen.
  * @function set_fullscreen
  * @param fullscreen True if to set to fullscreen, False for windowed.
@@ -63,6 +78,7 @@ static int bindings_display_set_title(lua_State* L) {
 
 static const struct luaL_Reg module_functions[] = {
     {"set_size", bindings_display_set_window_size},
+    {"set_aspect", bindings_display_set_aspect},
     {"set_fullscreen", bindings_display_set_window_fullscreen},
     {"set_title", bindings_display_set_title},
     {NULL, NULL}

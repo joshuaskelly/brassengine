@@ -133,6 +133,9 @@ void platform_destroy(void) {
     SDL_Quit();
 }
 
+void platform_reload(void) {
+}
+
 void platform_update(void) {
     sdl_handle_events();
     sdl_fix_frame_rate();
@@ -154,7 +157,7 @@ void platform_draw(void) {
     SDL_GetWindowSize(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
-    float buffer_aspect = config->resolution.width / (float)config->resolution.height;
+    float buffer_aspect = config->resolution.width / (float)config->resolution.height * config->display.aspect;
 
     display_rect.w = window_width;
     display_rect.h = window_height;

@@ -29,15 +29,6 @@ void assets_destroy(void);
 void assets_reload(void);
 
 /**
- * Opens a file from inside asset directory or zip file.
- *
- * @param filename Name of file to open
- * @param mode File access mode
- * @return FILE* File stream pointer if successful, NULL otherwise.
- */
-FILE* assets_open_file(const char* filename, const char* mode);
-
-/**
  * Get texture for given filename.
  *
  * @param filename Name to search for.

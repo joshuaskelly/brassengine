@@ -3,16 +3,13 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <dirent.h>
-#include <errno.h>
-#include <sys/stat.h>
-
 #include <drwav/dr_wav.h>
 #include <giflib/gif_lib.h>
 #include <zip/zip.h>
 
 #include "arguments.h"
 #include "assets.h"
+#include "files.h"
 #include "graphics.h"
 #include "log.h"
 #include "sounds.h"
@@ -115,25 +112,6 @@ sound_t* sound_from_wav(drwav* wav) {
 }
 
 /**
- * Check filename extension.
- *
- * @param filename Filename to check
- * @param ext Extension to look for
- * @return true if match, false otherwise
- */
-static bool check_extension(const char* filename, const char* ext) {
-    if (filename == NULL || ext == NULL) return false;
-
-    const char* dot = strrchr(filename, '.');
-
-    if (!dot) return false;
-
-    int n = strlen(ext);
-
-    return strncmp(dot + 1, ext, n) == 0;
-}
-
-/**
  * Load assets from zip file.
  *
  * @return true if successful, false otherwise.
@@ -178,13 +156,13 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (check_extension(name, "gif")) {
+            if (files_check_extension(name, "gif")) {
                 texture_asset_count++;
             }
-            else if (check_extension(name, "lua")) {
+            else if (files_check_extension(name, "lua")) {
                 script_asset_count++;
             }
-            else if (check_extension(name, "wav")) {
+            else if (files_check_extension(name, "wav")) {
                 sound_asset_count++;
             }
         }
@@ -211,7 +189,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "gif")) {
+            if (!files_check_extension(name, "gif")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -246,7 +224,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "lua")) {
+            if (!files_check_extension(name, "lua")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -277,7 +255,7 @@ static bool load_from_zip(void) {
 
             const char* name = zip_entry_name(zip);
 
-            if (!check_extension(name, "wav")) {
+            if (!files_check_extension(name, "wav")) {
                 zip_entry_close(zip);
                 continue;
             }
@@ -312,42 +290,6 @@ static bool load_from_zip(void) {
 }
 
 /**
- * Recursively walk given directory and invoke callback on all files.
- *
- * @param directory Directory to walk
- * @param callback Callback function to invoke on files
- */
-static void walk_directory(char* directory, void(callback)(const char*)) {
-    DIR* dir = opendir(directory);
-    if (!dir) return;
-
-    struct dirent* entry;
-    struct stat s;
-    char fullpath[512];
-    memset(fullpath, 0, 512);
-
-    // Iterate over directory contents
-    while ((entry = readdir(dir))) {
-        // Ignore current directory and parent directory
-        if (!strcmp(entry->d_name, ".\0")) continue;
-        if (!strcmp(entry->d_name, "..\0")) continue;
-
-        // Update fullpath
-        snprintf(fullpath, sizeof(fullpath), "%s/%s", directory, entry->d_name);
-        stat(fullpath, &s);
-
-        if (S_ISDIR(s.st_mode)) {
-            walk_directory(fullpath, callback);
-        }
-        else {
-            callback(fullpath);
-        }
-    }
-
-    closedir(dir);
-}
-
-/**
  * Get filepath relative to asset directory.
  *
  * @param filename Filename
@@ -375,13 +317,13 @@ static char* normalize_filename(const char* filename) {
  * Callback function to count assets.
  */
 static void count_assets(const char* filename) {
-    if (check_extension(filename, "gif")) {
+    if (files_check_extension(filename, "gif")) {
         texture_asset_count++;
     }
-    else if (check_extension(filename, "lua")) {
+    else if (files_check_extension(filename, "lua")) {
         script_asset_count++;
     }
-    else if (check_extension(filename, "wav")) {
+    else if (files_check_extension(filename, "wav")) {
         sound_asset_count++;
     }
 }
@@ -394,7 +336,7 @@ static int asset_count;
  * @param filename Texture filename
  */
 static void add_textures(const char* filename) {
-    if (!check_extension(filename, "gif")) return;
+    if (!files_check_extension(filename, "gif")) return;
 
     // Load gif file
     gif_t* gif = gif_load(filename);
@@ -422,7 +364,7 @@ static void add_textures(const char* filename) {
  * @param filename Script filename
  */
 static void add_scripts(const char* filename) {
-    if (!check_extension(filename, "lua")) return;
+    if (!files_check_extension(filename, "lua")) return;
 
     // Open script file
     FILE* fp = fopen(filename, "rb");
@@ -472,7 +414,7 @@ static void add_scripts(const char* filename) {
  * @param filename Sound filename
  */
 static void add_sounds(const char* filename) {
-    if (!check_extension(filename, "wav")) return;
+    if (!files_check_extension(filename, "wav")) return;
 
     drwav wav;
     if (!drwav_init_file(&wav, filename, NULL)) {
@@ -519,7 +461,7 @@ static bool load_from_assets_directory(void) {
 
     // Count all assets
     texture_asset_count = default_texture_asset_count;
-    walk_directory(assets_directory, count_assets);
+    files_walk_directory(assets_directory, count_assets);
 
     // Load textures
     asset_count = 0;
@@ -531,17 +473,17 @@ static bool load_from_assets_directory(void) {
     texture_assets[asset_count++] = assets_entry_new("font.gif", texture);
 
     // Load asset textures
-    walk_directory(assets_directory, add_textures);
+    files_walk_directory(assets_directory, add_textures);
 
     // Load scripts
     asset_count = 0;
     script_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * script_asset_count);
-    walk_directory(assets_directory, add_scripts);
+    files_walk_directory(assets_directory, add_scripts);
 
     // Load sounds
     asset_count = 0;
     sound_assets = (asset_entry_t*)malloc(sizeof(asset_entry_t) * sound_asset_count);
-    walk_directory(assets_directory, add_sounds);
+    files_walk_directory(assets_directory, add_sounds);
 
     return true;
 }
@@ -557,7 +499,7 @@ static bool load_assets(void) {
         const char* zip_or_directory = arguments_last();
 
         // If we are given a zip file, load it
-        if (check_extension(zip_or_directory, "zip")) {
+        if (files_check_extension(zip_or_directory, "zip")) {
             return load_from_zip();
         }
 
@@ -627,77 +569,6 @@ static void* asset_get(asset_entry_t* assets, int count, const char* name) {
     }
 
     return NULL;
-}
-
-static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
-    errno = 0;
-
-    // Get a temp file to write to
-    FILE* temp_file = tmpfile();
-    if (!temp_file) {
-        log_error("Failed to open temp file: %s", strerror(errno));
-        return NULL;
-    }
-
-    struct zip_t* zip = zip_open(arguments_last(), 0, 'r');
-    int total_zip_entries = zip_entries_total(zip);
-    for (int i = 0; i < total_zip_entries; i++) {
-        zip_entry_openbyindex(zip, i);
-
-        // Early out on directories
-        if (zip_entry_isdir(zip)) {
-            zip_entry_close(zip);
-            continue;
-        }
-
-        // Find the zip entry
-        const char* name = zip_entry_name(zip);
-        if (strcmp(filename, name) != 0) {
-            zip_entry_close(zip);
-            continue;
-        }
-
-        // Read zip entry data
-        size_t buffer_size = zip_entry_size(zip);
-        uint8_t* buffer = calloc(buffer_size, sizeof(uint8_t));
-        zip_entry_noallocread(zip, (void*)buffer, buffer_size);
-        zip_entry_close(zip);
-
-        // Write data to temp file
-        fwrite(buffer, sizeof(uint8_t), buffer_size, temp_file);
-        rewind(temp_file);
-
-        free(buffer);
-
-        break;
-    }
-
-    zip_close(zip);
-
-    return temp_file;
-}
-
-FILE* assets_open_file(const char* filename, const char* mode) {
-    if (check_extension(arguments_last(), "zip")) {
-        return open_zip_entry_as_file(filename, mode);
-    }
-
-    size_t size = strlen(filename) + strlen(assets_directory) + 2;
-    char asset_path[size];
-    memset(asset_path, '\0', size);
-
-    strcat(asset_path, assets_directory);
-    strcat(asset_path, "/");
-    strcat(asset_path, filename);
-
-    FILE* fp = fopen(asset_path, mode);
-
-    if (!fp) {
-        log_error("Failed to open file: %s", strerror(errno));
-        return NULL;
-    }
-
-    return fp;
 }
 
 texture_t* assets_get_texture(const char* filename) {

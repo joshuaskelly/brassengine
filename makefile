@@ -13,7 +13,7 @@ BIN_DIR:=$(BUILD_DIR)/bin
 WEB_DIR:=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
-PLATFORMS=desktop web
+PLATFORMS=desktop web desktop-opengl web-opengl
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
@@ -37,15 +37,29 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
+ifeq ($(PLATFORM),desktop-opengl)
+ifeq ($(OS),Windows_NT)
+XLIBS=-lglew32 -lopengl32
+else
+XLIBS=-lGLEW -lGL
+endif
+endif
+
+ifeq ($(OS),Windows_NT)
+DLIBS=-mconsole
+endif
+
 LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm
-DLDLIBS=$(LIBS) `sdl2-config --libs` -mconsole -lSDL2_mixer -lm
+LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS)
+DLDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS) $(DLIBS)
 
 default:help
 
 all:$(BIN)
 
 desktop:all ## Build desktop platform
+
+desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
 debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
@@ -62,6 +76,8 @@ web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
+
+web-opengl:web ## Build web OpenGL ES 2.0 platform
 
 $(BIN): $(OBJS) | $(BIN_DIR) $(LIBS)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@

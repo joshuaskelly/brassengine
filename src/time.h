@@ -43,4 +43,6 @@ double time_since_init(void);
 
 double time_millis_get(void);
 
+size_t time_frames_get(void);
+
 #endif
