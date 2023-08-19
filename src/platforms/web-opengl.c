@@ -130,17 +130,22 @@ void platform_init(void) {
         0, 1, 2, 3
     };
 
+    // Create vertex buffer object
     glGenBuffers(1, &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
     glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
 
+    // Create index buffer object
     glGenBuffers(1, &index_buffer_object);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), index_data, GL_STATIC_DRAW);
 
+    // Create texture
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, config->resolution.width, config->resolution.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
+
+    // Set texture paramters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
