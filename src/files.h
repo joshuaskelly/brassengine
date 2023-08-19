@@ -17,7 +17,7 @@
  * @param mode File access mode
  * @return FILE* File stream pointer if successful, NULL otherwise.
  */
-FILE* files_open_file(const char* filename, const char* mode);
+FILE* files_open(const char* filename, const char* mode);
 
 /**
  * Opens and reads entire file as a string.

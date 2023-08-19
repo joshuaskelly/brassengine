@@ -15,7 +15,7 @@
 #include "log.h"
 
 const char* files_read(const char* filename) {
-    FILE* file = files_open_file(filename, "rb");
+    FILE* file = files_open(filename, "rb");
     if (!file) {
         return NULL;
     }
@@ -97,7 +97,7 @@ static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
     return temp_file;
 }
 
-FILE* files_open_file(const char* filename, const char* mode) {
+FILE* files_open(const char* filename, const char* mode) {
     if (files_check_extension(arguments_last(), "zip")) {
         return open_zip_entry_as_file(filename, mode);
     }
