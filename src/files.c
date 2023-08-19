@@ -114,7 +114,6 @@ FILE* files_open(const char* filename, const char* mode) {
     FILE* fp = fopen(asset_path, mode);
 
     if (!fp) {
-        log_error("Failed to open file %s: %s", filename, strerror(errno));
         return NULL;
     }
 
