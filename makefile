@@ -72,7 +72,7 @@ web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1
 web:AR='emar rcu'
 web:RANLIB=emranlib
 web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
-	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --embed-file assets
+	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --shell-file resources/web/shell.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
