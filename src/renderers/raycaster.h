@@ -106,4 +106,30 @@ float raycaster_fog_distance_get(void);
 
 void raycaster_fog_distance_set(float distance);
 
+typedef struct {
+    texture_t* render_texture;
+    float* depth_buffer;
+    texture_t* shade_table;
+    float fog_distance;
+    struct {
+        mfloat_t position[VEC2_SIZE];
+        mfloat_t direction[VEC2_SIZE];
+        float fov;
+    } camera;
+} raycaster_renderer_t;
+
+raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture);
+
+void raycaster_renderer_free(raycaster_renderer_t* renderer);
+
+void raycaster_renderer_clear_color(raycaster_renderer_t* renderer, color_t color);
+
+void raycaster_renderer_clear_depth(raycaster_renderer_t* renderer, float depth);
+
+void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* position, mfloat_t* direction, float fov);
+
+void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map);
+
+void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position);
+
 #endif

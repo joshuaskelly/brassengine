@@ -700,3 +700,62 @@ float raycaster_fog_distance_get(void) {
 void raycaster_fog_distance_set(float distance) {
     fog_distance = distance;
 }
+
+raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
+    raycaster_renderer_t* renderer = (raycaster_renderer_t*)malloc(sizeof(raycaster_renderer_t));
+
+    if (!render_texture) {
+        render_texture = graphics_get_render_texture();
+    }
+
+    size_t size = render_texture->width * render_texture->height;
+
+    renderer->render_texture = render_texture;
+    renderer->depth_buffer = (float*)malloc(size * sizeof(float));
+    renderer->shade_table = NULL;
+    renderer->fog_distance = 32.0f;
+
+    vec2(renderer->camera.position, 0, 0);
+    vec2(renderer->camera.direction, 0, 0);
+    renderer->camera.fov = 90.0f;
+
+    return renderer;
+}
+
+void raycaster_renderer_free(raycaster_renderer_t* renderer) {
+    free(renderer->depth_buffer);
+    renderer->depth_buffer = NULL;
+
+    free(renderer);
+    renderer = NULL;
+}
+
+void raycaster_renderer_clear_color(raycaster_renderer_t* renderer, color_t color) {
+    graphics_texture_clear(renderer->render_texture, color);
+}
+
+void raycaster_renderer_clear_depth(raycaster_renderer_t* renderer, float depth) {
+    size_t size = renderer->render_texture->width * renderer->render_texture->height;
+
+    for (int i = 0; i < size; i++) {
+        renderer->depth_buffer[i] = depth;
+    }
+}
+
+void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* position, mfloat_t* direction, float fov) {
+    vec2_assign(renderer->camera.position, position);
+    vec2_assign(renderer->camera.direction, direction);
+    renderer->camera.fov = fov;
+}
+
+void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map) {
+    if (!renderer->render_texture) {
+        return;
+    }
+}
+
+void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position) {
+    if (!renderer->render_texture) {
+        return;
+    }
+}
