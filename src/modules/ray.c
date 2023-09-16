@@ -94,6 +94,47 @@ static int module_ray_renderer_camera(lua_State* L) {
     return 0;
 }
 
+static int module_ray_renderer_feature(lua_State* L) {
+    raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+    bool is_setter = lua_gettop(L) > 2;
+
+    if (strcmp(key, "fog") == 0) {
+        if (is_setter) {
+            float fog_distance = luaL_checknumber(L, 3);
+            renderer->fog_distance = fog_distance;
+
+            return 0;
+        }
+
+        lua_pushnumber(L, renderer->fog_distance);
+
+        return 1;
+    }
+    else if (strcmp(key, "shadetable") == 0) {
+        if (is_setter) {
+            texture_t* shade_table = luaL_checktexture(L, 3);
+            renderer->shade_table = shade_table;
+
+            return 0;
+        }
+
+        if (renderer->shade_table) {
+            lua_pushtexture(L, renderer->shade_table);
+        }
+        else {
+            lua_pushnil(L);
+        }
+
+        return 1;
+    }
+    else {
+        luaL_argerror(L, 2, lua_pushfstring(L, "invalid feature '%s'", key));
+    }
+
+    return 0;
+}
+
 static int module_ray_renderer_meta_index(lua_State* L) {
     luaL_checkrayrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
@@ -117,6 +158,7 @@ static const struct luaL_Reg ray_renderer_functions[] = {
     {"clear", module_ray_renderer_clear},
     {"render", module_ray_renderer_render},
     {"camera", module_ray_renderer_camera},
+    {"feature", module_ray_renderer_feature},
     {NULL, NULL}
 };
 
