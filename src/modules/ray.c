@@ -153,6 +153,42 @@ static int module_ray_renderer_meta_index(lua_State* L) {
     return 1;
 }
 
+static int module_ray_map_new(lua_State* L) {
+    raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
+    *handle = raycaster_map_new();
+    luaL_setmetatable(L, "raycaster_map");
+
+    return 1;
+}
+
+static int module_ray_map_meta_index(lua_State* L) {
+    luaL_checkrayrenderer(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_settop(L, 0);
+
+    luaL_requiref(L, "ray", NULL, false);
+    lua_getfield(L, -1, "Map");
+    if (lua_type(L, -1) == LUA_TTABLE) {
+        lua_getfield(L, -1, key);
+    }
+    else {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
+static const struct luaL_Reg ray_map_functions[] = {
+    {"new", module_ray_map_new},
+    {NULL, NULL}
+};
+
+static const struct luaL_Reg ray_map_meta_functions[] = {
+    {"__index", module_ray_map_meta_index},
+    {NULL, NULL}
+};
+
 static const struct luaL_Reg ray_renderer_functions[] = {
     {"new", module_ray_renderer_new},
     {"clear", module_ray_renderer_clear},
@@ -176,6 +212,14 @@ int luaopen_ray(lua_State* L) {
 
     luaL_newmetatable(L, "ray_renderer");
     luaL_setfuncs(L, ray_renderer_meta_functions, 0);
+    lua_pop(L, 1);
+
+    lua_pushstring(L, "Map");
+    luaL_newlib(L, ray_map_functions);
+    lua_settable(L, -3);
+
+    luaL_newmetatable(L, "ray_map");
+    luaL_setfuncs(L, ray_map_meta_functions, 0);
     lua_pop(L, 1);
 
     return 1;
