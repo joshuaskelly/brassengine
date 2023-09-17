@@ -30,7 +30,6 @@
 #include "modules/mouse.h"
 #include "modules/quaternion.h"
 #include "modules/ray.h"
-#include "modules/raycaster.h"
 #include "modules/sound.h"
 #include "modules/statistics.h"
 #include "modules/texture.h"
@@ -62,7 +61,6 @@ static const luaL_Reg modules[] = {
     {"mouse", luaopen_mouse},
     {"quaternion", luaopen_quaternion},
     {"ray", luaopen_ray},
-    {"raycaster", luaopen_raycaster},
     {"sound", luaopen_sound},
     {"statistics", luaopen_statistics},
     {"vector2", luaopen_vector2},
