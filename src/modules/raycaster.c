@@ -11,7 +11,7 @@
 
 #include <mathc/mathc.h>
 
-#include "ray.h"
+#include "raycaster.h"
 #include "texture.h"
 #include "vector2.h"
 
@@ -20,10 +20,10 @@
 static raycaster_renderer_t* luaL_checkrayrenderer(lua_State* L, int index) {
     raycaster_renderer_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
-    handle = (raycaster_renderer_t**)luaL_checkudata(L, index, "ray_renderer");
+    handle = (raycaster_renderer_t**)luaL_checkudata(L, index, "raycaster_renderer");
 
     if (!handle) {
-        luaL_typeerror(L, index, "ray_renderer");
+        luaL_typeerror(L, index, "raycaster_renderer");
     }
 
     return *handle;
@@ -33,16 +33,16 @@ static int lua_newrayrenderer(lua_State* L) {
     texture_t* render_texture = luaL_opttexture(L, 2, graphics_get_render_texture());
     raycaster_renderer_t** handle = (raycaster_renderer_t**)lua_newuserdata(L, sizeof(raycaster_renderer_t*));
     *handle = raycaster_renderer_new(render_texture);
-    luaL_setmetatable(L, "ray_renderer");
+    luaL_setmetatable(L, "raycaster_renderer");
 
     return 1;
 }
 
-static int module_ray_renderer_new(lua_State* L) {
+static int module_raycaster_renderer_new(lua_State* L) {
     return lua_newrayrenderer(L);
 }
 
-static int module_ray_renderer_clear(lua_State* L) {
+static int module_raycaster_renderer_clear(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
     const char* name = luaL_optstring(L, 2, "all");
@@ -72,12 +72,12 @@ static int module_ray_renderer_clear(lua_State* L) {
 #define MAX_PALETTE_SIZE 256
 static texture_t* palette[MAX_PALETTE_SIZE];
 
-static int module_ray_renderer_render(lua_State* L) {
+static int module_raycaster_renderer_render(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
     raycaster_map_t** handle = NULL;
     luaL_checktype(L, 2, LUA_TUSERDATA);
-    handle = (raycaster_map_t**)luaL_testudata(L, 2, "ray_map");
+    handle = (raycaster_map_t**)luaL_testudata(L, 2, "raycaster_map");
 
     if (handle) {
         raycaster_map_t* map = *handle;
@@ -112,7 +112,7 @@ static int module_ray_renderer_render(lua_State* L) {
     return 0;
 }
 
-static int module_ray_renderer_camera(lua_State* L) {
+static int module_raycaster_renderer_camera(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
     mfloat_t* position = luaL_checkvector2(L, 2);
     mfloat_t* direction = luaL_checkvector2(L, 3);
@@ -123,7 +123,7 @@ static int module_ray_renderer_camera(lua_State* L) {
     return 0;
 }
 
-static int module_ray_renderer_feature(lua_State* L) {
+static int module_raycaster_renderer_feature(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
     bool is_setter = lua_gettop(L) > 2;
@@ -164,13 +164,13 @@ static int module_ray_renderer_feature(lua_State* L) {
     return 0;
 }
 
-static int module_ray_renderer_meta_index(lua_State* L) {
+static int module_raycaster_renderer_meta_index(lua_State* L) {
     luaL_checkrayrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
     lua_settop(L, 0);
 
-    luaL_requiref(L, "ray", NULL, false);
+    luaL_requiref(L, "raycaster", NULL, false);
     lua_getfield(L, -1, "Renderer");
     if (lua_type(L, -1) == LUA_TTABLE) {
         lua_getfield(L, -1, key);
@@ -185,7 +185,7 @@ static int module_ray_renderer_meta_index(lua_State* L) {
 static raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
     raycaster_map_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
-    handle = (raycaster_map_t**)luaL_checkudata(L, index, "ray_map");
+    handle = (raycaster_map_t**)luaL_checkudata(L, index, "raycaster_map");
 
     return *handle;
 }
@@ -231,57 +231,57 @@ static int modules_raycaster_map_meta_gc(lua_State* L) {
     return 0;
 }
 
-static int module_ray_map_new(lua_State* L) {
+static int module_raycaster_map_new(lua_State* L) {
     raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
     *handle = raycaster_map_new();
-    luaL_setmetatable(L, "ray_map");
+    luaL_setmetatable(L, "raycaster_map");
 
     return 1;
 }
 
-static const struct luaL_Reg ray_map_functions[] = {
-    {"new", module_ray_map_new},
+static const struct luaL_Reg raycaster_map_functions[] = {
+    {"new", module_raycaster_map_new},
     {NULL, NULL}
 };
 
-static const struct luaL_Reg ray_renderer_functions[] = {
-    {"new", module_ray_renderer_new},
-    {"clear", module_ray_renderer_clear},
-    {"render", module_ray_renderer_render},
-    {"camera", module_ray_renderer_camera},
-    {"feature", module_ray_renderer_feature},
+static const struct luaL_Reg raycaster_renderer_functions[] = {
+    {"new", module_raycaster_renderer_new},
+    {"clear", module_raycaster_renderer_clear},
+    {"render", module_raycaster_renderer_render},
+    {"camera", module_raycaster_renderer_camera},
+    {"feature", module_raycaster_renderer_feature},
     {NULL, NULL}
 };
 
-static const struct luaL_Reg ray_renderer_meta_functions[] = {
-    {"__index", module_ray_renderer_meta_index},
+static const struct luaL_Reg raycaster_renderer_meta_functions[] = {
+    {"__index", module_raycaster_renderer_meta_index},
     {NULL, NULL}
 };
 
-static const struct luaL_Reg ray_map_meta_functions[] = {
+static const struct luaL_Reg raycaster_map_meta_functions[] = {
     {"__index", modules_raycaster_map_meta_index},
     {"__newindex", modules_raycaster_map_meta_newindex},
     {"__gc", modules_raycaster_map_meta_gc},
     {NULL, NULL}
 };
 
-int luaopen_ray(lua_State* L) {
+int luaopen_raycaster(lua_State* L) {
     lua_newtable(L);
 
     lua_pushstring(L, "Renderer");
-    luaL_newlib(L, ray_renderer_functions);
+    luaL_newlib(L, raycaster_renderer_functions);
     lua_settable(L, -3);
 
-    luaL_newmetatable(L, "ray_renderer");
-    luaL_setfuncs(L, ray_renderer_meta_functions, 0);
+    luaL_newmetatable(L, "raycaster_renderer");
+    luaL_setfuncs(L, raycaster_renderer_meta_functions, 0);
     lua_pop(L, 1);
 
     lua_pushstring(L, "Map");
-    luaL_newlib(L, ray_map_functions);
+    luaL_newlib(L, raycaster_map_functions);
     lua_settable(L, -3);
 
-    luaL_newmetatable(L, "ray_map");
-    luaL_setfuncs(L, ray_map_meta_functions, 0);
+    luaL_newmetatable(L, "raycaster_map");
+    luaL_setfuncs(L, raycaster_map_meta_functions, 0);
     lua_pop(L, 1);
 
     return 1;
