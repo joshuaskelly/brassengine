@@ -131,30 +131,30 @@ static int module_raycaster_renderer_feature(lua_State* L) {
     if (strcmp(key, "fog") == 0) {
         if (is_setter) {
             float fog_distance = luaL_checknumber(L, 3);
-            renderer->fog_distance = fog_distance;
+            renderer->features.fog_distance = fog_distance;
 
             return 0;
         }
 
-        lua_pushnumber(L, renderer->fog_distance);
+        lua_pushnumber(L, renderer->features.fog_distance);
 
         return 1;
     }
     else if (strcmp(key, "shadetable") == 0) {
         if (is_setter) {
             if (lua_isnil(L, 3)) {
-                renderer->shade_table = NULL;
+                renderer->features.shade_table = NULL;
             }
             else {
                 texture_t* shade_table = luaL_checktexture(L, 3);
-                renderer->shade_table = shade_table;
+                renderer->features.shade_table = shade_table;
             }
 
             return 0;
         }
 
-        if (renderer->shade_table) {
-            lua_pushtexture(L, renderer->shade_table);
+        if (renderer->features.shade_table) {
+            lua_pushtexture(L, renderer->features.shade_table);
         }
         else {
             lua_pushnil(L);

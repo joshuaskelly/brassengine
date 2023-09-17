@@ -31,8 +31,12 @@ void raycaster_map_free(raycaster_map_t* map);
 typedef struct {
     texture_t* render_texture;
     float* depth_buffer;
-    texture_t* shade_table;
-    float fog_distance;
+
+    struct {
+        texture_t* shade_table;
+        float fog_distance;
+    } features;
+
     struct {
         mfloat_t position[VEC2_SIZE];
         mfloat_t direction[VEC2_SIZE];

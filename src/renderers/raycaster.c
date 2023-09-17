@@ -381,8 +381,8 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
 
     renderer->render_texture = render_texture;
     renderer->depth_buffer = (float*)malloc(size * sizeof(float));
-    renderer->shade_table = NULL;
-    renderer->fog_distance = 32.0f;
+    renderer->features.shade_table = NULL;
+    renderer->features.fog_distance = 32.0f;
 
     vec2(renderer->camera.position, 0, 0);
     vec2(renderer->camera.direction, 0, 0);
@@ -433,8 +433,8 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
         render_texture = graphics_get_render_texture();
     }
 
-    shade_table = renderer->shade_table;
-    fog_distance = renderer->fog_distance;
+    shade_table = renderer->features.shade_table;
+    fog_distance = renderer->features.fog_distance;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
@@ -622,8 +622,8 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     mfloat_t* direction = renderer->camera.direction;
     mfloat_t* camera_position = renderer->camera.position;
 
-    shade_table = renderer->shade_table;
-    fog_distance = renderer->fog_distance;
+    shade_table = renderer->features.shade_table;
+    fog_distance = renderer->features.fog_distance;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
