@@ -26,6 +26,25 @@ texture_t* luaL_checktexture(lua_State* L, int index) {
     return *handle;
 }
 
+texture_t* luaL_opttexture(lua_State* L, int index, texture_t* default_) {
+    if (lua_isnoneornil(L, 2)) return default_;
+
+    texture_t** handle = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+
+    // Ensure we have correct userdata
+    handle = (texture_t**)luaL_testudata(L, index, "texture_nogc");
+    if (!handle) {
+        handle = (texture_t**)luaL_testudata(L, index, "texture");
+    }
+
+    if (!handle) {
+        return default_;
+    }
+
+    return *handle;
+}
+
 int lua_newtexture(lua_State* L, int width, int height) {
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = graphics_texture_new(width, height, NULL);
