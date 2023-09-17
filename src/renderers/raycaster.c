@@ -337,12 +337,6 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     }
 }
 
-/** Distances of all rays cast this frame. */
-static float* depths = NULL;
-static int depths_width = 0;
-static int depths_offset = 0;
-static float depths_max = -1;
-
 /** Depth of currently rendering sprite. */
 static float sprite_depth = FLT_MAX;
 
@@ -445,34 +439,6 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     const float width = render_texture->width;
     const float height = render_texture->height;
 
-    bool depths_dirty = false;
-
-    if (!depths) {
-        depths_dirty = true;
-    }
-
-    depths_offset =0;
-
-    // Free up and mark dirty if depth buffer not large enough.
-    if (depths_width < render_texture->width) {
-        depths_dirty = true;
-        free(depths);
-    }
-
-    // Ensure depth buffer
-    if (depths_dirty) {
-        // TODO: Need to free this
-        depths = (float*)malloc(sizeof(float) * width);
-        for (int i = 0; i < width; i++) {
-            depths[i] = FLT_MAX;
-        }
-
-        depths_width = render_texture->width;
-    }
-
-    depths_max = -1;
-
-
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
 
@@ -543,10 +509,6 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
         mfloat_t hit_vector[VEC2_SIZE];
         vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
         float corrected_distance = vec2_dot(hit_vector, direction);
-
-        // Write to depth buffer
-        depths[i] = corrected_distance;
-        depths_max = fmax(depths_max, corrected_distance);
 
         float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
         float half_wall_height = wall_height / 2.0f;
@@ -683,7 +645,6 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     // Cull sprites outside near/far planes
     if (distance < 0) return;
     if (distance >= fog_distance) return;
-    if (distance >= depths_max) return;
 
     // Frustum culling
     mfloat_t d[VEC2_SIZE];
