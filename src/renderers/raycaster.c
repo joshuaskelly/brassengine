@@ -964,79 +964,74 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             vec2_add(floor_next, floor_next, floor_step);
         }
     }
-
-    //graphics_set_clipping_rectangle(NULL);
 }
 
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position) {
-    if (!renderer->render_texture) {
-        return;
-    }
+    if (!renderer->render_texture) return;
+    if (!sprite) return;
 
-    // // Calculate sprite projected distance
-    // list_iterator_t* iter = list_iterator_new(map->sprites);
-    // for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
-    //     if (!sprite) continue;
+    texture_t* render_texture = renderer->render_texture;
+    mfloat_t* direction = renderer->camera.direction;
+    mfloat_t* camera_position = renderer->camera.position;
 
-    //     mfloat_t dir[VEC2_SIZE];
-    //     vec2_subtract(dir, sprite->position, position);
-    //     sprite->distance = vec2_dot(direction, dir);
-    // }
-    // list_iterator_free(iter);
+    shade_table = renderer->shade_table;
+    fog_distance = renderer->fog_distance;
 
-    // // Cull sprites outside near/far planes
-    // list_t* visible_sprites = list_filter(map->sprites, sprite_visible);
-    // const size_t count = visible_sprites->count;
-    // raycaster_sprite_t* sprite_array[count];
-    // list_to_array(visible_sprites, (void**)sprite_array);
-    // list_free(visible_sprites);
+    const float width = render_texture->width;
+    const float height = render_texture->height;
 
-    // // Sort sprites furthest to closest
-    // // Way faster to copy list to array and sort that, than sort the list.
-    // qsort(sprite_array, count, sizeof(raycaster_sprite_t*), sprite_compare);
+    const float fov = renderer->camera.fov;
+    const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
 
-    // // Draw sprites
-    // for (int i = 0; i < count; i++) {
-    //     raycaster_sprite_t* sprite = sprite_array[i];
-    //     if (!sprite) continue;
+    // Calculate step vector, we need it to move along the projection plane
+    mfloat_t step[VEC2_SIZE];
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
 
-    //     mfloat_t dir[VEC2_SIZE];
-    //     vec2_subtract(dir, sprite->position, position);
-    //     float corrected_distance = vec2_dot(direction, dir);
+    // Calculate sprite projected distance
+    mfloat_t dir[VEC2_SIZE];
+    vec2_subtract(dir, position, camera_position);
+    float distance = vec2_dot(direction, dir);
 
-    //     sprite_depth = corrected_distance;
+    // Cull sprites outside near/far planes
+    if (distance < 0) return;
+    if (distance >= fog_distance) return;
+    if (distance >= depths_max) return;
 
-    //     mfloat_t d[VEC2_SIZE];
-    //     vec2_assign(d, dir);
-    //     vec2_normalize(d, d);
+    // Frustum culling
+    mfloat_t d[VEC2_SIZE];
+    vec2_assign(d, dir);
+    vec2_normalize(d, d);
 
-    //     // Frustum culling
-    //     float ang = acos(vec2_dot(direction, d));
-    //     if (ang > (fov_rads / 2.0f) + 0.175f) continue;
+    float ang = acos(vec2_dot(direction, d));
+    if (ang > (fov_rads / 2.0f) + 0.175f) return;
 
-    //     // Scale to put point on projection plane.
-    //     vec2_multiply_f(dir, dir, distance_to_projection_plane / corrected_distance);
+    // Scale to put point on projection plane.
+    vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
 
-    //     // Find x offset
-    //     float x_offset = vec2_dot(dir, step);
+    // Find x offset
+    float x_offset = vec2_dot(dir, step);
 
-    //     float s_height = 1.0f / corrected_distance * distance_to_projection_plane;
-    //     float half_height = s_height / 2.0f;
+    float s_height = 1.0f / distance * distance_to_projection_plane;
+    float half_height = s_height / 2.0f;
 
-    //     rect_t rect = {
-    //         render_rect->x + (width / 2.0f) + x_offset - half_height,
-    //         render_rect->y + (height / 2.0f) - half_height,
-    //         s_height,
-    //         s_height
-    //     };
+    rect_t rect = {
+        (width / 2.0f) + x_offset - half_height,
+        (height / 2.0f) - half_height,
+        s_height,
+        s_height
+    };
 
-    //     // Draw sprite
-    //     graphics_blit(
-    //         sprite->texture,
-    //         render_texture,
-    //         NULL,
-    //         &rect,
-    //         sprite_depth_blit_func
-    //     );
-    // }
+    // Set sprite depth for blit func
+    sprite_depth = distance;
+
+    // Draw sprite
+    graphics_blit(
+        sprite,
+        render_texture,
+        NULL,
+        &rect,
+        sprite_depth_blit_func
+    );
 }
