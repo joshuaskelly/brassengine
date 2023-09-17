@@ -142,8 +142,13 @@ static int module_raycaster_renderer_feature(lua_State* L) {
     }
     else if (strcmp(key, "shadetable") == 0) {
         if (is_setter) {
-            texture_t* shade_table = luaL_checktexture(L, 3);
-            renderer->shade_table = shade_table;
+            if (lua_isnil(L, 3)) {
+                renderer->shade_table = NULL;
+            }
+            else {
+                texture_t* shade_table = luaL_checktexture(L, 3);
+                renderer->shade_table = shade_table;
+            }
 
             return 0;
         }
