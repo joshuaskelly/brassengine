@@ -162,6 +162,42 @@ static int module_raycaster_renderer_feature(lua_State* L) {
 
         return 1;
     }
+    else if (strcmp(key, "drawwalls") == 0) {
+        if (is_setter) {
+            bool draw_walls = lua_toboolean(L, 3);
+            renderer->features.draw_walls = draw_walls;
+
+            return 0;
+        }
+
+        lua_pushboolean(L, renderer->features.draw_walls);
+
+        return 1;
+    }
+    else if (strcmp(key, "drawfloors") == 0) {
+        if (is_setter) {
+            bool draw_floors = lua_toboolean(L, 3);
+            renderer->features.draw_floors = draw_floors;
+
+            return 0;
+        }
+
+        lua_pushboolean(L, renderer->features.draw_floors);
+
+        return 1;
+    }
+    else if (strcmp(key, "drawceilings") == 0) {
+        if (is_setter) {
+            bool draw_ceilings = lua_toboolean(L, 3);
+            renderer->features.draw_ceilings = draw_ceilings;
+
+            return 0;
+        }
+
+        lua_pushboolean(L, renderer->features.draw_ceilings);
+
+        return 1;
+    }
     else {
         luaL_argerror(L, 2, lua_pushfstring(L, "invalid feature '%s'", key));
     }

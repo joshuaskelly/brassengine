@@ -5,6 +5,7 @@
 #define M_PI 3.14159265359
 #endif
 
+#include <stdbool.h>
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
@@ -35,6 +36,9 @@ typedef struct {
     struct {
         texture_t* shade_table;
         float fog_distance;
+        bool draw_walls;
+        bool draw_floors;
+        bool draw_ceilings;
     } features;
 
     struct {
