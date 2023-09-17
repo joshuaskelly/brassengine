@@ -128,7 +128,7 @@ void raycaster_renderer_clear_depth(raycaster_renderer_t* renderer, float depth)
 
 void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* position, mfloat_t* direction, float fov);
 
-void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map);
+void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map, texture_t** palette);
 
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position);
 

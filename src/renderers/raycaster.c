@@ -748,14 +748,295 @@ void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* positio
     renderer->camera.fov = fov;
 }
 
-void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map) {
+void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map, texture_t** palette) {
     if (!renderer->render_texture) {
         return;
     }
+
+    mfloat_t* position = renderer->camera.position;
+    mfloat_t* direction = renderer->camera.direction;
+    float fov = renderer->camera.fov;
+
+    texture_t* render_texture = renderer->render_texture;
+    if (!render_texture) {
+        render_texture = graphics_get_render_texture();
+    }
+
+    shade_table = renderer->shade_table;
+    fog_distance = renderer->fog_distance;
+
+    const float width = render_texture->width;
+    const float height = render_texture->height;
+
+    bool depths_dirty = false;
+
+    if (!depths) {
+        depths_dirty = true;
+    }
+
+    depths_offset =0;
+
+    // Free up and mark dirty if depth buffer not large enough.
+    if (depths_width < render_texture->width) {
+        depths_dirty = true;
+        free(depths);
+    }
+
+    // Ensure depth buffer
+    if (depths_dirty) {
+        // TODO: Need to free this
+        depths = (float*)malloc(sizeof(float) * width);
+        for (int i = 0; i < width; i++) {
+            depths[i] = FLT_MAX;
+        }
+
+        depths_width = render_texture->width;
+    }
+
+    depths_max = -1;
+
+
+    // Ensure direction is normalized
+    vec2_normalize(direction, direction);
+
+    /*
+     * Casting rays along a plane in front of the camera.
+     *
+     * To determine the ray directions:
+     *
+     * 1. Determine distance to the projection plane. This distance will ensure
+     *    that width of the projection plane bounded by our fov is the same
+     *    width as the render texture.
+     *
+     * 2. Find left bound. This is the point on the projection plane where the
+     *    left fov bound intersects the plane.
+     *
+     * 3. Find step vector. Because the projection plane width is the same width
+     *    as the render texture, each step vector is of length one. The step
+     *    vector is just the negated tangent to the camera direction.
+     *
+     *           \_                    _/
+     * (left bound) _l<----plane---->_/
+     *                \_           _/
+     *                  \_   ^   _/
+     *                    \_ |<---(camera direction)
+     *                      \|/
+     *                       c (camera position)
+     */
+
+    // 1. Determine distance to the projection plane.
+    const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+
+    // Calculate step vector, we need it to move along the projection plane
+    mfloat_t step[VEC2_SIZE];
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
+
+    // 2. Calculate left bound.
+
+    // left_bound = position + (direction * distance_to_projection_plane) - (step * width / 2)
+    mfloat_t left_bound[VEC2_SIZE];
+    vec2_multiply_f(left_bound, direction, distance_to_projection_plane);
+    vec2_multiply_f(step, step, width * 0.5f);
+    vec2_subtract(left_bound, left_bound, step);
+
+    // 3. Find step vector
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
+
+    // Track where the next ray needs to point
+    mfloat_t next[VEC2_SIZE];
+    vec2_add(next, left_bound, position);
+
+    // Initialize ray to point to left bound
+    ray_t ray;
+    ray_set(&ray, position, ray.direction);
+    vec2_subtract(ray.direction, next, position);
+    vec2_normalize(ray.direction, ray.direction);
+
+    mfloat_t floor_step[VEC2_SIZE];
+    mfloat_t floor_next[VEC2_SIZE];
+
+    // Draw walls
+    for (int i = 0; i < width; i++) {
+        ray_cast(&ray, map->walls);
+
+        // Calculate wall height
+        mfloat_t hit_vector[VEC2_SIZE];
+        vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
+        float corrected_distance = vec2_dot(hit_vector, direction);
+
+        // Write to depth buffer
+        depths[i] = corrected_distance;
+        depths_max = fmax(depths_max, corrected_distance);
+
+        float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
+        float half_wall_height = wall_height / 2.0f;
+
+        // Calculate the texture normalized horizontal offset (u-coordinate).
+        float offset = 0.0f;
+        if (ray.hit_info.was_vertical) {
+            offset = frac(ray.hit_info.position[1]);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[0] < 0) {
+                offset = 1.0f - offset;
+            }
+        }
+        else {
+            offset = frac(ray.hit_info.position[0]);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[1] > 0) {
+                offset = 1.0f - offset;
+            }
+        }
+
+        texture_t* wall_texture = palette[ray.hit_info.data - 1];
+        if (wall_texture) {
+            float brightness = get_distance_based_brightness(ray.hit_info.distance);
+            // Darken vertically aligned walls.
+            brightness *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
+
+            draw_wall_strip(
+                wall_texture,
+                render_texture,
+                i,
+                height / 2.0f - half_wall_height - 0.5f,
+                height / 2.0f + half_wall_height + 1.5f,
+                offset,
+                brightness
+            );
+        }
+
+        // Orient ray to next position along plane
+        vec2_add(next, next, step);
+        vec2_subtract(ray.direction, next, position);
+        vec2_normalize(ray.direction, ray.direction);
+
+        // Clear out hit info
+        ray_hit_info_reset(&ray.hit_info);
+    }
+
+    // TODO: Move this down in the scanline rendering and lookup actual texture
+    texture_t* f = assets_get_texture("textures/colorstone.gif");
+
+    // Draw floor/ceiling
+    for (int j = height / 2.0f; j < height; j++) {
+        // Calculate distance from render texture y-coordinate
+        float wall_height = 2.0f * j - height;
+        float distance = distance_to_projection_plane / wall_height;
+
+        // Distance at horizon line is infinity
+        if (isinf(distance)) continue;
+
+        float scale = 1.0f / wall_height;
+
+        // Determine floor left bound
+        vec2_multiply_f(floor_next, left_bound, scale);
+        vec2_add(floor_next, floor_next, position);
+
+        // Determine floor horizontal step.
+        vec2_multiply_f(floor_step, step, scale);
+
+        float brightness = get_distance_based_brightness(distance);
+
+        // Draw current scanline for both floor and ceiling
+        for (int i = 0; i < width; i++) {
+
+            int x = frac(floor_next[0]) * f->width;
+            int y = frac(floor_next[1]) * f->height;
+            color_t color = graphics_texture_get_pixel(f, x, y);
+
+            if (depths[i] > distance) {
+                // Floor
+                graphics_set_pixel(
+                    i, j, shade_pixel(color, brightness)
+                );
+
+                // Ceiling
+                graphics_set_pixel(
+                    i, height - j - 1, shade_pixel(color, brightness)
+                );
+            }
+
+            vec2_add(floor_next, floor_next, floor_step);
+        }
+    }
+
+    //graphics_set_clipping_rectangle(NULL);
 }
 
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position) {
     if (!renderer->render_texture) {
         return;
     }
+
+    // // Calculate sprite projected distance
+    // list_iterator_t* iter = list_iterator_new(map->sprites);
+    // for (raycaster_sprite_t* sprite = list_iterator_begin(iter); list_iterator_done(iter); sprite = list_iterator_next(iter)) {
+    //     if (!sprite) continue;
+
+    //     mfloat_t dir[VEC2_SIZE];
+    //     vec2_subtract(dir, sprite->position, position);
+    //     sprite->distance = vec2_dot(direction, dir);
+    // }
+    // list_iterator_free(iter);
+
+    // // Cull sprites outside near/far planes
+    // list_t* visible_sprites = list_filter(map->sprites, sprite_visible);
+    // const size_t count = visible_sprites->count;
+    // raycaster_sprite_t* sprite_array[count];
+    // list_to_array(visible_sprites, (void**)sprite_array);
+    // list_free(visible_sprites);
+
+    // // Sort sprites furthest to closest
+    // // Way faster to copy list to array and sort that, than sort the list.
+    // qsort(sprite_array, count, sizeof(raycaster_sprite_t*), sprite_compare);
+
+    // // Draw sprites
+    // for (int i = 0; i < count; i++) {
+    //     raycaster_sprite_t* sprite = sprite_array[i];
+    //     if (!sprite) continue;
+
+    //     mfloat_t dir[VEC2_SIZE];
+    //     vec2_subtract(dir, sprite->position, position);
+    //     float corrected_distance = vec2_dot(direction, dir);
+
+    //     sprite_depth = corrected_distance;
+
+    //     mfloat_t d[VEC2_SIZE];
+    //     vec2_assign(d, dir);
+    //     vec2_normalize(d, d);
+
+    //     // Frustum culling
+    //     float ang = acos(vec2_dot(direction, d));
+    //     if (ang > (fov_rads / 2.0f) + 0.175f) continue;
+
+    //     // Scale to put point on projection plane.
+    //     vec2_multiply_f(dir, dir, distance_to_projection_plane / corrected_distance);
+
+    //     // Find x offset
+    //     float x_offset = vec2_dot(dir, step);
+
+    //     float s_height = 1.0f / corrected_distance * distance_to_projection_plane;
+    //     float half_height = s_height / 2.0f;
+
+    //     rect_t rect = {
+    //         render_rect->x + (width / 2.0f) + x_offset - half_height,
+    //         render_rect->y + (height / 2.0f) - half_height,
+    //         s_height,
+    //         s_height
+    //     };
+
+    //     // Draw sprite
+    //     graphics_blit(
+    //         sprite->texture,
+    //         render_texture,
+    //         NULL,
+    //         &rect,
+    //         sprite_depth_blit_func
+    //     );
+    // }
 }

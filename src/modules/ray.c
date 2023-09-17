@@ -63,6 +63,9 @@ static int module_ray_renderer_clear(lua_State* L) {
     return 0;
 }
 
+#define MAX_PALETTE_SIZE 256
+static texture_t* palette[MAX_PALETTE_SIZE];
+
 static int module_ray_renderer_render(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
@@ -72,7 +75,27 @@ static int module_ray_renderer_render(lua_State* L) {
 
     if (handle) {
         raycaster_map_t* map = *handle;
-        raycaster_renderer_render_map(renderer, map);
+
+        if (lua_istable(L, 3)) {
+            for (int i = 0; i < MAX_PALETTE_SIZE; i++) {
+                int index = i + 1;
+                lua_pushinteger(L, index);
+                lua_gettable(L, 3);
+
+                if (lua_type(L, -1) == LUA_TNIL) {
+                    palette[i] = NULL;
+                }
+                else {
+                    palette[i] = luaL_checktexture(L, -1);
+                }
+
+                lua_pop(L, 1);
+            }
+
+            lua_settop(L, 0);
+        }
+
+        raycaster_renderer_render_map(renderer, map, palette);
     }
     else {
         texture_t* sprite = luaL_checktexture(L, 2);
