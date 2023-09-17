@@ -48,14 +48,19 @@ static int module_ray_renderer_clear(lua_State* L) {
     const char* name = luaL_optstring(L, 2, "all");
 
     if (strcmp(name, "all") == 0) {
-        raycaster_renderer_clear_color(renderer, 0);
-        raycaster_renderer_clear_depth(renderer, 1.0f);
+        color_t color = (color_t)luaL_optnumber(L, 3, 0);
+        float depth = luaL_optnumber(L, 4, FLT_MAX);
+
+        raycaster_renderer_clear_color(renderer, color);
+        raycaster_renderer_clear_depth(renderer, depth);
     }
     else if (strcmp(name, "depth") == 0) {
-        raycaster_renderer_clear_depth(renderer, 1.0f);
+        float depth = luaL_optnumber(L, 3, FLT_MAX);
+        raycaster_renderer_clear_depth(renderer, depth);
     }
     else if (strcmp(name, "color") == 0) {
-        raycaster_renderer_clear_color(renderer, 0);
+        color_t color = (color_t)luaL_optnumber(L, 3, 0);
+        raycaster_renderer_clear_color(renderer, color);
     }
     else {
         luaL_argerror(L, 2, lua_pushfstring(L, "invalid option '%s'", name));
