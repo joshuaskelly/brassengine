@@ -304,7 +304,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
 
         color_t c = graphics_texture_get_pixel(wall_texture, s, t);
         c = shade_pixel(c, brightness);
-        graphics_set_pixel(x, y, c);
+        graphics_texture_set_pixel(destination_texture, x, y, c);
 
         t += t_step;
     }
@@ -595,13 +595,13 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             if (depths[i] > distance) {
                 // Floor
-                graphics_set_pixel(
-                    i, j, shade_pixel(color, brightness)
+                graphics_texture_set_pixel(
+                    render_texture, i, j, shade_pixel(color, brightness)
                 );
 
                 // Ceiling
-                graphics_set_pixel(
-                    i, height - j - 1, shade_pixel(color, brightness)
+                graphics_texture_set_pixel(
+                    render_texture, i, height - j - 1, shade_pixel(color, brightness)
                 );
             }
 
