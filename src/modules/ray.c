@@ -77,7 +77,7 @@ static int module_ray_renderer_render(lua_State* L) {
 
     raycaster_map_t** handle = NULL;
     luaL_checktype(L, 2, LUA_TUSERDATA);
-    handle = (raycaster_map_t**)luaL_testudata(L, 2, "raycaster_map");
+    handle = (raycaster_map_t**)luaL_testudata(L, 2, "ray_map");
 
     if (handle) {
         raycaster_map_t* map = *handle;
@@ -182,24 +182,22 @@ static int module_ray_renderer_meta_index(lua_State* L) {
     return 1;
 }
 
-static int module_ray_map_new(lua_State* L) {
-    raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
-    *handle = raycaster_map_new();
-    luaL_setmetatable(L, "raycaster_map");
+static raycaster_map_t* luaL_checkraycastermap(lua_State* L, int index) {
+    raycaster_map_t** handle = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    handle = (raycaster_map_t**)luaL_checkudata(L, index, "ray_map");
 
-    return 1;
+    return *handle;
 }
 
-static int module_ray_map_meta_index(lua_State* L) {
-    luaL_checkrayrenderer(L, 1);
+static int modules_raycaster_map_meta_index(lua_State* L) {
+    raycaster_map_t* map = luaL_checkraycastermap(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
-    lua_settop(L, 0);
+    lua_pop(L, -1);
 
-    luaL_requiref(L, "ray", NULL, false);
-    lua_getfield(L, -1, "Map");
-    if (lua_type(L, -1) == LUA_TTABLE) {
-        lua_getfield(L, -1, key);
+    if (strcmp(key, "walls") == 0) {
+        lua_pushtexture(L, map->walls);
     }
     else {
         lua_pushnil(L);
@@ -208,13 +206,41 @@ static int module_ray_map_meta_index(lua_State* L) {
     return 1;
 }
 
+static int modules_raycaster_map_meta_newindex(lua_State* L) {
+    raycaster_map_t* map = luaL_checkraycastermap(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strcmp(key, "walls") == 0) {
+        texture_t* texture = luaL_checktexture(L, 3);
+        map->walls = texture;
+    }
+    else {
+        luaL_error(L, "attempt to index a raycaster_map value");
+    }
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+static int modules_raycaster_map_meta_gc(lua_State* L) {
+    raycaster_map_t** handle = lua_touserdata(L, 1);
+    raycaster_map_free(*handle);
+    *handle = NULL;
+
+    return 0;
+}
+
+static int module_ray_map_new(lua_State* L) {
+    raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
+    *handle = raycaster_map_new();
+    luaL_setmetatable(L, "ray_map");
+
+    return 1;
+}
+
 static const struct luaL_Reg ray_map_functions[] = {
     {"new", module_ray_map_new},
-    {NULL, NULL}
-};
-
-static const struct luaL_Reg ray_map_meta_functions[] = {
-    {"__index", module_ray_map_meta_index},
     {NULL, NULL}
 };
 
@@ -229,6 +255,13 @@ static const struct luaL_Reg ray_renderer_functions[] = {
 
 static const struct luaL_Reg ray_renderer_meta_functions[] = {
     {"__index", module_ray_renderer_meta_index},
+    {NULL, NULL}
+};
+
+static const struct luaL_Reg ray_map_meta_functions[] = {
+    {"__index", modules_raycaster_map_meta_index},
+    {"__newindex", modules_raycaster_map_meta_newindex},
+    {"__gc", modules_raycaster_map_meta_gc},
     {NULL, NULL}
 };
 
