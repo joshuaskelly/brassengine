@@ -566,9 +566,6 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
         }
     }
 
-    // TODO: Move this down in the scanline rendering and lookup actual texture
-    texture_t* f = assets_get_texture("textures/colorstone.gif");
-
     // Draw floor/ceiling
     for (int j = height / 2.0f; j < height; j++) {
         // Calculate distance from render texture y-coordinate
@@ -591,9 +588,6 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
         // Draw current scanline for both floor and ceiling
         for (int i = 0; i < width; i++) {
-
-            int x = frac(floor_next[0]) * f->width;
-            int y = frac(floor_next[1]) * f->height;
             int tx = (int)floor_next[0];
             int ty = (int)floor_next[1];
 
@@ -604,6 +598,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 texture_t* texture = palette[index - 1];
 
                 if (!texture) continue;
+
+                int x = frac(floor_next[0]) * texture->width;
+                int y = frac(floor_next[1]) * texture->height;
 
                 color_t color = graphics_texture_get_pixel(texture, x, y);
 
@@ -621,6 +618,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 texture_t* texture = palette[index - 1];
 
                 if (!texture) continue;
+
+                int x = frac(floor_next[0]) * texture->width;
+                int y = frac(floor_next[1]) * texture->height;
 
                 color_t color = graphics_texture_get_pixel(texture, x, y);
 
