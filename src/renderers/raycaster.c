@@ -538,7 +538,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 }
             }
 
-            texture_t* wall_texture = palette[ray.hit_info.data - 1];
+            texture_t* wall_texture = palette[ray.hit_info.data];
             if (wall_texture) {
                 float brightness = get_distance_based_brightness(ray.hit_info.distance);
                 // Darken vertically aligned walls.
@@ -595,7 +595,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             float d = get_depth_buffer_pixel(active_renderer, i, j);
             if (d > distance && renderer->features.draw_floors && map->floors) {
                 int index = graphics_texture_get_pixel(map->floors, tx, ty);
-                texture_t* texture = palette[index - 1];
+                texture_t* texture = palette[index];
 
                 if (texture) {
                     int x = frac(floor_next[0]) * texture->width;
@@ -615,7 +615,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             d = get_depth_buffer_pixel(active_renderer, i, height - j - 1);
             if (d > distance && renderer->features.draw_ceilings && map->ceilings) {
                 int index = graphics_texture_get_pixel(map->ceilings, tx, ty);
-                texture_t* texture = palette[index - 1];
+                texture_t* texture = palette[index];
 
                 if (texture) {
                     int x = frac(floor_next[0]) * texture->width;

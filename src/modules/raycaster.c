@@ -84,8 +84,7 @@ static int module_raycaster_renderer_render(lua_State* L) {
 
         if (lua_istable(L, 3)) {
             for (int i = 0; i < MAX_PALETTE_SIZE; i++) {
-                int index = i + 1;
-                lua_pushinteger(L, index);
+                lua_pushinteger(L, i);
                 lua_gettable(L, 3);
 
                 if (lua_type(L, -1) == LUA_TNIL) {
