@@ -597,18 +597,18 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 int index = graphics_texture_get_pixel(map->floors, tx, ty);
                 texture_t* texture = palette[index - 1];
 
-                if (!texture) continue;
+                if (texture) {
+                    int x = frac(floor_next[0]) * texture->width;
+                    int y = frac(floor_next[1]) * texture->height;
 
-                int x = frac(floor_next[0]) * texture->width;
-                int y = frac(floor_next[1]) * texture->height;
+                    color_t color = graphics_texture_get_pixel(texture, x, y);
 
-                color_t color = graphics_texture_get_pixel(texture, x, y);
-
-                // Floor
-                graphics_texture_set_pixel(
-                    render_texture, i, j, shade_pixel(color, brightness)
-                );
-                set_depth_buffer_pixel(active_renderer, i, j, d);
+                    // Floor
+                    graphics_texture_set_pixel(
+                        render_texture, i, j, shade_pixel(color, brightness)
+                    );
+                    set_depth_buffer_pixel(active_renderer, i, j, d);
+                }
             }
 
             // Draw ceiling
@@ -617,18 +617,18 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 int index = graphics_texture_get_pixel(map->ceilings, tx, ty);
                 texture_t* texture = palette[index - 1];
 
-                if (!texture) continue;
+                if (texture) {
+                    int x = frac(floor_next[0]) * texture->width;
+                    int y = frac(floor_next[1]) * texture->height;
 
-                int x = frac(floor_next[0]) * texture->width;
-                int y = frac(floor_next[1]) * texture->height;
+                    color_t color = graphics_texture_get_pixel(texture, x, y);
 
-                color_t color = graphics_texture_get_pixel(texture, x, y);
-
-                // Ceiling
-                graphics_texture_set_pixel(
-                    render_texture, i, height - j - 1, shade_pixel(color, brightness)
-                );
-                set_depth_buffer_pixel(active_renderer, i, height - j - 1, d);
+                    // Ceiling
+                    graphics_texture_set_pixel(
+                        render_texture, i, height - j - 1, shade_pixel(color, brightness)
+                    );
+                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, d);
+                }
             }
 
             vec2_add(floor_next, floor_next, floor_step);
