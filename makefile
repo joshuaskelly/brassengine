@@ -101,7 +101,7 @@ $(LIBMATHC):
 	cd $(MATHC_DIR) && make CC=$(CC) AR=$(AR) RANLIB=$(RANLIB)
 
 docs: ## Generate API documentation
-	ldoc src/modules -d docs -p brassengine
+	ldoc src/modules -d docs -p brassengine -f markdown
 
 docsclean: ## Delete generated API documentation
 	rm -rf docs

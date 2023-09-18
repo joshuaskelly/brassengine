@@ -191,8 +191,17 @@ static int module_raycaster_renderer_camera(lua_State* L) {
 /**
  * Access renderer's features. If just the feature name is provided, the value of
  * that feature will be returned. If a value is provided, the feature will be set to that value.
+ *
+ * **Features:**
+ *
+ *  * <span class="parameter">'fogdistance'</span> number Distance at which fog is fully dark.
+ *  * <span class="parameter">'shadetable'</span> @{texture} Texture to use to shade colors using distance. Setting to nil will render full bright.
+ *  * <span class="parameter">'drawwalls'</span> boolean Should walls be drawn?
+ *  * <span class="parameter">'drawfloors'</span> boolean Should floors be drawn?
+ *  * <span class="parameter">'drawceilings'</span> boolean Should ceilings be drawn?
+ *
  * @function Renderer:feature
- * @param name @{string} Feature name. One of: 'fogdistance', 'shadetable', 'drawwalls', 'drawfloors', 'drawceilings'
+ * @param name @{string} Feature name.
  * @param value Value to set feature to. (optional)
  */
 static int module_raycaster_renderer_feature(lua_State* L) {
