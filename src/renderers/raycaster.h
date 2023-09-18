@@ -13,6 +13,8 @@
 
 typedef struct {
     texture_t* walls;
+    texture_t* floors;
+    texture_t* ceilings;
 } raycaster_map_t;
 
 /**

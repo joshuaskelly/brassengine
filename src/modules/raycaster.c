@@ -240,6 +240,12 @@ static int modules_raycaster_map_meta_index(lua_State* L) {
     if (strcmp(key, "walls") == 0) {
         lua_pushtexture(L, map->walls);
     }
+    else if (strcmp(key, "floors") == 0) {
+        lua_pushtexture(L, map->floors);
+    }
+    else if (strcmp(key, "ceilings") == 0) {
+        lua_pushtexture(L, map->ceilings);
+    }
     else {
         lua_pushnil(L);
     }
@@ -254,6 +260,14 @@ static int modules_raycaster_map_meta_newindex(lua_State* L) {
     if (strcmp(key, "walls") == 0) {
         texture_t* texture = luaL_checktexture(L, 3);
         map->walls = texture;
+    }
+    else if (strcmp(key, "floors") == 0) {
+        texture_t* texture = luaL_checktexture(L, 3);
+        map->floors = texture;
+    }
+    else if (strcmp(key, "ceilings") == 0) {
+        texture_t* texture = luaL_checktexture(L, 3);
+        map->ceilings = texture;
     }
     else {
         luaL_error(L, "attempt to index a raycaster_map value");

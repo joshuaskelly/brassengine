@@ -28,6 +28,8 @@ static raycaster_renderer_t* active_renderer;
 raycaster_map_t* raycaster_map_new(void) {
     raycaster_map_t* map = (raycaster_map_t*)malloc(sizeof(raycaster_map_t));
     map->walls = NULL;
+    map->floors = NULL;
+    map->ceilings = NULL;
 
     return map;
 }
@@ -505,7 +507,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     mfloat_t floor_next[VEC2_SIZE];
 
     // Draw walls
-    if (renderer->features.draw_walls) {
+    if (renderer->features.draw_walls && map->walls) {
         for (int i = 0; i < width; i++) {
             ray_cast(&ray, map->walls);
 
@@ -592,10 +594,19 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             int x = frac(floor_next[0]) * f->width;
             int y = frac(floor_next[1]) * f->height;
-            color_t color = graphics_texture_get_pixel(f, x, y);
+            int tx = (int)floor_next[0];
+            int ty = (int)floor_next[1];
 
+            // Draw floor
             float d = get_depth_buffer_pixel(active_renderer, i, j);
-            if (d > distance && renderer->features.draw_floors) {
+            if (d > distance && renderer->features.draw_floors && map->floors) {
+                int index = graphics_texture_get_pixel(map->floors, tx, ty);
+                texture_t* texture = palette[index - 1];
+
+                if (!texture) continue;
+
+                color_t color = graphics_texture_get_pixel(texture, x, y);
+
                 // Floor
                 graphics_texture_set_pixel(
                     render_texture, i, j, shade_pixel(color, brightness)
@@ -603,8 +614,16 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                 set_depth_buffer_pixel(active_renderer, i, j, d);
             }
 
+            // Draw ceiling
             d = get_depth_buffer_pixel(active_renderer, i, height - j - 1);
-            if (d > distance && renderer->features.draw_ceilings) {
+            if (d > distance && renderer->features.draw_ceilings && map->ceilings) {
+                int index = graphics_texture_get_pixel(map->ceilings, tx, ty);
+                texture_t* texture = palette[index - 1];
+
+                if (!texture) continue;
+
+                color_t color = graphics_texture_get_pixel(texture, x, y);
+
                 // Ceiling
                 graphics_texture_set_pixel(
                     render_texture, i, height - j - 1, shade_pixel(color, brightness)
