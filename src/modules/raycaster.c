@@ -1,7 +1,39 @@
 /**
- * Module for raycaster renderer.
- * @module ray
+ * Module for raycaster renderer
+ *
+ * @usage
+ * raycaster = require('raycaster')
+ *
+ * -- Tile palette for rendering the map
+ * tiles = {
+ *    [1] = assets.get_texture('stonewall.gif)
+ * }
+ *
+ * -- Camera info
+ * position = vector2.new()
+ * direction = vector2.new(0, 1)
+ * fov = 90
+ *
+ * -- Sprite
+ * sprite = assets.get_texture('sprite.gif')
+ * sprite_position = vector2.new()
+ *
+ * -- Map
+ * map = raycaster.Map:new()
+ * map.walls = assets.get_texture('walls.gif')
+ *
+ * renderer = raycaster.Renderer:new()
+ * renderer:feature('fog', 16)
+ *
+ * -- Render loop
+ * renderer:clear('all')
+ * renderer:camera(position, direction, fov)
+ * renderer:render(map, tiles)
+ * renderer:render(sprite, sprite_position)
+ *
+ * @module raycaster
  */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -38,10 +70,24 @@ static int lua_newrayrenderer(lua_State* L) {
     return 1;
 }
 
+/**
+ * @type Renderer
+ */
+
+/**
+ * Creates a raycaster renderer object.
+ * @function Renderer:new
+ * @return @{Renderer}
+ */
 static int module_raycaster_renderer_new(lua_State* L) {
     return lua_newrayrenderer(L);
 }
 
+/**
+ * Clears internal buffers.
+ * @function Renderer:clear
+ * @param target @{string} One of: "all" (default), "color", or "depth". (optional)
+ */
 static int module_raycaster_renderer_clear(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
@@ -72,6 +118,19 @@ static int module_raycaster_renderer_clear(lua_State* L) {
 #define MAX_PALETTE_SIZE 256
 static texture_t* palette[MAX_PALETTE_SIZE];
 
+/**
+ * Renders given map.
+ * @function Renderer:render
+ * @param map @{Map} Map to render.
+ * @param tiles @{table} An array of textures. Valid range of indices is 0-255.
+*/
+
+/**
+ * Renders given sprite.
+ * @function Renderer:render
+ * @param sprite @{texture} Sprite to render.
+ * @param position @{vector2} Position of sprite.
+*/
 static int module_raycaster_renderer_render(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
@@ -111,6 +170,13 @@ static int module_raycaster_renderer_render(lua_State* L) {
     return 0;
 }
 
+/**
+ * Set renderer's camera data.
+ * @function Renderer:camera
+ * @param position @{vector2} Camera position.
+ * @param direction @{vector2} Camera forward vector.
+ * @param fov number Camera field of view in degrees.
+*/
 static int module_raycaster_renderer_camera(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
     mfloat_t* position = luaL_checkvector2(L, 2);
@@ -122,6 +188,13 @@ static int module_raycaster_renderer_camera(lua_State* L) {
     return 0;
 }
 
+/**
+ * Access renderer's features. If just the feature name is provided, the value of
+ * that feature will be returned. If a value is provided, the feature will be set to that value.
+ * @function Renderer:feature
+ * @param name @{string} Feature name. One of: 'fog', 'shadetable', 'drawwalls', 'drawfloors', 'drawceilings'
+ * @param value Value to set feature to. (optional)
+ */
 static int module_raycaster_renderer_feature(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
@@ -285,6 +358,15 @@ static int modules_raycaster_map_meta_gc(lua_State* L) {
     return 0;
 }
 
+/**
+ * @type Map
+ */
+
+/**
+ * Create a new map.
+ * @function Map:new
+ * @return @{Map}
+*/
 static int module_raycaster_map_new(lua_State* L) {
     raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
     *handle = raycaster_map_new();
@@ -292,6 +374,21 @@ static int module_raycaster_map_new(lua_State* L) {
 
     return 1;
 }
+
+/**
+ * Tile indices for walls.
+ * @field walls @{texture}
+ */
+
+/**
+ * Tile indices for floors.
+ * @field floors @{texture}
+ */
+
+/**
+ * Tile indices for ceilings.
+ * @field ceilings @{texture}
+ */
 
 static const struct luaL_Reg raycaster_map_functions[] = {
     {"new", module_raycaster_map_new},
