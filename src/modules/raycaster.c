@@ -192,7 +192,7 @@ static int module_raycaster_renderer_camera(lua_State* L) {
  * Access renderer's features. If just the feature name is provided, the value of
  * that feature will be returned. If a value is provided, the feature will be set to that value.
  * @function Renderer:feature
- * @param name @{string} Feature name. One of: 'fog', 'shadetable', 'drawwalls', 'drawfloors', 'drawceilings'
+ * @param name @{string} Feature name. One of: 'fogdistance', 'shadetable', 'drawwalls', 'drawfloors', 'drawceilings'
  * @param value Value to set feature to. (optional)
  */
 static int module_raycaster_renderer_feature(lua_State* L) {
@@ -200,7 +200,7 @@ static int module_raycaster_renderer_feature(lua_State* L) {
     const char* key = luaL_checkstring(L, 2);
     bool is_setter = lua_gettop(L) > 2;
 
-    if (strcmp(key, "fog") == 0) {
+    if (strcmp(key, "fogdistance") == 0) {
         if (is_setter) {
             float fog_distance = luaL_checknumber(L, 3);
             renderer->features.fog_distance = fog_distance;
