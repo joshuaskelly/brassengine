@@ -3,6 +3,7 @@
  * @module texture
  */
 #include <stdbool.h>
+#include <string.h>
 
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
@@ -78,8 +79,76 @@ static int texture_size(lua_State* L) {
     return 2;
 }
 
-static const struct luaL_Reg texture_methods[] = {
-    {"size", texture_size},
+static int texture_meta_index(lua_State* L) {
+    texture_t* texture = luaL_checktexture(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_settop(L, 0);
+
+    if (strcmp(key, "pixels") == 0) {
+        lua_newtable(L);
+
+        for (int i = 0; i < texture->width * texture->height; i++) {
+            lua_pushinteger(L, i + 1);
+            lua_pushinteger(L, texture->pixels[i]);
+            lua_settable(L, -3);
+        }
+    }
+    else if (strcmp(key, "width") == 0) {
+        lua_pushinteger(L, texture->width);
+    }
+    else if (strcmp(key, "height") == 0) {
+        lua_pushinteger(L, texture->height);
+    }
+    else {
+        // Check module fields. This enables usage of the colon operator.
+        luaL_requiref(L, "texture", NULL, false);
+        if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_getfield(L, -1, key);
+        }
+        else {
+            lua_pushnil(L);
+        }
+    }
+
+    return 1;
+}
+
+static int texture_meta_newindex(lua_State* L) {
+    texture_t* texture = luaL_checktexture(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strcmp(key, "pixels") == 0) {
+        size_t pixel_count = texture->width * texture->height;
+        size_t table_size = lua_rawlen(L, 3);
+
+        if (table_size == pixel_count) {
+            for (int i = 0; i < pixel_count; i++) {
+                int index = i + 1;
+                lua_pushinteger(L, index);
+                lua_gettable(L, 3);
+
+                texture->pixels[i] = (int)luaL_checknumber(L, -1);
+
+                lua_pop(L, 1);
+            }
+
+            lua_settop(L, 0);
+        }
+        else {
+            luaL_error(L, "BAD!");
+        }
+    }
+    else {
+        luaL_error(L, "attempt to index a texture value");
+    }
+
+    return 0;
+}
+
+static const struct luaL_Reg meta_functions[] = {
+    {"__index", texture_meta_index},
+    {"__newindex", texture_meta_newindex},
     {NULL, NULL}
 };
 
@@ -88,7 +157,7 @@ static const struct luaL_Reg texture_methods[] = {
  * @function new
  * @param width Texture width
  * @param height Texture height
- * @return Texture userdata
+ * @return @{texture}
  */
 static int bindings_texture_new(lua_State* L) {
     int width = (int)luaL_checknumber(L, 1);
@@ -102,10 +171,13 @@ static int bindings_texture_new(lua_State* L) {
 }
 
 /**
- * Copy given texture.
+ * @type texture
+ */
+
+/**
+ * Returns a copy of this texture.
  * @function copy
- * @param texture Texture to copy
- * @return Texture userdata
+ * @return @{texture}
  */
 static int bindings_texture_copy(lua_State* L) {
     texture_t* source = luaL_checktexture(L, 1);
@@ -122,7 +194,6 @@ static int bindings_texture_copy(lua_State* L) {
 /**
  * Fill entire texture with color.
  * @function clear
- * @param texture Texture userdata
  * @param color Fill color
  */
 static int bindings_texture_clear(lua_State* L) {
@@ -137,9 +208,8 @@ static int bindings_texture_clear(lua_State* L) {
 }
 
 /**
- * Draw a pixel at given position and color.
+ * Sets pixel at given position and color.
  * @function set_pixel
- * @param texture Texture userdata
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  * @param color Pixel color
@@ -160,7 +230,6 @@ static int bindings_texture_set_pixel(lua_State* L) {
 /**
  * Gets pixel at given position.
  * @function get_pixel
- * @param texture Texture userdata
  * @param x Pixel x-coordinate
  * @param y Pixel y-coordinate
  */
@@ -178,16 +247,15 @@ static int bindings_texture_get_pixel(lua_State* L) {
 }
 
 /**
- * Copy a portion of one texture to another.
+ * Copy given source texture to this texture with given offset.
  * @function blit
- * @param source_texture Texture to copy from
- * @param destination_texture Texture to copy to
+ * @param source Texture to copy from
  * @param x Destination x-offset
  * @param y Destination y-offset
  */
 static int bindings_texture_blit(lua_State* L) {
-    texture_t* source = luaL_checktexture(L, 1);
-    texture_t* dest = luaL_checktexture(L, 2);
+    texture_t* dest = luaL_checktexture(L, 1);
+    texture_t* source = luaL_checktexture(L, 2);
     int x = (int)luaL_checknumber(L, 3);
     int y = (int)luaL_checknumber(L, 4);
 
@@ -197,6 +265,21 @@ static int bindings_texture_blit(lua_State* L) {
 
     return 0;
 }
+
+/**
+ * An array copy of pixel indices.
+ * @field pixels
+ */
+
+/**
+ * Texture width in pixels.
+ * @field width (read-only)
+ */
+
+/**
+ * Texture height in pixels.
+ * @field height (read-only)
+ */
 
 static const struct luaL_Reg module_functions[] = {
     {"new", bindings_texture_new},
@@ -213,8 +296,7 @@ int luaopen_texture(lua_State* L) {
 
     // Push texture userdata metatable
     luaL_newmetatable(L, "texture");
-    luaL_newlib(L, texture_methods);
-    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, texture_gc);
@@ -224,8 +306,7 @@ int luaopen_texture(lua_State* L) {
 
     // Push texture_nogc userdata metatable
     luaL_newmetatable(L, "texture_nogc");
-    luaL_newlib(L, texture_methods);
-    lua_setfield(L, -2, "__index");
+    luaL_setfuncs(L, meta_functions, 0);
 
     lua_pop(L, 1);
 
