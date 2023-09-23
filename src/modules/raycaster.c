@@ -318,14 +318,28 @@ static int modules_raycaster_map_meta_index(lua_State* L) {
 
     lua_pop(L, -1);
 
+    int* data = NULL;
+
     if (strcmp(key, "walls") == 0) {
-        lua_pushtexture(L, map->walls);
+        data = map->walls;
     }
     else if (strcmp(key, "floors") == 0) {
-        lua_pushtexture(L, map->floors);
+        data = map->floors;
     }
     else if (strcmp(key, "ceilings") == 0) {
-        lua_pushtexture(L, map->ceilings);
+        data = map->ceilings;
+    }
+
+    if (data) {
+        size_t size = map->width * map->height;
+
+        lua_newtable(L);
+
+        for (int i = 0; i < size; i++) {
+            lua_pushinteger(L, i + 1);
+            lua_pushinteger(L, data[i]);
+            lua_settable(L, -3);
+        }
     }
     else {
         lua_pushnil(L);
@@ -338,17 +352,38 @@ static int modules_raycaster_map_meta_newindex(lua_State* L) {
     raycaster_map_t* map = luaL_checkraycastermap(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
+    int* data = NULL;
+
     if (strcmp(key, "walls") == 0) {
-        texture_t* texture = luaL_checktexture(L, 3);
-        map->walls = texture;
+        data = map->walls;
     }
     else if (strcmp(key, "floors") == 0) {
-        texture_t* texture = luaL_checktexture(L, 3);
-        map->floors = texture;
+        data = map->floors;
     }
     else if (strcmp(key, "ceilings") == 0) {
-        texture_t* texture = luaL_checktexture(L, 3);
-        map->ceilings = texture;
+        data = map->ceilings;
+    }
+
+    if (data) {
+        size_t size = map->width * map->height;
+        size_t table_size = lua_rawlen(L, 3);
+
+        if (table_size == size) {
+            for (int i = 0; i < size; i++) {
+                int index = i + 1;
+                lua_pushinteger(L, index);
+                lua_gettable(L, 3);
+
+                data[i] = (int)luaL_checknumber(L, -1);
+
+                lua_pop(L, 1);
+            }
+
+            lua_settop(L, 0);
+        }
+        else {
+            luaL_error(L, "BAD!");
+        }
     }
     else {
         luaL_error(L, "attempt to index a raycaster_map value");
@@ -373,12 +408,15 @@ static int modules_raycaster_map_meta_gc(lua_State* L) {
 
 /**
  * Create a new map.
- * @function Map:new
+ * @function Map.new
  * @return @{Map}
 */
 static int module_raycaster_map_new(lua_State* L) {
+    int width = (int)luaL_checknumber(L, 1);
+    int height = (int)luaL_checknumber(L, 2);
+
     raycaster_map_t** handle = (raycaster_map_t**)lua_newuserdata(L, sizeof(raycaster_map_t*));
-    *handle = raycaster_map_new();
+    *handle = raycaster_map_new(width, height);
     luaL_setmetatable(L, "raycaster_map");
 
     return 1;
@@ -386,17 +424,17 @@ static int module_raycaster_map_new(lua_State* L) {
 
 /**
  * Tile indices for walls.
- * @field walls @{texture}
+ * @field walls Array of integers
  */
 
 /**
  * Tile indices for floors.
- * @field floors @{texture}
+ * @field floors Array of integers
  */
 
 /**
  * Tile indices for ceilings.
- * @field ceilings @{texture}
+ * @field ceilings Array of integers
  */
 
 static const struct luaL_Reg raycaster_map_functions[] = {

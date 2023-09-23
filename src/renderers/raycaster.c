@@ -12,8 +12,7 @@
 
 #include "raycaster.h"
 
-typedef texture_t map_t;
-typedef color_t map_data_t;
+typedef int map_data_t;
 
 /**
  * Shade table. Used for shading a given pixel. The y-coordinate corresponds
@@ -25,16 +24,28 @@ static float fog_distance = 32.0f;
 
 static raycaster_renderer_t* active_renderer;
 
-raycaster_map_t* raycaster_map_new(void) {
+raycaster_map_t* raycaster_map_new(int width, int height) {
     raycaster_map_t* map = (raycaster_map_t*)malloc(sizeof(raycaster_map_t));
-    map->walls = NULL;
-    map->floors = NULL;
-    map->ceilings = NULL;
+    map->width = width;
+    map->height = height;
+
+    size_t size = width * height;
+
+    map->walls = (int*)malloc(size * sizeof(int));
+    map->floors = (int*)malloc(size * sizeof(int));
+    map->ceilings = (int*)malloc(size * sizeof(int));
 
     return map;
 }
 
 void raycaster_map_free(raycaster_map_t* map) {
+    free(map->walls);
+    map->walls = NULL;
+    free(map->floors);
+    map->floors = NULL;
+    free(map->ceilings);
+    map->ceilings = NULL;
+
     free(map);
     map = NULL;
 }
@@ -48,7 +59,7 @@ void raycaster_map_free(raycaster_map_t* map) {
  * @return true If point is contained in map bounds.
  * @return false If point is outside of map bounds.
  */
-static bool map_contains(map_t* map, int x, int y) {
+static bool map_contains(raycaster_map_t* map, int x, int y) {
     if (x < 0 || x >= map->width) return false;
     if (y < 0 || y >= map->height) return false;
 
@@ -56,15 +67,49 @@ static bool map_contains(map_t* map, int x, int y) {
 }
 
 /**
- * Get map data at a given point
+ * Get map wall data at a given point
  *
  * @param map Map to check
  * @param x Point x-coordinate
  * @param y Point y-coordinate
  * @return map_data_t
  */
-static map_data_t map_get_data(map_t* map, int x, int y) {
-    return graphics_texture_get_pixel(map, x, y);
+static map_data_t map_get_wall(raycaster_map_t* map, int x, int y) {
+    if (x < 0 || x >= map->width) return 0;
+    if (y < 0 || y >= map->height) return 0;
+
+    return map->walls[y * map->width + x];
+}
+
+/**
+ * Get map floor data at a given point
+ *
+ * @param map Map to check
+ * @param x Point x-coordinate
+ * @param y Point y-coordinate
+ * @return map_data_t
+ */
+static map_data_t map_get_floor(raycaster_map_t* map, int x, int y) {
+    if (x < 0 || x >= map->width) return 0;
+    if (y < 0 || y >= map->height) return 0;
+
+    return map->floors[y * map->width + x];
+}
+
+
+/**
+ * Get map ceiling data at a given point
+ *
+ * @param map Map to check
+ * @param x Point x-coordinate
+ * @param y Point y-coordinate
+ * @return map_data_t
+ */
+static map_data_t map_get_ceiling(raycaster_map_t* map, int x, int y) {
+    if (x < 0 || x >= map->width) return 0;
+    if (y < 0 || y >= map->height) return 0;
+
+    return map->ceilings[y * map->width + x];
 }
 
 /**
@@ -76,8 +121,8 @@ static map_data_t map_get_data(map_t* map, int x, int y) {
  * @return true If map is solid at given point.
  * @return false If map is not solid at given point.
  */
-static bool map_is_solid(map_t* map, int x, int y) {
-    return map_get_data(map, x, y) > 0;
+static bool map_is_solid(raycaster_map_t* map, int x, int y) {
+    return map_get_wall(map, x, y) > 0;
 }
 
 typedef struct {
@@ -118,7 +163,7 @@ static void ray_set(ray_t* ray, mfloat_t* position, mfloat_t* direction) {
  * @param ray Ray to cast.
  * @param map Map to cast against.
  */
-static void ray_cast(ray_t* ray, map_t* map) {
+static void ray_cast(ray_t* ray, raycaster_map_t* map) {
     // Horizontal checks
     if (ray->direction[1] != 0.0f)
     {
@@ -171,7 +216,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
                 ray->hit_info.was_vertical = false;
-                ray->hit_info.data = map_get_data(map, i, j);
+                ray->hit_info.data = map_get_wall(map, i, j);
 
                 break;
             }
@@ -237,7 +282,7 @@ static void ray_cast(ray_t* ray, map_t* map) {
                 ray->hit_info.position[1] = intersection[1];
                 ray->hit_info.distance = distance;
                 ray->hit_info.was_vertical = true;
-                ray->hit_info.data = map_get_data(map, i, j);
+                ray->hit_info.data = map_get_wall(map, i, j);
 
                 break;
             }
@@ -509,7 +554,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     // Draw walls
     if (renderer->features.draw_walls && map->walls) {
         for (int i = 0; i < width; i++) {
-            ray_cast(&ray, map->walls);
+            ray_cast(&ray, map);
 
             // Calculate wall height
             mfloat_t hit_vector[VEC2_SIZE];
@@ -594,7 +639,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             // Draw floor
             float d = get_depth_buffer_pixel(active_renderer, i, j);
             if (d > distance && renderer->features.draw_floors && map->floors) {
-                int index = graphics_texture_get_pixel(map->floors, tx, ty);
+                int index = map_get_floor(map, tx, ty);
                 texture_t* texture = palette[index];
 
                 if (texture) {
@@ -614,7 +659,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             // Draw ceiling
             d = get_depth_buffer_pixel(active_renderer, i, height - j - 1);
             if (d > distance && renderer->features.draw_ceilings && map->ceilings) {
-                int index = graphics_texture_get_pixel(map->ceilings, tx, ty);
+                int index = map_get_ceiling(map, tx, ty);
                 texture_t* texture = palette[index];
 
                 if (texture) {
