@@ -408,7 +408,7 @@ static int modules_raycaster_map_meta_gc(lua_State* L) {
 
 /**
  * Create a new map.
- * @function Map:new
+ * @function Map.new
  * @return @{Map}
 */
 static int module_raycaster_map_new(lua_State* L) {
