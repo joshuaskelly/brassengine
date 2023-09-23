@@ -424,17 +424,17 @@ static int module_raycaster_map_new(lua_State* L) {
 
 /**
  * Tile indices for walls.
- * @field walls @{texture}
+ * @field walls Array of integers
  */
 
 /**
  * Tile indices for floors.
- * @field floors @{texture}
+ * @field floors Array of integers
  */
 
 /**
  * Tile indices for ceilings.
- * @field ceilings @{texture}
+ * @field ceilings Array of integers
  */
 
 static const struct luaL_Reg raycaster_map_functions[] = {
