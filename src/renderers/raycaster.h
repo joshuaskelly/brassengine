@@ -53,18 +53,62 @@ typedef struct {
     } camera;
 } raycaster_renderer_t;
 
+/**
+ * Creates a new renderer.
+ *
+ * @return raycast_renderer_t Newly created renderer.
+ */
 raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture);
 
+/**
+ * Frees a renderer.
+ *
+ * @param renderer Renderer to free.
+ */
 void raycaster_renderer_free(raycaster_renderer_t* renderer);
 
+/**
+ * Clears color buffer for given color.
+ *
+ * @param renderer Renderer to clear color buffer.
+ * @param color Clear color.
+ */
 void raycaster_renderer_clear_color(raycaster_renderer_t* renderer, color_t color);
 
+/**
+ * Clears depth buffer for given color.
+ *
+ * @param renderer Renderer to clear depth buffer.
+ * @param depth Clear depth.
+ */
 void raycaster_renderer_clear_depth(raycaster_renderer_t* renderer, float depth);
 
+/**
+ * Set camera data.
+ *
+ * @param renderer Renderer to set camera data for.
+ * @param position Camera position.
+ * @param direction Camera direction.
+ * @param fov Camera fov.
+ */
 void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* position, mfloat_t* direction, float fov);
 
+/**
+ * Render given map.
+ *
+ * @param renderer Renderer to render to.
+ * @param map Map to render.
+ * @param palette Texture array look up table.
+ */
 void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map, texture_t** palette);
 
+/**
+ * Render given texture as a billboarded sprite.
+ *
+ * @param renderer Renderer to render to.
+ * @param sprite Texture to render.
+ * @param position Sprite position.
+ */
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position);
 
 #endif
