@@ -12,9 +12,12 @@
 #include "../collections/list.h"
 
 typedef struct {
-    texture_t* walls;
-    texture_t* floors;
-    texture_t* ceilings;
+    int width;
+    int height;
+
+    int* walls;
+    int* floors;
+    int* ceilings;
 } raycaster_map_t;
 
 /**
@@ -22,7 +25,7 @@ typedef struct {
  *
  * @return raycaster_map_t* Newly created map.
  */
-raycaster_map_t* raycaster_map_new(void);
+raycaster_map_t* raycaster_map_new(int width, int height);
 
 /**
  * Frees a map.
