@@ -1,11 +1,11 @@
 # TODO
 ## General
 - [ ] Gamepad input
-- [ ] Array struct.
-- [ ] Tag all structs?
 - [ ] Default palette?
+- [ ] Support for loading all frames from GIF files.
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [ ] Array struct.
 - [x] Error on missing main.lua instead of segfaulting.
 - [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
@@ -18,9 +18,9 @@
 - [x] Fix web build. Lua isn't linking?
 
 ## Raycaster
-- [ ] Render targets
-- [ ] Ceiling/floor tile data
-- [ ] Depth buffer? Work on sprite perf.
+- [x] Render targets
+- [x] Ceiling/floor tile data
+- [x] Depth buffer? Work on sprite perf.
 - [x] Sprites
 - [x] Depth buffer
 - [x] Shading via color tables
