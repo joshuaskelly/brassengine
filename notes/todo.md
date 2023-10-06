@@ -1,8 +1,9 @@
 # TODO
 ## General
 - [ ] Gamepad input
-- [ ] Default palette?
 - [ ] Support for loading all frames from GIF files.
+- [ ] Support for creating/modifiying sound objects.
+- [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Array struct.
@@ -18,6 +19,8 @@
 - [x] Fix web build. Lua isn't linking?
 
 ## Raycaster
+- [ ] Direction aligned sprites
+- [ ] Pixels per unit feauture to support tall/short walls/sprites.
 - [x] Render targets
 - [x] Ceiling/floor tile data
 - [x] Depth buffer? Work on sprite perf.
