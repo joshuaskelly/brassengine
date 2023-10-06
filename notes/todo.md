@@ -3,6 +3,7 @@
 - [ ] Gamepad input
 - [ ] Support for loading all frames from GIF files.
 - [ ] Support for creating/modifiying sound objects.
+- [ ] Override io.lines() to sandbox/support zips.
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
@@ -21,6 +22,7 @@
 ## Raycaster
 - [ ] Direction aligned sprites
 - [ ] Pixels per unit feauture to support tall/short walls/sprites.
+- [ ] Investigate sprite perf.
 - [x] Render targets
 - [x] Ceiling/floor tile data
 - [x] Depth buffer? Work on sprite perf.
