@@ -433,6 +433,8 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     renderer->features.draw_walls = true;
     renderer->features.draw_floors = true;
     renderer->features.draw_ceilings = true;
+    renderer->features.horizontal_wall_brightness = 1.0f;
+    renderer->features.vertical_wall_brightness = 0.5f;
 
     vec2(renderer->camera.position, 0, 0);
     vec2(renderer->camera.direction, 0, 0);
@@ -551,6 +553,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     mfloat_t floor_step[VEC2_SIZE];
     mfloat_t floor_next[VEC2_SIZE];
 
+    float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
+    float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
+
     // Draw walls
     if (renderer->features.draw_walls && map->walls) {
         for (int i = 0; i < width; i++) {
@@ -587,7 +592,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             if (wall_texture) {
                 float brightness = get_distance_based_brightness(ray.hit_info.distance);
                 // Darken vertically aligned walls.
-                brightness *= ray.hit_info.was_vertical ? 0.5f : 1.0f;
+                brightness *= ray.hit_info.was_vertical ? vertical_wall_brightness : horizontal_wall_brightness;
 
                 draw_wall_strip(
                     wall_texture,

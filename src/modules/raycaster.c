@@ -199,6 +199,7 @@ static int module_raycaster_renderer_camera(lua_State* L) {
  *  * <span class="parameter">'drawwalls'</span> boolean Should walls be drawn?
  *  * <span class="parameter">'drawfloors'</span> boolean Should floors be drawn?
  *  * <span class="parameter">'drawceilings'</span> boolean Should ceilings be drawn?
+ *  * <span class="parameter">'wallbrightness'</span> number, number North/south facing wall brightness, east/west facing wall brightness.
  *
  * @function Renderer:feature
  * @param name @{string} Feature name.
@@ -278,6 +279,22 @@ static int module_raycaster_renderer_feature(lua_State* L) {
         lua_pushboolean(L, renderer->features.draw_ceilings);
 
         return 1;
+    }
+    else if (strcmp(key, "wallbrightness") == 0) {
+        if (is_setter) {
+            float horizontal_wall_brightness = clampf(lua_tonumber(L, 3), 0.0f, 1.0f);
+            float vertical_wall_brightness = clampf(lua_tonumber(L, 4), 0.0f, 1.0f);
+
+            renderer->features.horizontal_wall_brightness = horizontal_wall_brightness;
+            renderer->features.vertical_wall_brightness = vertical_wall_brightness;
+
+            return 0;
+        }
+
+        lua_pushnumber(L, renderer->features.horizontal_wall_brightness);
+        lua_pushnumber(L, renderer->features.vertical_wall_brightness);
+
+        return 2;
     }
     else {
         luaL_argerror(L, 2, lua_pushfstring(L, "invalid feature '%s'", key));

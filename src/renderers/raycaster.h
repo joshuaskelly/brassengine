@@ -44,6 +44,8 @@ typedef struct {
         bool draw_walls;
         bool draw_floors;
         bool draw_ceilings;
+        float horizontal_wall_brightness;
+        float vertical_wall_brightness;
     } features;
 
     struct {
