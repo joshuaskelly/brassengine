@@ -73,7 +73,7 @@ void platform_init(void) {
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL ES %i.%i)",
+        "PLATFORM: Init (SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL ES %i.%i)",
         version.major, version.minor, version.patch,
         mix_version->major, mix_version->minor, mix_version->patch,
         OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR
@@ -85,11 +85,11 @@ void platform_init(void) {
     const int window_height = config->resolution.height * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        log_fatal("Error initializing SDL");
+        log_fatal("PLATFORM: Error initializing SDL");
     }
 
     if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
-        log_fatal("Error intializing SDL Mixer");
+        log_fatal("PLATFORM: Error intializing SDL Mixer");
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
@@ -106,24 +106,24 @@ void platform_init(void) {
     );
 
     if (!window) {
-        log_fatal("Error creating SDL window");
+        log_fatal("PLATFORM: Error creating SDL window");
     }
 
     SDL_GLContext context = SDL_GL_CreateContext(window);
     if (!context) {
-        log_fatal("Error creating OpenGL context");
+        log_fatal("PLATFORM: Error creating OpenGL context");
     }
 
     render_buffer = calloc(config->resolution.width * config->resolution.height, sizeof(uint32_t));
 
     if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
+        log_fatal("PLATFORM: Error creating frame buffer.");
     }
 
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
-        log_fatal("Error initializing GLEW");
+        log_fatal("PLATFORM: Error initializing GLEW");
     }
 
     load_shader_program();
@@ -171,6 +171,7 @@ void platform_init(void) {
 }
 
 void platform_destroy(void) {
+    log_info("PLATFORM: Destroy");
     glDeleteProgram(shader_program);
     if (fragment_shader_source) free(fragment_shader_source);
     free(render_buffer);
@@ -436,7 +437,7 @@ static bool compile_shader(GLuint shader, const GLchar* source) {
     GLint compile_success = GL_FALSE;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
-        log_error("Error compiling shader");
+        log_error("PLATFORM: Error compiling shader");
         log_shader_info(shader);
 
         return false;
@@ -453,7 +454,7 @@ static void load_shader_program(void) {
     const GLchar* vertex_shader_source = "#version 100\nattribute vec2 position;attribute vec2 texture_coordinates;varying vec2 uv;void main(){uv=texture_coordinates;gl_Position=vec4(position.x,position.y,0,1);}";
 
     if (!compile_shader(vertex_shader, vertex_shader_source)) {
-        log_fatal("Error compiling vertex shader");
+        log_fatal("PLATFORM: Error compiling vertex shader");
     }
 
     glAttachShader(shader_program, vertex_shader);
@@ -469,7 +470,7 @@ static void load_shader_program(void) {
 
     if (use_default) {
         if (!compile_shader(fragment_shader, default_shader)) {
-            log_fatal("Error compiling default fragment shader");
+            log_fatal("PLATFORM: Error compiling default fragment shader");
         }
     }
 
@@ -481,7 +482,7 @@ static void load_shader_program(void) {
     glGetProgramiv(shader_program, GL_LINK_STATUS, &compile_success);
     if (compile_success != GL_TRUE) {
         log_program_info(shader_program);
-        log_fatal("Error linking program");
+        log_fatal("PLATFORM: Error linking program");
     }
 
     position = glGetAttribLocation(shader_program, "position");
@@ -497,7 +498,7 @@ void platform_display_set_resolution(int width, int height) {
     render_buffer = calloc(width * height, sizeof(uint32_t));
 
     if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
+        log_fatal("PLATFORM: Error creating frame buffer.");
     }
 }
 

@@ -17,7 +17,7 @@ texture_t* graphics_texture_new(int width, int height, const color_t* pixels) {
     texture_t* texture = (texture_t*)malloc(sizeof(texture_t) + width * height * sizeof(color_t));
 
     if (!texture) {
-        log_error("Failed to create texture");
+        log_error("GRAPHICS: Failed to create texture");
         return NULL;
     }
 
@@ -71,7 +71,7 @@ void graphics_texture_blit(texture_t* source_texture, texture_t* destination_tex
 }
 
 void graphics_init(void) {
-    log_info("graphics init");
+    log_info("GRAPHICS: Init");
 
     render_texture = graphics_texture_new(
         config->resolution.width,
@@ -80,7 +80,7 @@ void graphics_init(void) {
     );
 
     if (!render_texture) {
-        log_fatal("Failed to create frame buffer");
+        log_fatal("GRAPHICS: Failed to create frame buffer");
     }
 
     clip_rect.x = 0;
@@ -94,6 +94,7 @@ void graphics_init(void) {
 }
 
 void graphics_destroy(void) {
+    log_info("GRAPHICS: Destroy");
     graphics_texture_free(render_texture);
 }
 
@@ -222,7 +223,7 @@ void graphics_set_resolution(int width, int height) {
     );
 
     if (!render_texture) {
-        log_fatal("Failed to create frame buffer");
+        log_fatal("GRAPHICS: Failed to create frame buffer");
     }
 
     clip_rect.x = 0;

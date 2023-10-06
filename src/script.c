@@ -114,7 +114,7 @@ static void init_lua_vm(void) {
     is_in_error_state = false;
 
     if (!L) {
-        log_fatal("Error creating Lua VM");
+        log_fatal("SCRIPT: Error creating Lua VM");
     }
 
     luaL_openlibs(L);
@@ -180,7 +180,7 @@ static void init_lua_vm(void) {
    // Execute Lua script
     const char* main = assets_get_script("main.lua");
     if (!main) {
-        log_error("Failed to load main.lua file.");
+        log_error("SCRIPT: Failed to load main.lua file.");
         return;
     }
 
@@ -289,12 +289,13 @@ static int call(lua_State* L, int narg, int nresults) {
 }
 
 void script_init(void) {
-    log_info("script init (" LUA_RELEASE ")");
+    log_info("SCRIPT: Init (" LUA_RELEASE ")");
     init_lua_vm();
     call_global_lua_function(L, "_init");
 }
 
 void script_destroy(void) {
+    log_info("SCRIPT: Destroy");
     lua_close(L);
 }
 
@@ -330,7 +331,7 @@ int script_evaluate(const char* script) {
             lua_getglobal(L, "print");
             lua_insert(L, 1);
             if (lua_pcall(L, n, 0, 0) != LUA_OK) {
-                log_error("error calling 'print'");
+                log_error("SCRIPT: Error calling 'print'");
             }
         }
 

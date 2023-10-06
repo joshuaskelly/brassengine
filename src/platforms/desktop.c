@@ -52,7 +52,7 @@ void platform_init(void) {
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (SDL %i.%i.%i, SDL Mixer %i.%i.%i)",
+        "PLATFORM: Init (SDL %i.%i.%i, SDL Mixer %i.%i.%i)",
         version.major, version.minor, version.patch,
         mix_version->major, mix_version->minor, mix_version->patch
     );
@@ -63,11 +63,11 @@ void platform_init(void) {
     const int window_height = config->resolution.height * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        log_fatal("Error initializing SDL");
+        log_fatal("PLATFORM: Error initializing SDL");
     }
 
     if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
-        log_fatal("Error intializing SDL Mixer");
+        log_fatal("PLATFORM: Error intializing SDL Mixer");
     }
 
     window = SDL_CreateWindow(
@@ -80,7 +80,7 @@ void platform_init(void) {
     );
 
     if (!window) {
-        log_fatal("Error creating SDL window");
+        log_fatal("PLATFORM: Error creating SDL window");
     }
 
     renderer = SDL_CreateRenderer(
@@ -90,7 +90,7 @@ void platform_init(void) {
     );
 
     if (!renderer) {
-        log_fatal("Error creating SDL renderer");
+        log_fatal("PLATFORM: Error creating SDL renderer");
     }
 
     SDL_SetRenderDrawBlendMode(
@@ -101,7 +101,7 @@ void platform_init(void) {
     render_buffer = calloc(config->resolution.width * config->resolution.height, sizeof(uint32_t));
 
     if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
+        log_fatal("PLATFORM: Error creating frame buffer.");
     }
 
     render_buffer_texture = SDL_CreateTexture(
@@ -113,7 +113,7 @@ void platform_init(void) {
     );
 
     if (!render_buffer_texture) {
-        log_fatal("Error creating SDL frame buffer texture");
+        log_fatal("PLATFORM: Error creating SDL frame buffer texture");
     }
 
     display_rect.x = 0;
@@ -125,6 +125,7 @@ void platform_init(void) {
 }
 
 void platform_destroy(void) {
+    log_info("PLATFORM: Destroy");
     SDL_DestroyTexture(render_buffer_texture);
     free(render_buffer);
     SDL_DestroyRenderer(renderer);
@@ -283,7 +284,7 @@ void platform_display_set_resolution(int width, int height) {
     render_buffer = calloc(width * height, sizeof(uint32_t));
 
     if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
+        log_fatal("PLATFORM: Error creating frame buffer.");
     }
 
     render_buffer_texture = SDL_CreateTexture(
@@ -295,7 +296,7 @@ void platform_display_set_resolution(int width, int height) {
     );
 
     if (!render_buffer_texture) {
-        log_fatal("Error creating SDL frame buffer texture");
+        log_fatal("PLATFORM: Error creating SDL frame buffer texture");
     }
 }
 

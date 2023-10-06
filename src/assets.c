@@ -66,18 +66,19 @@ static bool load_assets(void);
 static void unload_assets(void);
 
 void assets_init(void) {
-    log_info("assets init");
+    log_info("ASSETS: Init");
 
     if (!load_assets()) {
-        log_fatal("assets init failed");
+        log_fatal("ASSETS: Init failed");
     }
 
-    log_info("scripts:  %iB", script_assets_total_bytes);
-    log_info("sounds:   %iB", sound_assets_total_bytes);
-    log_info("textures: %iB", texture_assets_total_bytes);
+    log_info("ASSETS: Scripts:  %iB", script_assets_total_bytes);
+    log_info("ASSETS: Sounds:   %iB", sound_assets_total_bytes);
+    log_info("ASSETS: Textures: %iB", texture_assets_total_bytes);
 }
 
 void assets_destroy(void) {
+    log_info("ASSETS: Destroy");
     unload_assets();
 }
 
@@ -86,13 +87,13 @@ sound_t* sound_from_wav(drwav* wav) {
     size_t size = total_frames * wav->channels * sizeof(sample_t);
     sample_t* pcm = (sample_t*)malloc(size);
     if (!pcm) {
-        log_error("Failed to allocate memory for sound");
+        log_error("ASSETS: Failed to allocate memory for sound");
         return NULL;
     }
 
     size_t frames_read = drwav_read_pcm_frames_s16(wav, total_frames, pcm);
     if (frames_read != total_frames) {
-        log_error("Failed to read PCM data.");
+        log_error("ASSETS: Failed to read PCM data.");
         free(pcm);
         return NULL;
     }
@@ -121,11 +122,11 @@ static bool load_from_zip(void) {
     struct zip_t* zip = zip_open(filename, 0, 'r');
 
     if (!zip) {
-        log_error("Failed to open zip file: %s", filename);
+        log_error("ASSETS: Failed to open zip file: %s", filename);
         return false;
     }
 
-    log_info("loading zip file: %s", filename);
+    log_info("ASSETS: Loading zip file: %s", filename);
 
     // Load palette
     zip_entry_open(zip, "palette.gif");
@@ -267,7 +268,7 @@ static bool load_from_zip(void) {
             // Load sounds
             drwav wav;
             if (!drwav_init_memory(&wav, buffer, buffer_size, NULL)) {
-                log_error("Failed to open sound: %s", name);
+                log_error("ASSETS: Failed to open sound: %s", name);
                 zip_entry_close(zip);
                 continue;
             }
@@ -341,7 +342,7 @@ static void add_textures(const char* filename) {
     // Load gif file
     gif_t* gif = gif_load(filename);
     if (!gif) {
-        log_error("Failed to load texture: %s", filename);
+        log_error("ASSETS: Failed to load texture: %s", filename);
         return;
     }
 
@@ -369,7 +370,7 @@ static void add_scripts(const char* filename) {
     // Open script file
     FILE* fp = fopen(filename, "rb");
     if (!fp) {
-        log_error("Failed to open script: %s", filename);
+        log_error("ASSETS: Failed to open script: %s", filename);
         return;
     }
 
@@ -381,7 +382,7 @@ static void add_scripts(const char* filename) {
     // Allocate memory
     char* script = calloc(size + 1, sizeof(char));
     if (!script) {
-        log_error("Failed to allocate memory for script.");
+        log_error("ASSETS: Failed to allocate memory for script.");
         fclose(fp);
         return;
     }
@@ -390,10 +391,10 @@ static void add_scripts(const char* filename) {
     size_t ret_code = fread(script, 1, size, fp);
     if (ret_code != size) {
         if (feof(fp)) {
-            log_error("Error reading %s: unexpected end of file\n", filename);
+            log_error("ASSETS: Error reading %s: unexpected end of file\n", filename);
         }
         else if (ferror(fp)) {
-            log_error("Error reading %s", filename);
+            log_error("ASSETS: Error reading %s", filename);
         }
     }
 
@@ -418,7 +419,7 @@ static void add_sounds(const char* filename) {
 
     drwav wav;
     if (!drwav_init_file(&wav, filename, NULL)) {
-        log_error("Failed to open sound: %s", filename);
+        log_error("ASSETS: Failed to open sound: %s", filename);
         return;
     }
 
@@ -441,7 +442,7 @@ static void add_sounds(const char* filename) {
  * @return true If successful, false otherwise.
  */
 static bool load_from_assets_directory(void) {
-    log_info("loading directory: %s", assets_directory);
+    log_info("ASSETS: Loading directory: %s", assets_directory);
 
     // Load palette
     char palette_path[strlen(assets_directory) + 13];
@@ -452,7 +453,7 @@ static bool load_from_assets_directory(void) {
     gif_t* palette = gif_load(palette_path);
 
     if (!palette) {
-        log_error("Failed to load palette file.");
+        log_error("ASSETS: Failed to load palette file.");
         return false;
     }
 
@@ -594,7 +595,7 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
 
     // Read GIF file contents
     if (DGifSlurp(gif_file) == GIF_ERROR) {
-        log_error("Failed to read GIF data");
+        log_error("ASSETS: Failed to read GIF data");
         DGifCloseFile(gif_file, &error);
         return NULL;
     }
@@ -603,7 +604,7 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
     ColorMapObject* color_map = gif_file->SColorMap;
 
     if (!color_map) {
-        log_error("GIF missing common color map");
+        log_error("ASSETS: GIF missing common color map");
 
         // Get palette from first image
         SavedImage first_image = gif_file->SavedImages[0];
@@ -615,13 +616,13 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
             return NULL;
         }
 
-        log_error("Using color map from first frame.");
+        log_error("ASSETS: Using color map from first frame.");
     }
 
     uint32_t* palette = (uint32_t*)calloc(256, sizeof(uint32_t));
 
     if (!palette) {
-        log_error("Failed to create palette for GIF");
+        log_error("ASSETS: Failed to create palette for GIF");
         DGifCloseFile(gif_file, &error);
         return NULL;
     }
@@ -655,7 +656,7 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
     texture_t** textures = (texture_t**)malloc(sizeof(texture_t*) * frame_count);
 
     if (!textures) {
-        log_error("Failed to create frames for GIF");
+        log_error("ASSETS: Failed to create frames for GIF");
         DGifCloseFile(gif_file, &error);
         return NULL;
     }
@@ -674,7 +675,7 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
     gif_t* gif = (gif_t*)malloc(sizeof(gif_t));
 
     if (!gif) {
-        log_error("Failed to create GIF");
+        log_error("ASSETS: Failed to create GIF");
         return NULL;
     }
 
@@ -710,7 +711,7 @@ static int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_
     buffer = (gif_read_buffer_t*)gif->UserData;
 
     if (!buffer) {
-        log_error("UserData not set.");
+        log_error("ASSETS: UserData not set.");
         return -1;
     }
 
@@ -751,7 +752,7 @@ static gif_t* gif_load_from_buffer(void* buffer, size_t buffer_size) {
 
     // Open the GIF file
     if (!gif_file) {
-        log_error("Failed to open gif from memory");
+        log_error("ASSETS: Failed to open gif from memory");
         return NULL;
     }
 
@@ -771,7 +772,7 @@ static gif_t* gif_load(const char* filename) {
 
     // Open the GIF file
     if (!gif_file) {
-        log_error("Failed to open: %s", filename);
+        log_error("ASSETS: Failed to open: %s", filename);
         return NULL;
     }
 
@@ -800,7 +801,7 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
     GifFileType* gif_file = EGifOpenFileName(filename, false, &error);
 
     if (!gif_file) {
-        log_error("Failed to open: %s", filename);
+        log_error("ASSETS: Failed to open: %s", filename);
         return;
     }
 
@@ -851,7 +852,7 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
     );
 
     if (error == GIF_ERROR) {
-        log_error("Failed to save: %s - %i", filename, gif_file->Error);
+        log_error("ASSETS: Failed to save: %s - %i", filename, gif_file->Error);
     }
 
     unsigned char params[] = {1, 0, 0};
@@ -938,7 +939,7 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
     error = EGifSpew(gif_file);
 
     if (error == GIF_ERROR) {
-        log_error("Failed to save: %s - %i", filename, gif_file->Error);
+        log_error("ASSETS: Failed to save: %s - %i", filename, gif_file->Error);
     }
 }
 
