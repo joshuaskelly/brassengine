@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "math.h"
 
 float clamp(float f, float min, float max) {
