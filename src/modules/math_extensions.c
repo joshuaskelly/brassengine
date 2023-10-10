@@ -6,6 +6,16 @@
 
 #include "../math.h"
 
+static int module_math_clamp(lua_State* L) {
+    float value = luaL_checknumber(L, 1);
+    float min = luaL_checknumber(L, 2);
+    float max = luaL_checknumber(L, 3);
+
+    lua_pushnumber(L, clamp(value, min, max));
+
+    return 1;
+}
+
 static int module_math_noise(lua_State* L) {
     float x = luaL_checknumber(L, 1);
     float y = luaL_optnumber(L, 2, 0);
@@ -17,6 +27,7 @@ static int module_math_noise(lua_State* L) {
 }
 
 static const struct luaL_Reg module_functions[] = {
+    {"clamp", module_math_clamp},
     {"noise", module_math_noise},
     {NULL, NULL}
 };
