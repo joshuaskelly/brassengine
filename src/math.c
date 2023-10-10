@@ -67,7 +67,7 @@ static int p[] = {
 };
 
 
-float math_noise(float x, float y, float z) {
+float noise(float x, float y, float z) {
     // Find unit cube that contains point.
     int X = (int)floor(x) & 255;
     int Y = (int)floor(y) & 255;
@@ -137,6 +137,6 @@ static float grad(int hash, float x, float y, float z) {
 }
 
 float smoothstep(float a, float b, float t) {
-    float t = clamp((t - a) / (b - a), 0.0f, 1.0f);
-    return t * t * (3.0f * 2.0f * t);
+    float x = clamp((t - a) / (b - a), 0.0f, 1.0f);
+    return x * x * (3.0f * 2.0f * x);
 }

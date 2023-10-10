@@ -31,7 +31,7 @@ static int module_math_noise(lua_State* L) {
     float y = luaL_optnumber(L, 2, 0);
     float z = luaL_optnumber(L, 3, 0);
 
-    lua_pushnumber(L, math_noise(x, y, z));
+    lua_pushnumber(L, noise(x, y, z));
 
     return 1;
 }

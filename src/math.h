@@ -47,7 +47,18 @@ float max(float a, float b);
  */
 float min(float a, float b);
 
-float math_noise(float x, float y, float z);
+/**
+ * Returns a Perlin noise value.
+ *
+ * The returned value might be outside the [-1, 1] range. If x, y, and z are
+ * all integers the result will be 0.
+ *
+ * @param x
+ * @param y
+ * @param z
+ * @return float
+ */
+float noise(float x, float y, float z);
 
 /**
  * Interpolates between a and b with smoothing at the limits.
