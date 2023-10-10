@@ -12,6 +12,10 @@ float frac(float f) {
     return f - (int)f;
 }
 
+float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}
+
 float max(float a, float b) {
     if (a > b) return a;
     return b;
@@ -24,7 +28,6 @@ float min(float a, float b) {
 
 
 static float fade(float t);
-static float lerp(float t, float a, float b);
 static float grad(int hash, float x, float y, float z);
 
 // Permutation set
@@ -89,22 +92,39 @@ float math_noise(float x, float y, float z) {
     int BB = p[B+1]+Z;
 
     // And add blended results from 8 corners of cube
-    return lerp(w, lerp(v, lerp(u, grad(p[AA  ], x    , y    , z     ),
-                                   grad(p[BA  ], x - 1, y    , z     )),
-                           lerp(u, grad(p[AB  ], x    , y - 1, z     ),
-                                   grad(p[BB  ], x - 1, y - 1, z     ))),
-                   lerp(v, lerp(u, grad(p[AA+1], x    , y    , z - 1 ),
-                                   grad(p[BA+1], x - 1, y    , z - 1 )),
-                           lerp(u, grad(p[AB+1], x    , y - 1, z - 1 ),
-                                   grad(p[BB+1], x - 1, y - 1, z - 1 ))));
+    return lerp(
+        lerp(
+            lerp(
+                grad(p[AA], x, y, z),
+                grad(p[BA], x - 1, y, z),
+                u
+            ),
+            lerp(
+                grad(p[AB], x, y - 1, z),
+                grad(p[BB], x - 1, y - 1, z),
+                u
+            ),
+            v
+        ),
+        lerp(
+            lerp(
+                grad(p[AA + 1], x, y, z - 1),
+                grad(p[BA + 1], x - 1, y, z - 1),
+                u
+            ),
+            lerp(
+                grad(p[AB + 1], x, y - 1, z - 1),
+                grad(p[BB + 1], x - 1, y - 1, z - 1),
+                u
+            ),
+            v
+        ),
+        w
+    );
 }
 
 static float fade(float t) {
     return t * t * t * (t * (t * 6 - 15) + 10);
-}
-
-static float lerp(float t, float a, float b) {
-    return a + t * (b - a);
 }
 
 static float grad(int hash, float x, float y, float z) {

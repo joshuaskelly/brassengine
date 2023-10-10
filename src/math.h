@@ -20,6 +20,16 @@ float clamp(float f, float min, float max);
 float frac(float f);
 
 /**
+ * Linearly interpolate between a and b by t.
+ *
+ * @param a Start value
+ * @param b End value
+ * @param t Interpolation value between a and b.
+ * @return Interpolated value between a and b.
+ */
+float lerp(float a, float b, float t);
+
+/**
  * Returns maximum of a or b.
  *
  * @param a Float value

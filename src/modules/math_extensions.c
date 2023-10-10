@@ -16,6 +16,16 @@ static int module_math_clamp(lua_State* L) {
     return 1;
 }
 
+static int module_math_lerp(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+    float b = luaL_checknumber(L, 2);
+    float t = luaL_checknumber(L, 3);
+
+    lua_pushnumber(L, lerp(a, b, t));
+
+    return 1;
+}
+
 static int module_math_noise(lua_State* L) {
     float x = luaL_checknumber(L, 1);
     float y = luaL_optnumber(L, 2, 0);
@@ -28,6 +38,7 @@ static int module_math_noise(lua_State* L) {
 
 static const struct luaL_Reg module_functions[] = {
     {"clamp", module_math_clamp},
+    {"lerp", module_math_lerp},
     {"noise", module_math_noise},
     {NULL, NULL}
 };
