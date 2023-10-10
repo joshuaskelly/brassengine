@@ -35,6 +35,8 @@ float lerp(float a, float b, float t);
  * The returned value might be outside the [-1, 1] range. If x, y, and z are
  * all integers the result will be 0.
  *
+ * Adapated from: https://mrl.cs.nyu.edu/~perlin/noise/
+ *
  * @param x
  * @param y
  * @param z
