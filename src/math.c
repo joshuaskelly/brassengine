@@ -16,17 +16,6 @@ float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
-float max(float a, float b) {
-    if (a > b) return a;
-    return b;
-}
-
-float min(float a, float b) {
-    if (a < b) return a;
-    return b;
-}
-
-
 static float fade(float t);
 static float grad(int hash, float x, float y, float z);
 

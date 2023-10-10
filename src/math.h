@@ -30,24 +30,6 @@ float frac(float f);
 float lerp(float a, float b, float t);
 
 /**
- * Returns maximum of a or b.
- *
- * @param a Float value
- * @param b Float value
- * @return float Maximum value.
- */
-float max(float a, float b);
-
-/**
- * Returns minimum of a or b.
- *
- * @param a Float value
- * @param b Float value
- * @return float Minimum value.
- */
-float min(float a, float b);
-
-/**
  * Returns a Perlin noise value.
  *
  * The returned value might be outside the [-1, 1] range. If x, y, and z are
