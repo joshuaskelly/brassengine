@@ -136,3 +136,7 @@ static float grad(int hash, float x, float y, float z) {
     return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
 
+float smoothstep(float a, float b, float t) {
+    float t = clamp((t - a) / (b - a), 0.0f, 1.0f);
+    return t * t * (3.0f * 2.0f * t);
+}

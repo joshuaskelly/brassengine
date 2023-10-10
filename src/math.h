@@ -49,4 +49,14 @@ float min(float a, float b);
 
 float math_noise(float x, float y, float z);
 
+/**
+ * Interpolates between a and b with smoothing at the limits.
+ *
+ * @param a Start value
+ * @param b End value
+ * @param t Interpolation value
+ * @return float
+ */
+float smoothstep(float a, float b, float t);
+
 #endif
