@@ -27,6 +27,7 @@
 #include "modules/json.h"
 #include "modules/keyboard.h"
 #include "modules/matrix4.h"
+#include "modules/math_extensions.h"
 #include "modules/mouse.h"
 #include "modules/quaternion.h"
 #include "modules/raycaster.h"
@@ -80,6 +81,8 @@ static void luaL_openenginemodules(lua_State* L) {
         luaL_requiref(L, module->name, module->func, 0);
         lua_pop(L, 1);
     }
+
+    luaopen_mathextensions(L);
 }
 
 /**

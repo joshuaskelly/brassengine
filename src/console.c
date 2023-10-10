@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -9,7 +10,6 @@
 #include "graphics.h"
 #include "input.h"
 #include "log.h"
-#include "math.h"
 #include "script.h"
 #include "time.h"
 #include "collections/circular_buffer.h"
@@ -204,7 +204,7 @@ static bool handle_key_down(event_t* event) {
 
         case KEYCODE_PAGEDOWN: {
             if (output->count > max_lines) {
-                output_buffer_offset = min(output_buffer_offset + 1, 0);
+                output_buffer_offset = fminf(output_buffer_offset + 1, 0);
             }
 
             return true;
@@ -225,7 +225,7 @@ static bool handle_key_down(event_t* event) {
         case KEYCODE_UP: {
             if (input->count == 0) return true;
 
-            input_buffer_offset = min(input_buffer_offset + 1, input->count);
+            input_buffer_offset = fminf(input_buffer_offset + 1, input->count);
             load_input_history();
             return true;
         }
@@ -233,18 +233,18 @@ static bool handle_key_down(event_t* event) {
         case KEYCODE_DOWN: {
             if (input->count == 0) return true;
 
-            input_buffer_offset = max(input_buffer_offset - 1, 1);
+            input_buffer_offset = fmaxf(input_buffer_offset - 1, 1);
             load_input_history();
             return true;
         }
 
         case KEYCODE_LEFT: {
-            cursor_offset = max(cursor_offset - 1, -(int)command_length);
+            cursor_offset = fmaxf(cursor_offset - 1, -(int)command_length);
             return true;
         }
 
         case KEYCODE_RIGHT: {
-            cursor_offset = min(cursor_offset + 1, 0);
+            cursor_offset = fminf(cursor_offset + 1, 0);
             return true;
         }
 
@@ -338,7 +338,7 @@ void console_draw(void) {
 
     // Draw console history
     if (output->count > 0) {
-        int lines_to_draw = min(output->count, max_lines);
+        int lines_to_draw = fminf(output->count, max_lines);
 
         const int history_begin = output->count - lines_to_draw + output_buffer_offset;
         const int history_end = output->count + output_buffer_offset;

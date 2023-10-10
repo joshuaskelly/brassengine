@@ -10,7 +10,6 @@
 #include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
-#include "../math.h"
 
 static int mod(int a, int b) {
     return a - floor(a / (float)b) * b;
@@ -410,10 +409,10 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
@@ -460,10 +459,10 @@ void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
@@ -513,10 +512,10 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
     mfloat_t uv2[VEC2_SIZE] = {u2, v2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
