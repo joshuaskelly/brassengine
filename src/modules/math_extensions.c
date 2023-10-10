@@ -1,0 +1,37 @@
+#include <stdbool.h>
+
+#include <lua/lua.h>
+#include <lua/lauxlib.h>
+#include <lua/lualib.h>
+
+#include "../math.h"
+
+static int module_math_noise(lua_State* L) {
+    float x = luaL_checknumber(L, 1);
+    float y = luaL_optnumber(L, 2, 0);
+    float z = luaL_optnumber(L, 3, 0);
+
+    lua_pushnumber(L, math_noise(x, y, z));
+
+    return 1;
+}
+
+static const struct luaL_Reg module_functions[] = {
+    {"noise", module_math_noise},
+    {NULL, NULL}
+};
+
+int luaopen_mathextensions(lua_State* L) {
+    luaL_requiref(L, "math", NULL, false);
+
+    const luaL_Reg *module;
+    for (module = module_functions; module->func; module++) {
+        lua_pushstring(L, module->name);
+        lua_pushcfunction(L, module->func);
+        lua_settable(L, -3);
+    }
+
+    lua_pop(L, 1);
+
+    return 1;
+}

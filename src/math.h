@@ -37,4 +37,6 @@ float max(float a, float b);
  */
 float min(float a, float b);
 
+float math_noise(float x, float y, float z);
+
 #endif

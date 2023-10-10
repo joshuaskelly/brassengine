@@ -27,8 +27,8 @@
 #include "modules/json.h"
 #include "modules/keyboard.h"
 #include "modules/matrix4.h"
+#include "modules/math_extensions.h"
 #include "modules/mouse.h"
-#include "modules/noise.h"
 #include "modules/quaternion.h"
 #include "modules/raycaster.h"
 #include "modules/sound.h"
@@ -60,7 +60,6 @@ static const luaL_Reg modules[] = {
     {"keyboard", luaopen_keyboard},
     {"matrix4", luaopen_matrix4},
     {"mouse", luaopen_mouse},
-    {"noise", luaopen_noise},
     {"quaternion", luaopen_quaternion},
     {"raycaster", luaopen_raycaster},
     {"sound", luaopen_sound},
@@ -82,6 +81,8 @@ static void luaL_openenginemodules(lua_State* L) {
         luaL_requiref(L, module->name, module->func, 0);
         lua_pop(L, 1);
     }
+
+    luaopen_mathextensions(L);
 }
 
 /**

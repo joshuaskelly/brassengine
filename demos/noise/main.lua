@@ -1,7 +1,5 @@
 local draw = require("draw")
 local graphics = require("graphics")
-local math = require("math")
-local noise = require("noise")
 local texture = require("texture")
 
 function _init ()
@@ -16,7 +14,7 @@ function _init ()
 
     for y = 1, 200 do
         for x = 1, 320 do
-            local p = (noise.perlin(x / 200 * freq + offset.x, y / 200 * freq + offset.y) + 1) / 2 * 255
+            local p = (math.noise(x / 200 * freq + offset.x, y / 200 * freq + offset.y) + 1) / 2 * 255
 
             if p > 118 and p < 132 then
                 --p = 255
