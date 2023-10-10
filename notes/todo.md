@@ -19,7 +19,7 @@
 - [x] Override Lua `io.open()` to sandbox/support zips. [Related SO question](https://stackoverflow.com/questions/20715652/how-to-wrap-the-io-functions-in-lua-to-prevent-the-user-from-leaving-x-directory)
 - [x] Fix web build. Lua isn't linking?
 
-## Raycaster
+## Raycaster Renderer
 - [ ] Direction aligned sprites
 - [ ] Pixels per unit feauture to support tall/short walls/sprites.
 - [ ] Investigate sprite perf.
@@ -29,6 +29,15 @@
 - [x] Sprites
 - [x] Depth buffer
 - [x] Shading via color tables
+
+## Mode7 Renderer
+- [ ] Initial implementation
+
+## VoxelSpace Renderer
+- [ ] Initial implementation
+
+## Sector (DOOM/Build style) Renderer
+- [ ] Initial implementation
 
 ## Console
 - [ ] Tab completion?
