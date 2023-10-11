@@ -41,7 +41,6 @@
 
 ## Console
 - [ ] Tab completion?
-- [ ] Remove implicit new line in log system?
 - [ ] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
 - [x] Split on new lines
@@ -50,3 +49,4 @@
 - [x] Input buffer. up / down
 - [x] Support move cursor left/right + insert (memmove)
 - [x] Custom prompt
+- [ ] ~~Remove implicit new line in log system?~~
