@@ -22,6 +22,7 @@
 ## Raycaster Renderer
 - [ ] Direction aligned sprites
 - [ ] Pixels per unit feauture to support tall/short walls/sprites.
+- [ ] Support vertical offsets for entities/camera.
 - [ ] Investigate sprite perf.
 - [x] Render targets
 - [x] Ceiling/floor tile data
