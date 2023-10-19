@@ -32,14 +32,6 @@ void script_update(void);
 void script_draw(void);
 
 /**
- * Handle given event.
- *
- * @param event Event to handle.
- * @return true if event was handled, false otherwise.
- */
-bool script_handle_event(event_t* event);
-
-/**
  * Reload current script and reset VM state.
  */
 void script_reload(void);

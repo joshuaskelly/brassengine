@@ -86,8 +86,6 @@ static void handle_events() {
             continue;
         }
 
-        input_handle_event(&event);
-
         if (event.type == EVENT_KEYDOWN) {
             if (event.key.code == KEYCODE_GRAVE) {
                 console_buffer_toggle();
@@ -97,6 +95,6 @@ static void handle_events() {
 
         if (console_handle_event(&event)) return;
 
-        script_handle_event(&event);
+        input_handle_event(&event);
     }
 }

@@ -351,10 +351,6 @@ double script_draw_time_get(void) {
     return draw_time;
 }
 
-bool script_handle_event(event_t* event) {
-    return false;
-}
-
 void script_update(void) {
     double start = time_millis_get();
     call_global_lua_function(L, "_update");

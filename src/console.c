@@ -8,7 +8,6 @@
 #include "console.h"
 #include "event.h"
 #include "graphics.h"
-#include "input.h"
 #include "log.h"
 #include "script.h"
 #include "time.h"
@@ -24,6 +23,9 @@ static circular_buffer_t* output;
 static int input_buffer_offset = 0;
 static int output_buffer_offset = 0;
 static int cursor_offset = 0;
+
+static bool left_shift_down = false;
+static bool right_shift_down = false;
 
 static bool visible = false;
 
@@ -41,7 +43,7 @@ void console_destroy(void) {
 }
 
 char get_char(key_event_t* key) {
-    bool shift_down = input_keyboard_is_key_code_down(KEYCODE_LSHIFT) || input_keyboard_is_key_code_down(KEYCODE_RSHIFT);
+    bool shift_down = left_shift_down || right_shift_down;
 
     switch (key->symbol) {
         case '`':
@@ -258,6 +260,16 @@ static bool handle_key_down(event_t* event) {
             return true;
         }
 
+        case KEYCODE_LSHIFT: {
+            left_shift_down = true;
+            return true;
+        }
+
+        case KEYCODE_RSHIFT: {
+            right_shift_down = true;
+            return true;
+        }
+
         default:
             break;
     }
@@ -283,6 +295,21 @@ static bool handle_key_down(event_t* event) {
  * @return true if handled, false otherwise
  */
 static bool handle_key_up(event_t* event) {
+    switch (event->key.code) {
+        case KEYCODE_LSHIFT: {
+            left_shift_down = false;
+            return true;
+        }
+
+        case KEYCODE_RSHIFT: {
+            right_shift_down = false;
+            return true;
+        }
+
+        default:
+            break;
+    }
+
     return false;
 }
 
