@@ -25,6 +25,7 @@
 - [ ] Pixels per unit feauture to support tall/short walls/sprites.
 - [ ] Support vertical offsets for entities/camera.
 - [ ] Investigate sprite perf.
+- [ ] Clean up some workaround globals.
 - [x] Render targets
 - [x] Ceiling/floor tile data
 - [x] Depth buffer? Work on sprite perf.
@@ -41,9 +42,15 @@
 ## Sector (DOOM/Build style) Renderer
 - [ ] Initial implementation
 
+## OpenGL Platform
+- [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
+
 ## Console
 - [ ] Tab completion?
 - [ ] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
+- [ ] Word navigation (ctrl + key)
+  - [ ] Left/right
+  - [ ] Delete/backspace
 - [x] Fix errors being output twice.
 - [x] Split on new lines
 - [x] Need built-in font asset
