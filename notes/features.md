@@ -7,15 +7,15 @@ Underlying platform is abstracted out to support many OSes and graphics APIs.
 
 ## 2. Scriptable
 Embedded Lua.
-1. Hot reload
+1. Hot reload.
 2. Interactive dev console REPL.
 
 ## 3. Open Standards
 Uses widely available formats for assets.
 1. GIF for 2D graphics.
 2. WAV for audio.
-3. JSON built in.
+3. JSON built-in.
 
 ## 4. Software Rendering
-Engine uses software rendering and presents an easy to understand immediate mode style API. Additional several renderers come built in.
+Engine uses software rendering and presents an easy to understand immediate mode style API. Additional several renderers come built-in.
 1. Raycaster renderer

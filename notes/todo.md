@@ -4,6 +4,7 @@
 - [ ] Support for loading all frames from GIF files.
 - [ ] Support for creating/modifiying sound objects.
 - [ ] Override io.lines() to sandbox/support zips.
+- [ ] iOS platform
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
