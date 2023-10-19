@@ -47,10 +47,10 @@
 
 ## Console
 - [ ] Tab completion?
-- [ ] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [ ] Word navigation (ctrl + key)
   - [ ] Left/right
   - [ ] Delete/backspace
+- [-] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
 - [x] Split on new lines
 - [x] Need built-in font asset
