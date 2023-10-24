@@ -35,6 +35,14 @@ sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, sample_t
 void sounds_sound_free(sound_t* sound);
 
 /**
+ * Copy given sound.
+ *
+ * @param sound Sound to copy.
+ * @return New sound if successful, NULL otherwise.
+ */
+sound_t* sounds_sound_copy(sound_t* sound);
+
+/**
  * Plays a sound.
  *
  * @param sound Sound to play

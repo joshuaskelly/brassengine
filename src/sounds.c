@@ -30,6 +30,14 @@ void sounds_sound_free(sound_t* sound) {
     sound = NULL;
 }
 
+sound_t* sounds_sound_copy(sound_t* sound) {
+    return sounds_sound_new(
+        sound->frame_count,
+        sound->channel_count,
+        sound->pcm
+    );
+}
+
 void sounds_sound_play(sound_t* sound) {
     platform_play_sound(sound);
 }
