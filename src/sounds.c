@@ -39,5 +39,5 @@ sound_t* sounds_sound_copy(sound_t* sound) {
 }
 
 void sounds_sound_play(sound_t* sound) {
-    platform_play_sound(sound);
+    platform_sound_play(sound);
 }
