@@ -6,9 +6,9 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
-#include "../platform.h"
-
 #include "sound.h"
+
+#include "../sounds.h"
 
 sound_t* luaL_checksound(lua_State* L, int index) {
     sound_t** handle = NULL;
@@ -49,7 +49,7 @@ static const struct luaL_Reg sound_methods[] = {
  */
 static int play_sound(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
-    platform_play_sound(sound);
+    sounds_sound_play(sound);
 
     return 0;
 }

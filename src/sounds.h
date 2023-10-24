@@ -34,4 +34,11 @@ sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, sample_t
  */
 void sounds_sound_free(sound_t* sound);
 
+/**
+ * Plays a sound.
+ *
+ * @param sound Sound to play
+*/
+void sounds_sound_play(sound_t* sound);
+
 #endif

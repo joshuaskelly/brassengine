@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "log.h"
-
+#include "platform.h"
 #include "sounds.h"
 
 sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, sample_t* pcm) {
@@ -28,4 +28,8 @@ sound_t* sounds_sound_new(uint64_t frame_count, uint16_t channel_count, sample_t
 void sounds_sound_free(sound_t* sound) {
     free(sound);
     sound = NULL;
+}
+
+void sounds_sound_play(sound_t* sound) {
+    platform_play_sound(sound);
 }
