@@ -8,6 +8,8 @@ local texture = require("texture")
 
 local gifrecorder = {}
 
+gifrecorder._VERSION = "1.0.0"
+
 local KEY_F7 = 64
 local KEY_F8 = 65
 
