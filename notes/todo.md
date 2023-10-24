@@ -1,5 +1,6 @@
 # TODO
 ## General
+- [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Support for loading all frames from GIF files.
 - [ ] Support for creating/modifiying sound objects.
