@@ -60,3 +60,7 @@
 - [x] Support move cursor left/right + insert (memmove)
 - [x] Custom prompt
 - [ ] ~~Remove implicit new line in log system?~~
+
+## Sound
+- [ ] Streaming audio support?
+- [ ] Remove SDL Mixer dependency?
