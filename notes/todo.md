@@ -3,13 +3,13 @@
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Support for loading all frames from GIF files.
-- [ ] Support for creating/modifiying sound objects.
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] iOS platform
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Array struct.
+- [x] Support for creating/modifiying sound objects.
 - [x] Error on missing main.lua instead of segfaulting.
 - [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
