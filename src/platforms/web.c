@@ -225,7 +225,7 @@ static void sdl_handle_events(void) {
                 event_post(&event);
                 break;
 
-            case SDL_MOUSEBUTTONDOWN:u8
+            case SDL_MOUSEBUTTONDOWN:
                 event.type = EVENT_MOUSEDOWN;
                 event.button.type = EVENT_MOUSEDOWN;
                 event.button.button = sdl_event.button.button;
