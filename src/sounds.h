@@ -9,7 +9,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef int16_t sample_t;
+typedef uint8_t sample_t;
 
 typedef struct {
     uint64_t frame_count;

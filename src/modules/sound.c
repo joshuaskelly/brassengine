@@ -52,7 +52,7 @@ static int sound_meta_index(lua_State* L) {
 
         for (int i = 0; i < sound->frame_count * sound->channel_count; i++) {
             lua_pushinteger(L, i + 1);
-            lua_pushinteger(L, sound->pcm[i]);
+            lua_pushinteger(L, (sample_t)sound->pcm[i]);
             lua_settable(L, -3);
         }
     }

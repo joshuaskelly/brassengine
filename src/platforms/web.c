@@ -53,7 +53,7 @@ void platform_init(void) {
         log_fatal("Error initializing SDL");
     }
 
-    if (Mix_OpenAudioDevice(11025, AUDIO_S16, 1, 2048, NULL, 0) < 0) {
+    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
         log_fatal("Error intializing SDL Mixer");
     }
 
@@ -225,7 +225,7 @@ static void sdl_handle_events(void) {
                 event_post(&event);
                 break;
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONDOWN:u8
                 event.type = EVENT_MOUSEDOWN;
                 event.button.type = EVENT_MOUSEDOWN;
                 event.button.button = sdl_event.button.button;

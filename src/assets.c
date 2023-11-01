@@ -90,7 +90,7 @@ sound_t* sound_from_wav(drwav* wav) {
         return NULL;
     }
 
-    size_t frames_read = drwav_read_pcm_frames_s16(wav, total_frames, pcm);
+    size_t frames_read = drwav_read_pcm_frames(wav, total_frames, pcm);
     if (frames_read != total_frames) {
         log_error("Failed to read PCM data.");
         free(pcm);
