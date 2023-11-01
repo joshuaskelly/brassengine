@@ -114,17 +114,31 @@ static const struct luaL_Reg meta_functions[] = {
     {NULL, NULL}
 };
 
+/**
+ * Create new sound.
+ * @function new
+ * @param frame_count Total number of PCM frames.
+ * @return @{sound}
+ */
 static int new_sound(lua_State* L) {
     int frame_count = (int)luaL_checknumber(L, 1);
-    int channel_count = (int)luaL_checknumber(L, 2);
 
     sound_t** handle = (sound_t**)lua_newuserdata(L, sizeof(sound_t*));
-    *handle = sounds_sound_new(frame_count, channel_count, NULL);
+    *handle = sounds_sound_new(frame_count, 1, NULL);
     luaL_setmetatable(L, "sound");
 
     return 1;
 }
 
+/**
+ * @type sound
+ */
+
+/**
+ * Returns a copy of this sound.
+ * @function copy
+ * @return @{sound}
+ */
 static int copy_sound(lua_State* L) {
     sound_t* source = luaL_checksound(L, 1);
 
@@ -181,9 +195,8 @@ static int get_sound_frame(lua_State* L) {
 }
 
 /**
- * Plays given sound.
+ * Plays sound.
  * @function play
- * @param sound Sound to play.
  * @param channel Channel to play sound on. (optional)
  */
 static int play_sound(lua_State* L) {
@@ -193,6 +206,16 @@ static int play_sound(lua_State* L) {
 
     return 0;
 }
+
+/**
+ * An array copy of PCM data.
+ * @field pcm
+ */
+
+/**
+ * Total number of frames
+ * @field frame_count (read-only)
+ */
 
 static const struct luaL_Reg module_functions[] = {
     {"new", new_sound},
