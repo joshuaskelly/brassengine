@@ -88,7 +88,7 @@ void platform_init(void) {
         log_fatal("Error initializing SDL");
     }
 
-    if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
+    if (Mix_OpenAudioDevice(11025, AUDIO_S16, 1, 2048, NULL, 0) < 0) {
         log_fatal("Error intializing SDL Mixer");
     }
 
