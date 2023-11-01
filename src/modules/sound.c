@@ -135,6 +135,19 @@ static int new_sound(lua_State* L) {
  */
 
 /**
+ * Plays sound.
+ * @function play
+ * @param channel Channel to play sound on. (optional)
+ */
+static int play_sound(lua_State* L) {
+    sound_t* sound = luaL_checksound(L, 1);
+    int channel = luaL_optnumber(L, 2, -1);
+    sounds_sound_play(sound, channel);
+
+    return 0;
+}
+
+/**
  * Returns a copy of this sound.
  * @function copy
  * @return @{sound}
@@ -151,35 +164,33 @@ static int copy_sound(lua_State* L) {
     return 1;
 }
 
+/**
+ * Sets PCM data for given frame.
+ * @function set_frame
+ * @param index Frame index
+ * @param value PCM data value
+ */
 static int set_sound_frame(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     int index = (int)luaL_checknumber(L, 2);
+    sample_t value = (sample_t)luaL_checknumber(L, 3);
+
+    lua_pop(L, -1);
 
     int frame_size = sound->channel_count;
     int offset = index * frame_size;
 
-    size_t table_size = lua_rawlen(L, 3);
-
-    if (table_size == frame_size) {
-        for (int i = 0; i < frame_size; i++) {
-            int ii = i + 1;
-            lua_pushinteger(L, ii);
-            lua_gettable(L, 3);
-
-            sound->pcm[i + offset] = (sample_t)luaL_checknumber(L, -1);
-
-            lua_pop(L, 1);
-        }
-
-        lua_pop(L, 1);
-    }
-    else {
-            luaL_error(L, "BAD!");
-    }
+    sound->pcm[offset] = value;
 
     return 0;
 }
 
+/**
+ * Gets PCM data for given frame.
+ * @function get_frame
+ * @param index Frame index
+ * @return PCM data
+ */
 static int get_sound_frame(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     int index = (int)luaL_checknumber(L, 2);
@@ -192,19 +203,6 @@ static int get_sound_frame(lua_State* L) {
     }
 
     return frame_size;
-}
-
-/**
- * Plays sound.
- * @function play
- * @param channel Channel to play sound on. (optional)
- */
-static int play_sound(lua_State* L) {
-    sound_t* sound = luaL_checksound(L, 1);
-    int channel = luaL_optnumber(L, 2, -1);
-    sounds_sound_play(sound, channel);
-
-    return 0;
 }
 
 /**
