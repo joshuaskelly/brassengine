@@ -15,12 +15,13 @@
  * fov = 90
  *
  * -- Sprite
- * sprite = assets.get_texture('sprite.gif')
+ * sprite_texture = assets.get_texture('sprite.gif')
  * sprite_position = vector2.new()
  *
  * -- Map
- * map = raycaster.Map:new()
- * map.walls = assets.get_texture('walls.gif')
+ * walls = assets.get_texture('walls.gif')
+ * map = raycaster.Map.new(walls.width, walls.height)
+ * map.walls = walls.pixels
  *
  * renderer = raycaster.Renderer:new()
  * renderer:feature('fog', 16)
@@ -29,7 +30,7 @@
  * renderer:clear('all')
  * renderer:camera(position, direction, fov)
  * renderer:render(map, tiles)
- * renderer:render(sprite, sprite_position)
+ * renderer:render(sprite_texture, sprite_position)
  *
  * @module raycaster
  */
@@ -426,6 +427,8 @@ static int modules_raycaster_map_meta_gc(lua_State* L) {
 /**
  * Create a new map.
  * @function Map.new
+ * @param width Map width
+ * @param height Map height
  * @return @{Map}
 */
 static int module_raycaster_map_new(lua_State* L) {

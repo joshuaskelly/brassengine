@@ -1,14 +1,15 @@
 # TODO
 ## General
+- [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Support for loading all frames from GIF files.
-- [ ] Support for creating/modifiying sound objects.
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] iOS platform
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Array struct.
+- [x] Support for creating/modifiying sound objects.
 - [x] Error on missing main.lua instead of segfaulting.
 - [x] Audit loadbuffer usage for filename correctness.
 - [x] Move reload to core and add Lua binding
@@ -59,3 +60,7 @@
 - [x] Support move cursor left/right + insert (memmove)
 - [x] Custom prompt
 - [ ] ~~Remove implicit new line in log system?~~
+
+## Sound
+- [ ] Streaming audio support?
+- [ ] Remove SDL Mixer dependency?
