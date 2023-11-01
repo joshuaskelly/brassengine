@@ -50,7 +50,7 @@ void platform_draw(void);
 /**
  * Plays given sound.
  */
-void platform_sound_play(sound_t* sound);
+void platform_sound_play(sound_t* sound, int channel);
 
 void platform_display_set_resolution(int width, int height);
 

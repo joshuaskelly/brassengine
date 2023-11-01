@@ -46,7 +46,8 @@ sound_t* sounds_sound_copy(sound_t* sound);
  * Plays a sound.
  *
  * @param sound Sound to play
+ * @param channel Channel to play sound on
 */
-void sounds_sound_play(sound_t* sound);
+void sounds_sound_play(sound_t* sound, int channel);
 
 #endif

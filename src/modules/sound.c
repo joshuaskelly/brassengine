@@ -184,10 +184,12 @@ static int get_sound_frame(lua_State* L) {
  * Plays given sound.
  * @function play
  * @param sound Sound to play.
+ * @param channel Channel to play sound on. (optional)
  */
 static int play_sound(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
-    sounds_sound_play(sound);
+    int channel = luaL_optnumber(L, 2, -1);
+    sounds_sound_play(sound, channel);
 
     return 0;
 }

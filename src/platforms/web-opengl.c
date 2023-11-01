@@ -324,9 +324,9 @@ static void sdl_handle_events(void) {
     }
 }
 
-void platform_sound_play(sound_t* sound) {
+void platform_sound_play(sound_t* sound, int channel) {
     Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
-    Mix_PlayChannel(-1, chunk, 0);
+    Mix_PlayChannel(channel, chunk, 0);
 }
 
 /**
