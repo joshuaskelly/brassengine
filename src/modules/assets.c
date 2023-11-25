@@ -14,7 +14,7 @@
 #include "../sounds.h"
 
 /**
- * Get texture for given filename
+ * Get texture for given filename and frame
  * @function get_texture
  * @param filename Name of texture asset to look for
  * @param frame Index of frame. (default 1)
