@@ -38,6 +38,16 @@ static asset_entry_t assets_entry_new(const char* name, void* asset) {
     return (asset_entry_t) {asset_name, asset};
 }
 
+typedef struct {
+    int frame_count;
+    texture_t** frames;
+} texture_asset_t;
+
+static texture_asset_t* texture_asset_new(int frame_count);
+static void texture_asset_free(texture_asset_t* asset);
+static size_t texture_asset_sizeof(texture_asset_t* asset);
+static texture_t* texture_asset_get_frame(texture_asset_t* asset, int index);
+
 static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
 static size_t texture_assets_total_bytes = 0;
@@ -175,8 +185,10 @@ static bool load_from_zip(void) {
 
     // Load default textures
     texture_t* texture = graphics_texture_new(256, 64, default_font_pixels);
-    texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
-    texture_assets[asset_index++] = assets_entry_new("font.gif", texture);
+    texture_asset_t* asset = texture_asset_new(1);
+    asset->frames[0] = texture;
+    texture_assets_total_bytes += texture_asset_sizeof(asset);
+    texture_assets[asset_index++] = assets_entry_new("font.gif", asset);
 
     // Load asset textures
     for (int i = 0; i < total_zip_entries; i++) {
@@ -198,14 +210,21 @@ static bool load_from_zip(void) {
             size_t buffer_size = 0;
             zip_entry_read(zip, &buffer, &buffer_size);
 
-            gif_t* textures = gif_load_from_buffer(buffer, buffer_size);
-            texture_t* texture = graphics_texture_copy(textures->frames[0]);
-            texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
+            // Create texture asset
+            gif_t* gif = gif_load_from_buffer(buffer, buffer_size);
+            texture_asset_t* asset = texture_asset_new(gif->frame_count);
+
+            // Add all frames
+            for (size_t i = 0 ; i < asset->frame_count; i++) {
+                asset->frames[i] = graphics_texture_copy(gif->frames[i]);
+            }
+
+            texture_assets_total_bytes += texture_asset_sizeof(asset);
 
             // Add texture asset
-            texture_assets[asset_index++] = assets_entry_new(name, texture);
+            texture_assets[asset_index++] = assets_entry_new(name, asset);
 
-            gif_free(textures);
+            gif_free(gif);
         }
         zip_entry_close(zip);
     }
@@ -345,15 +364,20 @@ static void add_textures(const char* filename) {
         return;
     }
 
-    // Use first frame as texture
-    texture_t* texture = graphics_texture_copy(gif->frames[0]);
-    texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
+    texture_asset_t* asset = texture_asset_new(gif->frame_count);
+
+    // Add all frames
+    for (size_t i = 0 ; i < asset->frame_count; i++) {
+        asset->frames[i] = graphics_texture_copy(gif->frames[i]);
+    }
+
+    texture_assets_total_bytes += texture_asset_sizeof(asset);
 
     // Normalize filename
     char* asset_name = normalize_filename(filename);
 
     // Add texture asset
-    texture_assets[asset_count++] = assets_entry_new(asset_name, texture);
+    texture_assets[asset_count++] = assets_entry_new(asset_name, asset);
 
     gif_free(gif);
 }
@@ -469,8 +493,10 @@ static bool load_from_assets_directory(void) {
 
     // Load default textures
     texture_t* texture = graphics_texture_new(256, 64, default_font_pixels);
-    texture_assets_total_bytes += texture->width * texture->height * sizeof(color_t) + sizeof(texture_t);
-    texture_assets[asset_count++] = assets_entry_new("font.gif", texture);
+    texture_asset_t* asset = texture_asset_new(1);
+    asset->frames[0] = texture;
+    texture_assets_total_bytes += texture_asset_sizeof(asset);
+    texture_assets[asset_count++] = assets_entry_new("font.gif", asset);
 
     // Load asset textures
     files_walk_directory(assets_directory, add_textures);
@@ -516,7 +542,7 @@ static bool load_assets(void) {
 static void unload_assets(void) {
     // Free textures
     for (int i = 0; i < texture_asset_count; i++) {
-        graphics_texture_free(texture_assets[i].asset);
+        texture_asset_free(texture_assets[i].asset);
         texture_assets[i].asset = NULL;
         free((char*)texture_assets[i].name);
         texture_assets[i].name = NULL;
@@ -571,8 +597,9 @@ static void* asset_get(asset_entry_t* assets, int count, const char* name) {
     return NULL;
 }
 
-texture_t* assets_get_texture(const char* filename) {
-    return (texture_t*)asset_get(texture_assets, texture_asset_count, filename);
+texture_t* assets_get_texture(const char* filename, int frame) {
+    texture_asset_t* asset = (texture_asset_t*)asset_get(texture_assets, texture_asset_count, filename);
+    return texture_asset_get_frame(asset, frame);
 }
 
 const char* assets_get_script(const char* filename) {
@@ -732,6 +759,71 @@ static int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_
     buffer->position += bytes_read;
 
     return bytes_read;
+}
+
+/**
+ * Creates a new texture asset.
+ *
+ * @param frame_count Number of frames.
+ * @return New texture asset.
+ */
+static texture_asset_t* texture_asset_new(int frame_count) {
+    texture_asset_t* asset = (texture_asset_t*)malloc(sizeof(texture_asset_t));
+
+    asset->frame_count = frame_count;
+    asset->frames = (texture_t**)malloc(sizeof(texture_t*) * frame_count);
+
+    for (size_t i=0; i < frame_count; i++) {
+        asset->frames[i] = NULL;
+    }
+
+    return asset;
+}
+
+/**
+ * Frees a texture asset. Will also free all frame textures.
+ *
+ * @param texture_asset_t Texture asset to free.
+ */
+static void texture_asset_free(texture_asset_t* asset) {
+    for (size_t i=0; i < asset->frame_count; i++) {
+        graphics_texture_free(asset->frames[i]);
+    }
+
+    asset->frames = NULL;
+
+    free(asset);
+    asset = NULL;
+}
+
+/**
+ * Returns size of texture asset in bytes.
+ *
+ * @param texture_asset_t Texture asset to get sizeof.
+ * @return Size of texture asset in bytes.
+ */
+static size_t texture_asset_sizeof(texture_asset_t* asset) {
+    size_t size = sizeof(texture_asset_t);
+
+    for (size_t i = 0; i < asset->frame_count; i++) {
+        size += graphics_texture_sizeof(asset->frames[i]);
+    }
+
+    return size;
+}
+
+/**
+ * Get texture from given texture asset and frame.
+ *
+ * @param texture_asset_t
+ * @param int
+ * @return Texture for given asset and frame is successful. NULL otherwise.
+ */
+static texture_t* texture_asset_get_frame(texture_asset_t* asset, int index) {
+    if (index < 0) return NULL;
+    if (index >= asset->frame_count) return NULL;
+
+    return asset->frames[index];
 }
 
 /**

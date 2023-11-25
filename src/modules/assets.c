@@ -14,20 +14,27 @@
 #include "../sounds.h"
 
 /**
- * Get texture for given filename
+ * Get texture for given filename and frame
  * @function get_texture
  * @param filename Name of texture asset to look for
+ * @param frame Index of frame. (default 1)
  * @return Texture userdata if found, nil otherwise.
  */
 static int bindings_assets_get_texture(lua_State* L) {
     const char* texture_name = luaL_checkstring(L, 1);
-    texture_t* texture = assets_get_texture(texture_name);
+    int frame = (int)luaL_optnumber(L, 2, 1);
+    texture_t* texture = assets_get_texture(texture_name, frame - 1);
 
     if (texture) {
         lua_pushtexture(L, texture);
     }
     else {
-        luaL_error(L, "missing asset: %s", texture_name);
+        if (assets_get_texture(texture_name, 0)) {
+            luaL_error(L, "bad frame: %d for asset: %s", frame, texture_name);
+        }
+        else {
+            luaL_error(L, "missing asset: %s", texture_name);
+        }
     }
 
     return 1;
