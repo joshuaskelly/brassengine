@@ -34,7 +34,7 @@ void assets_reload(void);
  * @param filename Name to search for.
  * @return texture_t* texture if found, NULL otherwise
  */
-texture_t* assets_get_texture(const char* filename);
+texture_t* assets_get_texture(const char* filename, int frame_count);
 
 /**
  * Get script for given filename.

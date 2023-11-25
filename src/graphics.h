@@ -41,6 +41,14 @@ texture_t* graphics_texture_new(int width, int height, const color_t* pixels);
 void graphics_texture_free(texture_t* texture);
 
 /**
+ * Returns size of given texture in bytes.
+ *
+ * @param texture Texture to get sizeof.
+ * @return Size of texture in bytes.
+ */
+size_t graphics_texture_sizeof(texture_t* texture);
+
+/**
  * Copy given texture
  *
  * @param texture Texture to copy

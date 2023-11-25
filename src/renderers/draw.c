@@ -324,7 +324,7 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
 }
 
 void draw_text(const char* message, int x, int y) {
-    texture_t* font_texture = assets_get_texture("font.gif");
+    texture_t* font_texture = assets_get_texture("font.gif", 0);
     if (!font_texture) {
         log_fatal("Missing font.gif asset");
     }
