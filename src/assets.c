@@ -766,7 +766,7 @@ static int read_data_from_buffer(GifFileType* gif, GifByteType* dest, int bytes_
  *
  * @param frame_count Number of frames.
  * @return New texture asset.
-*/
+ */
 static texture_asset_t* texture_asset_new(int frame_count) {
     texture_asset_t* asset = (texture_asset_t*)malloc(sizeof(texture_asset_t));
 
