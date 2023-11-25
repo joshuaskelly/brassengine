@@ -2,13 +2,14 @@
 ## General
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
-- [ ] Support for loading all frames from GIF files.
 - [ ] Override io.lines() to sandbox/support zips.
+- [ ] Support for custom console background. Custom draw callback?
 - [ ] iOS platform
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Array struct.
+- [x] Support for loading all frames from GIF files.
 - [x] Support for creating/modifiying sound objects.
 - [x] Error on missing main.lua instead of segfaulting.
 - [x] Audit loadbuffer usage for filename correctness.
