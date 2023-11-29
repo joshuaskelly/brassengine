@@ -20,3 +20,10 @@
 - [How to Draw Ugly Lines Really Fast](https://cohost.org/tomforsyth/post/648716-how-to-draw-ugly-lin)
 - [Drawing Thick Lines](http://kt8216.unixcab.org/murphy/index.html)
 - [The Beauty of Bresenham's Algorithm](https://zingl.github.io/bresenham.html)
+
+## Audio Production
+- Ensure the following for Audacity
+  - Project rate 11025Hz
+  - Disable resample dither
+  - Resample track to 11025
+  - Save as unsigned 8bit PCM
