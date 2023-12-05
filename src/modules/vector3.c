@@ -555,7 +555,7 @@ static int vector3_reflect(lua_State* L) {
  * @function rotate
  * @tparam vector3 v0
  * @tparam vector3 ra Vector to rotate around
- * @tparam number angle Angle to rotate in radians
+ * @tparam number radians Angle to rotate in radians
  * @treturn vector3
  */
 static int vector3_rotate(lua_State* L) {

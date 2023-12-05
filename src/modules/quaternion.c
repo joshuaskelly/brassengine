@@ -349,7 +349,7 @@ static int quaternion_power(lua_State* L) {
  * Creates a rotation from a unit vector and angle to rotate around the vector.
  * @function from_axis_angle
  * @tparam vector3.vector3 v0
- * @tparam number angle
+ * @tparam number radians
  * @treturn quaternion
  */
 static int quaternion_from_axis_angle(lua_State* L) {

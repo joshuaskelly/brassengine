@@ -510,7 +510,7 @@ static int vector2_tangent(lua_State* L) {
  * Returns a vector that is rotated clockwise by angle in radians from v0.
  * @function rotate
  * @tparam vector2 v0
- * @tparam number angle Angle to rotate in radians
+ * @tparam number radians Angle to rotate
  * @treturn vector2
  */
 static int vector2_rotate(lua_State* L) {
