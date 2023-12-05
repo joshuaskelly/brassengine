@@ -21,10 +21,10 @@
  * Clamps given value to specified minimum and maximum range.
  *
  * @function clamp
- * @param value
- * @param min
- * @param max
- * @return Clamped value between min and max.
+ * @tparam number value
+ * @tparam number min
+ * @tparam number max
+ * @treturn number Clamped value between min and max.
  */
 static int module_math_clamp(lua_State* L) {
     float value = luaL_checknumber(L, 1);
@@ -40,10 +40,10 @@ static int module_math_clamp(lua_State* L) {
  * Linearly interpolate between a and b by t.
  *
  * @function lerp
- * @param a Start value
- * @param b End value
- * @param t Interpolation value
- * @return Interpolated value between a and b.
+ * @tparam number a Start value
+ * @tparam number b End value
+ * @tparam number t Interpolation value
+ * @treturn number Interpolated value between a and b.
  */
 static int module_math_lerp(lua_State* L) {
     float a = luaL_checknumber(L, 1);
@@ -64,10 +64,10 @@ static int module_math_lerp(lua_State* L) {
  * Adapated from reference implementation at: <https://mrl.cs.nyu.edu/~perlin/noise/>
  *
  * @function noise
- * @param x X-coordinate of sample point.
- * @param y Y-coordinate of sample point. (optional)
- * @param z Z-coordinate of sample point. (optional)
- * @return float Sampled point.
+ * @tparam number x X-coordinate of sample point.
+ * @tparam number y Y-coordinate of sample point. (optional)
+ * @tparam number z Z-coordinate of sample point. (optional)
+ * @treturn number float Sampled point.
  */
 static int module_math_noise(lua_State* L) {
     float x = luaL_checknumber(L, 1);
@@ -83,10 +83,10 @@ static int module_math_noise(lua_State* L) {
  * Interpolates between a and b with smoothing at the limits.
  *
  * @function smoothstep
- * @param a Start value
- * @param b End value
- * @param t Interpolation value
- * @return float
+ * @tparam number a Start value
+ * @tparam number b End value
+ * @tparam number t Interpolation value
+ * @treturn number float
  */
 static int module_math_smoothstep(lua_State* L) {
     float a = luaL_checknumber(L, 1);

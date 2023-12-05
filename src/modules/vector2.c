@@ -60,17 +60,17 @@ static int vector2_gc(lua_State* L) {
 
 /**
  * Length of the vector.
- * @field length
+ * @tfield number length
  */
 
 /**
  * X component of the vector
- * @field x
+ * @tfield number x
  */
 
 /**
  * Y component of the vector
- * @field y
+ * @tfield number y
  */
 
 /**
@@ -81,7 +81,7 @@ static int vector2_gc(lua_State* L) {
 /**
  * Returns a new vector2
  * @function new
- * @return @{vector2}
+ * @treturn vector2
  */
 static int vector2_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
@@ -198,9 +198,9 @@ static int vector2_divide(lua_State* L) {
 /**
  * Returns a vector made from snapping the components to given resolution.
  * @function snap
- * @param v0 @{vector2}
- * @param f Resolution of snap
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam number f Resolution of snap
+ * @treturn vector2
  */
 static int vector2_snap(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -235,8 +235,8 @@ static int vector2_snap(lua_State* L) {
 /**
  * Negates a vector.
  * @function negative
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_negative(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -254,8 +254,8 @@ static int vector2_negative(lua_State* L) {
 /**
  * Returns a vector made from the absolute values of the components.
  * @function abs
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_abs(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -273,8 +273,8 @@ static int vector2_abs(lua_State* L) {
 /**
  * Returns a vector made from the floor of the components.
  * @function floor
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_floor(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -292,8 +292,8 @@ static int vector2_floor(lua_State* L) {
 /**
  * Returns a vector made from the ceil of the components.
  * @function ceil
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_ceil(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -311,8 +311,8 @@ static int vector2_ceil(lua_State* L) {
 /**
  * Returns a vector made from rounding the components.
  * @function round
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_round(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -330,9 +330,9 @@ static int vector2_round(lua_State* L) {
 /**
  * Returns a vector that is the component-wise max of v0 and v1.
  * @function max
- * @param v0 @{vector2}
- * @param v1 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
+ * @treturn vector2
  */
 static int vector2_max(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -351,9 +351,9 @@ static int vector2_max(lua_State* L) {
 /**
  * Returns a vector that is the component-wise min of v0 and v1.
  * @function max
- * @param v0 @{vector2}
- * @param v1 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
+ * @treturn vector2
  */
 static int vector2_min(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -372,10 +372,10 @@ static int vector2_min(lua_State* L) {
 /**
  * Returns a vector that is a component-wise clamp of v0 such that min < v0 < max.
  * @function clamp
- * @param v0 @{vector2} Vector to clamp
- * @param min @{vector2} Min vector
- * @param max @{vector2} Max vector
- * @return @{vector2}
+ * @tparam vector2 v0 Vector to clamp
+ * @tparam vector2 min Min vector
+ * @tparam vector2 max Max vector
+ * @treturn vector2
  */
 static int vector2_clamp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -395,8 +395,8 @@ static int vector2_clamp(lua_State* L) {
 /**
  * Returns a vector in the direction of v0 with magnitude 1.
  * @function normalize
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_normalize(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -414,8 +414,8 @@ static int vector2_normalize(lua_State* L) {
 /**
  * Dot product of two vectors.
  * @function dot
- * @param v0 @{vector2}
- * @param v1 @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
  * @return float
  */
 static int vector2_dot(lua_State* L) {
@@ -434,9 +434,9 @@ static int vector2_dot(lua_State* L) {
 /**
  * Project v0 onto v1.
  * @function project
- * @param v0 @{vector2}
- * @param v1 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
+ * @treturn vector2
  */
 static int vector2_project(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -469,9 +469,9 @@ static int vector2_slide(lua_State* L) {
 /**
  * Reflect v0 off of plane given by normal.
  * @function reflect
- * @param v0 @{vector2}
- * @param normal @{vector2} Plane normal
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 normal Plane normal
+ * @treturn vector2
  */
 static int vector2_reflect(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -490,8 +490,8 @@ static int vector2_reflect(lua_State* L) {
 /**
  * Returns a vector rotated 90 degrees clockwise from v0.
  * @function tangent
- * @param v0 @{vector2}
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @treturn vector2
  */
 static int vector2_tangent(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -509,9 +509,9 @@ static int vector2_tangent(lua_State* L) {
 /**
  * Returns a vector that is rotated clockwise by angle in radians from v0.
  * @function rotate
- * @param v0 @{vector2}
- * @param angle Angle to rotate in radians
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam number angle Angle to rotate in radians
+ * @treturn vector2
  */
 static int vector2_rotate(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -530,10 +530,10 @@ static int vector2_rotate(lua_State* L) {
 /**
  * Linearly interpolate between v0 and v1.
  * @function lerp
- * @param v0 @{vector2}
- * @param v1 @{vector2}
- * @param t Value used to interpolate between v0 and v1.
- * @return @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
+ * @tparam number t Value used to interpolate between v0 and v1.
+ * @treturn vector2
  */
 static int vector2_lerp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -553,7 +553,7 @@ static int vector2_lerp(lua_State* L) {
 /**
  * Get counterclockwise angle in radians between the positive x-axis and v0.
  * @function angle
- * @param v0 @{vector2}
+ * @tparam vector2 v0
  * @return float Angle in radians.
  */
 static int vector2_angle(lua_State* L) {
@@ -571,7 +571,7 @@ static int vector2_angle(lua_State* L) {
 /**
  * Get vector magnitude.
  * @function length
- * @param v0 @{vector2}
+ * @tparam vector2 v0
  * @return float
  */
 static int vector2_length(lua_State* L) {
@@ -589,7 +589,7 @@ static int vector2_length(lua_State* L) {
 /**
  * Get vector squared magnitude.
  * @function length_squared
- * @param v0 @{vector2}
+ * @tparam vector2 v0
  * @return float
  */
 static int vector2_length_squared(lua_State* L) {
@@ -607,8 +607,8 @@ static int vector2_length_squared(lua_State* L) {
 /**
  * Get distance between v0 and v1.
  * @function distance
- * @param v0 @{vector2}
- * @param v1 @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
  * @return float
  */
 static int vector2_distance(lua_State* L) {
@@ -627,8 +627,8 @@ static int vector2_distance(lua_State* L) {
 /**
  * Get squared distance between v0 and v1.
  * @function distance_squared
- * @param v0 @{vector2}
- * @param v1 @{vector2}
+ * @tparam vector2 v0
+ * @tparam vector2 v1
  * @return float
  */
 static int vector2_distance_squared(lua_State* L) {

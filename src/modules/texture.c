@@ -155,9 +155,9 @@ static const struct luaL_Reg meta_functions[] = {
 /**
  * Create new texture.
  * @function new
- * @param width Texture width
- * @param height Texture height
- * @return @{texture}
+ * @tparam integer width Texture width
+ * @tparam integer height Texture height
+ * @treturn texture
  */
 static int bindings_texture_new(lua_State* L) {
     int width = (int)luaL_checknumber(L, 1);
@@ -177,7 +177,7 @@ static int bindings_texture_new(lua_State* L) {
 /**
  * Returns a copy of this texture.
  * @function copy
- * @return @{texture}
+ * @treturn texture
  */
 static int bindings_texture_copy(lua_State* L) {
     texture_t* source = luaL_checktexture(L, 1);
@@ -194,7 +194,7 @@ static int bindings_texture_copy(lua_State* L) {
 /**
  * Fill entire texture with color.
  * @function clear
- * @param color Fill color
+ * @tparam integer color Fill color
  */
 static int bindings_texture_clear(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
@@ -210,9 +210,9 @@ static int bindings_texture_clear(lua_State* L) {
 /**
  * Sets pixel at given position and color.
  * @function set_pixel
- * @param x Pixel x-coordinate
- * @param y Pixel y-coordinate
- * @param color Pixel color
+ * @tparam integer x Pixel x-coordinate
+ * @tparam integer y Pixel y-coordinate
+ * @tparam integer color Pixel color
  */
 static int bindings_texture_set_pixel(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
@@ -230,8 +230,9 @@ static int bindings_texture_set_pixel(lua_State* L) {
 /**
  * Gets pixel at given position.
  * @function get_pixel
- * @param x Pixel x-coordinate
- * @param y Pixel y-coordinate
+ * @tparam integer x Pixel x-coordinate
+ * @tparam integer y Pixel y-coordinate
+ * @treturn integer Pixel color
  */
 static int bindings_texture_get_pixel(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
@@ -249,9 +250,9 @@ static int bindings_texture_get_pixel(lua_State* L) {
 /**
  * Copy given source texture to this texture with given offset.
  * @function blit
- * @param source Texture to copy from
- * @param x Destination x-offset
- * @param y Destination y-offset
+ * @tparam texture.texture source Texture to copy from
+ * @tparam integer x Destination x-offset
+ * @tparam integer y Destination y-offset
  */
 static int bindings_texture_blit(lua_State* L) {
     texture_t* dest = luaL_checktexture(L, 1);
@@ -268,17 +269,17 @@ static int bindings_texture_blit(lua_State* L) {
 
 /**
  * An array copy of pixel indices.
- * @field pixels
+ * @tfield {integer,...} pixels
  */
 
 /**
  * Texture width in pixels.
- * @field width (read-only)
+ * @tfield integer width (read-only)
  */
 
 /**
  * Texture height in pixels.
- * @field height (read-only)
+ * @tfield integer height (read-only)
  */
 
 static const struct luaL_Reg module_functions[] = {

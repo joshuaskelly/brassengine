@@ -71,22 +71,22 @@ static int vector3_gc(lua_State* L) {
 
 /**
  * Length of the vector.
- * @field length
+ * @tfield number length
  */
 
 /**
  * X component of the vector
- * @field x
+ * @tfield number x
  */
 
 /**
  * Y component of the vector
- * @field y
+ * @tfield number y
  */
 
 /**
  * Z component of the vector
- * @field z
+ * @tfield number z
  */
 
 /**
@@ -97,7 +97,7 @@ static int vector3_gc(lua_State* L) {
 /**
  * Returns a new vector3
  * @function new
- * @return @{vector3}
+ * @treturn vector3
  */
 static int vector3_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
@@ -240,9 +240,9 @@ static int vector3_divide(lua_State* L) {
 /**
  * Returns a vector made from snapping the components to given resolution.
  * @function snap
- * @param v0 @{vector3}
- * @param f Resolution of snap
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam number f Resolution of snap
+ * @treturn vector3
  */
 static int vector3_snap(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -277,8 +277,8 @@ static int vector3_snap(lua_State* L) {
 /**
  * Negates a vector.
  * @function negative
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_negative(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -296,8 +296,8 @@ static int vector3_negative(lua_State* L) {
 /**
  * Returns a vector made from the absolute values of the components.
  * @function abs
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_abs(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -315,8 +315,8 @@ static int vector3_abs(lua_State* L) {
 /**
  * Returns a vector made from the floor of the components.
  * @function floor
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_floor(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -334,8 +334,8 @@ static int vector3_floor(lua_State* L) {
 /**
  * Returns a vector made from the ceil of the components.
  * @function ceil
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_ceil(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -353,8 +353,8 @@ static int vector3_ceil(lua_State* L) {
 /**
  * Returns a vector made from rounding the components.
  * @function round
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_round(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -372,9 +372,9 @@ static int vector3_round(lua_State* L) {
 /**
  * Returns a vector that is the component-wise max of v0 and v1.
  * @function max
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn vector3
  */
 static int vector3_max(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -393,9 +393,9 @@ static int vector3_max(lua_State* L) {
 /**
  * Returns a vector that is the component-wise min of v0 and v1.
  * @function max
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn vector3
  */
 static int vector3_min(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -414,10 +414,10 @@ static int vector3_min(lua_State* L) {
 /**
  * Returns a vector that is a component-wise clamp of v0 such that min < v0 < max.
  * @function clamp
- * @param v0 @{vector3} Vector to clamp
- * @param min @{vector3} Min vector
- * @param max @{vector3} Max vector
- * @return @{vector3}
+ * @tparam vector3 v0 Vector to clamp
+ * @tparam vector3 min Min vector
+ * @tparam vector3 max Max vector
+ * @treturn vector3
  */
 static int vector3_clamp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -437,9 +437,9 @@ static int vector3_clamp(lua_State* L) {
 /**
  * Cross product of two vectors.
  * @function cross
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn vector3
  */
 static int vector3_cross(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -458,8 +458,8 @@ static int vector3_cross(lua_State* L) {
 /**
  * Returns a vector in the direction of v0 with magnitude 1.
  * @function normalize
- * @param v0 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @treturn vector3
  */
 static int vector3_normalize(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -477,9 +477,9 @@ static int vector3_normalize(lua_State* L) {
 /**
  * Dot product of two vectors.
  * @function dot
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return float
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn number float
  */
 static int vector3_dot(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -497,9 +497,9 @@ static int vector3_dot(lua_State* L) {
 /**
  * Project v0 onto v1.
  * @function project
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn vector3
  */
 static int vector3_project(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -532,9 +532,9 @@ static int vector3_slide(lua_State* L) {
 /**
  * Reflect v0 off of plane given by normal.
  * @function reflect
- * @param v0 @{vector3}
- * @param normal @{vector3} Plane normal
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 normal Plane normal
+ * @treturn vector3
  */
 static int vector3_reflect(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -553,10 +553,10 @@ static int vector3_reflect(lua_State* L) {
 /**
  * Rotate v0 around ra clockwise by angle in radians.
  * @function rotate
- * @param v0 @{vector3}
- * @param ra @{vector3} Vector to rotate around
- * @param angle Angle to rotate in radians
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 ra Vector to rotate around
+ * @tparam number angle Angle to rotate in radians
+ * @treturn vector3
  */
 static int vector3_rotate(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -576,10 +576,10 @@ static int vector3_rotate(lua_State* L) {
 /**
  * Linearly interpolate between v0 and v1.
  * @function lerp
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @param t Value used to interpolate between v0 and v1.
- * @return @{vector3}
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @tparam number t Value used to interpolate between v0 and v1.
+ * @treturn vector3
  */
 static int vector3_lerp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -634,8 +634,8 @@ static int vector3_bezier4(lua_State* L) {
 /**
  * Get vector magnitude.
  * @function length
- * @param v0 @{vector3}
- * @return float
+ * @tparam vector3 v0
+ * @treturn number float
  */
 static int vector3_length(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -652,8 +652,8 @@ static int vector3_length(lua_State* L) {
 /**
  * Get vector squared magnitude.
  * @function length_squared
- * @param v0 @{vector3}
- * @return float
+ * @tparam vector3 v0
+ * @treturn number float
  */
 static int vector3_length_squared(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -670,9 +670,9 @@ static int vector3_length_squared(lua_State* L) {
 /**
  * Get distance between v0 and v1.
  * @function distance
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return float
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn number float
  */
 static int vector3_distance(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
@@ -690,9 +690,9 @@ static int vector3_distance(lua_State* L) {
 /**
  * Get squared distance between v0 and v1.
  * @function distance_squared
- * @param v0 @{vector3}
- * @param v1 @{vector3}
- * @return float
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ * @treturn number float
  */
 static int vector3_distance_squared(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);

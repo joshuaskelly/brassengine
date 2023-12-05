@@ -117,8 +117,8 @@ static const struct luaL_Reg meta_functions[] = {
 /**
  * Create new sound.
  * @function new
- * @param frame_count Total number of PCM frames.
- * @return @{sound}
+ * @tparam integer frame_count Total number of PCM frames.
+ * @treturn sound
  */
 static int new_sound(lua_State* L) {
     int frame_count = (int)luaL_checknumber(L, 1);
@@ -137,7 +137,7 @@ static int new_sound(lua_State* L) {
 /**
  * Plays sound.
  * @function play
- * @param channel Channel to play sound on. (optional)
+ * @tparam integer channel Channel to play sound on. (optional)
  */
 static int play_sound(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
@@ -150,7 +150,7 @@ static int play_sound(lua_State* L) {
 /**
  * Returns a copy of this sound.
  * @function copy
- * @return @{sound}
+ * @treturn sound
  */
 static int copy_sound(lua_State* L) {
     sound_t* source = luaL_checksound(L, 1);
@@ -167,8 +167,8 @@ static int copy_sound(lua_State* L) {
 /**
  * Sets PCM data for given frame.
  * @function set_frame
- * @param index Frame index
- * @param value PCM data value
+ * @tparam integer index Frame index
+ * @tparam integer value PCM data value
  */
 static int set_sound_frame(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
@@ -188,8 +188,8 @@ static int set_sound_frame(lua_State* L) {
 /**
  * Gets PCM data for given frame.
  * @function get_frame
- * @param index Frame index
- * @return PCM data
+ * @tparam integer index Frame index
+ * @treturn integer PCM data
  */
 static int get_sound_frame(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
@@ -207,12 +207,12 @@ static int get_sound_frame(lua_State* L) {
 
 /**
  * An array copy of PCM data.
- * @field pcm
+ * @tfield {integer,...} pcm
  */
 
 /**
  * Total number of frames
- * @field frame_count (read-only)
+ * @tfield integer frame_count (read-only)
  */
 
 static const struct luaL_Reg module_functions[] = {

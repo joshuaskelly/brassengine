@@ -116,7 +116,7 @@ static int matrix4_gc(lua_State* L) {
 /**
  * Determinant of matrix.
  * @function determinant
- * @return float
+ * @treturn number float
  */
 static int matrix4_determinant(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -132,7 +132,7 @@ static int matrix4_determinant(lua_State* L) {
 /**
  * Negates a matrix.
  * @function negative
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_negative(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -150,7 +150,7 @@ static int matrix4_negative(lua_State* L) {
 /**
  * Transpose of matrix.
  * @function transpose
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_transpose(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -168,7 +168,7 @@ static int matrix4_transpose(lua_State* L) {
 /**
  * Cofactor of matrix.
  * @function cofactor
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_cofactor(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -186,7 +186,7 @@ static int matrix4_cofactor(lua_State* L) {
 /**
  * Inverse of matrix.
  * @function inverse
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_inverse(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -204,17 +204,17 @@ static int matrix4_inverse(lua_State* L) {
 /**
  * Translates matrix in-place.
  * @function translate
- * @param v0 @{vector3}
- * @return @{matrix4}
+ * @tparam vector3.vector3 v0
+ * @treturn matrix4
  */
 
 /**
  * Translates matrix in-place.
  * @function translate
- * @param x
- * @param y
- * @param z
- * @return @{matrix4}
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @treturn matrix4
  */
 static int matrix4_translate(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -249,17 +249,17 @@ static int matrix4_translate(lua_State* L) {
 /**
  * Scales matrix in-place.
  * @function translate
- * @param v0 @{vector3}
- * @return @{matrix4}
+ * @tparam vector3.vector3 v0
+ * @treturn matrix4
  */
 
 /**
  * Scales matrix in-place.
  * @function translate
- * @param x
- * @param y
- * @param z
- * @return @{matrix4}
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @treturn matrix4
  */
 static int matrix4_scale(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -299,7 +299,23 @@ static int matrix4_scale(lua_State* L) {
 /**
  * Returns a new matrix4
  * @function new
- * @return @{matrix4}
+ * @tparam ?number m11
+ * @tparam ?number m21
+ * @tparam ?number m31
+ * @tparam ?number m41
+ * @tparam ?number m12
+ * @tparam ?number m22
+ * @tparam ?number m32
+ * @tparam ?number m42
+ * @tparam ?number m13
+ * @tparam ?number m23
+ * @tparam ?number m33
+ * @tparam ?number m43
+ * @tparam ?number m14
+ * @tparam ?number m24
+ * @tparam ?number m34
+ * @tparam ?number m44
+ * @treturn matrix4
  */
 static int matrix4_new(lua_State* L) {
     float m11 = (float)luaL_optnumber(L, 1, 0);
@@ -329,7 +345,7 @@ static int matrix4_new(lua_State* L) {
 /**
  * Returns a matrix with all elements set to zero.
  * @function zero
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_zero(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -342,7 +358,7 @@ static int matrix4_zero(lua_State* L) {
 /**
  * Returns an identity matrix.
  * @function identity
- * @return @{matrix4}
+ * @treturn matrix4
  */
 static int matrix4_identity(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -416,8 +432,8 @@ static int matrix4_rotate_around_axis(lua_State* L) {
 /**
  * Creates a rotation matrix
  * @function rotation
- * @param q0 @{quaternion}
- * @return @{matrix4}
+ * @tparam quaternion.quaternion q0
+ * @treturn matrix4
  */
 static int matrix4_rotation_quaternion(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
@@ -435,17 +451,17 @@ static int matrix4_rotation_quaternion(lua_State* L) {
 /**
  * Creates a translation matrix
  * @function translation
- * @param v0 @{vector3}
- * @return @{matrix4}
+ * @tparam vector3.vector3 v0
+ * @treturn matrix4
  */
 
 /**
  * Creates a translation matrix
  * @function translation
- * @param x
- * @param y
- * @param z
- * @return @{matrix4}
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @treturn matrix4
  */
 static int matrix4_translation(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -481,17 +497,17 @@ static int matrix4_translation(lua_State* L) {
 /**
  * Creates a scaling matrix
  * @function scaling
- * @param v0 @{vector3}
- * @return @{matrix4}
+ * @tparam vector3.vector3 v0
+ * @treturn matrix4
  */
 
 /**
  * Creates a scaling matrix
  * @function scaling
- * @param x
- * @param y
- * @param z
- * @return @{matrix4}
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @treturn matrix4
  */
 static int matrix4_scaling(lua_State* L) {
     int arg_count = lua_gettop(L);
@@ -566,10 +582,10 @@ static int matrix4_multiply(lua_State* L) {
 /**
  * Linearly interpolate two matrices.
  * @function lerp
- * @param m0 @{matrix4}
- * @param m1 @{matrix4}
- * @param f
- * @return @{matrix4}
+ * @tparam matrix4.matrix4 m0
+ * @tparam matrix4.matrix4 m1
+ * @tparam number f
+ * @treturn matrix4
  */
 static int matrix4_lerp(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
@@ -589,10 +605,10 @@ static int matrix4_lerp(lua_State* L) {
 /**
  * Creates a look at transformation.
  * @function look_at
- * @param position @{vector3}
- * @param target @{vector3}
- * @param up @{vector3}
- * @return @{matrix4}
+ * @tparam vector3.vector3 position
+ * @tparam vector3.vector3 target
+ * @tparam vector3.vector3 up
+ * @treturn matrix4
  */
 static int matrix4_look_at(lua_State* L) {
     mfloat_t* position = luaL_checkvector3(L, 1);
@@ -612,13 +628,13 @@ static int matrix4_look_at(lua_State* L) {
 /**
  * Creates an orthographic view transformation.
  * @function ortho
- * @param l
- * @param r
- * @param b
- * @param t
- * @param n
- * @param f
- * @return @{matrix4}
+ * @tparam number l
+ * @tparam number r
+ * @tparam number b
+ * @tparam number t
+ * @tparam number n
+ * @tparam number f
+ * @treturn matrix4
  */
 static int matrix4_ortho(lua_State* L) {
     mfloat_t l = luaL_checknumber(L, 1);
@@ -638,11 +654,11 @@ static int matrix4_ortho(lua_State* L) {
 /**
  * Creates an perspective view transformation.
  * @function perspective
- * @param fov_y
- * @param aspect
- * @param n
- * @param f
- * @return @{matrix4}
+ * @tparam number fov_y
+ * @tparam number aspect
+ * @tparam number n
+ * @tparam number f
+ * @treturn matrix4
  */
 static int matrix4_perspective(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
@@ -660,12 +676,12 @@ static int matrix4_perspective(lua_State* L) {
 /**
  * Creates an perspective view transformation.
  * @function perspective_fov
- * @param fov
- * @param w
- * @param h
- * @param n
- * @param f
- * @return @{matrix4}
+ * @tparam number fov
+ * @tparam number w
+ * @tparam number h
+ * @tparam number n
+ * @tparam number f
+ * @treturn matrix4
  */
 static int matrix4_perspective_fov(lua_State* L) {
     mfloat_t fov = luaL_checknumber(L, 1);
@@ -684,10 +700,10 @@ static int matrix4_perspective_fov(lua_State* L) {
 /**
  * Creates an perspective view transformation.
  * @function perspective_infinite
- * @param fov_y
- * @param aspect
- * @param n
- * @return @{matrix4}
+ * @tparam number fov_y
+ * @tparam number aspect
+ * @tparam number n
+ * @treturn matrix4
  */
 static int matrix4_perspective_infinite(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);

@@ -65,3 +65,9 @@
 ## Sound
 - [ ] Streaming audio support?
 - [ ] Remove SDL Mixer dependency?
+
+## Documentation Improvements
+- [ ] Prefer degrees/radians in place of angle/fov
+- [ ] Prefer amount over t
+- [ ] Restructure vector2/3/4 to reflect OO methods (like matrix/quaternion)
+- [x] Types for parameters and return values.
