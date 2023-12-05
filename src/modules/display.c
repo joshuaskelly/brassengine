@@ -17,8 +17,8 @@
 /**
  * Set display size.
  * @function set_size
- * @param width Display width
- * @param height Display height
+ * @tparam integer width Display width
+ * @tparam integer height Display height
  */
 static int bindings_display_set_window_size(lua_State* L) {
     int width = (int)luaL_checknumber(L, 1);
@@ -34,7 +34,7 @@ static int bindings_display_set_window_size(lua_State* L) {
 /**
  * Set display aspect ratio.
  * @function set_aspect
- * @param aspect Pixel aspect ratio
+ * @tparam number aspect Pixel aspect ratio
  */
 static int bindings_display_set_aspect(lua_State* L) {
     float aspect = (float)luaL_checknumber(L, 1);
@@ -49,7 +49,7 @@ static int bindings_display_set_aspect(lua_State* L) {
 /**
  * Set display fullscreen.
  * @function set_fullscreen
- * @param fullscreen True if to set to fullscreen, False for windowed.
+ * @tparam bool fullscreen True if to set to fullscreen, False for windowed.
  */
 static int bindings_display_set_window_fullscreen(lua_State* L) {
     bool fullscreen = (bool)lua_toboolean(L, 1);
@@ -64,7 +64,7 @@ static int bindings_display_set_window_fullscreen(lua_State* L) {
 /**
  * Set display title.
  * @function set_title
- * @param title Title to set
+ * @tparam string title Title to set
  */
 static int bindings_display_set_title(lua_State* L) {
     const char* title = (char*)lua_tostring(L, 1);
