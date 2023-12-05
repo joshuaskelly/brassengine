@@ -72,17 +72,17 @@ static int vector4_gc(lua_State* L) {
 
 /**
  * X component of the vector
- * @field x
+ * @tfield number x
  */
 
 /**
  * Y component of the vector
- * @field y
+ * @tfield number y
  */
 
 /**
  * Z component of the vector
- * @field z
+ * @tfield number z
  */
 
 /**
@@ -93,7 +93,7 @@ static int vector4_gc(lua_State* L) {
 /**
  * Returns a new vector4
  * @function new
- * @return @{vector4}
+ * @treturn vector4
  */
 static int vector4_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
@@ -228,9 +228,9 @@ static int vector4_divide(lua_State* L) {
 /**
  * Returns a vector made from snapping the components to given resolution.
  * @function snap
- * @param v0 @{vector4}
- * @param f Resolution of snap
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @tparam number f Resolution of snap
+ * @treturn vector4
  */
 static int vector4_snap(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -265,8 +265,8 @@ static int vector4_snap(lua_State* L) {
 /**
  * Negates a vector.
  * @function negative
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_negative(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -284,8 +284,8 @@ static int vector4_negative(lua_State* L) {
 /**
  * Returns a vector made from the absolute values of the components.
  * @function abs
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_abs(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -303,8 +303,8 @@ static int vector4_abs(lua_State* L) {
 /**
  * Returns a vector made from the floor of the components.
  * @function floor
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_floor(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -322,8 +322,8 @@ static int vector4_floor(lua_State* L) {
 /**
  * Returns a vector made from the ceil of the components.
  * @function ceil
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_ceil(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -341,8 +341,8 @@ static int vector4_ceil(lua_State* L) {
 /**
  * Returns a vector made from rounding the components.
  * @function round
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_round(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -360,9 +360,9 @@ static int vector4_round(lua_State* L) {
 /**
  * Returns a vector that is the component-wise max of v0 and v1.
  * @function max
- * @param v0 @{vector4}
- * @param v1 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @tparam vector4 v1
+ * @treturn vector4
  */
 static int vector4_max(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -381,9 +381,9 @@ static int vector4_max(lua_State* L) {
 /**
  * Returns a vector that is the component-wise min of v0 and v1.
  * @function max
- * @param v0 @{vector4}
- * @param v1 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @tparam vector4 v1
+ * @treturn vector4
  */
 static int vector4_min(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -402,10 +402,10 @@ static int vector4_min(lua_State* L) {
 /**
  * Returns a vector that is a component-wise clamp of v0 such that min < v0 < max.
  * @function clamp
- * @param v0 @{vector4} Vector to clamp
- * @param min @{vector4} Min vector
- * @param max @{vector4} Max vector
- * @return @{vector4}
+ * @tparam vector4 v0 Vector to clamp
+ * @tparam vector4 min Min vector
+ * @tparam vector4 max Max vector
+ * @treturn vector4
  */
 static int vector4_clamp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -425,8 +425,8 @@ static int vector4_clamp(lua_State* L) {
 /**
  * Returns a vector in the direction of v0 with magnitude 1.
  * @function normalize
- * @param v0 @{vector4}
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @treturn vector4
  */
 static int vector4_normalize(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
@@ -444,10 +444,10 @@ static int vector4_normalize(lua_State* L) {
 /**
  * Linearly interpolate between v0 and v1.
  * @function lerp
- * @param v0 @{vector4}
- * @param v1 @{vector4}
- * @param t Value used to interpolate between v0 and v1.
- * @return @{vector4}
+ * @tparam vector4 v0
+ * @tparam vector4 v1
+ * @tparam number t Value used to interpolate between v0 and v1.
+ * @treturn vector4
  */
 static int vector4_lerp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);

@@ -17,7 +17,7 @@
 /**
  * Prints given object to console.
  * @function print
- * @param arg Object to print to console
+ * @tparam any arg Object to print to console
  */
 static int api_print(lua_State* L) {
     int n = lua_gettop(L);
@@ -43,7 +43,7 @@ static int api_clear(lua_State* L) {
 /**
  * Gets time since last frame.
  * @function delta_time
- * @return Time elapsed in milliseconds.
+ * @treturn integer Time elapsed in milliseconds.
  */
 static int api_get_delta_time(lua_State* L) {
     double delta_time = time_delta_time();
@@ -55,7 +55,7 @@ static int api_get_delta_time(lua_State* L) {
 /**
  * Gets time since app launch.
  * @function time
- * @return Time elapsed in milliseconds.
+ * @treturn integer Time elapsed in milliseconds.
  */
 static int api_get_time_since_init(lua_State* L) {
     double time = time_since_init();

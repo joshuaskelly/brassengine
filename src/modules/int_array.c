@@ -1,5 +1,5 @@
 /**
- * Module for working with intarray data.
+ * Module for working with native C arrays of integer data.
  * @module intarray
  */
 #include <stdint.h>
@@ -51,10 +51,20 @@ static int int_array_gc(lua_State* L) {
 }
 
 /**
+ * Int Array class
+ * @type intarray
+ */
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
  * Returns a new intarray
  * @function new
- * @param size Number of elements.
- * @return @{intarray}
+ * @tparam integer size Number of elements.
+ * @treturn intarray
  */
 static int module_int_array_new(lua_State* L) {
     int size = luaL_checkinteger(L, 1);
@@ -69,8 +79,8 @@ static int module_int_array_new(lua_State* L) {
 /**
  * Adds given value to end of int array.
  * @function add
- * @param @{intarray} int array to modify.
- * @param int Value to add
+ * @tparam intarray array Array to modify.
+ * @tparam integer value Value to add
  */
 static int module_int_array_add(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
@@ -86,8 +96,8 @@ static int module_int_array_add(lua_State* L) {
 /**
  * Resize intarray to new length.
  * @function resize
- * @param @{intarray} int array to modify.
- * @param int New number of elements
+ * @tparam intarray array int array to modify.
+ * @tparam integer size New total number of elements
  */
 static int module_int_array_resize(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);

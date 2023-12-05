@@ -1,5 +1,5 @@
 /**
- * Module for working with floatarray data.
+ * Module for working with native C arrays of floating point data.
  * @module floatarray
  */
 #include <stdint.h>
@@ -51,10 +51,20 @@ static int float_array_gc(lua_State* L) {
 }
 
 /**
+ * Float Array class
+ * @type floatarray
+ */
+
+/**
+ * Functions
+ * @section Functions
+ */
+
+/**
  * Returns a new floatarray
  * @function new
- * @param size Number of elements.
- * @return @{floatarray}
+ * @tparam integer size Number of elements.
+ * @treturn floatarray
  */
 static int module_float_array_new(lua_State* L) {
     int size = luaL_checkinteger(L, 1);
@@ -69,8 +79,8 @@ static int module_float_array_new(lua_State* L) {
 /**
  * Adds given value to end of float array.
  * @function add
- * @param @{floatarray} Float array to modify.
- * @param float Value to add
+ * @tparam floatarray array Array to modify.
+ * @tparam number value Value to add
  */
 static int module_float_array_add(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
@@ -86,8 +96,8 @@ static int module_float_array_add(lua_State* L) {
 /**
  * Resize floatarray to new length.
  * @function resize
- * @param @{floatarray} Float array to modify.
- * @param int New number of elements
+ * @tparam floatarray array Float array to modify.
+ * @tparam integer size New total number of elements
  */
 static int module_float_array_resize(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
