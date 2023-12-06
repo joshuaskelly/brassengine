@@ -1,3 +1,6 @@
+--- Generates language server compatible definition files. Output will be
+--- written to ./library
+
 local library = {}
 
 library.traverse = {}
@@ -18,7 +21,9 @@ function library.filter(modules)
 
         local source = lines:join()
 
-        print(source)
+        local f = assert(io.open("./library/" .. module.name .. ".lua", "w"))
+        f:write(source)
+        f:close()
     end
 end
 
