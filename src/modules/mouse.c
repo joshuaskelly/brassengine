@@ -34,7 +34,8 @@ static int bindings_get_mouse_button(lua_State* L) {
 /**
  * Get current mouse position.
  * @function position
- * @treturn {integer,integer} Mouse coords as x, y
+ * @treturn[1] integer Mouse x coord
+ * @treturn[2] integer Mouse y coord
  */
 static int bindings_get_mouse_position(lua_State* L) {
     int x = 0;
@@ -51,7 +52,8 @@ static int bindings_get_mouse_position(lua_State* L) {
 /**
  * Get mouse relative motion.
  * @function motion
- * @treturn {integer,integer} Motion as x, y pair
+ * @treturn[1] integer Mouse x coord
+ * @treturn[2] integer Mouse y coord
  */
 static int bindings_get_mouse_motion(lua_State* L) {
     int rel_x;
