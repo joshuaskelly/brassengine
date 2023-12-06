@@ -18,7 +18,7 @@
  * @function button
  * @tparam integer button Button index to check. Primary button is 1, middle button is 2,
  * secondary button is 3.
- * @treturn bool True if button is down, false otherwise
+ * @treturn boolean True if button is down, false otherwise
  */
 static int bindings_get_mouse_button(lua_State* L) {
     int button = luaL_checkinteger(L, 1);
@@ -68,7 +68,7 @@ static int bindings_get_mouse_motion(lua_State* L) {
 /**
  * Set mouse grab state.
  * @function set_grabbed
- * @tparam bool grabbed True if mouse should be constrained to window.
+ * @tparam boolean grabbed True if mouse should be constrained to window.
  */
 static int bindings_set_mouse_grabbed(lua_State* L) {
     bool grabbed = lua_toboolean(L, 1);
@@ -83,7 +83,7 @@ static int bindings_set_mouse_grabbed(lua_State* L) {
 /**
  * Get mouse grab state.
  *
- * @treturn bool True if mouse is grabbed, false otherwise.
+ * @treturn boolean True if mouse is grabbed, false otherwise.
  */
 static int bindings_get_mouse_grabbed(lua_State* L) {
     bool grabbed = platform_mouse_get_grabbed();
