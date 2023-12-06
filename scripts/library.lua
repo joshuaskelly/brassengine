@@ -1,5 +1,8 @@
 --- Generates language server compatible definition files. Output will be
 --- written to ./library
+---
+--- Language Server Definition Files
+--- https://luals.github.io/wiki/definition-files/
 
 local library = {}
 
