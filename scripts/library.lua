@@ -30,7 +30,7 @@ end
 function library.traverse.module(module)
     local lines = library.Lines:new()
 
-    local module_summary = "--- " .. module.summary
+    local module_summary = "--- " .. string.gsub(module.summary, "\n", "")
     local module_declaration = "local " .. module.name .. " = {}\n"
     local module_contents = library.traverse.contents(module)
     local module_return = "return " .. module.name
@@ -100,7 +100,7 @@ function library.traverse.section(section)
     local lines = library.Lines:new()
 
     if section.type then
-        local section_description = section.type.descpription
+        local section_description = string.gsub(section.type.descpription or "", "\n", "")
         local section_tag = "--- @class " .. section.type.name
 
         lines:concat(section_description)
@@ -159,7 +159,7 @@ function library.traverse.func_params(item)
 
         local param_tag = "--- @param"
         local param_type = library.format.type(item.modifiers.param[param_name].type)
-        local param_description = item.params.map[param_name]
+        local param_description = string.gsub(item.params.map[param_name], "\n", "")
 
         parts:concat(param_tag)
         parts:concat(param_name)
@@ -180,7 +180,7 @@ function library.traverse.func_return(item)
 
         local return_tag = "--- @return"
         local return_type = library.format.type(ret[1].type)
-        local return_description = ret[1].text
+        local return_description = string.gsub(ret[1].text, "\n", "")
 
         parts:concat(return_tag)
         parts:concat(return_type)
