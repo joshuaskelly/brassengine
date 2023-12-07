@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>brassengine</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Class_Renderer">Class Renderer </a></li>
+<li><a href="#Class_Map">Class Map </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/assets.html">assets</a></li>
+  <li><a href="../modules/display.html">display</a></li>
+  <li><a href="../modules/draw.html">draw</a></li>
+  <li><a href="../modules/floatarray.html">floatarray</a></li>
+  <li><a href="../modules/gif.html">gif</a></li>
+  <li><a href="../modules/globals.html">globals</a></li>
+  <li><a href="../modules/graphics.html">graphics</a></li>
+  <li><a href="../modules/intarray.html">intarray</a></li>
+  <li><a href="../modules/json.html">json</a></li>
+  <li><a href="../modules/keyboard.html">keyboard</a></li>
+  <li><a href="../modules/math.html">math</a></li>
+  <li><a href="../modules/matrix4.html">matrix4</a></li>
+  <li><a href="../modules/mouse.html">mouse</a></li>
+  <li><a href="../modules/quaternion.html">quaternion</a></li>
+  <li><strong>raycaster</strong></li>
+  <li><a href="../modules/sound.html">sound</a></li>
+  <li><a href="../modules/statistics.html">statistics</a></li>
+  <li><a href="../modules/texture.html">texture</a></li>
+  <li><a href="../modules/vector2.html">vector2</a></li>
+  <li><a href="../modules/vector3.html">vector3</a></li>
+  <li><a href="../modules/vector4.html">vector4</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>raycaster</code></h1>
+<p>Module for raycaster renderer</p>
+<p>
+
+</p>
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">raycaster = require(&apos;raycaster&apos;)
+
+-- Tile palette for rendering the map
+tiles = {
+   [1] = assets.get_texture(&apos;stonewall.gif)
+}
+
+-- Camera info
+position = vector2.new()
+direction = vector2.new(0, 1)
+fov = 90
+
+-- Sprite
+sprite_texture = assets.get_texture(&apos;sprite.gif&apos;)
+sprite_position = vector2.new()
+
+-- Map
+walls = assets.get_texture(&apos;walls.gif&apos;)
+map = raycaster.Map.new(walls.width, walls.height)
+map.walls = walls.pixels
+
+renderer = raycaster.Renderer:new()
+renderer:feature(&apos;fog&apos;, 16)
+
+-- Render loop
+renderer:clear(&apos;all&apos;)
+renderer:camera(position, direction, fov)
+renderer:render(map, tiles)
+renderer:render(sprite_texture, sprite_position)
+</pre>
+    </ul>
+
+
+<h2><a href="#Class_Renderer">Class Renderer </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:new">Renderer:new ()</a></td>
+	<td class="summary">Creates a raycaster renderer object.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:clear">Renderer:clear (target)</a></td>
+	<td class="summary">Clears internal buffers.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:render">Renderer:render (map, tiles)</a></td>
+	<td class="summary">Renders given map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:render">Renderer:render (sprite, position)</a></td>
+	<td class="summary">Renders given sprite.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:camera">Renderer:camera (position, direction, fov)</a></td>
+	<td class="summary">Set renderer's camera data.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Renderer:feature">Renderer:feature (name, value)</a></td>
+	<td class="summary">Access renderer's features.</td>
+	</tr>
+</table>
+<h2><a href="#Class_Map">Class Map </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Map.new">Map.new (width, height)</a></td>
+	<td class="summary">Create a new map.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#map.walls">map.walls</a></td>
+	<td class="summary">Tile indices for walls.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#map.floors">map.floors</a></td>
+	<td class="summary">Tile indices for floors.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#map.ceilings">map.ceilings</a></td>
+	<td class="summary">Tile indices for ceilings.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Class_Renderer"></a>Class Renderer </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Renderer:new"></a>
+    <strong>Renderer:new ()</strong>
+    </dt>
+    <dd>
+    Creates a raycaster renderer object.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/raycaster.html#Renderer">Renderer</a></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Renderer:clear"></a>
+    <strong>Renderer:clear (target)</strong>
+    </dt>
+    <dd>
+    Clears internal buffers.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">target</span>
+            <span class="types">optional <a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         One of: "all" (default), "color", or "depth".
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Renderer:render"></a>
+    <strong>Renderer:render (map, tiles)</strong>
+    </dt>
+    <dd>
+    Renders given map.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">map</span>
+            <span class="types"><a class="type" href="../modules/raycaster.html#Map">Map</a></span>
+         Map to render.
+        </li>
+        <li><span class="parameter">tiles</span>
+            <span class="types"><a class="type" href="../modules/texture.html#texture">{texture.texture,...}</a></span>
+         An array of textures. Valid range of indices is 0-255.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Renderer:render"></a>
+    <strong>Renderer:render (sprite, position)</strong>
+    </dt>
+    <dd>
+    Renders given sprite.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">sprite</span>
+            <span class="types"><a class="type" href="../modules/texture.html#texture">texture.texture</a></span>
+         Sprite to render.
+        </li>
+        <li><span class="parameter">position</span>
+            <span class="types"><a class="type" href="../modules/vector2.html#vector2">vector2.vector2</a></span>
+         Position of sprite.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Renderer:camera"></a>
+    <strong>Renderer:camera (position, direction, fov)</strong>
+    </dt>
+    <dd>
+    Set renderer's camera data.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">position</span>
+            <span class="types"><a class="type" href="../modules/vector2.html#vector2">vector2.vector2</a></span>
+         Camera position.
+        </li>
+        <li><span class="parameter">direction</span>
+            <span class="types"><a class="type" href="../modules/vector2.html#vector2">vector2.vector2</a></span>
+         Camera forward vector.
+        </li>
+        <li><span class="parameter">fov</span>
+            <span class="types"><span class="type">number</span></span>
+         Camera field of view in degrees.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Renderer:feature"></a>
+    <strong>Renderer:feature (name, value)</strong>
+    </dt>
+    <dd>
+
+<p>Access renderer's features.  If just the feature name is provided, the value of
+ that feature will be returned. If a value is provided, the feature will be set to that value.</p>
+
+<p> <strong>Features:</strong></p>
+
+<ul>
+    <li><span class="parameter">'fogdistance'</span> number Distance at which fog is fully dark.</li>
+    <li><span class="parameter">'shadetable'</span> <a href="../modules/texture.html#">texture</a> Texture to use to shade colors using distance. Setting to nil will render full bright.</li>
+    <li><span class="parameter">'drawwalls'</span> boolean Should walls be drawn?</li>
+    <li><span class="parameter">'drawfloors'</span> boolean Should floors be drawn?</li>
+    <li><span class="parameter">'drawceilings'</span> boolean Should ceilings be drawn?</li>
+    <li><span class="parameter">'wallbrightness'</span> number, number North/south facing wall brightness, east/west facing wall brightness.</li>
+</ul>
+
+
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.4/manual.html#6.4">string</a></span>
+         Feature name.
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types">optional <span class="type">any</span></span>
+         Value to set feature to.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Class_Map"></a>Class Map </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Map.new"></a>
+    <strong>Map.new (width, height)</strong>
+    </dt>
+    <dd>
+    Create a new map.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">integer</span></span>
+         Map width
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">integer</span></span>
+         Map height
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/raycaster.html#Map">Map</a></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "map.walls"></a>
+    <strong>map.walls</strong>
+    </dt>
+    <dd>
+    Tile indices for walls.
+
+
+    <ul>
+        <li><span class="parameter">walls</span>
+            <span class="types"><span class="type">{integer,...}</span></span>
+         Array of integers
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "map.floors"></a>
+    <strong>map.floors</strong>
+    </dt>
+    <dd>
+    Tile indices for floors.
+
+
+    <ul>
+        <li><span class="parameter">floors</span>
+            <span class="types"><span class="type">{integer,...}</span></span>
+         Array of integers
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "map.ceilings"></a>
+    <strong>map.ceilings</strong>
+    </dt>
+    <dd>
+    Tile indices for ceilings.
+
+
+    <ul>
+        <li><span class="parameter">ceilings</span>
+            <span class="types"><span class="type">{integer,...}</span></span>
+         Array of integers
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2023-12-07 09:46:22 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

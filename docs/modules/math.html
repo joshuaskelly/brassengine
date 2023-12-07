@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>brassengine</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/assets.html">assets</a></li>
+  <li><a href="../modules/display.html">display</a></li>
+  <li><a href="../modules/draw.html">draw</a></li>
+  <li><a href="../modules/floatarray.html">floatarray</a></li>
+  <li><a href="../modules/gif.html">gif</a></li>
+  <li><a href="../modules/globals.html">globals</a></li>
+  <li><a href="../modules/graphics.html">graphics</a></li>
+  <li><a href="../modules/intarray.html">intarray</a></li>
+  <li><a href="../modules/json.html">json</a></li>
+  <li><a href="../modules/keyboard.html">keyboard</a></li>
+  <li><strong>math</strong></li>
+  <li><a href="../modules/matrix4.html">matrix4</a></li>
+  <li><a href="../modules/mouse.html">mouse</a></li>
+  <li><a href="../modules/quaternion.html">quaternion</a></li>
+  <li><a href="../modules/raycaster.html">raycaster</a></li>
+  <li><a href="../modules/sound.html">sound</a></li>
+  <li><a href="../modules/statistics.html">statistics</a></li>
+  <li><a href="../modules/texture.html">texture</a></li>
+  <li><a href="../modules/vector2.html">vector2</a></li>
+  <li><a href="../modules/vector3.html">vector3</a></li>
+  <li><a href="../modules/vector4.html">vector4</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>math</code></h1>
+<p>Module that extends the standard Lua math library with useful functions for
+ game development.</p>
+<p> Reference manual for standard math library:</p>
+
+<p> <a href="https://www.lua.org/manual/5.4/manual.html#6.7">https://www.lua.org/manual/5.4/manual.html#6.7</a></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#clamp">clamp (value, min, max)</a></td>
+	<td class="summary">Clamps given value to specified minimum and maximum range.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#lerp">lerp (a, b, t)</a></td>
+	<td class="summary">Linearly interpolate between a and b by t.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#noise">noise (x, y, z)</a></td>
+	<td class="summary">Returns a Perlin noise value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#smoothstep">smoothstep (a, b, t)</a></td>
+	<td class="summary">Interpolates between a and b with smoothing at the limits.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "clamp"></a>
+    <strong>clamp (value, min, max)</strong>
+    </dt>
+    <dd>
+    Clamps given value to specified minimum and maximum range.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+        <li><span class="parameter">min</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+        <li><span class="parameter">max</span>
+            <span class="types"><span class="type">number</span></span>
+
+
+
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        Clamped value between min and max.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "lerp"></a>
+    <strong>lerp (a, b, t)</strong>
+    </dt>
+    <dd>
+    Linearly interpolate between a and b by t.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">a</span>
+            <span class="types"><span class="type">number</span></span>
+         Start value
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         End value
+        </li>
+        <li><span class="parameter">t</span>
+            <span class="types"><span class="type">number</span></span>
+         Interpolation value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        Interpolated value between a and b.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "noise"></a>
+    <strong>noise (x, y, z)</strong>
+    </dt>
+    <dd>
+    Returns a Perlin noise value. </p>
+
+<p> The returned value might be outside the [-1, 1] range. If x, y, and z are
+ all integers the result will be 0.</p>
+
+<p> Adapated from reference implementation at: <a href="https://mrl.cs.nyu.edu/~perlin/noise/">https://mrl.cs.nyu.edu/~perlin/noise/</a>
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">number</span></span>
+         X-coordinate of sample point.
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">number</span></span>
+         Y-coordinate of sample point. (optional)
+        </li>
+        <li><span class="parameter">z</span>
+            <span class="types"><span class="type">number</span></span>
+         Z-coordinate of sample point. (optional)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        float Sampled point.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "smoothstep"></a>
+    <strong>smoothstep (a, b, t)</strong>
+    </dt>
+    <dd>
+    Interpolates between a and b with smoothing at the limits.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">a</span>
+            <span class="types"><span class="type">number</span></span>
+         Start value
+        </li>
+        <li><span class="parameter">b</span>
+            <span class="types"><span class="type">number</span></span>
+         End value
+        </li>
+        <li><span class="parameter">t</span>
+            <span class="types"><span class="type">number</span></span>
+         Interpolation value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">number</span></span>
+        float
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2023-12-07 09:46:22 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>brassengine</h1>
+
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_texture">Class texture </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/assets.html">assets</a></li>
+  <li><a href="../modules/display.html">display</a></li>
+  <li><a href="../modules/draw.html">draw</a></li>
+  <li><a href="../modules/floatarray.html">floatarray</a></li>
+  <li><a href="../modules/gif.html">gif</a></li>
+  <li><a href="../modules/globals.html">globals</a></li>
+  <li><a href="../modules/graphics.html">graphics</a></li>
+  <li><a href="../modules/intarray.html">intarray</a></li>
+  <li><a href="../modules/json.html">json</a></li>
+  <li><a href="../modules/keyboard.html">keyboard</a></li>
+  <li><a href="../modules/math.html">math</a></li>
+  <li><a href="../modules/matrix4.html">matrix4</a></li>
+  <li><a href="../modules/mouse.html">mouse</a></li>
+  <li><a href="../modules/quaternion.html">quaternion</a></li>
+  <li><a href="../modules/raycaster.html">raycaster</a></li>
+  <li><a href="../modules/sound.html">sound</a></li>
+  <li><a href="../modules/statistics.html">statistics</a></li>
+  <li><strong>texture</strong></li>
+  <li><a href="../modules/vector2.html">vector2</a></li>
+  <li><a href="../modules/vector3.html">vector3</a></li>
+  <li><a href="../modules/vector4.html">vector4</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>texture</code></h1>
+<p>Module for working with texture data.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#new">new (width, height)</a></td>
+	<td class="summary">Create new texture.</td>
+	</tr>
+</table>
+<h2><a href="#Class_texture">Class texture </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#texture:copy">texture:copy ()</a></td>
+	<td class="summary">Returns a copy of this texture.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture:clear">texture:clear (color)</a></td>
+	<td class="summary">Fill entire texture with color.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture:set_pixel">texture:set_pixel (x, y, color)</a></td>
+	<td class="summary">Sets pixel at given position and color.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture:get_pixel">texture:get_pixel (x, y)</a></td>
+	<td class="summary">Gets pixel at given position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture:blit">texture:blit (source, x, y)</a></td>
+	<td class="summary">Copy given source texture to this texture with given offset.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture.pixels">texture.pixels</a></td>
+	<td class="summary">An array copy of pixel indices.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture.width">texture.width</a></td>
+	<td class="summary">Texture width in pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#texture.height">texture.height</a></td>
+	<td class="summary">Texture height in pixels.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "new"></a>
+    <strong>new (width, height)</strong>
+    </dt>
+    <dd>
+    Create new texture.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">integer</span></span>
+         Texture width
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">integer</span></span>
+         Texture height
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/texture.html#texture">texture</a></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Class_texture"></a>Class texture </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "texture:copy"></a>
+    <strong>texture:copy ()</strong>
+    </dt>
+    <dd>
+    Returns a copy of this texture.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/texture.html#texture">texture</a></span>
+
+
+
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture:clear"></a>
+    <strong>texture:clear (color)</strong>
+    </dt>
+    <dd>
+    Fill entire texture with color.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">color</span>
+            <span class="types"><span class="type">integer</span></span>
+         Fill color
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture:set_pixel"></a>
+    <strong>texture:set_pixel (x, y, color)</strong>
+    </dt>
+    <dd>
+    Sets pixel at given position and color.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         Pixel x-coordinate
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         Pixel y-coordinate
+        </li>
+        <li><span class="parameter">color</span>
+            <span class="types"><span class="type">integer</span></span>
+         Pixel color
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture:get_pixel"></a>
+    <strong>texture:get_pixel (x, y)</strong>
+    </dt>
+    <dd>
+    Gets pixel at given position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         Pixel x-coordinate
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         Pixel y-coordinate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">integer</span></span>
+        Pixel color
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture:blit"></a>
+    <strong>texture:blit (source, x, y)</strong>
+    </dt>
+    <dd>
+    Copy given source texture to this texture with given offset.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">source</span>
+            <span class="types"><a class="type" href="../modules/texture.html#texture">texture.texture</a></span>
+         Texture to copy from
+        </li>
+        <li><span class="parameter">x</span>
+            <span class="types"><span class="type">integer</span></span>
+         Destination x-offset
+        </li>
+        <li><span class="parameter">y</span>
+            <span class="types"><span class="type">integer</span></span>
+         Destination y-offset
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture.pixels"></a>
+    <strong>texture.pixels</strong>
+    </dt>
+    <dd>
+    An array copy of pixel indices.
+
+
+    <ul>
+        <li><span class="parameter">pixels</span>
+            <span class="types"><span class="type">{integer,...}</span></span>
+
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture.width"></a>
+    <strong>texture.width</strong>
+    </dt>
+    <dd>
+    Texture width in pixels.
+
+
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">integer</span></span>
+         (read-only)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "texture.height"></a>
+    <strong>texture.height</strong>
+    </dt>
+    <dd>
+    Texture height in pixels.
+
+
+    <ul>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">integer</span></span>
+         (read-only)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
+<i style="float:right;">Last updated 2023-12-07 09:46:22 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
