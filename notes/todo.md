@@ -4,11 +4,11 @@
 - [ ] Gamepad input
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] Support for custom console background. Custom draw callback?
+- [ ] Threaded rendering
 - [ ] iOS platform
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
-- [ ] Array struct.
 - [x] Support for loading all frames from GIF files.
 - [x] Support for creating/modifiying sound objects.
 - [x] Error on missing main.lua instead of segfaulting.
@@ -21,6 +21,7 @@
 - [x] Rename bindings directory to modules.
 - [x] Override Lua `io.open()` to sandbox/support zips. [Related SO question](https://stackoverflow.com/questions/20715652/how-to-wrap-the-io-functions-in-lua-to-prevent-the-user-from-leaving-x-directory)
 - [x] Fix web build. Lua isn't linking?
+- [ ] ~~Array struct.~~
 
 ## Raycaster Renderer
 - [ ] Direction aligned sprites
@@ -48,10 +49,11 @@
 - [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
 
 ## Console
-- [ ] Tab completion?
+- [ ] Ensure console colors + clear colors are correct before draw
 - [ ] Word navigation (ctrl + key)
   - [ ] Left/right
   - [ ] Delete/backspace
+- [ ] Tab completion?
 - [x] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
 - [x] Split on new lines
@@ -66,8 +68,9 @@
 - [ ] Streaming audio support?
 - [ ] Remove SDL Mixer dependency?
 
-## Documentation Improvements
-- [ ] Prefer degrees/radians in place of angle/fov
-- [ ] Prefer amount over t
-- [ ] Restructure vector2/3/4 to reflect OO methods (like matrix/quaternion)
+## Documentation
+- [ ] Fix how Language Server definition script treats global functions. (fix globals.lua and math.lua)
+- [x] Restructure vector2/3/4 to reflect OO methods (like matrix/quaternion)
+- [x] Prefer degrees/radians in place of angle/fov
 - [x] Types for parameters and return values.
+- [ ] ~~Prefer amount over t~~
