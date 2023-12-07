@@ -1,2 +1,4 @@
 demos/** linguist-vendored
+docs/** linguist-vendored
+library/** linguist-vendored
 libs/** linguist-vendored
