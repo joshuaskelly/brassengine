@@ -23,6 +23,7 @@ function library.filter(modules)
         lines:concat(module_content)
 
         local source = lines:join()
+        source = string.gsub(source, "\n\n\n", "\n\n")
 
         local f = assert(io.open("./library/" .. module.name .. ".lua", "w"))
         f:write(source)
