@@ -81,6 +81,8 @@ static int vector2_gc(lua_State* L) {
 /**
  * Returns a new vector2
  * @function new
+ * @tparam number x
+ * @tparam number y
  * @treturn vector2
  */
 static int vector2_new(lua_State* L) {
@@ -416,7 +418,7 @@ static int vector2_normalize(lua_State* L) {
  * @function dot
  * @tparam vector2 v0
  * @tparam vector2 v1
- * @return float
+ * @treturn number Dot product
  */
 static int vector2_dot(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -554,7 +556,7 @@ static int vector2_lerp(lua_State* L) {
  * Get counterclockwise angle in radians between the positive x-axis and v0.
  * @function angle
  * @tparam vector2 v0
- * @return float Angle in radians.
+ * @treturn number Angle in radians.
  */
 static int vector2_angle(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -572,7 +574,7 @@ static int vector2_angle(lua_State* L) {
  * Get vector magnitude.
  * @function length
  * @tparam vector2 v0
- * @return float
+ * @treturn number Length
  */
 static int vector2_length(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -590,7 +592,7 @@ static int vector2_length(lua_State* L) {
  * Get vector squared magnitude.
  * @function length_squared
  * @tparam vector2 v0
- * @return float
+ * @treturn number Squared length
  */
 static int vector2_length_squared(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -609,7 +611,7 @@ static int vector2_length_squared(lua_State* L) {
  * @function distance
  * @tparam vector2 v0
  * @tparam vector2 v1
- * @return float
+ * @treturn number Distance
  */
 static int vector2_distance(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
@@ -629,7 +631,7 @@ static int vector2_distance(lua_State* L) {
  * @function distance_squared
  * @tparam vector2 v0
  * @tparam vector2 v1
- * @return float
+ * @treturn number Squared distance
  */
 static int vector2_distance_squared(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);

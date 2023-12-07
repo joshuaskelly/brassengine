@@ -93,6 +93,10 @@ static int vector4_gc(lua_State* L) {
 /**
  * Returns a new vector4
  * @function new
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @tparam number w
  * @treturn vector4
  */
 static int vector4_new(lua_State* L) {
