@@ -49,7 +49,7 @@ static int bindings_display_set_aspect(lua_State* L) {
 /**
  * Set display fullscreen.
  * @function set_fullscreen
- * @tparam bool fullscreen True if to set to fullscreen, False for windowed.
+ * @tparam boolean fullscreen True if to set to fullscreen, False for windowed.
  */
 static int bindings_display_set_window_fullscreen(lua_State* L) {
     bool fullscreen = (bool)lua_toboolean(L, 1);

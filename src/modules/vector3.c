@@ -97,6 +97,9 @@ static int vector3_gc(lua_State* L) {
 /**
  * Returns a new vector3
  * @function new
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
  * @treturn vector3
  */
 static int vector3_new(lua_State* L) {

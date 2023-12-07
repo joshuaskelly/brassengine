@@ -17,7 +17,7 @@
  * Get texture for given filename and frame
  * @function get_texture
  * @tparam string filename Name of texture asset to look for
- * @tparam ?int frame Index of frame (default 1)
+ * @tparam ?integer frame Index of frame (default 1)
  * @treturn texture.texture Texture userdata if found, nil otherwise.
  */
 static int bindings_assets_get_texture(lua_State* L) {
