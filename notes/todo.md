@@ -49,11 +49,11 @@
 - [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
 
 ## Console
-- [ ] Ensure console colors + clear colors are correct before draw
 - [ ] Word navigation (ctrl + key)
   - [ ] Left/right
   - [ ] Delete/backspace
 - [ ] Tab completion?
+- [x] Ensure console colors + clear colors are correct before draw
 - [x] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
 - [x] Split on new lines
