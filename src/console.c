@@ -336,12 +336,16 @@ void console_update(void) {
 void console_draw(void) {
     if (!visible) return;
 
-    // Get palette
+    // Preserve palette + transparent color
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
     color_t foreground = palette[1];
+    color_t transparent_color = graphics_transparent_color_get();
+
+    // Set palette + transparent color
     palette[0] = config->console.colors.background;
     palette[1] = config->console.colors.foreground;
+    graphics_transparent_color_set(config->console.colors.transparent);
 
     rect_t console_rect = {
         0,
@@ -390,9 +394,10 @@ void console_draw(void) {
         draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
     }
 
-    // Restore palette
+    // Restore palette + transparent color
     palette[0] = background;
     palette[1] = foreground;
+    graphics_transparent_color_set(transparent_color);
 
     graphics_set_clipping_rectangle(NULL);
 }

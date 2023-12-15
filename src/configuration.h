@@ -20,6 +20,7 @@ extern struct config {
         struct {
             int foreground;
             int background;
+            int transparent;
             int cursor;
         } colors;
         char* prompt;
