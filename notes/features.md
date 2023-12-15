@@ -11,7 +11,7 @@ Embedded Lua.
 2. Interactive dev console REPL.
 
 ## 3. Open Standards
-Uses widely available formats for assets.
+Uses open and durable formats for assets.
 1. GIF for 2D graphics.
 2. WAV for audio.
 3. JSON built-in.

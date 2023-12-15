@@ -3,7 +3,6 @@
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Override io.lines() to sandbox/support zips.
-- [ ] Support for custom console background. Custom draw callback?
 - [ ] Threaded rendering
 - [ ] iOS platform
 - [ ] Default palette?
@@ -53,6 +52,7 @@
   - [ ] Left/right
   - [ ] Delete/backspace
 - [ ] Tab completion?
+- [ ] Support for custom console background. Custom draw callback?
 - [x] Ensure console colors + clear colors are correct before draw
 - [x] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
