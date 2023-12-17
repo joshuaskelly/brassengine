@@ -48,7 +48,7 @@
 - [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
 
 ## Console
-- [ ] Word navigation (ctrl + key)
+- [ ] Word navigation (ctrl + key) Needs to be alt + arrow on Mac 😫
   - [ ] Left/right
   - [ ] Delete/backspace
 - [ ] Tab completion?
