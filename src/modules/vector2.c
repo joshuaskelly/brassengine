@@ -81,8 +81,8 @@ static int vector2_gc(lua_State* L) {
 /**
  * Returns a new vector2
  * @function new
- * @tparam number x
- * @tparam number y
+ * @tparam ?number x
+ * @tparam ?number y
  * @treturn vector2
  */
 static int vector2_new(lua_State* L) {

@@ -86,6 +86,11 @@ static int vector4_gc(lua_State* L) {
  */
 
 /**
+ * W component of the vector
+ * @tfield number w
+ */
+
+/**
  * Functions
  * @section Functions
  */
@@ -93,10 +98,10 @@ static int vector4_gc(lua_State* L) {
 /**
  * Returns a new vector4
  * @function new
- * @tparam number x
- * @tparam number y
- * @tparam number z
- * @tparam number w
+ * @tparam ?number x
+ * @tparam ?number y
+ * @tparam ?number z
+ * @tparam ?number w
  * @treturn vector4
  */
 static int vector4_new(lua_State* L) {
