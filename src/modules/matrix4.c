@@ -543,7 +543,7 @@ static int matrix4_scaling(lua_State* L) {
 static int matrix4_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
-    // Vector multiplication
+    // vector4 multiplication
     if (lua_isvector4(L, 2)) {
         mfloat_t* v0 = luaL_checkvector4(L, 2);
 
@@ -554,6 +554,7 @@ static int matrix4_multiply(lua_State* L) {
 
         lua_newvector4(L, result[0], result[1], result[2], result[3]);
     }
+    // vector3 multiplication
     else if (lua_isvector3(L, 2)) {
         mfloat_t* v0 = luaL_checkvector3(L, 2);
 
@@ -563,6 +564,17 @@ static int matrix4_multiply(lua_State* L) {
         vec4_multiply_mat4(v1, v1, m0);
 
         lua_newvector3(L, v1[0], v1[1], v1[2]);
+    }
+    // Scalar multiplication
+    else if (lua_isnumber(L, 2)) {
+        mfloat_t f = luaL_checknumber(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[MAT4_SIZE];
+        mat4_multiply_f(result, m0, f);
+
+        lua_newmatrix4_from_matrix(L, result);
     }
     // Matrix multiplication
     else {

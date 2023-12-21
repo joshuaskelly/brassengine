@@ -423,7 +423,7 @@ static int matrix3_scaling(lua_State* L) {
 static int matrix3_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
-    // Vector multiplication
+    // vector3 multiplication
     if (lua_isvector3(L, 2)) {
         mfloat_t* v0 = luaL_checkvector3(L, 2);
 
@@ -434,13 +434,14 @@ static int matrix3_multiply(lua_State* L) {
 
         lua_newvector3(L, v1[0], v1[1], v1[2]);
     }
+    // Scalar multiplication
     else if (lua_isnumber(L, 2)) {
         mfloat_t f = luaL_checknumber(L, 2);
 
         lua_settop(L, 0);
 
         mfloat_t result[MAT3_SIZE];
-        vec3_multiply_f(result, m0, f);
+        mat3_multiply_f(result, m0, f);
 
         lua_newmatrix3_from_matrix(L, result);
     }
