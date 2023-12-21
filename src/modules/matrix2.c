@@ -12,7 +12,6 @@
 #include <mathc/mathc.h>
 
 #include "matrix2.h"
-#include "quaternion.h"
 #include "vector2.h"
 
 bool lua_ismatrix2(lua_State*L, int index) {
