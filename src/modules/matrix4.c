@@ -248,14 +248,14 @@ static int matrix4_translate(lua_State* L) {
 
 /**
  * Scales matrix in-place.
- * @function translate
+ * @function scale
  * @tparam vector3.vector3 v0
  * @treturn matrix4
  */
 
 /**
  * Scales matrix in-place.
- * @function translate
+ * @function scale
  * @tparam number x
  * @tparam number y
  * @tparam number z
