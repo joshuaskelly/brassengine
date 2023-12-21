@@ -13,6 +13,15 @@
 
 #include "vector2.h"
 
+bool lua_isvector2(lua_State*L, int index) {
+    void* p = luaL_testudata(L, index, "vector2");
+    if (p == NULL) {
+        p = luaL_testudata(L, index, "vector2_nogc");
+    }
+
+    return p != NULL;
+}
+
 mfloat_t* luaL_checkvector2(lua_State* L, int index) {
     mfloat_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
