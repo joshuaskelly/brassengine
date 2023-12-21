@@ -254,12 +254,12 @@ static int matrix3_new(lua_State* L) {
     float m11 = (float)luaL_optnumber(L, 1, 0);
     float m21 = (float)luaL_optnumber(L, 2, 0);
     float m31 = (float)luaL_optnumber(L, 3, 0);
-    float m12 = (float)luaL_optnumber(L, 5, 0);
-    float m22 = (float)luaL_optnumber(L, 6, 0);
-    float m32 = (float)luaL_optnumber(L, 7, 0);
-    float m13 = (float)luaL_optnumber(L, 9, 0);
-    float m23 = (float)luaL_optnumber(L, 10, 0);
-    float m33 = (float)luaL_optnumber(L, 11, 0);
+    float m12 = (float)luaL_optnumber(L, 4, 0);
+    float m22 = (float)luaL_optnumber(L, 5, 0);
+    float m32 = (float)luaL_optnumber(L, 6, 0);
+    float m13 = (float)luaL_optnumber(L, 7, 0);
+    float m23 = (float)luaL_optnumber(L, 8, 0);
+    float m33 = (float)luaL_optnumber(L, 9, 0);
 
     lua_settop(L, 0);
 
