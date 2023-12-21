@@ -42,12 +42,12 @@ int lua_newmatrix3(lua_State* L, float m11, float m21, float m31, float m12, flo
     m0[0] = m11;
     m0[1] = m21;
     m0[2] = m31;
-    m0[4] = m12;
-    m0[5] = m22;
-    m0[6] = m32;
-    m0[8] = m13;
-    m0[9] = m23;
-    m0[10] = m33;
+    m0[3] = m12;
+    m0[4] = m22;
+    m0[5] = m32;
+    m0[6] = m13;
+    m0[7] = m23;
+    m0[8] = m33;
 
     *handle = m0;
 
@@ -68,13 +68,6 @@ int lua_newmatrix3_from_matrix(lua_State* L, mfloat_t* m0) {
     m1[6] = m0[6];
     m1[7] = m0[7];
     m1[8] = m0[8];
-    m1[9] = m0[9];
-    m1[10] = m0[10];
-    m1[11] = m0[11];
-    m1[12] = m0[12];
-    m1[13] = m0[13];
-    m1[14] = m0[14];
-    m1[15] = m0[15];
 
     *handle = m1;
 
