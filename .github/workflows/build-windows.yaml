@@ -17,6 +17,7 @@ jobs:
         update: true
         install: >-
           git
+          make
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Checkout repository
