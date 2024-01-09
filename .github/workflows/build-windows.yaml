@@ -20,6 +20,7 @@ jobs:
           git
           make
           mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-glew
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Checkout repository
@@ -31,7 +32,7 @@ jobs:
     - name: make lua
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
-      run: make desktop
+      run: make desktop-opengl
     - name: Copy assets
       run: cp -r assets ./build/bin
     - name: Package artifacts
