@@ -5,7 +5,7 @@ on:
     branches: [ "features/github-actions" ]
 
 jobs:
-  msys2-ucrt64:
+  build-windows-msys2:
     runs-on: windows-latest
     defaults:
       run:
@@ -19,6 +19,7 @@ jobs:
           gcc
           git
           make
+          mingw-w64-x86_64-glew
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Checkout repository
