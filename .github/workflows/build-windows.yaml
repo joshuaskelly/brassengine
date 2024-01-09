@@ -38,5 +38,5 @@ jobs:
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: dist
+        name: brassengine-{{vars.GITHUB_REF}}
         path: ./build/bin
