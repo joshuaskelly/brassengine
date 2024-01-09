@@ -35,6 +35,8 @@ jobs:
       run: make desktop-opengl
     - name: Create out dir
       run: mkdir -p dist/brassengine-windows64-${{github.ref_name}}
+    - name: Copy binary
+      run: cp ./build/bin/brass.exe ./dist/brassengine-windows64-${{github.ref_name}}
     - name: Copy assets
       run: cp -r assets ./dist/brassengine-windows64-${{github.ref_name}}
     - name: Copy dlls
