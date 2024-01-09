@@ -28,6 +28,9 @@ jobs:
       run: git submodule update --init --recursive
     - name: make clean
       run: make clean
+    - run: cd ./libs/lua
+    - run: make a CFLAGS+=-DLUA_USE_LONGJUMP
+    - run: cd ../..
     - name: make
       run: make desktop
     - uses: actions/upload-artifact@v4
