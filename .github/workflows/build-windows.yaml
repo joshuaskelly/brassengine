@@ -36,7 +36,7 @@ jobs:
     - name: Copy assets
       run: cp -r assets ./build/bin
     - name: Copy dlls
-      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll ./build/bin
+      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./build/bin
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
