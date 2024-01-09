@@ -14,6 +14,7 @@ jobs:
     - name: Setup MSYS2
       uses: msys2/setup-msys2@v2
       with:
+        msystem: UCRT64
         update: true
         install: >-
           gcc
