@@ -42,5 +42,5 @@ jobs:
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: brassengine-${{ github.ref }}
+        name: brassengine-${{ github.ref_name }}
         path: ./build/bin
