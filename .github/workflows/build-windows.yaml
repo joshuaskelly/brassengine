@@ -1,0 +1,22 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ "features/github-actions" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+    - name: make
+      run: make desktop-opengl
+    - uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: .
