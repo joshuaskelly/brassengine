@@ -23,6 +23,8 @@ jobs:
           mingw-w64-x86_64-glew
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
+    - name: Setup env
+      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Checkout submodules
@@ -33,12 +35,16 @@ jobs:
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
       run: make desktop-opengl
+    - name: Create out dir
+      run: mkdir -p dist/${{ env.engine_ver }}
+    - name: Copy binary
+      run: cp ./build/bin/brass.exe ./dist/${{ env.engine_ver }}
     - name: Copy assets
-      run: cp -r assets ./build/bin
+      run: cp -r assets ./dist/${{ env.engine_ver }}
     - name: Copy dlls
-      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./build/bin
+      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./dist/${{ env.engine_ver }}
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: brassengine-windows64
-        path: ./build/bin
+        name: ${{ env.engine_ver }}
+        path: ./dist
