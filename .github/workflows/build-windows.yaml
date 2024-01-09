@@ -2,7 +2,11 @@ name: Build Windows
 
 on:
   push:
-    branches: [ "features/github-actions" ]
+    tags:
+      - '**'
+    branches:
+      - main
+    pull_request:
 
 jobs:
   build-windows-msys2:
