@@ -20,7 +20,6 @@ jobs:
           gcc
           git
           make
-          mingw-w64-x86_64-glew
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Checkout repository
@@ -30,7 +29,7 @@ jobs:
     - name: make clean
       run: make clean
     - name: make
-      run: make desktop-opengl
+      run: make desktop
     - uses: actions/upload-artifact@v4
       with:
         name: dist
