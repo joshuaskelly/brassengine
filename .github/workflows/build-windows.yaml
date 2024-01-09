@@ -35,6 +35,10 @@ jobs:
       run: make desktop-opengl
     - name: Copy assets
       run: cp -r assets ./build/bin
+    - name: Copy SDL2.dll
+      run: cp /mingw64/bin/SDL2.dll ./build/bin
+    - name: Copy SDL2_mixer.dll
+      run: cp /mingw64/bin/SDL2_mixer.dll ./build/bin
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
