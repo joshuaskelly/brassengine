@@ -32,7 +32,10 @@ jobs:
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
       run: make desktop
-    - uses: actions/upload-artifact@v4
+    - name: Copy assets
+      run: cp -r assets ./build/bin
+    - name: Package artifacts
+      uses: actions/upload-artifact@v4
       with:
         name: dist
         path: ./build/bin
