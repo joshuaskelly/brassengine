@@ -24,7 +24,7 @@ jobs:
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Setup env
-      run: echo "engine_ver=brassengine-windows64" >> "$GITHUB_ENV"
+      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" >> "$GITHUB_ENV"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Checkout submodules
