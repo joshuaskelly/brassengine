@@ -24,8 +24,6 @@ jobs:
           make
           mingw-w64-x86_64-gcc
           mingw-w64-x86_64-glew
-          mingw-w64-x86_64-lua
-          mingw-w64-x86_64-lua-luarocks
           mingw-w64-x86_64-SDL2
           mingw-w64-x86_64-SDL2_mixer
     - name: Setup env
@@ -40,10 +38,6 @@ jobs:
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
       run: make desktop-opengl
-    - name: Install LDoc
-      run: luarocks install ldoc
-    - name: make docs
-      run: make docsclean && make docs
     - name: Create out dir
       run: mkdir -p dist/${{ env.engine_ver }}
     - name: Copy binary
