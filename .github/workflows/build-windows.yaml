@@ -2,7 +2,8 @@ name: Build Windows
 
 on:
   push:
-    branches: [ "github-actions" ]
+    tags:
+      - '**'
 
 jobs:
   build-windows-msys2:
@@ -35,14 +36,20 @@ jobs:
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
       run: make desktop-opengl
+    - name: make docs
+      run: make docsclean && make docs
     - name: Create out dir
       run: mkdir -p dist/${{ env.engine_ver }}
     - name: Copy binary
       run: cp ./build/bin/brass.exe ./dist/${{ env.engine_ver }}
     - name: Copy assets
       run: cp -r assets ./dist/${{ env.engine_ver }}
+    - name: Copy demos
+      run: cp -r demos ./dist/${{ env.engine_ver }}
     - name: Copy dlls
       run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./dist/${{ env.engine_ver }}
+    - name: Copy docs
+      run: cp -r docs ./dist/${{ env.engine_ver }}
     - name: Package artifacts
       uses: actions/upload-artifact@v4
       with:
