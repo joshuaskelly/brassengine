@@ -28,6 +28,7 @@ jobs:
         path: docs
 
   build-windows-msys2:
+    needs: generate-docs
     runs-on: windows-latest
     defaults:
       run:
