@@ -7,7 +7,8 @@ on:
 
 jobs:
   generate-docs:
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
+    steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
