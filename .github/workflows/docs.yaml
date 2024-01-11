@@ -7,19 +7,7 @@ on:
 
 jobs:
   generate-docs:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-    - name: Setup MSYS2
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
-        install: >-
-          git
-          make
+    runs-on: linux-latest
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -27,8 +15,13 @@ jobs:
     - uses: leafo/gh-actions-luarocks@v4
 
     # Install some package
-    - name: install a module
+    - name: Install LDoc
       run: luarocks install ldoc
 
     - name: make docs
       run: make docsclean && make docs
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: docs
+        path: docs
