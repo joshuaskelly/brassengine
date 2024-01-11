@@ -1,0 +1,32 @@
+name: Generate Docs
+
+on:
+  push:
+    branches:
+      - 'generate-docs'
+
+jobs:
+  generate-docs:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          git
+          make
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-glew
+          mingw-w64-x86_64-SDL2
+          mingw-w64-x86_64-SDL2_mixer
+    - name: Setup env
+      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: make docs
+      run: make docsclean && make docs
