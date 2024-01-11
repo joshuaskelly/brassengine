@@ -25,11 +25,12 @@ jobs:
           mingw-w64-x86_64-lua-luarocks
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Create temp dir
+    - name: Create luarocks directories
       run: |
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/lua/5.4
-        mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/markdown/0.32-2/lib
+        mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/ldoc/1.5.0-1/bin
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/luafilesystem/1.8.0-1/lua
+        mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/markdown/0.32-2/lib
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/penlight/1.13.1-1/lib
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/share/lua/5.4
     - name: Install ldoc
