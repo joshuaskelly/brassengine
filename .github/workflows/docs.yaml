@@ -24,6 +24,8 @@ jobs:
           mingw-w64-x86_64-lua-luarocks
     - name: Checkout repository
       uses: actions/checkout@v4
+    - name: Install markdown
+      run: luarocks install markdown
     - name: Install ldoc
       run: luarocks install ldoc
     - name: make docs
