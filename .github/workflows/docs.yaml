@@ -24,8 +24,8 @@ jobs:
           mingw-w64-x86_64-lua-luarocks
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Create temp dir
-      run: mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/markdown/0.32-2/lib
+    - name: Create mkdir alias
+      run: alias mkdir='mkdir -p'
     - name: Install ldoc
       run: luarocks install --local ldoc
     - name: make docs
