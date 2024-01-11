@@ -20,6 +20,7 @@ jobs:
         install: >-
           git
           make
+          mingw-w64-x86_64-gcc
           mingw-w64-x86_64-lua
           mingw-w64-x86_64-lua-luarocks
     - name: Checkout repository
