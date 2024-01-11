@@ -28,6 +28,7 @@ jobs:
       run: |
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/markdown/0.32-2/lib
         mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/share/lua/5.4
+        mkdir -p D:/a/_temp/msys64/home/runneradmin/.luarocks/lib/luarocks/rocks-5.4/luafilesystem/1.8.0-1/lua
     - name: Install ldoc
       run: luarocks install --local ldoc
     - name: make docs
