@@ -20,12 +20,8 @@ jobs:
         install: >-
           git
           make
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-glew
-          mingw-w64-x86_64-SDL2
-          mingw-w64-x86_64-SDL2_mixer
-    - name: Setup env
-      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
+          mingw-w64-x86_64-lua
+          mingw-w64-x86_64-lua-luarocks
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: make docs
