@@ -49,7 +49,7 @@ jobs:
     - name: Copy dlls
       run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./dist/${{ env.engine_ver }}
     - name: Generate docs
-      uses: lunarmodules/ldoc@v0
+      uses: lunarmodules/ldoc@v1
       with:
         args: src/modules -d docs -p brassengine -f markdown
     - name: Copy docs
