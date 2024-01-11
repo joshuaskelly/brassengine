@@ -1,9 +1,9 @@
-name: Build Windows
+name: Generate Docs
 
 on:
   push:
-    tags:
-      - '**'
+    branches:
+      - 'generate-docs'
 
 jobs:
   generate-docs:

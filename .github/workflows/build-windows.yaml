@@ -6,6 +6,27 @@ on:
       - '**'
 
 jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - uses: leafo/gh-actions-lua@v9
+    - uses: leafo/gh-actions-luarocks@v4
+
+    # Install some package
+    - name: Install LDoc
+      run: luarocks install ldoc
+
+    - name: make docs
+      run: make docsclean && make docs
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: docs
+        path: docs
+
   build-windows-msys2:
     runs-on: windows-latest
     defaults:
@@ -36,8 +57,13 @@ jobs:
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
       run: make desktop-opengl
-    - name: make docs
-      run: make docsclean && make docs
+    - name: make docsclean
+      run: make docsclean
+    - name: Download docs
+      uses: actions/download-artifact@master
+      with:
+        name: docs
+        path: docs
     - name: Create out dir
       run: mkdir -p dist/${{ env.engine_ver }}
     - name: Copy binary
