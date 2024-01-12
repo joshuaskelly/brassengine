@@ -82,3 +82,13 @@ jobs:
       with:
         name: ${{ env.engine_ver }}
         path: ./dist
+
+  clean-up-docs:
+    needs: build-windows-msys2
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete docs artifact
+      uses: geekyeggo/delete-artifact@v4
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: docs
