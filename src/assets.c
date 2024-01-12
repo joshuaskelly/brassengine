@@ -531,6 +531,14 @@ static bool load_assets(void) {
 
         // Otherwise set the asset directory and fall through
         assets_directory = (char*)zip_or_directory;
+
+        // Sanitize Windows-style path separators
+        size_t len = strlen(assets_directory);
+        for (size_t i = 0; i < len; i++) {
+            if (assets_directory[i] == '\\') {
+                assets_directory[i] = '/';
+            }
+        }
     }
 
     return load_from_assets_directory();
