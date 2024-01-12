@@ -1,9 +1,9 @@
-name: Generate Docs
+name: Build Brass Engine
 
 on:
   push:
-    branches:
-      - 'generate-docs'
+    tags:
+      - '**'
 
 jobs:
   generate-docs:
@@ -83,7 +83,7 @@ jobs:
         name: ${{ env.engine_ver }}
         path: ./dist
 
-  clean-up-docs:
+  cleanup-docs:
     needs: build-windows-msys2
     runs-on: ubuntu-latest
     steps:
