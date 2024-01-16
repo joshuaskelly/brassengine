@@ -5,6 +5,9 @@
 
 #include <mathc/mathc.h>
 
+/* Checks if given arg is a vector3 userdata. */
+bool lua_isvector2(lua_State* L, int index);
+
 /* Checks whether the function argument arg is a vector2 and returns a mfloat_t*. */
 mfloat_t* luaL_checkvector2(lua_State* L, int index);
 

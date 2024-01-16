@@ -145,28 +145,54 @@ static int vector3_one(lua_State* L) {
 
 static int vector3_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
-    mfloat_t* v1 = luaL_checkvector3(L, 2);
 
-    lua_settop(L, 0);
+    if (lua_isnumber(L, 2)) {
+        mfloat_t f = luaL_checknumber(L, 2);
 
-    mfloat_t result[VEC3_SIZE];
-    vec3_add(result, v0, v1);
+        lua_settop(L, 0);
 
-    lua_newvector3(L, result[0], result[1], result[2]);
+        mfloat_t result[VEC3_SIZE];
+        vec3_add_f(result, v0, f);
+
+        lua_newvector3(L, result[0], result[1], result[2]);
+    }
+    else {
+        mfloat_t* v1 = luaL_checkvector3(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC3_SIZE];
+        vec3_add(result, v0, v1);
+
+        lua_newvector3(L, result[0], result[1], result[2]);
+    }
 
     return 1;
 }
 
 static int vector3_subtract(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
-    mfloat_t* v1 = luaL_checkvector3(L, 2);
 
-    lua_settop(L, 0);
+    if (lua_isnumber(L, 2)) {
+        mfloat_t f = luaL_checknumber(L, 2);
 
-    mfloat_t result[VEC3_SIZE];
-    vec3_subtract(result, v0, v1);
+        lua_settop(L, 0);
 
-    lua_newvector3(L, result[0], result[1], result[2]);
+        mfloat_t result[VEC3_SIZE];
+        vec3_subtract_f(result, v0, f);
+
+        lua_newvector3(L, result[0], result[1], result[2]);
+    }
+    else {
+        mfloat_t* v1 = luaL_checkvector3(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC3_SIZE];
+        vec3_subtract(result, v0, v1);
+
+        lua_newvector3(L, result[0], result[1], result[2]);
+    }
 
     return 1;
 }

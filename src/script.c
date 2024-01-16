@@ -26,6 +26,8 @@
 #include "modules/int_array.h"
 #include "modules/json.h"
 #include "modules/keyboard.h"
+#include "modules/matrix2.h"
+#include "modules/matrix3.h"
 #include "modules/matrix4.h"
 #include "modules/math_extensions.h"
 #include "modules/mouse.h"
@@ -58,6 +60,8 @@ static const luaL_Reg modules[] = {
     {"intarray", luaopen_intarray},
     {"texture", luaopen_texture},
     {"keyboard", luaopen_keyboard},
+    {"matrix2", luaopen_matrix2},
+    {"matrix3", luaopen_matrix3},
     {"matrix4", luaopen_matrix4},
     {"mouse", luaopen_mouse},
     {"quaternion", luaopen_quaternion},

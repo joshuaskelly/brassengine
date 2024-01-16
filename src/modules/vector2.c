@@ -13,6 +13,15 @@
 
 #include "vector2.h"
 
+bool lua_isvector2(lua_State*L, int index) {
+    void* p = luaL_testudata(L, index, "vector2");
+    if (p == NULL) {
+        p = luaL_testudata(L, index, "vector2_nogc");
+    }
+
+    return p != NULL;
+}
+
 mfloat_t* luaL_checkvector2(lua_State* L, int index) {
     mfloat_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -111,28 +120,54 @@ static int vector2_equal(lua_State* L) {
 
 static int vector2_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
-    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
-    lua_settop(L, 0);
+    if (lua_isnumber(L, 2)) {
+        mfloat_t f = luaL_checknumber(L, 2);
 
-    mfloat_t result[VEC2_SIZE];
-    vec2_add(result, v0, v1);
+        lua_settop(L, 0);
 
-    lua_newvector2(L, result[0], result[1]);
+        mfloat_t result[VEC2_SIZE];
+        vec2_add_f(result, v0, f);
+
+        lua_newvector2(L, result[0], result[1]);
+    }
+    else {
+        mfloat_t* v1 = luaL_checkvector2(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC2_SIZE];
+        vec2_add(result, v0, v1);
+
+        lua_newvector2(L, result[0], result[1]);
+    }
 
    return 1;
 }
 
 static int vector2_subtract(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
-    mfloat_t* v1 = luaL_checkvector2(L, 2);
 
-    lua_settop(L, 0);
+    if (lua_isnumber(L, 2)) {
+        mfloat_t f = luaL_checknumber(L, 2);
 
-    mfloat_t result[VEC2_SIZE];
-    vec2_subtract(result, v0, v1);
+        lua_settop(L, 0);
 
-    lua_newvector2(L, result[0], result[1]);
+        mfloat_t result[VEC2_SIZE];
+        vec2_subtract_f(result, v0, f);
+
+        lua_newvector2(L, result[0], result[1]);
+    }
+    else {
+        mfloat_t* v1 = luaL_checkvector2(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC2_SIZE];
+        vec2_subtract(result, v0, v1);
+
+        lua_newvector2(L, result[0], result[1]);
+    }
 
     return 1;
 }
