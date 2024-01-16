@@ -2,12 +2,11 @@ name: Build Brass Engine
 
 on:
   push:
-    pull_request:
-      branches:
-        - main
     tags:
       - '**'
   pull_request:
+    branches:
+      - main
     types: [opened, reopened]
 
 jobs:
