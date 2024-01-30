@@ -810,11 +810,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     const float fov_rads = fov * M_PI / 180.0f;
     const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
 
-    // Calculate step vector, we need it to move along the projection plane
-    mfloat_t step[VEC2_SIZE];
-    vec2_tangent(step, direction);
-    vec2_negative(step, step);
-
     // Calculate sprite projected distance
     mfloat_t dir[VEC2_SIZE];
     vec2_subtract(dir, position, camera_position);
@@ -831,9 +826,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     float ang = acos(vec2_dot(direction, d));
     if (ang > (fov_rads / 2.0f) + 0.175f) return;
-
-    // Scale to put point on projection plane.
-    vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
 
     // Set sprite depth for blit func
     sprite_depth = distance;
