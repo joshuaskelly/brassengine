@@ -833,25 +833,38 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;
 
+    // Calculate camera matrix
     mfloat_t m[MAT3_SIZE];
     mat3_identity(m);
-    mat3_rotation_z(m, -angle);
+    mat3_rotation_z(m, angle);
+    m[6] = camera_position[0];
+    m[7] = camera_position[1];
+    mat3_inverse(m, m);
 
-    mfloat_t t[VEC2_SIZE];
-    vec2_tangent(t, forward);
+    // Transform sprite position
+    mfloat_t p[VEC3_SIZE];
+    vec3(p, position[0], position[1], 1.0f);
+    vec3_multiply_mat3(p, p, m);
+    p[2] = 0;
 
+    // Calculate sprite tangent
+    mfloat_t tangent[VEC3_SIZE];
+    vec3(tangent, 0, 0, 1.0f);
+    vec2_tangent(tangent, forward);
+    m[6] = 0;
+    m[7] = 0;
+    vec3_multiply_mat3(tangent, tangent, m);
+    tangent[2] = 0;
+
+    // Calculate half-tangent
+    mfloat_t half_tangent[VEC3_SIZE];
+    vec3_divide_f(half_tangent, tangent, 2.0f);
+
+    // Calculate sprite left + right endpoints
     mfloat_t l[VEC3_SIZE];
-    l[0] = position[0] + t[0] / 2.0f - camera_position[0];
-    l[1] = position[1] + t[1] / 2.0f - camera_position[1];
-    l[2] = 1;
-
     mfloat_t r[VEC3_SIZE];
-    r[0] = position[0] - t[0] / 2.0f - camera_position[0];
-    r[1] = position[1] - t[1] / 2.0f - camera_position[1];
-    r[2] = 1;
-
-    vec3_multiply_mat3(l, l, m);
-    vec3_multiply_mat3(r, r, m);
+    vec3_subtract(l, p, half_tangent);
+    vec3_add(r, p, half_tangent);
 
     int left_bound = l[0] * distance_to_projection_plane / l[1];
     int right_bound = r[0] * distance_to_projection_plane / r[1];
