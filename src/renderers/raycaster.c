@@ -850,12 +850,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     r[1] = position[1] - t[1] / 2.0f - camera_position[1];
     r[2] = 1;
 
-    mfloat_t v[VEC3_SIZE];
-    v[0] = position[0] - camera_position[0];
-    v[1] = position[1] - camera_position[1];
-    v[2] = 1;
-
-    vec3_multiply_mat3(v, v, m);
     vec3_multiply_mat3(l, l, m);
     vec3_multiply_mat3(r, r, m);
 
