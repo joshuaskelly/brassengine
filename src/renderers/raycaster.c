@@ -756,3 +756,230 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
         sprite_depth_blit_func
     );
 }
+
+static bool intersect(mfloat_t* result, mfloat_t* l, mfloat_t* r, mfloat_t* ray) {
+    float x1 = l[0];
+    float y1 = l[1];
+    float x2 = r[0];
+    float y2 = r[1];
+    float x3 = ray[0];
+    float y3 = ray[1];
+    float x4 = 0;
+    float y4 = 0;
+
+    float x12 = x1 - x2;
+    float x34 = x3 - x4;
+    float y12 = y1 - y2;
+    float y34 = y3 - y4;
+
+    float c = x12 * y34 - y12 * x34;
+
+    if (fabs(c) < 0.01) {
+        return false;
+    }
+
+    float a = x1 * y2 - y1 * x2;
+    float b = x3 * y4 - y3 * x4;
+
+    float x = (a * x34 - b * x12) / c;
+    float y = (a * y34 - b * y12) / c;
+
+    result[0] = x;
+    result[1] = y;
+
+    return true;
+}
+
+void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position, mfloat_t* forward) {
+    if (!renderer->render_texture) return;
+    if (!sprite) return;
+
+    active_renderer = renderer;
+
+    texture_t* render_texture = renderer->render_texture;
+    mfloat_t* direction = renderer->camera.direction;
+    mfloat_t* camera_position = renderer->camera.position;
+
+    shade_table = renderer->features.shade_table;
+    fog_distance = renderer->features.fog_distance;
+
+    const float width = render_texture->width;
+    const float height = render_texture->height;
+
+    const float fov = renderer->camera.fov;
+    const float fov_rads = fov * M_PI / 180.0f;
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+
+    // Calculate step vector, we need it to move along the projection plane
+    mfloat_t step[VEC2_SIZE];
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
+
+    // Calculate sprite projected distance
+    mfloat_t dir[VEC2_SIZE];
+    vec2_subtract(dir, position, camera_position);
+    float distance = vec2_dot(direction, dir);
+
+    // Cull sprites outside near/far planes
+    if (distance < 0) return;
+    if (distance >= fog_distance) return;
+
+    // Frustum culling
+    mfloat_t d[VEC2_SIZE];
+    vec2_assign(d, dir);
+    vec2_normalize(d, d);
+
+    float ang = acos(vec2_dot(direction, d));
+    if (ang > (fov_rads / 2.0f) + 0.175f) return;
+
+    // Scale to put point on projection plane.
+    vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
+
+    // Find x offset
+    float x_offset = vec2_dot(dir, step);
+
+    float s_height = 1.0f / distance * distance_to_projection_plane;
+    float half_height = s_height / 2.0f;
+
+    rect_t rect = {
+        (width / 2.0f) + x_offset - half_height,
+        (height / 2.0f) - half_height,
+        s_height,
+        s_height
+    };
+
+    // Set sprite depth for blit func
+    sprite_depth = distance;
+
+    // Draw sprite
+    // graphics_blit(
+    //     sprite,
+    //     render_texture,
+    //     NULL,
+    //     &rect,
+    //     sprite_depth_blit_func
+    // );
+
+
+    mfloat_t angle = vec2_angle(direction);
+    angle -= MPI_2;
+
+    mfloat_t m[MAT3_SIZE];
+    mat3_identity(m);
+    mat3_rotation_z(m, -angle);
+
+    mfloat_t t[VEC2_SIZE];
+    vec2_tangent(t, forward);
+    //vec2_divide_f(t, t, 2.0f);
+
+    mfloat_t l[VEC3_SIZE];
+    l[0] = position[0] + t[0] / 2.0f - camera_position[0];
+    l[1] = position[1] + t[1] / 2.0f - camera_position[1];
+    l[2] = 1;
+
+    mfloat_t r[VEC3_SIZE];
+    r[0] = position[0] - t[0] / 2.0f - camera_position[0];
+    r[1] = position[1] - t[1] / 2.0f - camera_position[1];
+    r[2] = 1;
+
+    mfloat_t v[VEC3_SIZE];
+    v[0] = position[0] - camera_position[0];
+    v[1] = position[1] - camera_position[1];
+    v[2] = 1;
+
+    vec3_multiply_mat3(v, v, m);
+    vec3_multiply_mat3(l, l, m);
+    vec3_multiply_mat3(r, r, m);
+
+    int rc = 11;
+    int lc = 12;
+
+    // if (r[0] < l[0]) {
+    //     float swap = r[0];
+    //     r[0] = l[0];
+    //     l[0] = swap;
+    //     swap = r[1];
+    //     r[1] = l[1];
+    //     l[1] = swap;
+    // }
+
+    int left_bound = l[0] * distance_to_projection_plane / l[1];
+    int right_bound = r[0] * distance_to_projection_plane / r[1];
+
+    if (left_bound > right_bound) {
+        float swap = r[0];
+        r[0] = l[0];
+        l[0] = swap;
+        swap = r[1];
+        r[1] = l[1];
+        l[1] = swap;
+
+        swap = right_bound;
+        right_bound = left_bound;
+        left_bound = (int)swap;
+    }
+
+    // draw_line(
+    //     (width / 2.0f) + x_offset,
+    //     (height / 2.0f) - half_height,
+    //     (width / 2.0f) + x_offset,
+    //     (height / 2.0f) + half_height - 1,
+    //     13
+    // );
+
+    float s = distance_to_projection_plane / l[1];
+    float u = s * l[0];
+    float hh = s / 2.0f;
+
+    // char msg[1024];
+    // sprintf(msg, "left: %i, right: %i", left_bound, right_bound);
+    // draw_text(msg, 0, 32);
+
+    mfloat_t inter[VEC2_SIZE];
+    mfloat_t ray[VEC2_SIZE];
+    vec2(ray, left_bound, distance_to_projection_plane);
+
+    intersect(inter, l, r, ray);
+
+    int start = fmax(left_bound, width / -2.0f);
+    int stop = fmin(right_bound, width / 2.0f);
+
+    for (int i = left_bound; i <= right_bound; i++) {
+        ray[0] = i;
+        if (intersect(inter, l, r, ray)) {
+
+            float hhh = ((distance_to_projection_plane / inter[1]) * 0.5f);
+
+            draw_line(
+                width / 2.0f - i,
+                (height / 2.0f) - hhh,
+                width / 2.0f - i,
+                (height / 2.0f) + hhh,
+                10
+            );
+        }
+    }
+
+    // draw_line(
+    //     width / 2.0f - left_bound,
+    //     (height / 2.0f) - hh,
+    //     width / 2.0f - left_bound,
+    //     (height / 2.0f) + hh,
+    //     lc
+    // );
+
+    s = distance_to_projection_plane / r[1];
+    u = s * r[0];
+    hh = s / 2.0f;
+
+    //sprintf(msg, "right: %f", (width / 2.0f) - u);
+    //draw_text(msg, 0, 40);
+
+    // draw_line(
+    //     width / 2.0f - right_bound,
+    //     (height / 2.0f) - hh,
+    //     width / 2.0f - right_bound,
+    //     (height / 2.0f) + hh,
+    //     rc
+    // );
+}

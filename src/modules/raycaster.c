@@ -165,7 +165,14 @@ static int module_raycaster_renderer_render(lua_State* L) {
     else {
         texture_t* sprite = luaL_checktexture(L, 2);
         mfloat_t* position = luaL_checkvector2(L, 3);
-        raycaster_renderer_render_sprite(renderer, sprite, position);
+
+        if (lua_gettop(L) > 3) {
+            mfloat_t* forward = luaL_checkvector2(L, 4);
+            raycaster_renderer_render_sprite_oriented(renderer, sprite, position, forward);
+        }
+        else {
+            raycaster_renderer_render_sprite(renderer, sprite, position);
+        }
     }
 
     return 0;
