@@ -835,31 +835,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Scale to put point on projection plane.
     vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
 
-    // Find x offset
-    float x_offset = vec2_dot(dir, step);
-
-    float s_height = 1.0f / distance * distance_to_projection_plane;
-    float half_height = s_height / 2.0f;
-
-    rect_t rect = {
-        (width / 2.0f) + x_offset - half_height,
-        (height / 2.0f) - half_height,
-        s_height,
-        s_height
-    };
-
     // Set sprite depth for blit func
     sprite_depth = distance;
-
-    // Draw sprite
-    // graphics_blit(
-    //     sprite,
-    //     render_texture,
-    //     NULL,
-    //     &rect,
-    //     sprite_depth_blit_func
-    // );
-
 
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;
@@ -870,7 +847,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     mfloat_t t[VEC2_SIZE];
     vec2_tangent(t, forward);
-    //vec2_divide_f(t, t, 2.0f);
 
     mfloat_t l[VEC3_SIZE];
     l[0] = position[0] + t[0] / 2.0f - camera_position[0];
@@ -891,18 +867,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_multiply_mat3(l, l, m);
     vec3_multiply_mat3(r, r, m);
 
-    int rc = 11;
-    int lc = 12;
-
-    // if (r[0] < l[0]) {
-    //     float swap = r[0];
-    //     r[0] = l[0];
-    //     l[0] = swap;
-    //     swap = r[1];
-    //     r[1] = l[1];
-    //     l[1] = swap;
-    // }
-
     int left_bound = l[0] * distance_to_projection_plane / l[1];
     int right_bound = r[0] * distance_to_projection_plane / r[1];
 
@@ -919,30 +883,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         left_bound = (int)swap;
     }
 
-    // draw_line(
-    //     (width / 2.0f) + x_offset,
-    //     (height / 2.0f) - half_height,
-    //     (width / 2.0f) + x_offset,
-    //     (height / 2.0f) + half_height - 1,
-    //     13
-    // );
-
-    float s = distance_to_projection_plane / l[1];
-    float u = s * l[0];
-    float hh = s / 2.0f;
-
-    // char msg[1024];
-    // sprintf(msg, "left: %i, right: %i", left_bound, right_bound);
-    // draw_text(msg, 0, 32);
-
     mfloat_t inter[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
     vec2(ray, left_bound, distance_to_projection_plane);
 
     intersect(inter, l, r, ray);
-
-    int start = fmax(left_bound, width / -2.0f);
-    int stop = fmin(right_bound, width / 2.0f);
 
     for (int i = left_bound; i <= right_bound; i++) {
         ray[0] = i;
@@ -959,27 +904,4 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             );
         }
     }
-
-    // draw_line(
-    //     width / 2.0f - left_bound,
-    //     (height / 2.0f) - hh,
-    //     width / 2.0f - left_bound,
-    //     (height / 2.0f) + hh,
-    //     lc
-    // );
-
-    s = distance_to_projection_plane / r[1];
-    u = s * r[0];
-    hh = s / 2.0f;
-
-    //sprintf(msg, "right: %f", (width / 2.0f) - u);
-    //draw_text(msg, 0, 40);
-
-    // draw_line(
-    //     width / 2.0f - right_bound,
-    //     (height / 2.0f) - hh,
-    //     width / 2.0f - right_bound,
-    //     (height / 2.0f) + hh,
-    //     rc
-    // );
 }
