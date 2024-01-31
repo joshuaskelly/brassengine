@@ -371,16 +371,18 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         int y = y0 + i;
         if (y >= bottom) break;
 
+        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
+        t += t_step;
+        if (c == graphics_transparent_color_get()) continue;
+
         float d = get_depth_buffer_pixel(active_renderer, x, y);
         if (d <= depth) continue;
 
         set_depth_buffer_pixel(active_renderer, x, y, depth);
 
-        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
         c = shade_pixel(c, brightness);
         graphics_texture_set_pixel(destination_texture, x, y, c);
 
-        t += t_step;
     }
 }
 
@@ -882,6 +884,9 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         left_bound = (int)swap;
     }
 
+    // Ensure correct direction of tanget
+    vec3_subtract(tangent, r, l);
+
     mfloat_t inter[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
     vec2(ray, left_bound, distance_to_projection_plane);
@@ -891,15 +896,22 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     for (int i = left_bound; i <= right_bound; i++) {
         ray[0] = i;
         if (intersect(inter, l, r, ray)) {
+            float distance = inter[1];
+            float brightness = get_distance_based_brightness(distance);
+            float hh = ((distance_to_projection_plane / distance) * 0.5f);
+            vec3_subtract(p, inter, l);
+            p[2] = 0;
+            float offset = vec3_dot(p, tangent);
 
-            float hhh = ((distance_to_projection_plane / inter[1]) * 0.5f);
-
-            draw_line(
+            draw_wall_strip(
+                sprite,
+                render_texture,
                 width / 2.0f - i,
-                (height / 2.0f) - hhh,
-                width / 2.0f - i,
-                (height / 2.0f) + hhh,
-                10
+                (height / 2.0f) - hh,
+                (height / 2.0f) + hh,
+                offset,
+                brightness,
+                distance
             );
         }
     }
