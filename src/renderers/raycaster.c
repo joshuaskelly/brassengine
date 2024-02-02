@@ -522,8 +522,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
      */
 
     // 1. Determine distance to the projection plane.
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
@@ -705,8 +704,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     const float height = render_texture->height;
 
     const float fov = renderer->camera.fov;
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
@@ -728,7 +726,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     vec2_normalize(d, d);
 
     float ang = acos(vec2_dot(direction, d));
-    if (ang > (fov_rads / 2.0f) + 0.175f) return;
+    if (ang > (to_radians(fov) / 2.0f) + 0.175f) return;
 
     // Scale to put point on projection plane.
     vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
@@ -810,8 +808,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     const float half_width = width / 2.0f;
 
     const float fov = renderer->camera.fov;
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = half_width / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = half_width / tanf(to_radians(fov) / 2.0f);
 
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;

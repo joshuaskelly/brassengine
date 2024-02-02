@@ -1,10 +1,6 @@
 #ifndef RENDERERS_RAYCASTER_H
 #define RENDERERS_RAYCASTER_H
 
-#ifndef M_PI
-#define M_PI 3.14159265359
-#endif
-
 #include <stdbool.h>
 #include <mathc/mathc.h>
 
