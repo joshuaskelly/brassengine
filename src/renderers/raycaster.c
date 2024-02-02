@@ -885,12 +885,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         return;
     }
 
-    // Far culling
-    if (l[1] >= fog_distance && r[1] >= fog_distance) {
-        draw_text("clip far", 0, 40);
-        return;
-    }
-
     mfloat_t ll[VEC3_SIZE];
     mfloat_t rr[VEC3_SIZE];
     vec3_assign(ll, l);
@@ -953,7 +947,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         if (intersect(inter, ll, rr, ray)) {
             float distance = inter[1];
 
-            if (distance <= 0 || distance >= fog_distance) continue;
+            if (distance <= 0) continue;
 
             float brightness = get_distance_based_brightness(distance);
             float hh = ((distance_to_projection_plane / distance) * 0.5f);
