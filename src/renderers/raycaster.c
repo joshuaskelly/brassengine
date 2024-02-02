@@ -807,10 +807,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     const float width = render_texture->width;
     const float height = render_texture->height;
+    const float half_width = width / 2.0f;
 
     const float fov = renderer->camera.fov;
     const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = half_width / tanf(fov_rads / 2.0f);
 
     // Calculate sprite projected distance
     mfloat_t dir[VEC2_SIZE];
@@ -818,19 +819,19 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     float distance = vec2_dot(direction, dir);
 
     // Cull sprites outside near/far planes
-    if (distance < 0) return;
-    if (distance >= fog_distance) return;
+    //if (distance < 0) return;
+    //if (distance >= fog_distance) return;
 
     // Frustum culling
     mfloat_t d[VEC2_SIZE];
     vec2_assign(d, dir);
     vec2_normalize(d, d);
 
-    float ang = acos(vec2_dot(direction, d));
-    if (ang > (fov_rads / 2.0f) + 0.175f) return;
+    // float ang = acos(vec2_dot(direction, d));
+    // if (ang > (fov_rads / 2.0f) + 0.175f) return;
 
-    // Set sprite depth for blit func
-    sprite_depth = distance;
+    //Set sprite depth for blit func
+    //sprite_depth = distance;
 
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;
@@ -871,7 +872,14 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     int left_bound = l[0] * distance_to_projection_plane / l[1];
     int right_bound = r[0] * distance_to_projection_plane / r[1];
 
-    if (left_bound > right_bound) {
+    mfloat_t t[VEC2_SIZE];
+    vec2(t, -l[0], -l[1]);
+    mfloat_t f[VEC3_SIZE];
+    vec3(f, 0, 0, 1.0f);
+    vec2_tangent(f, tangent);
+    float align = vec2_dot(f, t);
+
+    if (align >= 0) {
         float swap = r[0];
         r[0] = l[0];
         l[0] = swap;
@@ -887,16 +895,87 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Ensure correct direction of tanget
     vec3_subtract(tangent, r, l);
 
+    char msg[1024];
+    sprintf(msg, "l[0]: %f, r[1]: %f", l[0], l[1]);
+    draw_text(msg, 0, 32);
+
+    // Near culling
+    if (l[1] <= 0 && r[1] <= 0) {
+        draw_text("clip near", 0, 40);
+        return;
+    }
+
+    // Far culling
+    if (l[1] >= fog_distance && r[1] >= fog_distance) {
+        draw_text("clip far", 0, 40);
+        return;
+    }
+
+    mfloat_t ll[VEC3_SIZE];
+    mfloat_t rr[VEC3_SIZE];
+    vec3_assign(ll, l);
+    vec3_assign(rr, r);
+
+    // // Frustum culling
+    //if (right_bound > half_width || left_bound < -half_width) return;
+    mfloat_t clip[VEC2_SIZE];
+    vec2(clip, -half_width, distance_to_projection_plane);
+    vec2_normalize(clip, clip);
+    vec2_tangent(clip, clip);
+
+    float a;
+    float b;
+
+    a = vec2_dot(clip, l);
+    b = vec2_dot(clip, r);
+
+    if (a <= 0 && b <= 0) {
+        draw_text("clip right", 0, 40);
+        return;
+    }
+
+    if (b < 0) {
+        float f = a / (a + fabs(b));
+        vec3_multiply_f(p, tangent, f);
+        vec3_add(rr, l, p);
+        right_bound = rr[0] * distance_to_projection_plane / rr[1] - 0.5f;
+    }
+
+    vec2(clip, half_width, distance_to_projection_plane);
+    vec2_normalize(clip, clip);
+    vec2_tangent(clip, clip);
+    vec2_multiply_f(clip, clip, -1.0f);
+
+    a = vec2_dot(clip, l);
+    b = vec2_dot(clip, r);
+
+    if (a <= 0 && b <= 0) {
+        draw_text("clip left", 0, 40);
+        return;
+    }
+
+    if (a < 0) {
+        float f = a / (fabs(a) + b);
+        vec3_multiply_f(p, tangent, f);
+        vec3_subtract(ll, l, p);
+        left_bound = ll[0] * distance_to_projection_plane / ll[1] + 0.5f;
+    }
+
     mfloat_t inter[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
     vec2(ray, left_bound, distance_to_projection_plane);
 
-    intersect(inter, l, r, ray);
+    // Clamp bounds to view frustum
+    left_bound = (int)fmin(left_bound, half_width);
+    right_bound = (int)fmax(right_bound, -half_width);
 
-    for (int i = left_bound; i <= right_bound; i++) {
+    for (int i = left_bound; i > right_bound; i--) {
         ray[0] = i;
-        if (intersect(inter, l, r, ray)) {
+        if (intersect(inter, ll, rr, ray)) {
             float distance = inter[1];
+
+            if (distance <= 0 || distance >= fog_distance) continue;
+
             float brightness = get_distance_based_brightness(distance);
             float hh = ((distance_to_projection_plane / distance) * 0.5f);
             vec3_subtract(p, inter, l);
@@ -906,7 +985,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             draw_wall_strip(
                 sprite,
                 render_texture,
-                width / 2.0f - i,
+                half_width - i,
                 (height / 2.0f) - hh,
                 (height / 2.0f) + hh,
                 offset,
@@ -915,4 +994,47 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             );
         }
     }
+
+    sprintf(msg, "lb: %i, rb: %i", left_bound, right_bound);
+    draw_text(msg, 0, 40);
+
+    sprintf(msg, "align: %f", align);
+    draw_text(msg, 0, 48);
+
+    draw_line(160, 100, 160 + half_width, 100 - distance_to_projection_plane, 15);
+    draw_line(160, 100, 160 - half_width, 100 - distance_to_projection_plane, 15);
+
+    float scalar = 36.0f;
+
+    draw_line(
+        160 - l[0] * scalar,
+        100 - l[1] * scalar,
+        160 - r[0] * scalar,
+        100 - r[1] * scalar,
+        14
+    );
+
+    draw_line(
+        160 - ll[0] * scalar,
+        100 - ll[1] * scalar,
+        160 - rr[0] * scalar,
+        100 - rr[1] * scalar,
+        11
+    );
+
+    draw_filled_rectangle(
+        160 - l[0] * scalar - 1,
+        100 - l[1] * scalar - 1,
+        3,
+        3,
+        12
+    );
+
+    draw_filled_rectangle(
+        160 - r[0] * scalar - 1,
+        100 - r[1] * scalar - 1,
+        3,
+        3,
+        10
+    );
 }
