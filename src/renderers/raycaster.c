@@ -813,26 +813,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     const float fov_rads = fov * M_PI / 180.0f;
     const float distance_to_projection_plane = half_width / tanf(fov_rads / 2.0f);
 
-    // Calculate sprite projected distance
-    mfloat_t dir[VEC2_SIZE];
-    vec2_subtract(dir, position, camera_position);
-    float distance = vec2_dot(direction, dir);
-
-    // Cull sprites outside near/far planes
-    //if (distance < 0) return;
-    //if (distance >= fog_distance) return;
-
-    // Frustum culling
-    mfloat_t d[VEC2_SIZE];
-    vec2_assign(d, dir);
-    vec2_normalize(d, d);
-
-    // float ang = acos(vec2_dot(direction, d));
-    // if (ang > (fov_rads / 2.0f) + 0.175f) return;
-
-    //Set sprite depth for blit func
-    //sprite_depth = distance;
-
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;
 
@@ -917,7 +897,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_assign(rr, r);
 
     // // Frustum culling
-    //if (right_bound > half_width || left_bound < -half_width) return;
     mfloat_t clip[VEC2_SIZE];
     vec2(clip, -half_width, distance_to_projection_plane);
     vec2_normalize(clip, clip);
