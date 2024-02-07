@@ -846,31 +846,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_subtract(l, p, half_tangent);
     vec3_add(r, p, half_tangent);
 
-    // int left_bound = l[0] * distance_to_projection_plane / l[1];
-    // int right_bound = r[0] * distance_to_projection_plane / r[1];
-
     mfloat_t t[VEC2_SIZE];
     vec2(t, -l[0], -l[1]);
     mfloat_t f[VEC3_SIZE];
     vec3(f, 0, 0, 1.0f);
     vec2_tangent(f, tangent);
-    //float align = vec2_dot(f, t);
-
-    // if (align >= 0) {
-    //     float swap = r[0];
-    //     r[0] = l[0];
-    //     l[0] = swap;
-    //     swap = r[1];
-    //     r[1] = l[1];
-    //     l[1] = swap;
-
-    //     swap = right_bound;
-    //     right_bound = left_bound;
-    //     left_bound = (int)swap;
-    // }
-
-    // Ensure correct direction of tangent
-
 
     char msg[1024];
     sprintf(msg, "l[0]: %f, r[1]: %f", l[0], l[1]);
@@ -917,7 +897,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     }
 
     // Check left clip plane
-
     vec2(clip, half_width, distance_to_projection_plane);
     vec2_normalize(clip, clip);
     vec2_tangent(clip, clip);
