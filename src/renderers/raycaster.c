@@ -800,9 +800,6 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     mfloat_t* direction = renderer->camera.direction;
     mfloat_t* camera_position = renderer->camera.position;
 
-    shade_table = renderer->features.shade_table;
-    fog_distance = renderer->features.fog_distance;
-
     const float width = render_texture->width;
     const float height = render_texture->height;
     const float half_width = width / 2.0f;
