@@ -852,15 +852,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3(f, 0, 0, 1.0f);
     vec2_tangent(f, tangent);
 
-    char msg[1024];
-    sprintf(msg, "l[0]: %f, r[1]: %f", l[0], l[1]);
-    draw_text(msg, 0, 32);
-
     // Near culling
-    if (l[1] <= 0 && r[1] <= 0) {
-        draw_text("clip near", 0, 40);
-        return;
-    }
+    if (l[1] <= 0 && r[1] <= 0) return;
 
     mfloat_t ll[VEC3_SIZE];
     mfloat_t rr[VEC3_SIZE];
@@ -880,10 +873,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     a = vec2_dot(clip, ll);
     b = vec2_dot(clip, rr);
 
-    if (a <= 0 && b <= 0) {
-        draw_text("clip right", 0, 40);
-        return;
-    }
+    if (a <= 0 && b <= 0) return;
 
     if (a > 0 && b < 0) {
         float f = a / (a - b);
@@ -905,10 +895,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     a = vec2_dot(clip, ll);
     b = vec2_dot(clip, rr);
 
-    if (a <= 0 && b <= 0) {
-        draw_text("clip left", 0, 40);
-        return;
-    }
+    if (a <= 0 && b <= 0) return;
 
     if (a < 0 && b > 0) {
         float f = fabs(a) / (b - a);
@@ -983,61 +970,4 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             );
         }
     }
-
-    sprintf(msg, "lb: %i, rb: %i", left_bound, right_bound);
-    draw_text(msg, 0, 40);
-
-    sprintf(msg, "align: %f", align);
-    draw_text(msg, 0, 48);
-
-    draw_line(160, 100, 160 + half_width, 100 - distance_to_projection_plane, 15);
-    draw_line(160, 100, 160 - half_width, 100 - distance_to_projection_plane, 15);
-
-    float scalar = 72.0f;
-
-    draw_line(
-        160 - l[0] * scalar,
-        100 - l[1] * scalar,
-        160 - r[0] * scalar,
-        100 - r[1] * scalar,
-        14
-    );
-
-    draw_line(
-        160 - ll[0] * scalar,
-        100 - ll[1] * scalar,
-        160 - rr[0] * scalar,
-        100 - rr[1] * scalar,
-        11
-    );
-
-    draw_filled_rectangle(
-        160 - l[0] * scalar - 1,
-        100 - l[1] * scalar - 1,
-        3,
-        3,
-        12
-    );
-
-    draw_circle(
-        160 - ll[0] * scalar,
-        100 - ll[1] * scalar,
-        1,
-        12
-    );
-
-    draw_circle(
-        160 - rr[0] * scalar,
-        100 - rr[1] * scalar,
-        1,
-        10
-    );
-
-    draw_filled_rectangle(
-        160 - r[0] * scalar - 1,
-        100 - r[1] * scalar - 1,
-        3,
-        3,
-        10
-    );
 }
