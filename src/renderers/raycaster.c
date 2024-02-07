@@ -957,8 +957,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
                 sprite,
                 render_texture,
                 half_width - i,
-                (height / 2.0f) - hh,
-                (height / 2.0f) + hh,
+                (height / 2.0f) - hh - 0.5f,
+                (height / 2.0f) + hh + 1.5f,
                 offset,
                 brightness,
                 distance
