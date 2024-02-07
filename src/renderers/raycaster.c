@@ -846,31 +846,31 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_subtract(l, p, half_tangent);
     vec3_add(r, p, half_tangent);
 
-    int left_bound = l[0] * distance_to_projection_plane / l[1];
-    int right_bound = r[0] * distance_to_projection_plane / r[1];
+    // int left_bound = l[0] * distance_to_projection_plane / l[1];
+    // int right_bound = r[0] * distance_to_projection_plane / r[1];
 
     mfloat_t t[VEC2_SIZE];
     vec2(t, -l[0], -l[1]);
     mfloat_t f[VEC3_SIZE];
     vec3(f, 0, 0, 1.0f);
     vec2_tangent(f, tangent);
-    float align = vec2_dot(f, t);
+    //float align = vec2_dot(f, t);
 
-    if (align >= 0) {
-        float swap = r[0];
-        r[0] = l[0];
-        l[0] = swap;
-        swap = r[1];
-        r[1] = l[1];
-        l[1] = swap;
+    // if (align >= 0) {
+    //     float swap = r[0];
+    //     r[0] = l[0];
+    //     l[0] = swap;
+    //     swap = r[1];
+    //     r[1] = l[1];
+    //     l[1] = swap;
 
-        swap = right_bound;
-        right_bound = left_bound;
-        left_bound = (int)swap;
-    }
+    //     swap = right_bound;
+    //     right_bound = left_bound;
+    //     left_bound = (int)swap;
+    // }
 
-    // Ensure correct direction of tanget
-    vec3_subtract(tangent, r, l);
+    // Ensure correct direction of tangent
+
 
     char msg[1024];
     sprintf(msg, "l[0]: %f, r[1]: %f", l[0], l[1]);
@@ -888,6 +888,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_assign(rr, r);
 
     // // Frustum culling
+    // Check right clip plane
     mfloat_t clip[VEC2_SIZE];
     vec2(clip, -half_width, distance_to_projection_plane);
     vec2_normalize(clip, clip);
@@ -896,46 +897,85 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     float a;
     float b;
 
-    a = vec2_dot(clip, l);
-    b = vec2_dot(clip, r);
+    a = vec2_dot(clip, ll);
+    b = vec2_dot(clip, rr);
 
     if (a <= 0 && b <= 0) {
         draw_text("clip right", 0, 40);
         return;
     }
 
-    if (b < 0) {
-        float f = a / (a + fabs(b));
+    if (a > 0 && b < 0) {
+        float f = a / (a - b);
         vec3_multiply_f(p, tangent, f);
-        vec3_add(rr, l, p);
-        right_bound = rr[0] * distance_to_projection_plane / rr[1] - 0.5f;
+        vec3_add(rr, ll, p);
     }
+    else if (a < 0 && b > 0) {
+        float f = b / (b - a);
+        vec3_multiply_f(p, tangent, f);
+        vec3_subtract(ll, rr, p);
+    }
+
+    // Check left clip plane
 
     vec2(clip, half_width, distance_to_projection_plane);
     vec2_normalize(clip, clip);
     vec2_tangent(clip, clip);
     vec2_multiply_f(clip, clip, -1.0f);
 
-    a = vec2_dot(clip, l);
-    b = vec2_dot(clip, r);
+    a = vec2_dot(clip, ll);
+    b = vec2_dot(clip, rr);
 
     if (a <= 0 && b <= 0) {
         draw_text("clip left", 0, 40);
         return;
     }
 
-    if (a < 0) {
-        float f = a / (fabs(a) + b);
-        vec3_multiply_f(p, tangent, f);
-        vec3_subtract(ll, l, p);
-        left_bound = ll[0] * distance_to_projection_plane / ll[1] + 0.5f;
+    if (a < 0 && b > 0) {
+        float f = fabs(a) / (b - a);
+        vec3_subtract(p, ll, rr);
+        vec3_multiply_f(p, p, f);
+        vec3_subtract(ll, ll, p);
     }
+    else if (b < 0 && a > 0) {
+        float f = fabs(b) / (a - b);
+        vec3_subtract(p, ll, rr);
+        vec3_multiply_f(p, p, f);
+        vec3_add(rr, rr, p);
+    }
+
+    // Flip
+    int left_bound = ll[0] * distance_to_projection_plane / ll[1];
+    int right_bound = rr[0] * distance_to_projection_plane / rr[1];
+
+    float align = vec2_dot(f, t);
+
+    if (align >= 0) {
+        float swap = r[0];
+        r[0] = l[0];
+        l[0] = swap;
+        swap = r[1];
+        r[1] = l[1];
+        l[1] = swap;
+
+        swap = rr[0];
+        rr[0] = ll[0];
+        ll[0] = swap;
+        swap = rr[1];
+        rr[1] = ll[1];
+        ll[1] = swap;
+
+        swap = right_bound;
+        right_bound = left_bound;
+        left_bound = (int)swap;
+    }
+
+    vec3_subtract(tangent, r, l);
 
     mfloat_t inter[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
-    vec2(ray, left_bound, distance_to_projection_plane);
+    vec2(ray, 0, distance_to_projection_plane);
 
-    // Clamp bounds to view frustum
     left_bound = (int)fmin(left_bound, half_width);
     right_bound = (int)fmax(right_bound, -half_width);
 
@@ -974,7 +1014,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     draw_line(160, 100, 160 + half_width, 100 - distance_to_projection_plane, 15);
     draw_line(160, 100, 160 - half_width, 100 - distance_to_projection_plane, 15);
 
-    float scalar = 36.0f;
+    float scalar = 72.0f;
 
     draw_line(
         160 - l[0] * scalar,
@@ -998,6 +1038,20 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         3,
         3,
         12
+    );
+
+    draw_circle(
+        160 - ll[0] * scalar,
+        100 - ll[1] * scalar,
+        1,
+        12
+    );
+
+    draw_circle(
+        160 - rr[0] * scalar,
+        100 - rr[1] * scalar,
+        1,
+        10
     );
 
     draw_filled_rectangle(
