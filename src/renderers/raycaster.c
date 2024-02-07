@@ -914,9 +914,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     int left_bound = ll[0] * distance_to_projection_plane / ll[1] - 0.5f;
     int right_bound = rr[0] * distance_to_projection_plane / rr[1] + 0.5f;
 
-    float align = vec2_dot(f, t);
-
-    if (align >= 0) {
+    if (right_bound > left_bound) {
         float swap = r[0];
         r[0] = l[0];
         l[0] = swap;
