@@ -783,7 +783,7 @@ static bool intersect_camera_ray(mfloat_t* result, mfloat_t* a, mfloat_t* b, mfl
 
     float c = x12 * y34 - y12 * x34;
 
-    if (fabs(c) < 0.01) {
+    if (fabsf(c) < 0.01) {
         return false;
     }
 
@@ -808,6 +808,9 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     texture_t* render_texture = renderer->render_texture;
     mfloat_t* direction = renderer->camera.direction;
     mfloat_t* camera_position = renderer->camera.position;
+
+    float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
+    float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
@@ -918,14 +921,14 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
         // Second endpoint is outside clipping plane. Back-facing sprite.
         if (bb < 0 && aa > 0) {
-            float f = fabs(bb) / (aa - bb);
+            float f = fabsf(bb) / (aa - bb);
             vec3_subtract(tangent, l, r);
             vec3_multiply_f(tangent, tangent, f);
             vec3_add(r, r, tangent);
         }
         // First endpoint is outside clipping plane. Front-facing sprite.
         else if (aa < 0 && bb > 0) {
-            float f = fabs(aa) / (bb - aa);
+            float f = fabsf(aa) / (bb - aa);
             vec3_subtract(tangent, l, r);
             vec3_multiply_f(tangent, tangent, f);
             vec3_subtract(l, l, tangent);
@@ -975,6 +978,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             if (distance <= 0) continue;
 
             float brightness = get_distance_based_brightness(distance);
+
+            // Darken vertically aligned walls.
+            float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
+            brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
+
             float half_sprite_height = ((distance_to_projection_plane / distance) * 0.5f);
             vec3_subtract(p, intersection, a);
             p[2] = 0;
