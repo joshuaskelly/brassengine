@@ -767,15 +767,12 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
  * @return true if intersection occurs, false otherwise.
  */
 static bool intersect_camera_ray(mfloat_t* result, mfloat_t* a, mfloat_t* b, mfloat_t* ray) {
-    mfloat_t r[VEC2_SIZE];
-    vec2_normalize(r, ray);
-
     float x1 = a[0];
     float y1 = a[1];
     float x2 = b[0];
     float y2 = b[1];
-    float x3 = r[0];
-    float y3 = r[1];
+    float x3 = ray[0];
+    float y3 = ray[1];
     float x4 = 0;
     float y4 = 0;
 
