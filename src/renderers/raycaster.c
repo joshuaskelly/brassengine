@@ -850,15 +850,12 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
 
-    // Calculate sprite endpoints
-
     /** First sprite endpoint. */
     mfloat_t a[VEC3_SIZE];
+    vec3_subtract(a, p, half_tangent);
 
     /** Second sprite endpoint. */
     mfloat_t b[VEC3_SIZE];
-
-    vec3_subtract(a, p, half_tangent);
     vec3_add(b, p, half_tangent);
 
     // Near culling
@@ -866,66 +863,69 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     /** Clipped left sprite endpoint. */
     mfloat_t l[VEC3_SIZE];
+    vec3_assign(l, a);
 
     /** Clipped right sprite endpoint. */
     mfloat_t r[VEC3_SIZE];
-
-    vec3_assign(l, a);
     vec3_assign(r, b);
 
-    // Clip right end point.
-    mfloat_t clip_plane_normal[VEC2_SIZE];
-    vec2(clip_plane_normal, -half_width, distance_to_projection_plane);
-    vec2_normalize(clip_plane_normal, clip_plane_normal);
-    vec2_tangent(clip_plane_normal, clip_plane_normal);
+    // Right clip plane
+    {
+        mfloat_t clip_plane_normal[VEC2_SIZE];
+        vec2(clip_plane_normal, -half_width, distance_to_projection_plane);
+        vec2_normalize(clip_plane_normal, clip_plane_normal);
+        vec2_tangent(clip_plane_normal, clip_plane_normal);
 
-    float aa;
-    float bb;
+        float aa = vec2_dot(clip_plane_normal, l);
+        float bb = vec2_dot(clip_plane_normal, r);
 
-    aa = vec2_dot(clip_plane_normal, l);
-    bb = vec2_dot(clip_plane_normal, r);
+        // Both endpoints are outside clipping plane.
+        if (aa <= 0 && bb <= 0) return;
 
-    // Both endpoints are outside clipping plane.
-    if (aa <= 0 && bb <= 0) return;
-
-    // Second endpoint is outside clipping plane. Back-facing sprite.
-    if (aa > 0 && bb < 0) {
-        float f = aa / (aa - bb);
-        vec3_multiply_f(p, tangent, f);
-        vec3_add(r, l, p);
+        // Second endpoint is outside clipping plane. Back-facing sprite.
+        if (aa > 0 && bb < 0) {
+            float f = aa / (aa - bb);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_subtract(r, l, tangent);
+        }
+        // First endpoint is outside clipping plane. Front-facing sprite.
+        else if (aa < 0 && bb > 0) {
+            float f = bb / (bb - aa);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_add(l, r, tangent);
+        }
     }
-    // First endpoint is outside clipping plane. Front-facing sprite.
-    else if (aa < 0 && bb > 0) {
-        float f = bb / (bb - aa);
-        vec3_multiply_f(p, tangent, f);
-        vec3_subtract(l, r, p);
-    }
 
-    // Clip left endpoint.
-    vec2(clip_plane_normal, half_width, distance_to_projection_plane);
-    vec2_normalize(clip_plane_normal, clip_plane_normal);
-    vec2_tangent(clip_plane_normal, clip_plane_normal);
-    vec2_multiply_f(clip_plane_normal, clip_plane_normal, -1.0f);
+    // Left clip plane
+    {
+        mfloat_t clip_plane_normal[VEC2_SIZE];
+        vec2(clip_plane_normal, half_width, distance_to_projection_plane);
+        vec2_normalize(clip_plane_normal, clip_plane_normal);
+        vec2_tangent(clip_plane_normal, clip_plane_normal);
+        vec2_multiply_f(clip_plane_normal, clip_plane_normal, -1.0f);
 
-    aa = vec2_dot(clip_plane_normal, l);
-    bb = vec2_dot(clip_plane_normal, r);
+        float aa = vec2_dot(clip_plane_normal, l);
+        float bb = vec2_dot(clip_plane_normal, r);
 
-    // Both endpoints are outside clipping plane.
-    if (aa <= 0 && bb <= 0) return;
+        // Both endpoints are outside clipping plane.
+        if (aa <= 0 && bb <= 0) return;
 
-    // Second endpoint is outside clipping plane. Back-facing sprite.
-    if (bb < 0 && aa > 0) {
-        float f = fabs(bb) / (aa - bb);
-        vec3_subtract(p, l, r);
-        vec3_multiply_f(p, p, f);
-        vec3_add(r, r, p);
-    }
-    // First endpoint is outside clipping plane. Front-facing sprite.
-    else if (aa < 0 && bb > 0) {
-        float f = fabs(aa) / (bb - aa);
-        vec3_subtract(p, l, r);
-        vec3_multiply_f(p, p, f);
-        vec3_subtract(l, l, p);
+        // Second endpoint is outside clipping plane. Back-facing sprite.
+        if (bb < 0 && aa > 0) {
+            float f = fabs(bb) / (aa - bb);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_add(r, r, tangent);
+        }
+        // First endpoint is outside clipping plane. Front-facing sprite.
+        else if (aa < 0 && bb > 0) {
+            float f = fabs(aa) / (bb - aa);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_subtract(l, l, tangent);
+        }
     }
 
     // Flip
@@ -952,15 +952,18 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         left_bound = (int)swap;
     }
 
+    // Recalculate tangent. This is to ensure correct texture mapping.
     vec3_subtract(tangent, b, a);
+
+    // Clamp to visible bounds
+    left_bound = (int)fmin(left_bound, half_width);
+    right_bound = (int)fmax(right_bound, -half_width);
 
     mfloat_t intersection[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
     vec2(ray, 0, distance_to_projection_plane);
 
-    left_bound = (int)fmin(left_bound, half_width);
-    right_bound = (int)fmax(right_bound, -half_width);
-
+    // Draw sprite
     for (int i = left_bound; i > right_bound; i--) {
         ray[0] = i;
         if (intersect_camera_ray(intersection, l, r, ray)) {
