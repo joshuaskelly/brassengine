@@ -132,6 +132,14 @@ static texture_t* palette[MAX_PALETTE_SIZE];
  * @tparam texture.texture sprite Sprite to render.
  * @tparam vector2.vector2 position Position of sprite.
 */
+
+/**
+ * Renders given sprite with orientation.
+ * @function Renderer:render
+ * @tparam texture.texture sprite Sprite to render.
+ * @tparam vector2.vector2 position Position of sprite.
+ * @tparam vector2.vector2 forward Forward vector of sprite.
+*/
 static int module_raycaster_renderer_render(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
