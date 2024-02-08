@@ -972,14 +972,18 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         ray[0] = i;
         if (intersect_camera_ray(intersection, l, r, ray)) {
             float distance = intersection[1];
-
             if (distance <= 0) continue;
 
             float brightness = get_distance_based_brightness(distance);
             float half_sprite_height = ((distance_to_projection_plane / distance) * 0.5f);
             vec3_subtract(p, intersection, a);
             p[2] = 0;
+
             float offset = vec3_dot(p, tangent);
+
+            // TODO: Fix this hack. My hunch is related to pixel centers and
+            // calculating the left and right bounds.
+            if (offset < 0 || offset > 1.0f) continue;
 
             draw_wall_strip(
                 sprite,
