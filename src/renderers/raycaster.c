@@ -371,16 +371,18 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         int y = y0 + i;
         if (y >= bottom) break;
 
+        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
+        t += t_step;
+        if (c == graphics_transparent_color_get()) continue;
+
         float d = get_depth_buffer_pixel(active_renderer, x, y);
         if (d <= depth) continue;
 
         set_depth_buffer_pixel(active_renderer, x, y, depth);
 
-        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
         c = shade_pixel(c, brightness);
         graphics_texture_set_pixel(destination_texture, x, y, c);
 
-        t += t_step;
     }
 }
 
@@ -520,8 +522,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
      */
 
     // 1. Determine distance to the projection plane.
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
@@ -703,8 +704,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     const float height = render_texture->height;
 
     const float fov = renderer->camera.fov;
-    const float fov_rads = fov * M_PI / 180.0f;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(fov_rads / 2.0f);
+    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate step vector, we need it to move along the projection plane
     mfloat_t step[VEC2_SIZE];
@@ -726,7 +726,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     vec2_normalize(d, d);
 
     float ang = acos(vec2_dot(direction, d));
-    if (ang > (fov_rads / 2.0f) + 0.175f) return;
+    if (ang > (to_radians(fov) / 2.0f) + 0.175f) return;
 
     // Scale to put point on projection plane.
     vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
@@ -755,4 +755,300 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
         &rect,
         sprite_depth_blit_func
     );
+}
+
+/**
+ * Test intersection for given line segment and ray having origin at 0, 0
+ *
+ * @param result intersection point if intersection occurs.
+ * @param l first endpoint
+ * @param r second endpoint
+ * @param ray direction of ray
+ * @return true if intersection occurs, false otherwise.
+ */
+static bool intersect_camera_ray(mfloat_t* result, mfloat_t* a, mfloat_t* b, mfloat_t* ray) {
+    float x1 = a[0];
+    float y1 = a[1];
+    float x2 = b[0];
+    float y2 = b[1];
+    float x3 = ray[0];
+    float y3 = ray[1];
+    float x4 = 0;
+    float y4 = 0;
+
+    float x12 = x1 - x2;
+    float x34 = x3 - x4;
+    float y12 = y1 - y2;
+    float y34 = y3 - y4;
+
+    float c = x12 * y34 - y12 * x34;
+
+    if (fabsf(c) < 0.01) {
+        return false;
+    }
+
+    float t = x1 * y2 - y1 * x2;
+    float u = x3 * y4 - y3 * x4;
+
+    float x = (t * x34 - u * x12) / c;
+    float y = (t * y34 - u * y12) / c;
+
+    result[0] = x;
+    result[1] = y;
+
+    return true;
+}
+
+void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position, mfloat_t* forward) {
+    if (!renderer->render_texture) return;
+    if (!sprite) return;
+
+    active_renderer = renderer;
+
+    texture_t* render_texture = renderer->render_texture;
+    mfloat_t* direction = renderer->camera.direction;
+    mfloat_t* camera_position = renderer->camera.position;
+
+    float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
+    float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
+
+    const float width = render_texture->width;
+    const float height = render_texture->height;
+    const float half_width = width / 2.0f;
+    const float half_height = height / 2.0f;
+
+    const float fov = renderer->camera.fov;
+    const float distance_to_projection_plane = half_width / tanf(to_radians(fov) / 2.0f);
+
+    /*
+     * Rendering an oriented sprite:
+     *
+     * 1. Transform sprite from world to camera space coordinates. Such that
+     *    the camera is looking down the +y-axis.
+     *
+     *    The big advantage of this approach is that the distance from
+     *    the sprite-ray intersections to the view plane (needed for the
+     *    raycasting in step 5) is just the y-coordinate of the intersection.
+     *
+     * 2. Create line segment from sprite endpoints.
+     *
+     * 3. Clip line segment against right and left view planes.
+     *
+     * 4. Flip endpoints to ensure correct left to right rendering.
+     *
+     * 5. Render sprite as raycast columns.
+     *
+     *    \_                               ^                                _/
+     *      \_                             | +y                           _/
+     *        \_                           |                            _/
+     *          \_                         |                          _/
+     *            \_                       |                        _/
+     *              \_                     |                      _/
+     * (endpoint) a___l_(clipped endpoint) |                    _/
+     *                  \_  \__________    |                  _/
+     *                    \_           \___|_____            _/
+     *                      \_             |     \_________r (clipped endpoint)
+     *                        \_           |            _/ \_______b (endpoint)
+     *                          \_         |          _/
+     *                            \_       |        _/
+     *                              \_     |      _/
+     *                                \_   |    _/
+     *                                  \_ |  _/
+     *                                    \|/
+     * +x <-----------------------(origin) + ------------------------------> -x
+     */
+
+    mfloat_t angle = vec2_angle(direction);
+    angle -= MPI_2;
+
+    // 1. Transform sprite from world to camera space coordinates.
+
+    // Calculate camera matrix
+    mfloat_t m[MAT3_SIZE];
+    mat3_identity(m);
+    mat3_rotation_z(m, angle);
+    m[6] = camera_position[0];
+    m[7] = camera_position[1];
+    mat3_inverse(m, m);
+
+    // Transform sprite position
+    mfloat_t p[VEC3_SIZE];
+    vec3(p, position[0], position[1], 1.0f);
+    vec3_multiply_mat3(p, p, m);
+    p[2] = 0;
+
+    // Calculate sprite tangent
+    mfloat_t tangent[VEC3_SIZE];
+    vec3(tangent, 0, 0, 1.0f);
+    vec2_tangent(tangent, forward);
+    vec2_normalize(tangent, tangent);
+    m[6] = 0;
+    m[7] = 0;
+    vec3_multiply_mat3(tangent, tangent, m);
+    tangent[2] = 0;
+
+    // 2. Calculate sprite endpoints.
+
+    // Calculate half-tangent
+    mfloat_t half_tangent[VEC3_SIZE];
+    vec3_divide_f(half_tangent, tangent, 2.0f);
+
+    /** First sprite endpoint. */
+    mfloat_t a[VEC3_SIZE];
+    vec3_subtract(a, p, half_tangent);
+
+    /** Second sprite endpoint. */
+    mfloat_t b[VEC3_SIZE];
+    vec3_add(b, p, half_tangent);
+
+    // Near culling
+    if (a[1] <= 0 && b[1] <= 0) return;
+
+    // 3. Clip line segment against right and left view planes.
+
+    /** Clipped left sprite endpoint. */
+    mfloat_t l[VEC3_SIZE];
+    vec3_assign(l, a);
+
+    /** Clipped right sprite endpoint. */
+    mfloat_t r[VEC3_SIZE];
+    vec3_assign(r, b);
+
+    // Right clip plane
+    {
+        mfloat_t clip_plane_normal[VEC2_SIZE];
+        vec2(clip_plane_normal, -half_width, distance_to_projection_plane);
+        vec2_normalize(clip_plane_normal, clip_plane_normal);
+        vec2_tangent(clip_plane_normal, clip_plane_normal);
+
+        /** Clipped left endpoint projected onto clip plane normal.*/
+        float aa = vec2_dot(clip_plane_normal, l);
+
+        /** Clipped right endpoint projected onto clip plane normal.*/
+        float bb = vec2_dot(clip_plane_normal, r);
+
+        // Both endpoints are outside clipping plane.
+        if (aa <= 0 && bb <= 0) return;
+
+        // Second endpoint is outside clipping plane. Back-facing sprite.
+        if (aa > 0 && bb < 0) {
+            float f = aa / (aa - bb);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_subtract(r, l, tangent);
+        }
+        // First endpoint is outside clipping plane. Front-facing sprite.
+        else if (aa < 0 && bb > 0) {
+            float f = bb / (bb - aa);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_add(l, r, tangent);
+        }
+    }
+
+    // Left clip plane
+    {
+        mfloat_t clip_plane_normal[VEC2_SIZE];
+        vec2(clip_plane_normal, half_width, distance_to_projection_plane);
+        vec2_normalize(clip_plane_normal, clip_plane_normal);
+        vec2_tangent(clip_plane_normal, clip_plane_normal);
+        vec2_multiply_f(clip_plane_normal, clip_plane_normal, -1.0f);
+
+        /** Clipped left endpoint projected onto clip plane normal.*/
+        float aa = vec2_dot(clip_plane_normal, l);
+
+        /** Clipped right endpoint projected onto clip plane normal.*/
+        float bb = vec2_dot(clip_plane_normal, r);
+
+        // Both endpoints are outside clipping plane.
+        if (aa <= 0 && bb <= 0) return;
+
+        // Second endpoint is outside clipping plane. Back-facing sprite.
+        if (bb < 0 && aa > 0) {
+            float f = fabsf(bb) / (aa - bb);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_add(r, r, tangent);
+        }
+        // First endpoint is outside clipping plane. Front-facing sprite.
+        else if (aa < 0 && bb > 0) {
+            float f = fabsf(aa) / (bb - aa);
+            vec3_subtract(tangent, l, r);
+            vec3_multiply_f(tangent, tangent, f);
+            vec3_subtract(l, l, tangent);
+        }
+    }
+
+    // 4. Flip endpoints to ensure correct left to right drawing.
+    float left_bound = l[0] * distance_to_projection_plane / l[1];
+    float right_bound = r[0] * distance_to_projection_plane / r[1];
+
+    if (right_bound > left_bound) {
+        float swap = b[0];
+        b[0] = a[0];
+        a[0] = swap;
+        swap = b[1];
+        b[1] = a[1];
+        a[1] = swap;
+
+        swap = r[0];
+        r[0] = l[0];
+        l[0] = swap;
+        swap = r[1];
+        r[1] = l[1];
+        l[1] = swap;
+
+        swap = right_bound;
+        right_bound = left_bound;
+        left_bound = (int)swap;
+    }
+
+    // Recalculate tangent. This is to ensure correct texture mapping.
+    vec3_subtract(tangent, b, a);
+
+    // 5. Render sprite as raycast columns.
+
+    // Clamp to visible bounds
+    left_bound = fminf(left_bound, half_width);
+    right_bound = fmaxf(right_bound, -half_width);
+
+    mfloat_t intersection[VEC2_SIZE];
+    mfloat_t ray[VEC2_SIZE];
+    vec2(ray, 0, distance_to_projection_plane);
+
+    // Draw sprite
+    for (int i = left_bound; i > right_bound; i--) {
+        ray[0] = i;
+        if (intersect_camera_ray(intersection, l, r, ray)) {
+            // Distance to view plane is just y-coordinate.
+            float distance = intersection[1];
+            if (distance <= 0) continue;
+
+            // Darken vertically aligned walls.
+            float brightness = get_distance_based_brightness(distance);
+            float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
+            brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
+
+            float half_sprite_height = ((distance_to_projection_plane / distance) * 0.5f);
+            vec3_subtract(p, intersection, a);
+            p[2] = 0;
+
+            float offset = vec3_dot(p, tangent);
+
+            // TODO: Fix this hack. My hunch is related to pixel centers and
+            // calculating the left and right bounds.
+            if (offset < 0 || offset > 1.0f) continue;
+
+            draw_wall_strip(
+                sprite,
+                render_texture,
+                half_width - i,
+                half_height - half_sprite_height - 0.5f,
+                half_height + half_sprite_height + 1.5f,
+                offset,
+                brightness,
+                distance
+            );
+        }
+    }
 }

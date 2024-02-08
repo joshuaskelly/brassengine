@@ -124,14 +124,22 @@ static texture_t* palette[MAX_PALETTE_SIZE];
  * @function Renderer:render
  * @tparam Map map Map to render.
  * @tparam {texture.texture,...} tiles An array of textures. Valid range of indices is 0-255.
-*/
+ */
 
 /**
  * Renders given sprite.
  * @function Renderer:render
  * @tparam texture.texture sprite Sprite to render.
  * @tparam vector2.vector2 position Position of sprite.
-*/
+ */
+
+/**
+ * Renders given sprite with orientation.
+ * @function Renderer:render
+ * @tparam texture.texture sprite Sprite to render.
+ * @tparam vector2.vector2 position Position of sprite.
+ * @tparam vector2.vector2 forward Forward vector of sprite.
+ */
 static int module_raycaster_renderer_render(lua_State* L) {
     raycaster_renderer_t* renderer = luaL_checkrayrenderer(L, 1);
 
@@ -165,7 +173,14 @@ static int module_raycaster_renderer_render(lua_State* L) {
     else {
         texture_t* sprite = luaL_checktexture(L, 2);
         mfloat_t* position = luaL_checkvector2(L, 3);
-        raycaster_renderer_render_sprite(renderer, sprite, position);
+
+        if (lua_gettop(L) > 3) {
+            mfloat_t* forward = luaL_checkvector2(L, 4);
+            raycaster_renderer_render_sprite_oriented(renderer, sprite, position, forward);
+        }
+        else {
+            raycaster_renderer_render_sprite(renderer, sprite, position);
+        }
     }
 
     return 0;
