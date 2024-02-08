@@ -876,7 +876,10 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         vec2_normalize(clip_plane_normal, clip_plane_normal);
         vec2_tangent(clip_plane_normal, clip_plane_normal);
 
+        /** Clipped left endpoint projected onto clip plane normal.*/
         float aa = vec2_dot(clip_plane_normal, l);
+
+        /** Clipped right endpoint projected onto clip plane normal.*/
         float bb = vec2_dot(clip_plane_normal, r);
 
         // Both endpoints are outside clipping plane.
@@ -906,7 +909,10 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         vec2_tangent(clip_plane_normal, clip_plane_normal);
         vec2_multiply_f(clip_plane_normal, clip_plane_normal, -1.0f);
 
+        /** Clipped left endpoint projected onto clip plane normal.*/
         float aa = vec2_dot(clip_plane_normal, l);
+
+        /** Clipped right endpoint projected onto clip plane normal.*/
         float bb = vec2_dot(clip_plane_normal, r);
 
         // Both endpoints are outside clipping plane.
