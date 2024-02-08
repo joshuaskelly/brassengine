@@ -109,6 +109,14 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
  */
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position);
 
+/**
+ * Render given texture as an oriented sprite.
+ *
+ * @param renderer Renderer to render to.
+ * @param sprite Texture to render.
+ * @param position Sprite position.
+ * @param forward Sprite forward vector.
+ */
 void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position, mfloat_t* forward);
 
 #endif

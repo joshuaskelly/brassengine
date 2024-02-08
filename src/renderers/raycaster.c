@@ -757,13 +757,25 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     );
 }
 
-static bool intersect(mfloat_t* result, mfloat_t* l, mfloat_t* r, mfloat_t* ray) {
-    float x1 = l[0];
-    float y1 = l[1];
-    float x2 = r[0];
-    float y2 = r[1];
-    float x3 = ray[0];
-    float y3 = ray[1];
+/**
+ * Test intersection for given line segment and ray having origin at 0, 0
+ *
+ * @param result intersection point if intersection occurs.
+ * @param l first endpoint
+ * @param r second endpoint
+ * @param ray direction of ray
+ * @return true if intersection occurs, false otherwise.
+ */
+static bool intersect_camera_ray(mfloat_t* result, mfloat_t* a, mfloat_t* b, mfloat_t* ray) {
+    mfloat_t r[VEC2_SIZE];
+    vec2_normalize(r, ray);
+
+    float x1 = a[0];
+    float y1 = a[1];
+    float x2 = b[0];
+    float y2 = b[1];
+    float x3 = r[0];
+    float y3 = r[1];
     float x4 = 0;
     float y4 = 0;
 
@@ -778,11 +790,11 @@ static bool intersect(mfloat_t* result, mfloat_t* l, mfloat_t* r, mfloat_t* ray)
         return false;
     }
 
-    float a = x1 * y2 - y1 * x2;
-    float b = x3 * y4 - y3 * x4;
+    float t = x1 * y2 - y1 * x2;
+    float u = x3 * y4 - y3 * x4;
 
-    float x = (a * x34 - b * x12) / c;
-    float y = (a * y34 - b * y12) / c;
+    float x = (t * x34 - u * x12) / c;
+    float y = (t * y34 - u * y12) / c;
 
     result[0] = x;
     result[1] = y;
@@ -942,7 +954,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     for (int i = left_bound; i > right_bound; i--) {
         ray[0] = i;
-        if (intersect(inter, ll, rr, ray)) {
+        if (intersect_camera_ray(inter, ll, rr, ray)) {
             float distance = inter[1];
 
             if (distance <= 0) continue;
