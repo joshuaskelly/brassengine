@@ -933,8 +933,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     }
 
     // Flip
-    int left_bound = l[0] * distance_to_projection_plane / l[1] - 0.5f;
-    int right_bound = r[0] * distance_to_projection_plane / r[1] + 0.5f;
+    float left_bound = l[0] * distance_to_projection_plane / l[1];
+    float right_bound = r[0] * distance_to_projection_plane / r[1];
 
     if (right_bound > left_bound) {
         float swap = b[0];
@@ -960,8 +960,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_subtract(tangent, b, a);
 
     // Clamp to visible bounds
-    left_bound = (int)fmin(left_bound, half_width);
-    right_bound = (int)fmax(right_bound, -half_width);
+    left_bound = fminf(left_bound, half_width);
+    right_bound = fmaxf(right_bound, -half_width);
 
     mfloat_t intersection[VEC2_SIZE];
     mfloat_t ray[VEC2_SIZE];
