@@ -841,6 +841,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     mfloat_t tangent[VEC3_SIZE];
     vec3(tangent, 0, 0, 1.0f);
     vec2_tangent(tangent, forward);
+    vec2_normalize(tangent, tangent);
     m[6] = 0;
     m[7] = 0;
     vec3_multiply_mat3(tangent, tangent, m);
