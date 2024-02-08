@@ -820,8 +820,48 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     const float fov = renderer->camera.fov;
     const float distance_to_projection_plane = half_width / tanf(to_radians(fov) / 2.0f);
 
+    /*
+     * Rendering an oriented sprite:
+     *
+     * 1. Transform sprite from world to camera space coordinates. Such that
+     *    the camera is looking down the +y-axis.
+     *
+     *    The big advantage of this approach is that the distance from
+     *    the sprite-ray intersections to the view plane (needed for the
+     *    raycasting in step 5) is just the y-coordinate of the intersection.
+     *
+     * 2. Create line segment from sprite endpoints.
+     *
+     * 3. Clip line segment against right and left view planes.
+     *
+     * 4. Flip endpoints to ensure correct left to right rendering.
+     *
+     * 5. Render sprite as raycast columns.
+     *
+     *    \_                               ^                                _/
+     *      \_                             | +y                           _/
+     *        \_                           |                            _/
+     *          \_                         |                          _/
+     *            \_                       |                        _/
+     *              \_                     |                      _/
+     * (endpoint) a___l_(clipped endpoint) |                    _/
+     *                  \_  \__________    |                  _/
+     *                    \_           \___|_____            _/
+     *                      \_             |     \_________r (clipped endpoint)
+     *                        \_           |            _/ \_______b (endpoint)
+     *                          \_         |          _/
+     *                            \_       |        _/
+     *                              \_     |      _/
+     *                                \_   |    _/
+     *                                  \_ |  _/
+     *                                    \|/
+     * +x <-----------------------(origin) + ------------------------------> -x
+     */
+
     mfloat_t angle = vec2_angle(direction);
     angle -= MPI_2;
+
+    // 1. Transform sprite from world to camera space coordinates.
 
     // Calculate camera matrix
     mfloat_t m[MAT3_SIZE];
@@ -847,6 +887,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     vec3_multiply_mat3(tangent, tangent, m);
     tangent[2] = 0;
 
+    // 2. Calculate sprite endpoints.
+
     // Calculate half-tangent
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
@@ -861,6 +903,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     // Near culling
     if (a[1] <= 0 && b[1] <= 0) return;
+
+    // 3. Clip line segment against right and left view planes.
 
     /** Clipped left sprite endpoint. */
     mfloat_t l[VEC3_SIZE];
@@ -935,7 +979,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
         }
     }
 
-    // Flip
+    // 4. Flip endpoints to ensure correct left to right drawing.
     float left_bound = l[0] * distance_to_projection_plane / l[1];
     float right_bound = r[0] * distance_to_projection_plane / r[1];
 
@@ -962,6 +1006,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Recalculate tangent. This is to ensure correct texture mapping.
     vec3_subtract(tangent, b, a);
 
+    // 5. Render sprite as raycast columns.
+
     // Clamp to visible bounds
     left_bound = fminf(left_bound, half_width);
     right_bound = fmaxf(right_bound, -half_width);
@@ -974,12 +1020,12 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     for (int i = left_bound; i > right_bound; i--) {
         ray[0] = i;
         if (intersect_camera_ray(intersection, l, r, ray)) {
+            // Distance to view plane is just y-coordinate.
             float distance = intersection[1];
             if (distance <= 0) continue;
 
-            float brightness = get_distance_based_brightness(distance);
-
             // Darken vertically aligned walls.
+            float brightness = get_distance_based_brightness(distance);
             float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
             brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
 
