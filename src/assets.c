@@ -828,6 +828,7 @@ static size_t texture_asset_sizeof(texture_asset_t* asset) {
  * @return Texture for given asset and frame is successful. NULL otherwise.
  */
 static texture_t* texture_asset_get_frame(texture_asset_t* asset, int index) {
+    if (!asset) return NULL;
     if (index < 0) return NULL;
     if (index >= asset->frame_count) return NULL;
 
