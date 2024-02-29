@@ -1,5 +1,7 @@
 # TODO
 ## General
+- [ ] Audit/fix draw rectangle functions. Width/height seems off?
+- [ ] Add foreground/background color as optional args to draw text.
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Override io.lines() to sandbox/support zips.
