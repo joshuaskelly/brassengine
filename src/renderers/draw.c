@@ -110,8 +110,8 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
 void draw_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int y0 = y;
-    int x1 = x + width;
-    int y1 = y + height;
+    int x1 = x + width - 1;
+    int y1 = y + height - 1;
 
     draw_line(x0, y0, x1, y0, color);
     draw_line(x1, y0, x1, y1, color);
@@ -122,8 +122,8 @@ void draw_rectangle(int x, int y, int width, int height, color_t color) {
 void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     int x0 = x;
     int y0 = y;
-    int x1 = x + width;
-    int y1 = y + height;
+    int x1 = x + width - 1;
+    int y1 = y + height - 1;
 
     draw_pattern_line(x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
     draw_pattern_line(x1, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
@@ -133,7 +133,7 @@ void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* patt
 
 void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
-    int x1 = x + width;
+    int x1 = x + width - 1;
     int y0 = y;
 
     for (int i = 0; i < height; i++) {
