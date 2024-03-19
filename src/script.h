@@ -21,6 +21,14 @@ void script_init(void);
 void script_destroy(void);
 
 /**
+ * Handle given event.
+ *
+ * @param event Event to handle.
+ * @return true if event was handled, false otherwise.
+ */
+bool script_handle_event(event_t* event);
+
+/**
  * Update scripting system. Called at the beginning of an engine update
  * cycle.
  */

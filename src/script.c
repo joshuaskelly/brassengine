@@ -19,6 +19,7 @@
 #include "modules/assets.h"
 #include "modules/display.h"
 #include "modules/draw.h"
+#include "modules/event.h"
 #include "modules/float_array.h"
 #include "modules/gif.h"
 #include "modules/globals.h"
@@ -353,6 +354,49 @@ double script_update_time_get(void) {
 
 double script_draw_time_get(void) {
     return draw_time;
+}
+
+bool script_handle_event(event_t* event) {
+    if (is_in_error_state) return false;
+
+    // Attempt to find the global object
+    lua_getglobal(L, "_event");
+
+    int base = lua_gettop(L);
+
+    lua_pushevent(L, event);
+
+    // Invoke function
+    if (lua_isfunction(L, -2)) {
+        // Set message handler
+        lua_pushcfunction(L, message_handler);
+        // Move message handler under function and args
+        lua_insert(L, base);
+
+        if (lua_pcall(L, 1, 1, base) != LUA_OK) {
+            // Handle traceback if we get one.
+            const char* message = lua_tostring(L, -1);
+            log_error(message);
+            is_in_error_state = true;
+
+            lua_settop(L, 0);
+            return false;
+        }
+
+        bool result = lua_toboolean(L, -1);
+
+        // Remove message handler
+        lua_remove(L, base);
+
+        lua_settop(L, 0);
+
+        return result;
+    }
+    else {
+        lua_settop(L, 0);
+    }
+
+    return false;
 }
 
 void script_update(void) {

@@ -310,7 +310,7 @@ static bool handle_key_up(event_t* event) {
             break;
     }
 
-    return false;
+    return true;
 }
 
 bool console_handle_event(event_t* event) {

@@ -95,6 +95,8 @@ static void handle_events() {
 
         if (console_handle_event(&event)) return;
 
+        if (script_handle_event(&event)) return;
+
         input_handle_event(&event);
     }
 }

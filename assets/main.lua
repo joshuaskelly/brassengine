@@ -4,6 +4,15 @@ local draw = require("draw")
 function _init()
 end
 
+function _event(e)
+    if e.type == "keydown" then
+        print ("keydown: "..string.char(e.symbol))
+    end
+
+
+    return true
+end
+
 -- Called once per frame
 function _update()
 end
