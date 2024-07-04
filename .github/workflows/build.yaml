@@ -1,6 +1,7 @@
 name: Build Brass Engine
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '**'
@@ -8,7 +9,6 @@ on:
     branches:
       - main
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
 
 jobs:
   generate-docs:
