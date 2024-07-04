@@ -2,13 +2,6 @@ name: Build Foo
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '**'
-  pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
 
 jobs:
   generate-docs:
