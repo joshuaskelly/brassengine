@@ -1,4 +1,4 @@
-name: Build Brass Engine
+name: Build Brass Engine Test
 
 on:
   workflow_dispatch:
