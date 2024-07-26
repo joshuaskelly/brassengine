@@ -415,7 +415,7 @@ static int vector4_max(lua_State* L) {
 
 /**
  * Returns a vector that is the component-wise min of v0 and v1.
- * @function max
+ * @function min
  * @tparam vector4 v0
  * @tparam vector4 v1
  * @treturn vector4
