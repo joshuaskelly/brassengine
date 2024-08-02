@@ -36,6 +36,12 @@ function raycaster.Renderer:render(map, tiles) end
 --- @param position vector2  Position of sprite.
 function raycaster.Renderer:render(sprite, position) end
 
+--- Renders given sprite with orientation.
+--- @param sprite texture  Sprite to render.
+--- @param position vector2  Position of sprite.
+--- @param forward vector2  Forward vector of sprite.
+function raycaster.Renderer:render(sprite, position, forward) end
+
 --- Set renderer's camera data.
 --- @param position vector2  Camera position.
 --- @param direction vector2  Camera forward vector.

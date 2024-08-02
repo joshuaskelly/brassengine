@@ -3,6 +3,11 @@
 --- Module for playing sounds.
 local sound = {}
 
+--- Create new sound.
+--- @param frame_count integer  Total number of PCM frames.
+--- @return sound 
+function sound.new(frame_count) end
+
 --- @class sound
 --- @field pcm integer[]
 --- @field frame_count integer
@@ -25,10 +30,5 @@ function sound.sound:set_frame(index, value) end
 --- @param index integer  Frame index
 --- @return integer PCM data
 function sound.sound:get_frame(index) end
-
---- Create new sound.
---- @param frame_count integer  Total number of PCM frames.
---- @return sound 
-function sound.new(frame_count) end
 
 return sound

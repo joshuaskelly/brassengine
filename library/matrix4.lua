@@ -146,13 +146,13 @@ function matrix4.matrix4:translate(x, y, z) end
 --- Scales matrix in-place.
 --- @param v0 vector3 
 --- @return matrix4 
-function matrix4.matrix4:translate(v0) end
+function matrix4.matrix4:scale(v0) end
 
 --- Scales matrix in-place.
 --- @param x number 
 --- @param y number 
 --- @param z number 
 --- @return matrix4 
-function matrix4.matrix4:translate(x, y, z) end
+function matrix4.matrix4:scale(x, y, z) end
 
 return matrix4

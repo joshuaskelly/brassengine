@@ -3,10 +3,17 @@
 --- Module for working with vector3 data.
 local vector3 = {}
 
+--- @class vector3
+--- @field length number
+--- @field x number
+--- @field y number
+--- @field z number
+vector3.vector3 = {}
+
 --- Returns a new vector3
---- @param x number 
---- @param y number 
---- @param z number 
+--- @param x number? 
+--- @param y number? 
+--- @param z number? 
 --- @return vector3 
 function vector3.new(x, y, z) end
 
@@ -51,7 +58,7 @@ function vector3.max(v0, v1) end
 --- @param v0 vector3 
 --- @param v1 vector3 
 --- @return vector3 
-function vector3.max(v0, v1) end
+function vector3.min(v0, v1) end
 
 --- Returns a vector that is a component-wise clamp of v0 such that min < v0 < max.
 --- @param v0 vector3  Vector to clamp
@@ -124,12 +131,5 @@ function vector3.distance(v0, v1) end
 --- @param v1 vector3 
 --- @return number float
 function vector3.distance_squared(v0, v1) end
-
---- @class vector3
---- @field length number
---- @field x number
---- @field y number
---- @field z number
-vector3.vector3 = {}
 
 return vector3

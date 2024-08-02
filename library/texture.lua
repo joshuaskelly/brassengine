@@ -3,6 +3,12 @@
 --- Module for working with texture data.
 local texture = {}
 
+--- Create new texture.
+--- @param width integer  Texture width
+--- @param height integer  Texture height
+--- @return texture 
+function texture.new(width, height) end
+
 --- @class texture
 --- @field pixels integer[]
 --- @field width integer
@@ -34,11 +40,5 @@ function texture.texture:get_pixel(x, y) end
 --- @param x integer  Destination x-offset
 --- @param y integer  Destination y-offset
 function texture.texture:blit(source, x, y) end
-
---- Create new texture.
---- @param width integer  Texture width
---- @param height integer  Texture height
---- @return texture 
-function texture.new(width, height) end
 
 return texture

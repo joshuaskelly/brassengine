@@ -7,13 +7,14 @@ local vector4 = {}
 --- @field x number
 --- @field y number
 --- @field z number
+--- @field w number
 vector4.vector4 = {}
 
 --- Returns a new vector4
---- @param x number 
---- @param y number 
---- @param z number 
---- @param w number 
+--- @param x number? 
+--- @param y number? 
+--- @param z number? 
+--- @param w number? 
 --- @return vector4 
 function vector4.new(x, y, z, w) end
 
@@ -58,7 +59,7 @@ function vector4.max(v0, v1) end
 --- @param v0 vector4 
 --- @param v1 vector4 
 --- @return vector4 
-function vector4.max(v0, v1) end
+function vector4.min(v0, v1) end
 
 --- Returns a vector that is a component-wise clamp of v0 such that min < v0 < max.
 --- @param v0 vector4  Vector to clamp
