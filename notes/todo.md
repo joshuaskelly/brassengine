@@ -1,6 +1,5 @@
 # TODO
 ## General
-- [ ] Audit/fix draw rectangle functions. Width/height seems off?
 - [ ] Add foreground/background color as optional args to draw text.
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
@@ -10,6 +9,7 @@
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [x] Audit/fix draw rectangle functions. Width/height seems off?
 - [x] Support for loading all frames from GIF files.
 - [x] Support for creating/modifiying sound objects.
 - [x] Error on missing main.lua instead of segfaulting.
