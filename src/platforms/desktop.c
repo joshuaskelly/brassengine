@@ -179,6 +179,8 @@ void platform_draw(void) {
         render_texture->width * sizeof(uint32_t)
     );
 
+    SDL_RenderClear(renderer);
+
     SDL_RenderCopy(
         renderer,
         render_buffer_texture,
