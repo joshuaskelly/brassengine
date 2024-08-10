@@ -162,6 +162,26 @@ static void load_input_history(void) {
     command[strlen(s)] = '\0';
 }
 
+static void scroll_up(void) {
+    const int max_lines = (config->resolution.height / 2) / 8 - 1;
+
+    if (output->count > max_lines) {
+        output_buffer_offset--;
+
+        if (max_lines - output_buffer_offset > output->count) {
+            output_buffer_offset = -(output->count - max_lines);
+        }
+    }
+}
+
+static void scroll_down(void) {
+    const int max_lines = (config->resolution.height / 2) / 8 - 1;
+
+    if (output->count > max_lines) {
+        output_buffer_offset = fminf(output_buffer_offset + 1, 0);
+    }
+}
+
 /**
  * Handle key down events.
  *
@@ -170,7 +190,6 @@ static void load_input_history(void) {
  */
 static bool handle_key_down(event_t* event) {
     const size_t command_length = strlen(command);
-    const int max_lines = (config->resolution.height / 2) / 8 - 1;
 
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
@@ -205,23 +224,13 @@ static bool handle_key_down(event_t* event) {
         }
 
         case KEYCODE_PAGEDOWN: {
-            if (output->count > max_lines) {
-                output_buffer_offset = fminf(output_buffer_offset + 1, 0);
-            }
-
+            scroll_down();
             return true;
         }
 
         case KEYCODE_PAGEUP: {
-            if (output->count > max_lines) {
-                output_buffer_offset--;
-
-                if (max_lines - output_buffer_offset > output->count) {
-                    output_buffer_offset = -(output->count - max_lines);
-                }
-            }
-
-           return true;
+            scroll_up();
+            return true;
         }
 
         case KEYCODE_UP: {
@@ -288,6 +297,21 @@ static bool handle_key_down(event_t* event) {
     return true;
 }
 
+bool handle_mouse_wheel(event_t* event) {
+    if (event->wheel.wheel_y == 0) {
+        return false;
+    }
+
+    if (event->wheel.wheel_y > 0) {
+        scroll_up();
+    }
+    else {
+        scroll_down();
+    }
+
+    return true;
+}
+
 /**
  * Handle key up events.
  *
@@ -322,6 +346,9 @@ bool console_handle_event(event_t* event) {
 
         case EVENT_KEYUP:
             return handle_key_up(event);
+
+        case EVENT_MOUSEWHEEL:
+            return handle_mouse_wheel(event);
 
         default:
             break;
