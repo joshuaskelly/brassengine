@@ -297,7 +297,7 @@ static bool handle_key_down(event_t* event) {
     return true;
 }
 
-bool handle_mouse_wheel(event_t* event) {
+static bool handle_mouse_wheel(event_t* event) {
     if (event->wheel.wheel_y == 0) {
         return false;
     }
