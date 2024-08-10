@@ -18,6 +18,11 @@ function mouse.position() end
 --- @return integer Mouse y coord
 function mouse.motion() end
 
+--- Get mouse wheel scroll values.
+--- @return integer Horizontal scroll amount
+--- @return integer Vertical scroll amount
+function mouse.wheel() end
+
 --- Set mouse grab state.
 --- @param grabbed boolean  True if mouse should be constrained to window.
 function mouse.set_grabbed(grabbed) end
