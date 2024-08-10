@@ -41,7 +41,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
-        graphics_set_pixel(current_x, current_y, color);
+        graphics_set_pixel(current_x + 0.5f, current_y + 0.5f, color);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -60,7 +60,7 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
     float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
-        pattern_set_pixel(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
+        pattern_set_pixel(current_x + 0.5f, current_y + 0.5f, pattern, pattern_offset_x, pattern_offset_y);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -85,7 +85,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
-    float st_longest_side = fmax(abs(delta_s), abs(delta_t));
+    float st_longest_side = fmax(fabs(delta_s), fabs(delta_t));
 
     float r = st_longest_side / longest_side;
 
@@ -98,7 +98,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     for (int i = 0; i <= longest_side; i++) {
         color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
 
-        graphics_set_pixel(current_x, current_y, c);
+        graphics_set_pixel(current_x + 0.5f, current_y + 0.5f, c);
 
         current_x += x_inc;
         current_y += y_inc;
