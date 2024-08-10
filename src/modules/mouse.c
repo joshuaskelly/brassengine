@@ -68,6 +68,24 @@ static int bindings_get_mouse_motion(lua_State* L) {
 }
 
 /**
+ * Get mouse wheel scroll values.
+ * @function wheel
+ * @treturn[1] integer Horizontal scroll amount
+ * @treturn[2] integer Vertical scroll amount
+ */
+static int bindings_get_mouse_wheel(lua_State* L) {
+    int horizontal;
+    int vertical;
+
+    input_mouse_wheel(&horizontal, &vertical);
+
+    lua_pushnumber(L, horizontal);
+    lua_pushnumber(L, vertical);
+
+    return 2;
+}
+
+/**
  * Set mouse grab state.
  * @function set_grabbed
  * @tparam boolean grabbed True if mouse should be constrained to window.
@@ -99,6 +117,7 @@ static const struct luaL_Reg module_functions[] = {
     {"button", bindings_get_mouse_button},
     {"position", bindings_get_mouse_position},
     {"motion", bindings_get_mouse_motion},
+    {"wheel", bindings_get_mouse_wheel},
     {"set_grabbed", bindings_set_mouse_grabbed},
     {"get_grabbed", bindings_get_mouse_grabbed},
     {NULL, NULL}

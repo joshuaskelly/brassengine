@@ -19,7 +19,8 @@ typedef enum {
     EVENT_KEYUP,
     EVENT_MOUSEMOTION,
     EVENT_MOUSEDOWN,
-    EVENT_MOUSEUP
+    EVENT_MOUSEUP,
+    EVENT_MOUSEWHEEL
 } event_type_t;
 
 typedef struct {
@@ -366,12 +367,19 @@ typedef struct {
     uint8_t button;
 } mouse_button_event_t;
 
+typedef struct {
+    event_type_t type;
+    int wheel_x;
+    int wheel_y;
+} mouse_wheel_event_t;
+
 typedef union {
     event_type_t type;
     common_event_t common;
     key_event_t key;
     mouse_motion_event_t motion;
     mouse_button_event_t button;
+    mouse_wheel_event_t wheel;
 } event_t;
 
 /**
