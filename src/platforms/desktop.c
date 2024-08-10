@@ -257,8 +257,8 @@ static void sdl_handle_events(void) {
 
             case SDL_MOUSEWHEEL:
                 event.type = EVENT_MOUSEWHEEL;
-                event.wheel.horizontal = sdl_event.wheel.x;
-                event.wheel.vertical = sdl_event.wheel.y;
+                event.wheel.wheel_x = sdl_event.wheel.x;
+                event.wheel.wheel_y = sdl_event.wheel.y;
                 event_post(&event);
                 break;
 

@@ -369,8 +369,8 @@ typedef struct {
 
 typedef struct {
     event_type_t type;
-    int vertical;
-    int horizontal;
+    int wheel_x;
+    int wheel_y;
 } mouse_wheel_event_t;
 
 typedef union {
