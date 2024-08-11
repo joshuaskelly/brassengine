@@ -37,11 +37,11 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        graphics_set_pixel(current_x + 0.5f, current_y + 0.5f, color);
+        graphics_set_pixel(current_x, current_y, color);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -56,11 +56,11 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        pattern_set_pixel(current_x + 0.5f, current_y + 0.5f, pattern, pattern_offset_x, pattern_offset_y);
+        pattern_set_pixel(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -75,8 +75,8 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     float s0 = u0 * texture->width;
     float t0 = v0 * texture->height;
@@ -92,13 +92,13 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     float s_inc = delta_s / st_longest_side * r;
     float t_inc = delta_t / st_longest_side * r;
 
-    float current_s = s0;
-    float current_t = t0;
+    float current_s = s0 + 0.5f;
+    float current_t = t0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
         color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
 
-        graphics_set_pixel(current_x + 0.5f, current_y + 0.5f, c);
+        graphics_set_pixel(current_x, current_y, c);
 
         current_x += x_inc;
         current_y += y_inc;
