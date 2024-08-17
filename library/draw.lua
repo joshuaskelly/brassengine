@@ -29,6 +29,18 @@ function draw.line(x0, y0, x1, y1, color) end
 --- @param texture texture  Texture to map
 function draw.textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture) end
 
+--- Draw a line between given position and color.
+--- @param x0 integer  Start anchor point x-coordinate
+--- @param y0 integer  Start anchor point y-coordinate
+--- @param x1 integer  Start control point x-coordinate
+--- @param y1 integer  Start contorl point y-coordinate
+--- @param x2 integer  End control point x-coordinate
+--- @param y2 integer  End control point y-coordinate
+--- @param x3 integer  End anchor point x-coordinate
+--- @param y3 integer  End anchor point y-coordinate
+--- @param color integer  Line color
+function draw.bezier(x0, y0, x1, y1, x2, y2, x3, y3, color) end
+
 --- Draw rectangle.
 --- @param x integer  Rect top left x-coordinate
 --- @param y integer  Rect top left y-coordinate
