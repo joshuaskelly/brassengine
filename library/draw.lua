@@ -29,7 +29,7 @@ function draw.line(x0, y0, x1, y1, color) end
 --- @param texture texture  Texture to map
 function draw.textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture) end
 
---- Draw a line between given position and color.
+--- Draw a bezier curve with the given anchor and control points, and color.
 --- @param x0 integer  Start anchor point x-coordinate
 --- @param y0 integer  Start anchor point y-coordinate
 --- @param x1 integer  Start control point x-coordinate

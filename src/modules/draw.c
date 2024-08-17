@@ -96,7 +96,7 @@ static int bindings_draw_textured_line(lua_State* L) {
 }
 
 /**
- * Draw a line between given position and color.
+ * Draw a bezier curve with the given anchor and control points, and color.
  * @function bezier
  * @tparam integer x0 Start anchor point x-coordinate
  * @tparam integer y0 Start anchor point y-coordinate
