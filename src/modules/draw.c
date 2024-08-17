@@ -96,6 +96,45 @@ static int bindings_draw_textured_line(lua_State* L) {
 }
 
 /**
+ * Draw a line between given position and color.
+ * @function bezier
+ * @tparam integer x0 Start anchor point x-coordinate
+ * @tparam integer y0 Start anchor point y-coordinate
+ * @tparam integer x1 Start control point x-coordinate
+ * @tparam integer y1 Start contorl point y-coordinate
+ * @tparam integer x2 End control point x-coordinate
+ * @tparam integer y2 End control point y-coordinate
+ * @tparam integer x3 End anchor point x-coordinate
+ * @tparam integer y3 End anchor point y-coordinate
+ * @tparam integer color Line color
+ */
+static int bindings_draw_bezier(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int x2 = (int)luaL_checknumber(L, 5);
+    int y2 = (int)luaL_checknumber(L, 6);
+    int x3 = (int)luaL_checknumber(L, 7);
+    int y3 = (int)luaL_checknumber(L, 8);
+
+    if (lua_isnumber(L, 9)) {
+        int color = (int)luaL_checknumber(L, 9);
+        draw_bezier(x0, y0, x1, y1, x2, y2, x3, y3, color);
+    }
+    else {
+        texture_t* pattern = luaL_checktexture(L, 9);
+        int offset_x = (int)luaL_optnumber(L, 10, 0);
+        int offset_y = (int)luaL_optnumber(L, 11, 0);
+        draw_pattern_bezier(x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
+    }
+
+    lua_settop(L, 0);
+
+    return 0;
+}
+
+/**
  * Draw rectangle.
  * @function rectangle
  * @tparam integer x Rect top left x-coordinate
@@ -363,6 +402,7 @@ static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
     {"textured_line", bindings_draw_textured_line},
+    {"bezier", bindings_draw_bezier},
     {"rectangle", bindings_draw_rectangle},
     {"filled_rectangle", bindings_draw_filled_rectangle},
     {"circle", bindings_draw_circle},

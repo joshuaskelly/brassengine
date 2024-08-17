@@ -107,6 +107,90 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     }
 }
 
+void draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    mfloat_t a[VEC2_SIZE] = {x0, y0};
+    mfloat_t b[VEC2_SIZE] = {x1, y1};
+    mfloat_t c[VEC2_SIZE] = {x2, y2};
+    mfloat_t d[VEC2_SIZE] = {x3, y3};
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t bc[VEC2_SIZE];
+    mfloat_t cd[VEC2_SIZE];
+
+    mfloat_t abbc[VEC2_SIZE];
+    mfloat_t bccd[VEC2_SIZE];
+
+    mfloat_t first[VEC2_SIZE] = {x0, y0};
+    mfloat_t next[VEC2_SIZE];
+
+    // Approximate curve length
+    mfloat_t d0 = vec2_distance(a, d);
+    mfloat_t d1 = vec2_distance(a, b) + vec2_distance(b, c) + vec2_distance(c, d);
+    mfloat_t length = 2.0f / 3.0f * d0 + 1.0f / 3.0f * d1;
+
+    int pixels_per_segment = 4;
+    int steps = length / pixels_per_segment;
+
+    for (int i = 1; i <= steps; i++) {
+        mfloat_t t = i / (float)steps;
+
+        vec2_lerp(ab, a, b, t);
+        vec2_lerp(bc, b, c, t);
+        vec2_lerp(cd, c, d, t);
+
+        vec2_lerp(abbc, ab, bc, t);
+        vec2_lerp(bccd, bc, cd, t);
+
+        vec2_lerp(next, abbc, bccd, t);
+
+        draw_line(first[0], first[1], next[0], next[1], color);
+
+        vec2_assign(first, next);
+    }
+}
+
+void draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    mfloat_t a[VEC2_SIZE] = {x0, y0};
+    mfloat_t b[VEC2_SIZE] = {x1, y1};
+    mfloat_t c[VEC2_SIZE] = {x2, y2};
+    mfloat_t d[VEC2_SIZE] = {x3, y3};
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t bc[VEC2_SIZE];
+    mfloat_t cd[VEC2_SIZE];
+
+    mfloat_t abbc[VEC2_SIZE];
+    mfloat_t bccd[VEC2_SIZE];
+
+    mfloat_t first[VEC2_SIZE] = {x0, y0};
+    mfloat_t next[VEC2_SIZE];
+
+    // Approximate curve length
+    mfloat_t d0 = vec2_distance(a, d);
+    mfloat_t d1 = vec2_distance(a, b) + vec2_distance(b, c) + vec2_distance(c, d);
+    mfloat_t length = 2.0f / 3.0f * d0 + 1.0f / 3.0f * d1;
+
+    int pixels_per_segment = 4;
+    int steps = length / pixels_per_segment;
+
+    for (int i = 1; i <= steps; i++) {
+        mfloat_t t = i / (float)steps;
+
+        vec2_lerp(ab, a, b, t);
+        vec2_lerp(bc, b, c, t);
+        vec2_lerp(cd, c, d, t);
+
+        vec2_lerp(abbc, ab, bc, t);
+        vec2_lerp(bccd, bc, cd, t);
+
+        vec2_lerp(next, abbc, bccd, t);
+
+        draw_pattern_line(first[0], first[1], next[0], next[1], pattern, pattern_offset_x, pattern_offset_y);
+
+        vec2_assign(first, next);
+    }
+}
+
 void draw_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int y0 = y;
