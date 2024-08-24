@@ -1,0 +1,9 @@
+{
+    "console": {
+        "colors": {
+            "background": 1,
+            "foreground": 2,
+            "cursor": 3
+        }
+    }
+}
