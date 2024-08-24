@@ -93,13 +93,13 @@ function matrix4.ortho(l, r, b, t, n, f) end
 function matrix4.perspective(fov_y, aspect, n, f) end
 
 --- Creates an perspective view transformation.
---- @param fov number 
+--- @param fov_y number 
 --- @param w number 
 --- @param h number 
 --- @param n number 
 --- @param f number 
 --- @return matrix4 
-function matrix4.perspective_fov(fov, w, h, n, f) end
+function matrix4.perspective_fov(fov_y, w, h, n, f) end
 
 --- Creates an perspective view transformation.
 --- @param fov_y number 

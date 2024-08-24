@@ -705,7 +705,7 @@ static int matrix4_perspective(lua_State* L) {
 /**
  * Creates an perspective view transformation.
  * @function perspective_fov
- * @tparam number fov
+ * @tparam number fov_y
  * @tparam number w
  * @tparam number h
  * @tparam number n
@@ -713,14 +713,14 @@ static int matrix4_perspective(lua_State* L) {
  * @treturn matrix4
  */
 static int matrix4_perspective_fov(lua_State* L) {
-    mfloat_t fov = luaL_checknumber(L, 1);
+    mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t w = luaL_checknumber(L, 2);
     mfloat_t h = luaL_checknumber(L, 3);
     mfloat_t n = luaL_checknumber(L, 4);
     mfloat_t f = luaL_checknumber(L, 5);
 
     mfloat_t result[MAT4_SIZE];
-    mat4_perspective_fov(result, fov, w, h, n, f);
+    mat4_perspective_fov(result, fov_y, w, h, n, f);
 
     lua_newmatrix4_from_matrix(L, result);
     return 1;
