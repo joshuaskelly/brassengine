@@ -87,6 +87,11 @@ static int matrix2_gc(lua_State* L) {
  * @type matrix2
  */
 
+/** @tfield number m11 */
+/** @tfield number m21 */
+/** @tfield number m12 */
+/** @tfield number m22 */
+
 /**
  * Determinant of matrix.
  * @function determinant

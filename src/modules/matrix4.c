@@ -113,6 +113,23 @@ static int matrix4_gc(lua_State* L) {
  * @type matrix4
  */
 
+/** @tfield number m11 */
+/** @tfield number m21 */
+/** @tfield number m31 */
+/** @tfield number m41 */
+/** @tfield number m12 */
+/** @tfield number m22 */
+/** @tfield number m32 */
+/** @tfield number m42 */
+/** @tfield number m13 */
+/** @tfield number m23 */
+/** @tfield number m33 */
+/** @tfield number m43 */
+/** @tfield number m14 */
+/** @tfield number m24 */
+/** @tfield number m34 */
+/** @tfield number m44 */
+
 /**
  * Determinant of matrix.
  * @function determinant

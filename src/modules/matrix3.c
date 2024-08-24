@@ -98,6 +98,16 @@ static int matrix3_gc(lua_State* L) {
  * @type matrix3
  */
 
+/** @tfield number m11 */
+/** @tfield number m21 */
+/** @tfield number m31 */
+/** @tfield number m12 */
+/** @tfield number m22 */
+/** @tfield number m32 */
+/** @tfield number m13 */
+/** @tfield number m23 */
+/** @tfield number m33 */
+
 /**
  * Determinant of matrix.
  * @function determinant

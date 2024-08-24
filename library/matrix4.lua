@@ -109,6 +109,22 @@ function matrix4.perspective_fov(fov, w, h, n, f) end
 function matrix4.perspective_infinite(fov_y, aspect, n) end
 
 --- @class matrix4
+--- @field m11 number
+--- @field m21 number
+--- @field m31 number
+--- @field m41 number
+--- @field m12 number
+--- @field m22 number
+--- @field m32 number
+--- @field m42 number
+--- @field m13 number
+--- @field m23 number
+--- @field m33 number
+--- @field m43 number
+--- @field m14 number
+--- @field m24 number
+--- @field m34 number
+--- @field m44 number
 matrix4.matrix4 = {}
 
 --- Determinant of matrix.

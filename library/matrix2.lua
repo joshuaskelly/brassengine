@@ -4,6 +4,10 @@
 local matrix2 = {}
 
 --- @class matrix2
+--- @field m11 number
+--- @field m21 number
+--- @field m12 number
+--- @field m22 number
 matrix2.matrix2 = {}
 
 --- Determinant of matrix.

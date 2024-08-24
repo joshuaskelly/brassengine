@@ -4,6 +4,15 @@
 local matrix3 = {}
 
 --- @class matrix3
+--- @field m11 number
+--- @field m21 number
+--- @field m31 number
+--- @field m12 number
+--- @field m22 number
+--- @field m32 number
+--- @field m13 number
+--- @field m23 number
+--- @field m33 number
 matrix3.matrix3 = {}
 
 --- Determinant of matrix.
