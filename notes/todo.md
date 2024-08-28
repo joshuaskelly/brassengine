@@ -3,6 +3,11 @@
 - [ ] Add foreground/background color as optional args to draw text.
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
+- [ ] Simplify web html wrapper
+- [ ] Platform specific Lua module
+- [ ] Polygon rasterization for draw module
+- [ ] Audit custom clamp() implementations
+- [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] Threaded rendering
 - [ ] iOS platform
@@ -25,6 +30,7 @@
 - [ ] ~~Array struct.~~
 
 ## Raycaster Renderer
+- [ ] Improved demo assets
 - [ ] Direction aligned sprites
 - [ ] Pixels per unit feauture to support tall/short walls/sprites.
 - [ ] Support vertical offsets for entities/camera.
