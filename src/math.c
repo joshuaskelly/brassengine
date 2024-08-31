@@ -129,3 +129,7 @@ float smoothstep(float a, float b, float t) {
     float x = clamp((t - a) / (b - a), 0.0f, 1.0f);
     return x * x * (3.0f - 2.0f * x);
 }
+
+float sign(float f) {
+    return (0 < f) - (f < 0);
+}

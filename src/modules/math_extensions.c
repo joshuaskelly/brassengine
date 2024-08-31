@@ -98,11 +98,28 @@ static int module_math_smoothstep(lua_State* L) {
     return 1;
 }
 
+/**
+ * Return sign of given number. 1 if greater than zero, -1 if less than zero, and
+ * 0 if equal to zero.
+ *
+ * @function sign
+ * @tparam f number
+ * @return float
+ */
+static int module_math_sign(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+
+    lua_pushnumber(L, sign(a));
+
+    return 1;
+}
+
 static const struct luaL_Reg module_functions[] = {
     {"clamp", module_math_clamp},
     {"lerp", module_math_lerp},
     {"noise", module_math_noise},
     {"smoothstep", module_math_smoothstep},
+    {"sign", module_math_sign},
     {NULL, NULL}
 };
 

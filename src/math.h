@@ -54,4 +54,13 @@ float noise(float x, float y, float z);
  */
 float smoothstep(float a, float b, float t);
 
+/**
+ * Return sign of given number. 1 if greater than zero, -1 if less than zero, and
+ * 0 if equal to zero.
+ *
+ * @param f
+ * @return float
+ */
+float sign(float f);
+
 #endif
