@@ -18,6 +18,11 @@ vector4.vector4 = {}
 --- @return vector4 
 function vector4.new(x, y, z, w) end
 
+--- Returns a vector made from the sign of it's components.
+--- @param v0 vector4 
+--- @return vector4 
+function vector4.sign(v0) end
+
 --- Returns a vector made from snapping the components to given resolution.
 --- @param v0 vector4 
 --- @param f number  Resolution of snap

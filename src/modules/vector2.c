@@ -118,6 +118,21 @@ static int vector2_equal(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns a vector made from the sign of it's components.
+ * @function sign
+ * @tparam vector2 v0
+ * @treturn vector2
+ */
+static int vector2_sign(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+    mfloat_t result[VEC2_SIZE];
+    vec2_sign(result, v0);
+    lua_newvector2(L, result[0], result[1]);
+
+    return 1;
+}
+
 static int vector2_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
@@ -683,6 +698,7 @@ static int vector2_distance_squared(lua_State* L) {
 
 static const struct luaL_Reg module_functions[] = {
     {"new", vector2_new},
+    {"sign", vector2_sign},
     {"snap", vector2_snap},
     {"abs", vector2_abs},
     {"floor", vector2_floor},

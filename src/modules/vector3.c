@@ -143,6 +143,21 @@ static int vector3_one(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns a vector made from the sign of it's components.
+ * @function sign
+ * @tparam vector3 v0
+ * @treturn vector3
+ */
+static int vector3_sign(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector3(L, 1);
+    mfloat_t result[VEC3_SIZE];
+    vec3_sign(result, v0);
+    lua_newvector3(L, result[0], result[1], result[2]);
+
+    return 1;
+}
+
 static int vector3_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
 
@@ -741,6 +756,7 @@ static const struct luaL_Reg module_functions[] = {
     {"new", vector3_new},
     {"zero", vector3_zero},
     {"one", vector3_one},
+    {"sign", vector3_sign},
     {"add", vector3_add},
     {"subtract", vector3_subtract},
     {"multiply", vector3_multiply},

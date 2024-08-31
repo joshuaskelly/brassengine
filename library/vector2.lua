@@ -15,6 +15,11 @@ vector2.vector2 = {}
 --- @return vector2
 function vector2.new(x, y) end
 
+--- Returns a vector made from the sign of it's components.
+--- @param v0 vector2
+--- @return vector2
+function vector2.sign(v0) end
+
 --- Returns a vector made from snapping the components to given resolution.
 --- @param v0 vector2
 --- @param f number  Resolution of snap
