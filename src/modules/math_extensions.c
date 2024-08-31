@@ -103,8 +103,8 @@ static int module_math_smoothstep(lua_State* L) {
  * 0 if equal to zero.
  *
  * @function sign
- * @tparam f number
- * @return float
+ * @tparam number f
+ * @return number float
  */
 static int module_math_sign(lua_State* L) {
     float a = luaL_checknumber(L, 1);

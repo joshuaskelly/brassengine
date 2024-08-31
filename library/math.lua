@@ -31,4 +31,9 @@ function math.noise(x, y, z) end
 --- @return number float
 function math.smoothstep(a, b, t) end
 
+--- Return sign of given number.
+--- @param f number 
+--- @return  number float
+function math.sign(f) end
+
 return math
