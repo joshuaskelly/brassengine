@@ -66,7 +66,7 @@ void platform_init(void) {
         log_fatal("Error initializing SDL");
     }
 
-    if (Mix_OpenAudio(11025, MIX_DEFAULT_FORMAT, 1, 2048) < 0) {
+    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
         log_fatal("Error intializing SDL Mixer");
     }
 
@@ -179,6 +179,8 @@ void platform_draw(void) {
         render_texture->width * sizeof(uint32_t)
     );
 
+    SDL_RenderClear(renderer);
+
     SDL_RenderCopy(
         renderer,
         render_buffer_texture,
@@ -253,6 +255,13 @@ static void sdl_handle_events(void) {
                 event_post(&event);
                 break;
 
+            case SDL_MOUSEWHEEL:
+                event.type = EVENT_MOUSEWHEEL;
+                event.wheel.wheel_x = sdl_event.wheel.x;
+                event.wheel.wheel_y = sdl_event.wheel.y;
+                event_post(&event);
+                break;
+
             case SDL_WINDOWEVENT_RESIZED:
             case SDL_WINDOWEVENT_SIZE_CHANGED:
                 display_rect.w = sdl_event.window.data1;
@@ -271,9 +280,9 @@ static void sdl_fix_frame_rate(void) {
     ticks_last_frame = SDL_GetTicks();
 }
 
-void platform_play_sound(sound_t* sound) {
+void platform_sound_play(sound_t* sound, int channel) {
     Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
-    Mix_PlayChannel(-1, chunk, 0);
+    Mix_PlayChannel(channel, chunk, 0);
 }
 
 void platform_display_set_resolution(int width, int height) {

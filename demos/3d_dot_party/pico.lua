@@ -1,4 +1,5 @@
---- @module pico
+---
+-- @module pico
 -- pico8-like API wrapper
 
 local draw = require("draw")

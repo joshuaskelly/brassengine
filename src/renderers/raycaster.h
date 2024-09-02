@@ -1,30 +1,19 @@
 #ifndef RENDERERS_RAYCASTER_H
 #define RENDERERS_RAYCASTER_H
 
-#ifndef M_PI
-#define M_PI 3.14159265359
-#endif
-
+#include <stdbool.h>
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
 #include "../collections/list.h"
 
 typedef struct {
-    mfloat_t position[VEC2_SIZE];
-    mfloat_t direction[VEC2_SIZE];
-    float fov;
-} raycaster_camera_t;
+    int width;
+    int height;
 
-typedef struct {
-    texture_t* texture;
-    mfloat_t position[VEC2_SIZE];
-    float distance;
-} raycaster_sprite_t;
-
-typedef struct {
-    texture_t* walls;
-    list_t* sprites;
+    int* walls;
+    int* floors;
+    int* ceilings;
 } raycaster_map_t;
 
 /**
@@ -32,7 +21,7 @@ typedef struct {
  *
  * @return raycaster_map_t* Newly created map.
  */
-raycaster_map_t* raycaster_map_new(void);
+raycaster_map_t* raycaster_map_new(int width, int height);
 
 /**
  * Frees a map.
@@ -41,69 +30,93 @@ raycaster_map_t* raycaster_map_new(void);
  */
 void raycaster_map_free(raycaster_map_t* map);
 
-/**
- * Adds a sprite to a map.
- *
- * @param map Map to add sprite to.
- * @param sprite Sprite to add.
- */
-void raycaster_map_add_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite);
+typedef struct {
+    texture_t* render_texture;
+    float* depth_buffer;
+
+    struct {
+        texture_t* shade_table;
+        float fog_distance;
+        bool draw_walls;
+        bool draw_floors;
+        bool draw_ceilings;
+        float horizontal_wall_brightness;
+        float vertical_wall_brightness;
+    } features;
+
+    struct {
+        mfloat_t position[VEC2_SIZE];
+        mfloat_t direction[VEC2_SIZE];
+        float fov;
+    } camera;
+} raycaster_renderer_t;
 
 /**
- * Removes a sprite from a map.
+ * Creates a new renderer.
  *
- * @param map Map to remove sprite from.
- * @param sprite Sprite to remove.
+ * @return raycast_renderer_t Newly created renderer.
  */
-void raycaster_map_remove_sprite(raycaster_map_t* map, raycaster_sprite_t* sprite);
+raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture);
 
 /**
- * Renders given map
+ * Frees a renderer.
  *
- * @param camera Camera to render from
- * @param map Map to render
- * @param render_texture Texture to render to. NULL will use default render target
- * @param render_rect Portion of render texture to render to. NULL will use entire render target
+ * @param renderer Renderer to free.
  */
-void raycaster_render(
-    raycaster_camera_t* camera,
-    raycaster_map_t* map,
-    texture_t* render_texture,
-    rect_t* render_rect
-);
+void raycaster_renderer_free(raycaster_renderer_t* renderer);
 
 /**
- * Returns a texture in the texture palette for given index.
+ * Clears color buffer for given color.
  *
- * @param i Index of texture.
- * @return texture_t* Texture from palette.
+ * @param renderer Renderer to clear color buffer.
+ * @param color Clear color.
  */
-texture_t* raycaster_get_texture(int i);
+void raycaster_renderer_clear_color(raycaster_renderer_t* renderer, color_t color);
 
 /**
- * Sets a texture palette at given index to given texture.
+ * Clears depth buffer for given color.
  *
- * @param i Index in palette to set
- * @param texture Texture to set
+ * @param renderer Renderer to clear depth buffer.
+ * @param depth Clear depth.
  */
-void raycaster_set_texture(int i, texture_t* texture);
+void raycaster_renderer_clear_depth(raycaster_renderer_t* renderer, float depth);
 
 /**
- * Gets shade table.
+ * Set camera data.
  *
- * @return texture_t* Shade table as a texture.
+ * @param renderer Renderer to set camera data for.
+ * @param position Camera position.
+ * @param direction Camera direction.
+ * @param fov Camera fov.
  */
-texture_t* raycaster_shade_table_get(void);
+void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* position, mfloat_t* direction, float fov);
 
 /**
- * Sets shade table.
+ * Render given map.
  *
- * @param texture Texture to use as the shade table.
+ * @param renderer Renderer to render to.
+ * @param map Map to render.
+ * @param palette Texture array look up table.
  */
-void raycaster_shade_table_set(texture_t* texture);
+void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map, texture_t** palette);
 
-float raycaster_fog_distance_get(void);
+/**
+ * Render given texture as a billboarded sprite.
+ *
+ * @param renderer Renderer to render to.
+ * @param sprite Texture to render.
+ * @param position Sprite position.
+ */
+void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position);
 
-void raycaster_fog_distance_set(float distance);
+/**
+ * Render given texture as an oriented sprite.
+ *
+ * @param renderer Renderer to render to.
+ * @param sprite Texture to render.
+ * @param position Sprite position.
+ * @param forward Sprite forward vector.
+ */
+void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position, mfloat_t* forward);
 
 #endif

@@ -12,6 +12,8 @@ static struct {
     int y;
     int motion_x;
     int motion_y;
+    int wheel_x;
+    int wheel_y;
     uint32_t buttons;
 } mouse_state;
 
@@ -25,6 +27,8 @@ void input_init(void) {
     mouse_state.motion_x = 0;
     mouse_state.motion_y = 0;
     mouse_state.buttons = 0;
+    mouse_state.wheel_x = 0;
+    mouse_state.wheel_y = 0;
 }
 
 void input_destroy(void) {
@@ -34,6 +38,8 @@ void input_destroy(void) {
 void input_update(void) {
     mouse_state.motion_x = 0;
     mouse_state.motion_y = 0;
+    mouse_state.wheel_x = 0;
+    mouse_state.wheel_y = 0;
 }
 
 void input_handle_event(event_t* event) {
@@ -65,6 +71,10 @@ void input_handle_event(event_t* event) {
     else if (event->type == EVENT_MOUSEUP) {
         mouse_state.buttons &= (~(1 <<  event->button.button));
     }
+    else if (event->type == EVENT_MOUSEWHEEL) {
+        mouse_state.wheel_x = event->wheel.wheel_x;
+        mouse_state.wheel_y = event->wheel.wheel_y;
+    }
 }
 
 bool input_keyboard_is_key_code_down(key_code_t code) {
@@ -93,4 +103,9 @@ void input_mouse_position(int* x, int* y) {
 void input_mouse_motion(int* x, int* y) {
     *x = mouse_state.motion_x;
     *y = mouse_state.motion_y;
+}
+
+void input_mouse_wheel(int* x, int* y) {
+    *x = mouse_state.wheel_x;
+    *y = mouse_state.wheel_y;
 }

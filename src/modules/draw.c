@@ -16,9 +16,9 @@
 /**
  * Draw a pixel at given position and color.
  * @function pixel
- * @param x Pixel x-coordinate
- * @param y Pixel y-coordinate
- * @param color Pixel color
+ * @tparam integer x Pixel x-coordinate
+ * @tparam integer y Pixel y-coordinate
+ * @tparam integer color Pixel color
  */
 static int bindings_draw_pixel(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
@@ -36,11 +36,11 @@ static int bindings_draw_pixel(lua_State* L) {
 /**
  * Draw a line between given position and color.
  * @function line
- * @param x0 Start x-coordinate
- * @param y0 Start y-coordinate
- * @param x1 End x-coordinate
- * @param y1 End y-coordinate
- * @param color Line color
+ * @tparam integer x0 Start x-coordinate
+ * @tparam integer y0 Start y-coordinate
+ * @tparam integer x1 End x-coordinate
+ * @tparam integer y1 End y-coordinate
+ * @tparam integer color Line color
  */
 static int bindings_draw_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -67,15 +67,15 @@ static int bindings_draw_line(lua_State* L) {
 /**
  * Draw line using affine texture mapping.
  * @function textured_line
- * @param x0 Start x-coordinate
- * @param y0 Start y-coordinate
- * @param u0 Start 0 u-coordinate
- * @param v0 Start 0 v-coordinate
- * @param x1 End x-coordinate
- * @param y1 End y-coordinate
- * @param u1 End u-coordinate
- * @param v1 End v-coordinate
- * @param texture Texture to map
+ * @tparam integer x0 Start x-coordinate
+ * @tparam integer y0 Start y-coordinate
+ * @tparam number u0 Start 0 u-coordinate
+ * @tparam number v0 Start 0 v-coordinate
+ * @tparam integer x1 End x-coordinate
+ * @tparam integer y1 End y-coordinate
+ * @tparam number u1 End u-coordinate
+ * @tparam number v1 End v-coordinate
+ * @tparam texture.texture texture Texture to map
  */
 static int bindings_draw_textured_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -96,13 +96,52 @@ static int bindings_draw_textured_line(lua_State* L) {
 }
 
 /**
+ * Draw a bezier curve with the given anchor and control points, and color.
+ * @function bezier
+ * @tparam integer x0 Start anchor point x-coordinate
+ * @tparam integer y0 Start anchor point y-coordinate
+ * @tparam integer x1 Start control point x-coordinate
+ * @tparam integer y1 Start contorl point y-coordinate
+ * @tparam integer x2 End control point x-coordinate
+ * @tparam integer y2 End control point y-coordinate
+ * @tparam integer x3 End anchor point x-coordinate
+ * @tparam integer y3 End anchor point y-coordinate
+ * @tparam integer color Line color
+ */
+static int bindings_draw_bezier(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int x2 = (int)luaL_checknumber(L, 5);
+    int y2 = (int)luaL_checknumber(L, 6);
+    int x3 = (int)luaL_checknumber(L, 7);
+    int y3 = (int)luaL_checknumber(L, 8);
+
+    if (lua_isnumber(L, 9)) {
+        int color = (int)luaL_checknumber(L, 9);
+        draw_bezier(x0, y0, x1, y1, x2, y2, x3, y3, color);
+    }
+    else {
+        texture_t* pattern = luaL_checktexture(L, 9);
+        int offset_x = (int)luaL_optnumber(L, 10, 0);
+        int offset_y = (int)luaL_optnumber(L, 11, 0);
+        draw_pattern_bezier(x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
+    }
+
+    lua_settop(L, 0);
+
+    return 0;
+}
+
+/**
  * Draw rectangle.
  * @function rectangle
- * @param x Rect top left x-coordinate
- * @param y Rect top left y-coordinate
- * @param width Rect width
- * @param height Rect height
- * @param color Line color
+ * @tparam integer x Rect top left x-coordinate
+ * @tparam integer y Rect top left y-coordinate
+ * @tparam integer width Rect width
+ * @tparam integer height Rect height
+ * @tparam integer color Line color
  */
 static int bindings_draw_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
@@ -129,11 +168,11 @@ static int bindings_draw_rectangle(lua_State* L) {
 /**
  * Draw filled rectangle.
  * @function filled_rectangle
- * @param x Rect top left x-coordinate
- * @param y Rect top left y-coordinate
- * @param width Rect width
- * @param height Rect height
- * @param color Fill color
+ * @tparam integer x Rect top left x-coordinate
+ * @tparam integer y Rect top left y-coordinate
+ * @tparam integer width Rect width
+ * @tparam integer height Rect height
+ * @tparam integer color Fill color
  */
 static int bindings_draw_filled_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
@@ -160,10 +199,10 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
 /**
  * Draw circle
  * @function circle
- * @param x Circle center x-coordinate
- * @param y Circle center y-coordinate
- * @param radius Circle radius
- * @param color Line color
+ * @tparam integer x Circle center x-coordinate
+ * @tparam integer y Circle center y-coordinate
+ * @tparam integer radius Circle radius
+ * @tparam integer color Line color
  */
 static int bindings_draw_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
@@ -189,10 +228,10 @@ static int bindings_draw_circle(lua_State* L) {
 /**
  * Draw filled circle
  * @function filled_circle
- * @param x Circle center x-coordinate
- * @param y Circle center y-coordinate
- * @param radius Circle radius
- * @param color Fill color
+ * @tparam integer x Circle center x-coordinate
+ * @tparam integer y Circle center y-coordinate
+ * @tparam integer radius Circle radius
+ * @tparam integer color Fill color
  */
 static int bindings_draw_filled_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
@@ -218,7 +257,7 @@ static int bindings_draw_filled_circle(lua_State* L) {
 /**
  * Clear screen to given color.
  * @function clear
- * @param color Color to clear screen
+ * @tparam integer color Color to clear screen
  */
 static int bindings_clear_screen(lua_State* L) {
     int color = (int)luaL_checknumber(L, 1);
@@ -234,9 +273,9 @@ static int bindings_clear_screen(lua_State* L) {
 /**
  * Draw text to screen.
  * @function text
- * @param message Text to draw
- * @param x Text top-left x-coordinate
- * @param y Text top-left y-coordinate
+ * @tparam string message Text to draw
+ * @tparam integer x Text top-left x-coordinate
+ * @tparam integer y Text top-left y-coordinate
  */
 static int bindings_draw_text(lua_State* L) {
     const char* message = (const char*)luaL_checkstring(L, 1);
@@ -253,13 +292,13 @@ static int bindings_draw_text(lua_State* L) {
 /**
  * Draw triangle.
  * @function triangle
- * @param x0 Vertex 0 x-coordinate
- * @param y0 Vertex 0 y-coordinate
- * @param x1 Vertex 1 x-coordinate
- * @param y1 Vertex 1 y-coordinate
- * @param x2 Vertex 2 x-coordinate
- * @param y2 Vertex 2 y-coordinate
- * @param color Line color
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer color Line color
  */
 static int bindings_draw_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -288,13 +327,13 @@ static int bindings_draw_triangle(lua_State* L) {
 /**
  * Draw filled triangle.
  * @function filled_triangle
- * @param x0 Vertex 0 x-coordinate
- * @param y0 Vertex 0 y-coordinate
- * @param x1 Vertex 1 x-coordinate
- * @param y1 Vertex 1 y-coordinate
- * @param x2 Vertex 2 x-coordinate
- * @param y2 Vertex 2 y-coordinate
- * @param color_t Fill color
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer color Fill color
  */
 static int bindings_draw_filled_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -323,19 +362,19 @@ static int bindings_draw_filled_triangle(lua_State* L) {
 /**
  * Draw triangle using affine texture mapping.
  * @function textured_triangle
- * @param x0 Vertex 0 x-coordinate
- * @param y0 Vertex 0 y-coordinate
- * @param u0 UV 0 u-coordinate
- * @param v0 UV 0 v-coordinate
- * @param x1 Vertex 1 x-coordinate
- * @param y1 Vertex 1 y-coordinate
- * @param u1 UV 1 u-coordinate
- * @param v1 UV 1 v-coordinate
- * @param x2 Vertex 2 x-coordinate
- * @param y2 Vertex 2 y-coordinate
- * @param u2 UV 2 u-coordinate
- * @param v2 UV 2 v-coordinate
- * @param texture Texture to map
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam number u0 UV 0 u-coordinate
+ * @tparam number v0 UV 0 v-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam number u1 UV 1 u-coordinate
+ * @tparam number v1 UV 1 v-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam number u2 UV 2 u-coordinate
+ * @tparam number v2 UV 2 v-coordinate
+ * @tparam texture.texture texture Texture to map
  */
 static int bindings_draw_textured_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -363,6 +402,7 @@ static const struct luaL_Reg module_functions[] = {
     {"pixel", bindings_draw_pixel},
     {"line", bindings_draw_line},
     {"textured_line", bindings_draw_textured_line},
+    {"bezier", bindings_draw_bezier},
     {"rectangle", bindings_draw_rectangle},
     {"filled_rectangle", bindings_draw_filled_rectangle},
     {"circle", bindings_draw_circle},

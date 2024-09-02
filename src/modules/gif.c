@@ -14,8 +14,8 @@
 /**
  * Save frames as an animated GIF. Result will be encoded at 50 fps.
  * @function save
- * @param filename Name of GIF to save.
- * @param frames Array of texture userdata.
+ * @tparam string filename Name of GIF to save.
+ * @tparam {texture.texture,...} frames Array of texture userdata.
  */
 static int bindings_gif_save(lua_State* L) {
     const char* filename = luaL_checkstring(L, 1);

@@ -73,4 +73,12 @@ void input_mouse_position(int* x, int* y);
  */
 void input_mouse_motion(int* x, int* y);
 
+/**
+ * Get mouse wheel values.
+ *
+ * @param x Mouse horizontal scroll amount as reference.
+ * @param y Mouse vertical scroll amount as reference.
+*/
+void input_mouse_wheel(int* x, int* y);
+
 #endif

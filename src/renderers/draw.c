@@ -10,7 +10,6 @@
 #include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
-#include "../math.h"
 
 static int mod(int a, int b) {
     return a - floor(a / (float)b) * b;
@@ -38,8 +37,8 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
         graphics_set_pixel(current_x, current_y, color);
@@ -57,8 +56,8 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
         pattern_set_pixel(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
@@ -76,8 +75,8 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0;
-    float current_y = y0;
+    float current_x = x0 + 0.5f;
+    float current_y = y0 + 0.5f;
 
     float s0 = u0 * texture->width;
     float t0 = v0 * texture->height;
@@ -86,15 +85,15 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
-    float st_longest_side = fmax(abs(delta_s), abs(delta_t));
+    float st_longest_side = fmax(fabs(delta_s), fabs(delta_t));
 
     float r = st_longest_side / longest_side;
 
     float s_inc = delta_s / st_longest_side * r;
     float t_inc = delta_t / st_longest_side * r;
 
-    float current_s = s0;
-    float current_t = t0;
+    float current_s = s0 + 0.5f;
+    float current_t = t0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
         color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
@@ -108,11 +107,95 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     }
 }
 
+void draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    mfloat_t a[VEC2_SIZE] = {x0, y0};
+    mfloat_t b[VEC2_SIZE] = {x1, y1};
+    mfloat_t c[VEC2_SIZE] = {x2, y2};
+    mfloat_t d[VEC2_SIZE] = {x3, y3};
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t bc[VEC2_SIZE];
+    mfloat_t cd[VEC2_SIZE];
+
+    mfloat_t abbc[VEC2_SIZE];
+    mfloat_t bccd[VEC2_SIZE];
+
+    mfloat_t first[VEC2_SIZE] = {x0, y0};
+    mfloat_t next[VEC2_SIZE];
+
+    // Approximate curve length
+    mfloat_t d0 = vec2_distance(a, d);
+    mfloat_t d1 = vec2_distance(a, b) + vec2_distance(b, c) + vec2_distance(c, d);
+    mfloat_t length = 2.0f / 3.0f * d0 + 1.0f / 3.0f * d1;
+
+    int pixels_per_segment = 4;
+    int steps = length / pixels_per_segment;
+
+    for (int i = 1; i <= steps; i++) {
+        mfloat_t t = i / (float)steps;
+
+        vec2_lerp(ab, a, b, t);
+        vec2_lerp(bc, b, c, t);
+        vec2_lerp(cd, c, d, t);
+
+        vec2_lerp(abbc, ab, bc, t);
+        vec2_lerp(bccd, bc, cd, t);
+
+        vec2_lerp(next, abbc, bccd, t);
+
+        draw_line(first[0], first[1], next[0], next[1], color);
+
+        vec2_assign(first, next);
+    }
+}
+
+void draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    mfloat_t a[VEC2_SIZE] = {x0, y0};
+    mfloat_t b[VEC2_SIZE] = {x1, y1};
+    mfloat_t c[VEC2_SIZE] = {x2, y2};
+    mfloat_t d[VEC2_SIZE] = {x3, y3};
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t bc[VEC2_SIZE];
+    mfloat_t cd[VEC2_SIZE];
+
+    mfloat_t abbc[VEC2_SIZE];
+    mfloat_t bccd[VEC2_SIZE];
+
+    mfloat_t first[VEC2_SIZE] = {x0, y0};
+    mfloat_t next[VEC2_SIZE];
+
+    // Approximate curve length
+    mfloat_t d0 = vec2_distance(a, d);
+    mfloat_t d1 = vec2_distance(a, b) + vec2_distance(b, c) + vec2_distance(c, d);
+    mfloat_t length = 2.0f / 3.0f * d0 + 1.0f / 3.0f * d1;
+
+    int pixels_per_segment = 4;
+    int steps = length / pixels_per_segment;
+
+    for (int i = 1; i <= steps; i++) {
+        mfloat_t t = i / (float)steps;
+
+        vec2_lerp(ab, a, b, t);
+        vec2_lerp(bc, b, c, t);
+        vec2_lerp(cd, c, d, t);
+
+        vec2_lerp(abbc, ab, bc, t);
+        vec2_lerp(bccd, bc, cd, t);
+
+        vec2_lerp(next, abbc, bccd, t);
+
+        draw_pattern_line(first[0], first[1], next[0], next[1], pattern, pattern_offset_x, pattern_offset_y);
+
+        vec2_assign(first, next);
+    }
+}
+
 void draw_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int y0 = y;
-    int x1 = x + width;
-    int y1 = y + height;
+    int x1 = x + width - 1;
+    int y1 = y + height - 1;
 
     draw_line(x0, y0, x1, y0, color);
     draw_line(x1, y0, x1, y1, color);
@@ -123,8 +206,8 @@ void draw_rectangle(int x, int y, int width, int height, color_t color) {
 void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     int x0 = x;
     int y0 = y;
-    int x1 = x + width;
-    int y1 = y + height;
+    int x1 = x + width - 1;
+    int y1 = y + height - 1;
 
     draw_pattern_line(x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
     draw_pattern_line(x1, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
@@ -134,7 +217,7 @@ void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* patt
 
 void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
     int x0 = x;
-    int x1 = x + width;
+    int x1 = x + width - 1;
     int y0 = y;
 
     for (int i = 0; i < height; i++) {
@@ -325,7 +408,7 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
 }
 
 void draw_text(const char* message, int x, int y) {
-    texture_t* font_texture = assets_get_texture("font.gif");
+    texture_t* font_texture = assets_get_texture("font.gif", 0);
     if (!font_texture) {
         log_fatal("Missing font.gif asset");
     }
@@ -410,10 +493,10 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
@@ -460,10 +543,10 @@ void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
@@ -513,10 +596,10 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
     mfloat_t uv2[VEC2_SIZE] = {u2, v2};
 
     // Find triangle
-    int x_min = min(min(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_min = min(min(vertex0[1], vertex1[1]), vertex2[1]);
-    int x_max = max(max(vertex0[0], vertex1[0]), vertex2[0]);
-    int y_max = max(max(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_min = fminf(fminf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_min = fminf(fminf(vertex0[1], vertex1[1]), vertex2[1]);
+    int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
+    int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
     // Biases for fill rule
     float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;

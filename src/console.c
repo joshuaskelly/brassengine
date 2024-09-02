@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -7,9 +8,7 @@
 #include "console.h"
 #include "event.h"
 #include "graphics.h"
-#include "input.h"
 #include "log.h"
-#include "math.h"
 #include "script.h"
 #include "time.h"
 #include "collections/circular_buffer.h"
@@ -24,6 +23,9 @@ static circular_buffer_t* output;
 static int input_buffer_offset = 0;
 static int output_buffer_offset = 0;
 static int cursor_offset = 0;
+
+static bool left_shift_down = false;
+static bool right_shift_down = false;
 
 static bool visible = false;
 
@@ -41,7 +43,7 @@ void console_destroy(void) {
 }
 
 char get_char(key_event_t* key) {
-    bool shift_down = input_keyboard_is_key_code_down(KEYCODE_LSHIFT) || input_keyboard_is_key_code_down(KEYCODE_RSHIFT);
+    bool shift_down = left_shift_down || right_shift_down;
 
     switch (key->symbol) {
         case '`':
@@ -160,6 +162,26 @@ static void load_input_history(void) {
     command[strlen(s)] = '\0';
 }
 
+static void scroll_up(void) {
+    const int max_lines = (config->resolution.height / 2) / 8 - 1;
+
+    if (output->count > max_lines) {
+        output_buffer_offset--;
+
+        if (max_lines - output_buffer_offset > output->count) {
+            output_buffer_offset = -(output->count - max_lines);
+        }
+    }
+}
+
+static void scroll_down(void) {
+    const int max_lines = (config->resolution.height / 2) / 8 - 1;
+
+    if (output->count > max_lines) {
+        output_buffer_offset = fminf(output_buffer_offset + 1, 0);
+    }
+}
+
 /**
  * Handle key down events.
  *
@@ -168,7 +190,6 @@ static void load_input_history(void) {
  */
 static bool handle_key_down(event_t* event) {
     const size_t command_length = strlen(command);
-    const int max_lines = (config->resolution.height / 2) / 8 - 1;
 
     switch (event->key.code) {
         case KEYCODE_BACKSPACE: {
@@ -203,29 +224,19 @@ static bool handle_key_down(event_t* event) {
         }
 
         case KEYCODE_PAGEDOWN: {
-            if (output->count > max_lines) {
-                output_buffer_offset = min(output_buffer_offset + 1, 0);
-            }
-
+            scroll_down();
             return true;
         }
 
         case KEYCODE_PAGEUP: {
-            if (output->count > max_lines) {
-                output_buffer_offset--;
-
-                if (max_lines - output_buffer_offset > output->count) {
-                    output_buffer_offset = -(output->count - max_lines);
-                }
-            }
-
-           return true;
+            scroll_up();
+            return true;
         }
 
         case KEYCODE_UP: {
             if (input->count == 0) return true;
 
-            input_buffer_offset = min(input_buffer_offset + 1, input->count);
+            input_buffer_offset = fminf(input_buffer_offset + 1, input->count);
             load_input_history();
             return true;
         }
@@ -233,18 +244,18 @@ static bool handle_key_down(event_t* event) {
         case KEYCODE_DOWN: {
             if (input->count == 0) return true;
 
-            input_buffer_offset = max(input_buffer_offset - 1, 1);
+            input_buffer_offset = fmaxf(input_buffer_offset - 1, 1);
             load_input_history();
             return true;
         }
 
         case KEYCODE_LEFT: {
-            cursor_offset = max(cursor_offset - 1, -(int)command_length);
+            cursor_offset = fmaxf(cursor_offset - 1, -(int)command_length);
             return true;
         }
 
         case KEYCODE_RIGHT: {
-            cursor_offset = min(cursor_offset + 1, 0);
+            cursor_offset = fminf(cursor_offset + 1, 0);
             return true;
         }
 
@@ -255,6 +266,16 @@ static bool handle_key_down(event_t* event) {
 
         case KEYCODE_END: {
             cursor_offset = 0;
+            return true;
+        }
+
+        case KEYCODE_LSHIFT: {
+            left_shift_down = true;
+            return true;
+        }
+
+        case KEYCODE_RSHIFT: {
+            right_shift_down = true;
             return true;
         }
 
@@ -276,6 +297,21 @@ static bool handle_key_down(event_t* event) {
     return true;
 }
 
+static bool handle_mouse_wheel(event_t* event) {
+    if (event->wheel.wheel_y == 0) {
+        return false;
+    }
+
+    if (event->wheel.wheel_y > 0) {
+        scroll_up();
+    }
+    else {
+        scroll_down();
+    }
+
+    return true;
+}
+
 /**
  * Handle key up events.
  *
@@ -283,6 +319,21 @@ static bool handle_key_down(event_t* event) {
  * @return true if handled, false otherwise
  */
 static bool handle_key_up(event_t* event) {
+    switch (event->key.code) {
+        case KEYCODE_LSHIFT: {
+            left_shift_down = false;
+            return true;
+        }
+
+        case KEYCODE_RSHIFT: {
+            right_shift_down = false;
+            return true;
+        }
+
+        default:
+            break;
+    }
+
     return false;
 }
 
@@ -295,6 +346,9 @@ bool console_handle_event(event_t* event) {
 
         case EVENT_KEYUP:
             return handle_key_up(event);
+
+        case EVENT_MOUSEWHEEL:
+            return handle_mouse_wheel(event);
 
         default:
             break;
@@ -309,12 +363,16 @@ void console_update(void) {
 void console_draw(void) {
     if (!visible) return;
 
-    // Get palette
+    // Preserve palette + transparent color
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
     color_t foreground = palette[1];
+    color_t transparent_color = graphics_transparent_color_get();
+
+    // Set palette + transparent color
     palette[0] = config->console.colors.background;
     palette[1] = config->console.colors.foreground;
+    graphics_transparent_color_set(config->console.colors.transparent);
 
     rect_t console_rect = {
         0,
@@ -338,7 +396,7 @@ void console_draw(void) {
 
     // Draw console history
     if (output->count > 0) {
-        int lines_to_draw = min(output->count, max_lines);
+        int lines_to_draw = fminf(output->count, max_lines);
 
         const int history_begin = output->count - lines_to_draw + output_buffer_offset;
         const int history_end = output->count + output_buffer_offset;
@@ -363,9 +421,10 @@ void console_draw(void) {
         draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
     }
 
-    // Restore palette
+    // Restore palette + transparent color
     palette[0] = background;
     palette[1] = foreground;
+    graphics_transparent_color_set(transparent_color);
 
     graphics_set_clipping_rectangle(NULL);
 }

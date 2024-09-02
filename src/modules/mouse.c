@@ -16,9 +16,9 @@
 /**
  * Check if given button is down.
  * @function button
- * @param button Button index to check. Primary button is 1, middle button is 2,
+ * @tparam integer button Button index to check. Primary button is 1, middle button is 2,
  * secondary button is 3.
- * @return True if button is down, false otherwise
+ * @treturn boolean True if button is down, false otherwise
  */
 static int bindings_get_mouse_button(lua_State* L) {
     int button = luaL_checkinteger(L, 1);
@@ -34,7 +34,8 @@ static int bindings_get_mouse_button(lua_State* L) {
 /**
  * Get current mouse position.
  * @function position
- * @return Mouse coords as x, y
+ * @treturn[1] integer Mouse x coord
+ * @treturn[2] integer Mouse y coord
  */
 static int bindings_get_mouse_position(lua_State* L) {
     int x = 0;
@@ -51,7 +52,8 @@ static int bindings_get_mouse_position(lua_State* L) {
 /**
  * Get mouse relative motion.
  * @function motion
- * @return Motion as x, y pair
+ * @treturn[1] integer Mouse x coord
+ * @treturn[2] integer Mouse y coord
  */
 static int bindings_get_mouse_motion(lua_State* L) {
     int rel_x;
@@ -66,9 +68,27 @@ static int bindings_get_mouse_motion(lua_State* L) {
 }
 
 /**
+ * Get mouse wheel scroll values.
+ * @function wheel
+ * @treturn[1] integer Horizontal scroll amount
+ * @treturn[2] integer Vertical scroll amount
+ */
+static int bindings_get_mouse_wheel(lua_State* L) {
+    int horizontal;
+    int vertical;
+
+    input_mouse_wheel(&horizontal, &vertical);
+
+    lua_pushnumber(L, horizontal);
+    lua_pushnumber(L, vertical);
+
+    return 2;
+}
+
+/**
  * Set mouse grab state.
  * @function set_grabbed
- * @param grabbed True if mouse should be constrained to window.
+ * @tparam boolean grabbed True if mouse should be constrained to window.
  */
 static int bindings_set_mouse_grabbed(lua_State* L) {
     bool grabbed = lua_toboolean(L, 1);
@@ -83,7 +103,7 @@ static int bindings_set_mouse_grabbed(lua_State* L) {
 /**
  * Get mouse grab state.
  *
- * @return True if mouse is grabbed, false otherwise.
+ * @treturn boolean True if mouse is grabbed, false otherwise.
  */
 static int bindings_get_mouse_grabbed(lua_State* L) {
     bool grabbed = platform_mouse_get_grabbed();
@@ -97,6 +117,7 @@ static const struct luaL_Reg module_functions[] = {
     {"button", bindings_get_mouse_button},
     {"position", bindings_get_mouse_position},
     {"motion", bindings_get_mouse_motion},
+    {"wheel", bindings_get_mouse_wheel},
     {"set_grabbed", bindings_set_mouse_grabbed},
     {"get_grabbed", bindings_get_mouse_grabbed},
     {NULL, NULL}

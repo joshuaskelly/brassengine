@@ -16,8 +16,8 @@
 /**
  * Check if given key is down.
  * @function key
- * @param code_or_symbol Key code or symbol to check.
- * @return True if key is down.
+ * @tparam integer|string code_or_symbol Key code or symbol to check.
+ * @treturn boolean True if key is down.
  */
 static int bindings_get_keyboard_key(lua_State* L) {
     // Key code

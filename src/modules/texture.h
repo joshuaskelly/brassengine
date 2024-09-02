@@ -8,6 +8,9 @@
 /* Checks whether the function argument arg is a texture and returns a texure_t*. */
 texture_t* luaL_checktexture(lua_State* L, int index);
 
+/* If function argument is a texture, return it. If argument is absent or nil, return default_. Otherwise raises an error. */
+texture_t* luaL_opttexture(lua_State* L, int index, texture_t* default_);
+
 /* Creates and pushes on the stack a new texture userdata. */
 int lua_newtexture(lua_State* L, int width, int height);
 

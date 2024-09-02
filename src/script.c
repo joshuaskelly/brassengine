@@ -26,7 +26,10 @@
 #include "modules/int_array.h"
 #include "modules/json.h"
 #include "modules/keyboard.h"
+#include "modules/matrix2.h"
+#include "modules/matrix3.h"
 #include "modules/matrix4.h"
+#include "modules/math_extensions.h"
 #include "modules/mouse.h"
 #include "modules/quaternion.h"
 #include "modules/raycaster.h"
@@ -57,6 +60,8 @@ static const luaL_Reg modules[] = {
     {"intarray", luaopen_intarray},
     {"texture", luaopen_texture},
     {"keyboard", luaopen_keyboard},
+    {"matrix2", luaopen_matrix2},
+    {"matrix3", luaopen_matrix3},
     {"matrix4", luaopen_matrix4},
     {"mouse", luaopen_mouse},
     {"quaternion", luaopen_quaternion},
@@ -80,6 +85,8 @@ static void luaL_openenginemodules(lua_State* L) {
         luaL_requiref(L, module->name, module->func, 0);
         lua_pop(L, 1);
     }
+
+    luaopen_mathextensions(L);
 }
 
 /**
@@ -346,10 +353,6 @@ double script_update_time_get(void) {
 
 double script_draw_time_get(void) {
     return draw_time;
-}
-
-bool script_handle_event(event_t* event) {
-    return false;
 }
 
 void script_update(void) {

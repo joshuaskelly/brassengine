@@ -43,6 +43,38 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
 void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture);
 
 /**
+ * Draw bezier curve
+ *
+ * @param x0 Start anchor point x-coordinate
+ * @param y0 Start anchor point y-coordinate
+ * @param x1 Start control point x-coordinate
+ * @param y1 Start control point y-coordinate
+ * @param x2 End control point x-coordinate
+ * @param y2 End control point y-coordinate
+ * @param x3 End anchor point x-coordinate
+ * @param y3 End anchor point y-coordinate
+ * @param color Cuve color
+ */
+void draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+
+/**
+ * Draw bezier curve
+ *
+ * @param x0 Start anchor point x-coordinate
+ * @param y0 Start anchor point y-coordinate
+ * @param x1 Start control point x-coordinate
+ * @param y1 Start control point y-coordinate
+ * @param x2 End control point x-coordinate
+ * @param y2 End control point y-coordinate
+ * @param x3 End anchor point x-coordinate
+ * @param y3 End anchor point y-coordinate
+ * @param pattern Texture to use as a pattern
+ * @param offset_x Pattern x-axis offset
+ * @param offset_y Pattern y-axis offset
+ */
+void draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+
+/**
  * Draw rectangle.
  *
  * @param x Rect top left x-coordinate

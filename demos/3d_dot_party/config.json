@@ -1,4 +1,11 @@
 {
+    "console": {
+        "colors": {
+            "foreground": 7,
+            "background": 0,
+            "cursor": 8
+        }
+    },
     "resolution": {
         "width": 128,
         "height": 128

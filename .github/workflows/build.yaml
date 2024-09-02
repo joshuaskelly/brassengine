@@ -1,0 +1,98 @@
+name: Build Brass Engine
+
+on:
+  push:
+    tags:
+      - '**'
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - uses: leafo/gh-actions-lua@v9
+    - uses: leafo/gh-actions-luarocks@v4
+
+    # Install some package
+    - name: Install LDoc
+      run: luarocks install ldoc
+
+    - name: make docs
+      run: make docsclean && make docs
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: docs
+        path: docs
+
+  build-windows-msys2:
+    needs: generate-docs
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          git
+          make
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-glew
+          mingw-w64-x86_64-SDL2
+          mingw-w64-x86_64-SDL2_mixer
+    - name: Setup env
+      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+    - name: make clean
+      run: make clean
+    - name: make lua
+      run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
+    - name: make
+      run: make desktop-opengl
+    - name: make docsclean
+      run: make docsclean
+    - name: Download docs
+      uses: actions/download-artifact@master
+      with:
+        name: docs
+        path: docs
+    - name: Create out dir
+      run: mkdir -p dist/${{ env.engine_ver }}
+    - name: Copy binary
+      run: cp ./build/bin/brass.exe ./dist/${{ env.engine_ver }}
+    - name: Copy assets
+      run: cp -r assets ./dist/${{ env.engine_ver }}
+    - name: Copy demos
+      run: cp -r demos ./dist/${{ env.engine_ver }}
+    - name: Copy dlls
+      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll ./dist/${{ env.engine_ver }}
+    - name: Copy docs
+      run: cp -r docs ./dist/${{ env.engine_ver }}
+    - name: Package artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.engine_ver }}
+        path: ./dist
+
+  cleanup-docs:
+    needs: build-windows-msys2
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete docs artifact
+      uses: geekyeggo/delete-artifact@v4
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: docs

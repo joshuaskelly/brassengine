@@ -1,2 +1,4 @@
-demos/** linguist-vendored
-libs/** linguist-vendored
+demos/** -linguist-detectable
+docs/** -linguist-detectable
+library/** -linguist-detectable
+libs/** -linguist-detectable

@@ -17,6 +17,7 @@ static void defaults_set(struct config* config) {
     config->display.aspect = 1.0f;
     config->console.colors.foreground = 1;
     config->console.colors.background = 0;
+    config->console.colors.transparent = -1;
     config->console.colors.cursor = 1;
 
     char* prompt = (char*)malloc(sizeof(char) * 3);
@@ -64,6 +65,7 @@ static void set(cJSON* json) {
         if (colors) {
             cJSON* foreground = cJSON_GetObjectItemCaseSensitive(colors, "foreground");
             cJSON* background = cJSON_GetObjectItemCaseSensitive(colors, "background");
+            cJSON* transparent = cJSON_GetObjectItemCaseSensitive(colors, "transparent");
             cJSON* cursor = cJSON_GetObjectItemCaseSensitive(colors, "cursor");
 
             if (cJSON_IsNumber(foreground)) {
@@ -72,6 +74,10 @@ static void set(cJSON* json) {
 
             if (cJSON_IsNumber(background)) {
                 config->console.colors.background = background->valueint;
+            }
+
+            if (cJSON_IsNumber(transparent)) {
+                config->console.colors.transparent = transparent->valueint;
             }
 
             if (cJSON_IsNumber(cursor)) {

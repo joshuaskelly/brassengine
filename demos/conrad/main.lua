@@ -1,5 +1,6 @@
 local draw = require("draw")
 local mouse = require("mouse")
+local gifrecorder = require("gifrecorder")
 
 function _init()
     black = 0
@@ -23,6 +24,12 @@ function _init()
 
     color = 0
     size = 0
+
+    recorder = gifrecorder.Recorder:new()
+end
+
+function _update()
+    recorder:update()
 end
 
 function _draw()

@@ -20,21 +20,47 @@ float clamp(float f, float min, float max);
 float frac(float f);
 
 /**
- * Returns maximum of a or b.
+ * Linearly interpolate between a and b by t.
  *
- * @param a Float value
- * @param b Float value
- * @return float Maximum value.
+ * @param a Start value
+ * @param b End value
+ * @param t Interpolation value between a and b.
+ * @return Interpolated value between a and b.
  */
-float max(float a, float b);
+float lerp(float a, float b, float t);
 
 /**
- * Returns minimum of a or b.
+ * Returns a Perlin noise value.
  *
- * @param a Float value
- * @param b Float value
- * @return float Minimum value.
+ * The returned value might be outside the [-1, 1] range. If x, y, and z are
+ * all integers the result will be 0.
+ *
+ * Adapated from: https://mrl.cs.nyu.edu/~perlin/noise/
+ *
+ * @param x
+ * @param y
+ * @param z
+ * @return float
  */
-float min(float a, float b);
+float noise(float x, float y, float z);
+
+/**
+ * Interpolates between a and b with smoothing at the limits.
+ *
+ * @param a Start value
+ * @param b End value
+ * @param t Interpolation value
+ * @return float
+ */
+float smoothstep(float a, float b, float t);
+
+/**
+ * Return sign of given number. 1 if greater than zero, -1 if less than zero, and
+ * 0 if equal to zero.
+ *
+ * @param f
+ * @return float
+ */
+float sign(float f);
 
 #endif

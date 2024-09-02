@@ -15,7 +15,7 @@
 /**
  * Gets time used by _draw function call in milliseconds
  * @function draw_time
- * @return Time in milliseconds
+ * @treturn integer Time in milliseconds
  */
 static int bindings_get_draw_time(lua_State* L) {
     double draw_time = script_draw_time_get();
@@ -27,7 +27,7 @@ static int bindings_get_draw_time(lua_State* L) {
 /**
  * Gets time used by _update function call in milliseconds
  * @function update_time
- * @return Time in milliseconds
+ * @treturn integer Time in milliseconds
  */
 static int bindings_get_update_time(lua_State* L) {
     double update_time = script_update_time_get();
@@ -39,7 +39,7 @@ static int bindings_get_update_time(lua_State* L) {
 /**
  * Gets current fps
  * @function fps
- * @return Frames per second
+ * @treturn number Frames per second
  */
 static int bindings_get_fps(lua_State* L) {
     double fps = 1000.0 / time_delta_time();
