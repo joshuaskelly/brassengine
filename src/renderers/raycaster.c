@@ -658,7 +658,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     graphics_texture_set_pixel(
                         render_texture, i, j, shade_pixel(color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, j, d);
+                    set_depth_buffer_pixel(active_renderer, i, j, distance);
                 }
             }
 
@@ -678,7 +678,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     graphics_texture_set_pixel(
                         render_texture, i, height - j - 1, shade_pixel(color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, d);
+                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, distance);
                 }
             }
 
