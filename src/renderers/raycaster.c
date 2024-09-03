@@ -726,24 +726,49 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     // Get x-offset
     mfloat_t tangent[VEC2_SIZE];
     vec2_tangent(tangent, direction);
-    vec2_negative(tangent, tangent);
-    float x_offset = vec2_dot(camera_space_position, tangent);
+    float x_projection = vec2_dot(camera_space_position, tangent);
 
-    float s_height = 1.0f / distance * distance_to_projection_plane;
-    float half_height = s_height / 2.0f;
+    // Get scale for perspective effect
+    float scale = 1.0f / distance * distance_to_projection_plane;
+    float half_scale = scale / 2.0f;
 
-    // Get y-offset
-    float y_offset = position[2] * s_height;
+    // Get sprite dimensions relative to unit 64x64
+    float sprite_height = (float)sprite->height / 64.0f * scale;
+    float sprite_width = (float)sprite->width / 64.0f * scale;
+    float sprite_y_offset = ((float)sprite->height - 64.0f) / 64.0f;
+    float sprite_x_offset = ((float)sprite->width - 64.0f) / 64.0f;
+
+    // Get screen space offsets
+    float top = (render_texture->height / 2.0f) - half_scale;
+    float left = (render_texture->width / 2.0f) - half_scale;
+    float y_offset = (sprite_y_offset + position[2]) * scale;
+    float x_offset = x_projection + (sprite_x_offset * half_scale);
 
     rect_t rect = {
-        (render_texture->width / 2.0f) + x_offset - half_height,
-        (render_texture->height / 2.0f) - y_offset - half_height,
-        s_height,
-        s_height
+        left - x_offset + 0.5f,
+        top - y_offset + 0.5f,
+        sprite_width,
+        sprite_height
     };
 
     // Set sprite depth for blit func
     sprite_depth = distance;
+
+    draw_rectangle(
+        left - x_projection,
+        top,
+        scale,
+        scale,
+        15
+    );
+
+    draw_rectangle(
+        rect.x,
+        rect.y,
+        rect.width,
+        rect.height,
+        12
+    );
 
     // Draw sprite
     graphics_blit(
