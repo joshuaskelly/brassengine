@@ -700,21 +700,13 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     shade_table = renderer->features.shade_table;
     fog_distance = renderer->features.fog_distance;
 
-    const float width = render_texture->width;
-    const float height = render_texture->height;
-
     const float fov = renderer->camera.fov;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
-
-    // Calculate step vector, we need it to move along the projection plane
-    mfloat_t step[VEC2_SIZE];
-    vec2_tangent(step, direction);
-    vec2_negative(step, step);
+    const float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate sprite projected distance
-    mfloat_t dir[VEC2_SIZE];
-    vec2_subtract(dir, position, camera_position);
-    float distance = vec2_dot(direction, dir);
+    mfloat_t camera_space_position[VEC2_SIZE];
+    vec2_subtract(camera_space_position, position, camera_position);
+    float distance = vec2_dot(direction, camera_space_position);
 
     // Cull sprites outside near/far planes
     if (distance < 0) return;
@@ -722,25 +714,30 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
 
     // Frustum culling
     mfloat_t d[VEC2_SIZE];
-    vec2_assign(d, dir);
+    vec2_assign(d, camera_space_position);
     vec2_normalize(d, d);
 
     float ang = acos(vec2_dot(direction, d));
     if (ang > (to_radians(fov) / 2.0f) + 0.175f) return;
 
     // Scale to put point on projection plane.
-    vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
+    vec2_multiply_f(camera_space_position, camera_space_position, distance_to_projection_plane / distance);
 
-    // Find x offset
-    float x_offset = vec2_dot(dir, step);
+    // Get x-offset
+    mfloat_t tangent[VEC2_SIZE];
+    vec2_tangent(tangent, direction);
+    vec2_negative(tangent, tangent);
+    float x_offset = vec2_dot(camera_space_position, tangent);
 
     float s_height = 1.0f / distance * distance_to_projection_plane;
     float half_height = s_height / 2.0f;
+
+    // Get y-offset
     float y_offset = position[2] * s_height;
 
     rect_t rect = {
-        (width / 2.0f) + x_offset - half_height,
-        (height / 2.0f) - y_offset - half_height,
+        (render_texture->width / 2.0f) + x_offset - half_height,
+        (render_texture->height / 2.0f) - y_offset - half_height,
         s_height,
         s_height
     };
