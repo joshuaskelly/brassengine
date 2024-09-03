@@ -47,6 +47,7 @@
 #include "raycaster.h"
 #include "texture.h"
 #include "vector2.h"
+#include "vector3.h"
 
 #include "../renderers/raycaster.h"
 
@@ -172,7 +173,7 @@ static int module_raycaster_renderer_render(lua_State* L) {
     }
     else {
         texture_t* sprite = luaL_checktexture(L, 2);
-        mfloat_t* position = luaL_checkvector2(L, 3);
+        mfloat_t* position = luaL_checkvector3(L, 3);
 
         if (lua_gettop(L) > 3) {
             mfloat_t* forward = luaL_checkvector2(L, 4);

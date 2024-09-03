@@ -736,10 +736,11 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
 
     float s_height = 1.0f / distance * distance_to_projection_plane;
     float half_height = s_height / 2.0f;
+    float y_offset = position[2] * s_height;
 
     rect_t rect = {
         (width / 2.0f) + x_offset - half_height,
-        (height / 2.0f) - half_height,
+        (height / 2.0f) - y_offset - half_height,
         s_height,
         s_height
     };
