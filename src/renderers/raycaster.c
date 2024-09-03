@@ -712,14 +712,6 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     if (distance < 0) return;
     if (distance >= fog_distance) return;
 
-    // Frustum culling
-    mfloat_t d[VEC2_SIZE];
-    vec2_assign(d, camera_space_position);
-    vec2_normalize(d, d);
-
-    float ang = acos(vec2_dot(direction, d));
-    if (ang > (to_radians(fov) / 2.0f) + 0.175f) return;
-
     // Scale to put point on projection plane.
     vec2_multiply_f(camera_space_position, camera_space_position, distance_to_projection_plane / distance);
 
@@ -739,36 +731,24 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     float sprite_x_offset = ((float)sprite->width - 64.0f) / 64.0f;
 
     // Get screen space offsets
-    float top = (render_texture->height / 2.0f) - half_scale;
-    float left = (render_texture->width / 2.0f) - half_scale;
     float y_offset = (sprite_y_offset + position[2]) * scale;
     float x_offset = x_projection + (sprite_x_offset * half_scale);
+    float top = (render_texture->height / 2.0f) - half_scale - y_offset + 0.5f;
+    float left = (render_texture->width / 2.0f) - half_scale - x_offset + 0.5f;
+
+    // Frustum culling
+    if (left > render_texture->width) return;
+    if (left + sprite_width < 0) return;
 
     rect_t rect = {
-        left - x_offset + 0.5f,
-        top - y_offset + 0.5f,
+        left,
+        top,
         sprite_width,
         sprite_height
     };
 
     // Set sprite depth for blit func
     sprite_depth = distance;
-
-    draw_rectangle(
-        left - x_projection,
-        top,
-        scale,
-        scale,
-        15
-    );
-
-    draw_rectangle(
-        rect.x,
-        rect.y,
-        rect.width,
-        rect.height,
-        12
-    );
 
     // Draw sprite
     graphics_blit(
