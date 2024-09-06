@@ -382,7 +382,6 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
 
         c = shade_pixel(c, brightness);
         graphics_texture_set_pixel(destination_texture, x, y, c);
-
     }
 }
 
@@ -895,6 +894,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Calculate half-tangent
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
+    vec3_multiply_f(half_tangent, half_tangent, (float)sprite->width / 64.0f);
 
     /** First sprite endpoint. */
     mfloat_t a[VEC3_SIZE];
@@ -1008,6 +1008,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     // Recalculate tangent. This is to ensure correct texture mapping.
     vec3_subtract(tangent, b, a);
+    vec3_normalize(tangent, tangent);
+    float sprite_width = vec3_distance(b, a);
 
     // 5. Render sprite as raycast columns.
 
@@ -1036,7 +1038,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             vec3_subtract(p, intersection, a);
             p[2] = 0;
 
-            float offset = vec3_dot(p, tangent);
+            float offset = vec3_dot(p, tangent) / sprite_width;
 
             // TODO: Fix this hack. My hunch is related to pixel centers and
             // calculating the left and right bounds.
