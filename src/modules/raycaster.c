@@ -313,6 +313,18 @@ static int module_raycaster_renderer_feature(lua_State* L) {
 
         return 2;
     }
+    if (strcmp(key, "pixelsperunit") == 0) {
+        if (is_setter) {
+            float pixels_per_unit = luaL_checknumber(L, 3);
+            renderer->features.pixels_per_unit = pixels_per_unit;
+
+            return 0;
+        }
+
+        lua_pushnumber(L, renderer->features.pixels_per_unit);
+
+        return 1;
+    }
     else {
         luaL_argerror(L, 2, lua_pushfstring(L, "invalid feature '%s'", key));
     }

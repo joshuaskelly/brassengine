@@ -436,6 +436,7 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     renderer->features.draw_ceilings = true;
     renderer->features.horizontal_wall_brightness = 1.0f;
     renderer->features.vertical_wall_brightness = 0.5f;
+    renderer->features.pixels_per_unit = 64.0f;
 
     vec2(renderer->camera.position, 0, 0);
     vec2(renderer->camera.direction, 0, 0);
@@ -724,10 +725,11 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     float half_scale = scale / 2.0f;
 
     // Get sprite dimensions relative to unit 64x64
-    float sprite_height = (float)sprite->height / 64.0f * scale;
-    float sprite_width = (float)sprite->width / 64.0f * scale;
-    float sprite_y_offset = ((float)sprite->height - 64.0f) / 64.0f;
-    float sprite_x_offset = ((float)sprite->width - 64.0f) / 64.0f;
+    float pixels_per_unit = renderer->features.pixels_per_unit;
+    float sprite_height = (float)sprite->height / pixels_per_unit * scale;
+    float sprite_width = (float)sprite->width / pixels_per_unit * scale;
+    float sprite_y_offset = ((float)sprite->height - pixels_per_unit) / pixels_per_unit;
+    float sprite_x_offset = ((float)sprite->width - pixels_per_unit) / pixels_per_unit;
 
     // Get screen space offsets
     float y_offset = (sprite_y_offset + position[2]) * scale;
@@ -813,6 +815,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
     float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
+    float ppu = renderer->features.pixels_per_unit;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
@@ -894,7 +897,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Calculate half-tangent
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
-    vec3_multiply_f(half_tangent, half_tangent, (float)sprite->width / 64.0f);
+    vec3_multiply_f(half_tangent, half_tangent, (float)sprite->width / ppu);
 
     /** First sprite endpoint. */
     mfloat_t a[VEC3_SIZE];
