@@ -359,15 +359,15 @@ static float get_depth_buffer_pixel(raycaster_renderer_t* renderer, int x, int y
  * @param brightness How light/dark to shade wall.
  */
 static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float brightness, float depth) {
-    const int length = y1 - y0;
+    const int length = y1 - y0 - 1;
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    const int s = (wall_texture->width - 1) * offset + 0.5f;
-    const float t_step = (wall_texture->height - 1) / (float)length;
+    const int s = wall_texture->width * offset;
+    const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
-    for (int i = start; i <= length; i++) {
+    for (int i = start; i < length; i++) {
         int y = y0 + i;
         if (y >= bottom) break;
 
@@ -1054,7 +1054,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float sprite_y_offset = position[2] * scale;
 
             // Get screen space offsets
-            float bottom = half_height + (scale / 2.0f) - sprite_y_offset;
+            float bottom = half_height + (scale / 2.0f) - sprite_y_offset + 0.001f;
             float top = bottom - sprite_height;
             float x = half_width - i;
 
