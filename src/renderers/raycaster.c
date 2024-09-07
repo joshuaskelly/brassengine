@@ -363,11 +363,11 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    const int s = wall_texture->width * offset;
-    const float t_step = wall_texture->height / (float)length;
+    const int s = (wall_texture->width - 1) * offset + 0.5f;
+    const float t_step = (wall_texture->height - 1) / (float)length;
     float t = start * t_step;
 
-    for (int i = start; i < length; i++) {
+    for (int i = start; i <= length; i++) {
         int y = y0 + i;
         if (y >= bottom) break;
 
@@ -599,8 +599,8 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     wall_texture,
                     render_texture,
                     i,
-                    height / 2.0f - half_wall_height - 0.5f,
-                    height / 2.0f + half_wall_height + 1.5f,
+                    height / 2.0f - half_wall_height,
+                    height / 2.0f + half_wall_height,
                     offset,
                     brightness,
                     corrected_distance
@@ -1051,12 +1051,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float scale = distance_to_projection_plane / distance;
 
             float sprite_height = (float)sprite->height / ppu * scale;
-            float half_sprite_height = sprite_height / 2.0f;
-            float sprite_y_offset = (((sprite->height - ppu) / ppu / 2) + position[2]) * scale;
+            float sprite_y_offset = position[2] * scale;
 
             // Get screen space offsets
-            float top = half_height - half_sprite_height - sprite_y_offset - 0.5f;
-            float bottom = half_height + half_sprite_height - sprite_y_offset + 1.5f;
+            float bottom = half_height + (scale / 2.0f) - sprite_y_offset;
+            float top = bottom - sprite_height;
             float x = half_width - i;
 
             draw_wall_strip(
