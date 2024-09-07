@@ -721,7 +721,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     float x_projection = vec2_dot(camera_space_position, tangent);
 
     // Get scale for perspective effect
-    float scale = 1.0f / distance * distance_to_projection_plane;
+    float scale = distance_to_projection_plane / distance;
     float half_scale = scale / 2.0f;
 
     // Get sprite dimensions relative to unit 64x64
@@ -897,6 +897,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Calculate half-tangent
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
+    // Scale half tangent by sprite width
     vec3_multiply_f(half_tangent, half_tangent, (float)sprite->width / ppu);
 
     /** First sprite endpoint. */
@@ -1037,22 +1038,33 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
             brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
 
-            float half_sprite_height = ((distance_to_projection_plane / distance) * 0.5f);
+            // Project intersection point along sprite to find tex coord.
             vec3_subtract(p, intersection, a);
             p[2] = 0;
-
             float offset = vec3_dot(p, tangent) / sprite_width;
 
             // TODO: Fix this hack. My hunch is related to pixel centers and
             // calculating the left and right bounds.
             if (offset < 0 || offset > 1.0f) continue;
 
+            // Get scale for perspective effect
+            float scale = distance_to_projection_plane / distance;
+
+            float sprite_height = (float)sprite->height / ppu * scale;
+            float half_sprite_height = sprite_height / 2.0f;
+            float sprite_y_offset = (((sprite->height - ppu) / ppu / 2) + position[2]) * scale;
+
+            // Get screen space offsets
+            float top = half_height - half_sprite_height - sprite_y_offset - 0.5f;
+            float bottom = half_height + half_sprite_height - sprite_y_offset + 1.5f;
+            float x = half_width - i;
+
             draw_wall_strip(
                 sprite,
                 render_texture,
-                half_width - i,
-                half_height - half_sprite_height - 0.5f,
-                half_height + half_sprite_height + 1.5f,
+                x,
+                top,
+                bottom,
                 offset,
                 brightness,
                 distance
