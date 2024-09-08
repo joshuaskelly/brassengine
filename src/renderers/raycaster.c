@@ -1053,8 +1053,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float sprite_height = (float)sprite->height / ppu * scale;
             float sprite_y_offset = position[2] * scale;
 
+            // Bias to reduce hairy pixels
+            const float bias = 0.11109375f;
+
             // Get screen space offsets
-            float bottom = half_height + (scale / 2.0f) - sprite_y_offset + 0.001f;
+            float bottom = half_height + (scale / 2.0f) - sprite_y_offset + bias;
             float top = bottom - sprite_height;
             float x = half_width - i;
 
