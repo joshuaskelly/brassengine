@@ -367,7 +367,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
-    for (int i = start; i < length; i++) {
+    for (int i = start; i <= length; i++) {
         int y = y0 + i;
         if (y >= bottom) break;
 
@@ -492,6 +492,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
     const float width = render_texture->width;
     const float height = render_texture->height;
+    const float half_height = height / 2.0f;
 
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
@@ -569,6 +570,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
             float half_wall_height = wall_height / 2.0f;
+            float top = half_height - half_wall_height;
+            top += sign(top) * 0.5f;
+            float bottom = top + wall_height;
 
             // Calculate the texture normalized horizontal offset (u-coordinate).
             float offset = 0.0f;
@@ -599,8 +603,8 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     wall_texture,
                     render_texture,
                     i,
-                    height / 2.0f - half_wall_height,
-                    height / 2.0f + half_wall_height + 1,
+                    top,
+                    bottom,
                     offset,
                     brightness,
                     corrected_distance
