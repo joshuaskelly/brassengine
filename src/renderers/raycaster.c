@@ -363,7 +363,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    const int s = wall_texture->width * offset;
+    const int s = (float)wall_texture->width * offset + 0.00001f;
     const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
