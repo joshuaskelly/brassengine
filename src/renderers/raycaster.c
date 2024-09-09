@@ -738,7 +738,8 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     // Get screen space offsets
     float y_offset = (sprite_y_offset + position[2]) * scale;
     float x_offset = x_projection + (sprite_x_offset * half_scale);
-    float top = (render_texture->height / 2.0f) - half_scale - y_offset + 0.5f;
+    float top = (render_texture->height / 2.0f) - half_scale - y_offset;
+    top += sign(top) * 0.5f;
     float left = (render_texture->width / 2.0f) - half_scale - x_offset + 0.5f;
 
     // Frustum culling
