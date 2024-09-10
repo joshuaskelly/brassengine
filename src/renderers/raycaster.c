@@ -367,7 +367,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
-    for (int i = start; i <= length; i++) {
+    for (int i = start; i < length; i++) {
         int y = y0 + i;
         if (y >= bottom) break;
 
