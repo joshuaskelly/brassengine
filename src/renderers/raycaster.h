@@ -42,6 +42,7 @@ typedef struct {
         bool draw_ceilings;
         float horizontal_wall_brightness;
         float vertical_wall_brightness;
+        float pixels_per_unit;
     } features;
 
     struct {
