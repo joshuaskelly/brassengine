@@ -363,15 +363,15 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    const int s = (wall_texture->width - 1) * offset + 0.5f;
-    const float t_step = (wall_texture->height - 1) / (float)length;
+    const int s = (float)wall_texture->width * offset + 0.00001f;
+    const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
-    for (int i = start; i <= length; i++) {
+    for (int i = start; i < length; i++) {
         int y = y0 + i;
         if (y >= bottom) break;
 
-        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
+        color_t c = graphics_texture_get_pixel(wall_texture, s, t + 0.0001f);
         t += t_step;
         if (c == graphics_transparent_color_get()) continue;
 
@@ -492,6 +492,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
     const float width = render_texture->width;
     const float height = render_texture->height;
+    const float half_height = height / 2.0f;
 
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
@@ -569,6 +570,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
             float half_wall_height = wall_height / 2.0f;
+            float top = half_height - half_wall_height;
+            top += sign(top) * 0.5f;
+            float bottom = top + wall_height;
 
             // Calculate the texture normalized horizontal offset (u-coordinate).
             float offset = 0.0f;
@@ -599,8 +603,8 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     wall_texture,
                     render_texture,
                     i,
-                    height / 2.0f - half_wall_height,
-                    height / 2.0f + half_wall_height,
+                    top,
+                    bottom,
                     offset,
                     brightness,
                     corrected_distance
@@ -734,7 +738,8 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     // Get screen space offsets
     float y_offset = (sprite_y_offset + position[2]) * scale;
     float x_offset = x_projection + (sprite_x_offset * half_scale);
-    float top = (render_texture->height / 2.0f) - half_scale - y_offset + 0.5f;
+    float top = (render_texture->height / 2.0f) - half_scale - y_offset;
+    top += sign(top) * 0.5f;
     float left = (render_texture->width / 2.0f) - half_scale - x_offset + 0.5f;
 
     // Frustum culling
@@ -1053,8 +1058,11 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float sprite_height = (float)sprite->height / ppu * scale;
             float sprite_y_offset = position[2] * scale;
 
+            // Bias to reduce hairy pixels
+            const float bias = 0.11109375f;
+
             // Get screen space offsets
-            float bottom = half_height + (scale / 2.0f) - sprite_y_offset;
+            float bottom = half_height + (scale / 2.0f) - sprite_y_offset + bias + 1;
             float top = bottom - sprite_height;
             float x = half_width - i;
 
