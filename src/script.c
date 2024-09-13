@@ -18,7 +18,6 @@
 #include "time.h"
 
 #include "modules/assets.h"
-#include "modules/display.h"
 #include "modules/draw.h"
 #include "modules/float_array.h"
 #include "modules/gif.h"
@@ -52,7 +51,6 @@ static int call(lua_State* L, int narg, int nresults);
 
 static const luaL_Reg modules[] = {
     {"assets", luaopen_assets},
-    {"display", luaopen_display},
     {"draw", luaopen_draw},
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
