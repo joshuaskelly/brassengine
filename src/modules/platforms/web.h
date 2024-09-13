@@ -95,11 +95,28 @@ static const struct luaL_Reg modules_web_window_functions[] = {
     {NULL, NULL}
 };
 
+static int modules_web_javascript_run(lua_State* L) {
+    const char* script = luaL_checkstring(L, 1);
+    const char* result = emscripten_run_script_string(script);
+    lua_pushstring(L, result);
+
+    return 1;
+}
+
+static const struct luaL_Reg modules_web_javascript_functions[] = {
+    {"run", modules_web_javascript_run},
+    {NULL, NULL}
+};
+
 static int luaopen_platform(lua_State* L) {
     lua_newtable(L);
 
     lua_pushstring(L, "window");
     luaL_newlib(L, modules_web_window_functions);
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "javascript");
+    luaL_newlib(L, modules_web_javascript_functions);
     lua_settable(L, -3);
 
     lua_pushstring(L, "name");
