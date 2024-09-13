@@ -12,6 +12,8 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "../../configuration.h"
+
 static SDL_Window* window_ = NULL;
 
 static int modules_desktop_window_position_set(lua_State* L) {
@@ -89,6 +91,18 @@ static int modules_desktop_window_fullscreen_get(lua_State* L) {
     return 1;
 }
 
+static int modules_desktop_window_aspect_set(lua_State* L) {
+    float aspect = luaL_checknumber(L, 1);
+    config->display.aspect = aspect;
+
+    return 0;
+}
+
+static int modules_desktop_window_aspect_get(lua_State* L) {
+    lua_pushnumber(L, config->display.aspect);
+    return 1;
+}
+
 static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"set_position", modules_desktop_window_position_set},
     {"get_position", modules_desktop_window_position_get},
@@ -98,6 +112,8 @@ static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"get_title", modules_desktop_window_title_get},
     {"set_fullscreen", modules_desktop_window_fullscreen_set},
     {"get_fullscreen", modules_desktop_window_fullscreen_get},
+    {"set_aspect", modules_desktop_window_aspect_set},
+    {"get_aspect", modules_desktop_window_aspect_get},
     {NULL, NULL}
 };
 
