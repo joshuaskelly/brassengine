@@ -18,7 +18,7 @@
 #include "../sounds.h"
 #include "../time.h"
 
-#include "modules/web.h"
+#include "../modules/platforms/web.h"
 
 static SDL_Window* window = NULL;
 static uint32_t* render_buffer = NULL;

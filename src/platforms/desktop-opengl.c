@@ -18,7 +18,7 @@
 #include "../sounds.h"
 #include "../time.h"
 
-#include "modules/desktop.h"
+#include "../modules/platforms/desktop.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)

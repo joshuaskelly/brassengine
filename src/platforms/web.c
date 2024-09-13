@@ -13,7 +13,7 @@
 #include "../platform.h"
 #include "../sounds.h"
 
-#include "modules/web.h"
+#include "../modules/platforms/web.h"
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
