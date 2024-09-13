@@ -13,11 +13,11 @@
 #include "graphics.h"
 #include "input.h"
 #include "log.h"
+#include "platform.h"
 #include "script.h"
 #include "time.h"
 
 #include "modules/assets.h"
-#include "modules/display.h"
 #include "modules/draw.h"
 #include "modules/float_array.h"
 #include "modules/gif.h"
@@ -51,7 +51,6 @@ static int call(lua_State* L, int narg, int nresults);
 
 static const luaL_Reg modules[] = {
     {"assets", luaopen_assets},
-    {"display", luaopen_display},
     {"draw", luaopen_draw},
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
@@ -183,6 +182,9 @@ static void init_lua_vm(void) {
 
     // Load modules
     luaL_openenginemodules(L);
+
+    // Load platform specific module
+    platform_open_module(L);
 
    // Execute Lua script
     const char* main = assets_script_get("main.lua");

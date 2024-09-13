@@ -13,6 +13,8 @@
 #include "../platform.h"
 #include "../sounds.h"
 
+#include "../modules/platforms/web.h"
+
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
@@ -283,4 +285,8 @@ void platform_mouse_grabbed_set(bool grabbed) {
 
 bool platform_mouse_grabbed_get(void) {
     return SDL_GetWindowMouseGrab(window);
+}
+
+void platform_open_module(void* arg) {
+    open_web_platform_module(arg, window);
 }

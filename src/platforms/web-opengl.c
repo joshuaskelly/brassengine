@@ -18,6 +18,8 @@
 #include "../sounds.h"
 #include "../time.h"
 
+#include "../modules/platforms/web.h"
+
 static SDL_Window* window = NULL;
 static uint32_t* render_buffer = NULL;
 static SDL_Rect display_rect;
@@ -487,4 +489,8 @@ void platform_mouse_grabbed_set(bool grabbed) {
 
 bool platform_mouse_grabbed_get(void) {
     return SDL_GetWindowMouseGrab(window);
+}
+
+void platform_open_module(void* arg) {
+    open_web_platform_module(arg, window);
 }

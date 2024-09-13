@@ -68,9 +68,10 @@ debug:all
 desktop-run: ## Run desktop build
 	./$(BIN)
 
-web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1
+web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1 -s EXPORTED_FUNCTIONS=_main,_free
 web:AR='emar rcu'
 web:RANLIB=emranlib
+web:LIBS=$(LIBLUA) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
 web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
 	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --embed-file assets
 
