@@ -6,7 +6,6 @@
 - [ ] Simplify web html wrapper
 - [ ] Platform specific Lua module
 - [ ] Polygon rasterization for draw module
-- [ ] Audit custom clamp() implementations
 - [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] Threaded rendering
@@ -14,6 +13,7 @@
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [x] Audit custom clamp() implementations
 - [x] Audit/fix draw rectangle functions. Width/height seems off?
 - [x] Support for loading all frames from GIF files.
 - [x] Support for creating/modifiying sound objects.
