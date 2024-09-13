@@ -14,6 +14,8 @@
 #include "../platform.h"
 #include "../sounds.h"
 
+#include "modules/desktop.h"
+
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
 
@@ -321,4 +323,8 @@ void platform_mouse_grabbed_set(bool grabbed) {
 
 bool platform_mouse_grabbed_get(void) {
     return SDL_GetRelativeMouseMode();
+}
+
+void platform_open_module(void* arg) {
+    open_desktop_platform_module(arg, window, renderer);
 }

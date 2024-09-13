@@ -13,6 +13,7 @@
 #include "graphics.h"
 #include "input.h"
 #include "log.h"
+#include "platform.h"
 #include "script.h"
 #include "time.h"
 
@@ -183,6 +184,9 @@ static void init_lua_vm(void) {
 
     // Load modules
     luaL_openenginemodules(L);
+
+    // Load platform specific module
+    platform_open_module(L);
 
    // Execute Lua script
     const char* main = assets_script_get("main.lua");

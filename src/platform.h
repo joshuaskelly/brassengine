@@ -90,4 +90,12 @@ void platform_mouse_grabbed_set(bool grabbed);
  */
 bool platform_mouse_grabbed_get(void);
 
+/**
+ * Open platform specific module.
+ *
+ * @param arg Scipting engine specific context data. Typically this is a
+ * lua_State pointer.
+ */
+void platform_open_module(void* arg);
+
 #endif
