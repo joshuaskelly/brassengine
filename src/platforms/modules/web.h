@@ -1,12 +1,6 @@
-/**
- * Module for getting keyboard input.
- * @module keyboard
- */
-#include <ctype.h>
-#include <stdbool.h>
-
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <emscripten.h>
 
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
@@ -89,7 +83,7 @@ static int modules_desktop_window_fullscreen_get(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg modules_desktop_window_functions[] = {
+static const struct luaL_Reg modules_web_window_functions[] = {
     {"set_position", modules_desktop_window_position_set},
     {"get_position", modules_desktop_window_position_get},
     {"set_size", modules_desktop_window_size_set},
@@ -105,17 +99,17 @@ static int luaopen_platform(lua_State* L) {
     lua_newtable(L);
 
     lua_pushstring(L, "window");
-    luaL_newlib(L, modules_desktop_window_functions);
+    luaL_newlib(L, modules_web_window_functions);
     lua_settable(L, -3);
 
     lua_pushstring(L, "name");
-    lua_pushstring(L, "desktop");
+    lua_pushstring(L, "web");
     lua_settable(L, -3);
 
     return 1;
 }
 
-void open_desktop_platform_module(void* arg, SDL_Window* w) {
+void open_web_platform_module(void* arg, SDL_Window* w) {
     window_ = w;
     lua_State* L = (lua_State*)arg;
 
