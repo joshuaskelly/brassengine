@@ -1,7 +1,14 @@
 /**
- * Module for getting keyboard input.
- * @module keyboard
+ * Module for desktop platform specific APIs.
+ *
+ * @usage
+ * platform = require("platform")
+ *
+ * platform.window.set_title("Example")
+ *
+ * @module platform-desktop
  */
+
 #include <ctype.h>
 #include <stdbool.h>
 
@@ -16,6 +23,22 @@
 
 static SDL_Window* window_ = NULL;
 
+/**
+ * Platform name. Should be 'desktop'
+ * @tfield string name
+ */
+
+/**
+ * Submodule window
+ * @section window
+ */
+
+/**
+ * Set window position
+ * @function window.set_position
+ * @tparam integer x Window left x position
+ * @tparam integer y Window top y position
+ */
 static int modules_desktop_window_position_set(lua_State* L) {
     int x = luaL_checknumber(L, 1);
     int y = luaL_checknumber(L, 2);
@@ -24,6 +47,12 @@ static int modules_desktop_window_position_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get window position
+ * @function window.get_position
+ * @treturn integer Window left position
+ * @treturn integer Window top position
+ */
 static int modules_desktop_window_position_get(lua_State* L) {
     int x;
     int y;
@@ -35,6 +64,12 @@ static int modules_desktop_window_position_get(lua_State* L) {
     return 2;
 }
 
+/**
+ * Set window size
+ * @function window.set_size
+ * @tparam integer width Window width
+ * @tparam integer height Window height
+ */
 static int modules_desktop_window_size_set(lua_State* L) {
     int w = luaL_checknumber(L, 1);
     int h = luaL_checknumber(L, 2);
@@ -44,6 +79,12 @@ static int modules_desktop_window_size_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get window size
+ * @function window.get_size
+ * @treturn integer width Window width
+ * @treturn integer height Window height
+ */
 static int modules_desktop_window_size_get(lua_State* L) {
     int w;
     int h;
@@ -55,6 +96,11 @@ static int modules_desktop_window_size_get(lua_State* L) {
     return 2;
 }
 
+/**
+ * Set window title
+ * @function window.set_title
+ * @tparam string title Window title
+ */
 static int modules_desktop_window_title_set(lua_State* L) {
     const char* title = luaL_checkstring(L, 1);
     SDL_SetWindowTitle(window_, title);
@@ -62,6 +108,11 @@ static int modules_desktop_window_title_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get window title
+ * @function window.get_title
+ * @treturn string Window title
+ */
 static int modules_desktop_window_title_get(lua_State* L) {
     const char* title = SDL_GetWindowTitle(window_);
     lua_pushstring(L, title);
@@ -69,6 +120,11 @@ static int modules_desktop_window_title_get(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set window fullscreen state
+ * @function window.set_fullscreen
+ * @tparam boolean state True to set fullscreen, false for windowed.
+ */
 static int modules_desktop_window_fullscreen_set(lua_State* L) {
     bool state = lua_toboolean(L, 1);
 
@@ -82,6 +138,11 @@ static int modules_desktop_window_fullscreen_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get window fullscreen state
+ * @function window.get_fullscreen
+ * @treturn boolean True if fullscreen, false for windowed.
+ */
 static int modules_desktop_window_fullscreen_get(lua_State* L) {
     uint32_t flags = SDL_GetWindowFlags(window_);
     bool fullscreen = flags & SDL_WINDOW_FULLSCREEN;
@@ -91,6 +152,11 @@ static int modules_desktop_window_fullscreen_get(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set window pixel aspect ratio
+ * @function window.set_aspect
+ * @tparam number aspect Pixel aspect ratio width / height
+ */
 static int modules_desktop_window_aspect_set(lua_State* L) {
     float aspect = luaL_checknumber(L, 1);
     config->display.aspect = aspect;
@@ -98,6 +164,10 @@ static int modules_desktop_window_aspect_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get window pixel aspect ratio
+ * @treturn number Pixel aspect ratio width / height
+ */
 static int modules_desktop_window_aspect_get(lua_State* L) {
     lua_pushnumber(L, config->display.aspect);
     return 1;
