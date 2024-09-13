@@ -52,7 +52,7 @@ int lua_pushquaternion(lua_State* L, mfloat_t* quaternion) {
     return 1;
 }
 
-static int quaternion_gc(lua_State* L) {
+static int modules_quaternion_gc(lua_State* L) {
     mfloat_t** handle = lua_touserdata(L, 1);
     free(*handle);
     *handle = NULL;
@@ -70,7 +70,7 @@ static int quaternion_gc(lua_State* L) {
  * @function conjugate
  * @treturn quaternion
  */
-static int quaternion_conjugate(lua_State* L) {
+static int modules_quaternion_conjugate(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -88,7 +88,7 @@ static int quaternion_conjugate(lua_State* L) {
  * @function inverse
  * @treturn quaternion
  */
-static int quaternion_inverse(lua_State* L) {
+static int modules_quaternion_inverse(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -106,7 +106,7 @@ static int quaternion_inverse(lua_State* L) {
  * @function length
  * @treturn number float
  */
-static int quaternion_length(lua_State* L) {
+static int modules_quaternion_length(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -123,7 +123,7 @@ static int quaternion_length(lua_State* L) {
  * @function length_squared
  * @treturn number float
  */
-static int quaternion_length_squared(lua_State* L) {
+static int modules_quaternion_length_squared(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -169,7 +169,7 @@ static int quaternion_length_squared(lua_State* L) {
  * @tparam number w
  * @treturn quaternion
  */
-static int quaternion_new(lua_State* L) {
+static int modules_quaternion_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
     float y = (float)luaL_optnumber(L, 2, 0);
     float z = (float)luaL_optnumber(L, 3, 0);
@@ -186,7 +186,7 @@ static int quaternion_new(lua_State* L) {
  * Returns a quaternion with all components set to zero.
  * @treturn quaternion
  */
-static int quaternion_zero(lua_State* L) {
+static int modules_quaternion_zero(lua_State* L) {
     lua_newquaternion(L, 0, 0, 0, 0);
     mfloat_t* result = luaL_checkquaternion(L, 1);
     quat_zero(result);
@@ -198,7 +198,7 @@ static int quaternion_zero(lua_State* L) {
  * Returns a quaternion representing no rotation.
  * @treturn quaternion
  */
-static int quaternion_identity(lua_State* L) {
+static int modules_quaternion_identity(lua_State* L) {
     lua_newquaternion(L, 0, 0, 0, 0);
     mfloat_t* result = luaL_checkquaternion(L, 1);
     quat_null(result);
@@ -206,7 +206,7 @@ static int quaternion_identity(lua_State* L) {
     return 1;
 }
 
-static int quaternion_multiply(lua_State* L) {
+static int modules_quaternion_multiply(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     // Scalar multiplication
@@ -236,7 +236,7 @@ static int quaternion_multiply(lua_State* L) {
     return 1;
 }
 
-static int quaternion_divide(lua_State* L) {
+static int modules_quaternion_divide(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     // Scalar multiplication
@@ -266,7 +266,7 @@ static int quaternion_divide(lua_State* L) {
     return 1;
 }
 
-static int quaternion_negative(lua_State* L) {
+static int modules_quaternion_negative(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -279,7 +279,7 @@ static int quaternion_negative(lua_State* L) {
     return 1;
 }
 
-static int quaternion_equal(lua_State* L) {
+static int modules_quaternion_equal(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
 
@@ -298,7 +298,7 @@ static int quaternion_equal(lua_State* L) {
  * @tparam quaternion q0
  * @treturn quaternion
  */
-static int quaternion_normalize(lua_State* L) {
+static int modules_quaternion_normalize(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -318,7 +318,7 @@ static int quaternion_normalize(lua_State* L) {
  * @tparam quaternion q1
  * @treturn number float
  */
-static int quaternion_dot(lua_State* L) {
+static int modules_quaternion_dot(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
 
@@ -331,7 +331,7 @@ static int quaternion_dot(lua_State* L) {
     return 1;
 }
 
-static int quaternion_power(lua_State* L) {
+static int modules_quaternion_power(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t exponent = luaL_checknumber(L, 2);
 
@@ -352,7 +352,7 @@ static int quaternion_power(lua_State* L) {
  * @tparam number radians
  * @treturn quaternion
  */
-static int quaternion_from_axis_angle(lua_State* L) {
+static int modules_quaternion_from_axis_angle(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
     mfloat_t angle = luaL_checknumber(L, 2);
 
@@ -373,7 +373,7 @@ static int quaternion_from_axis_angle(lua_State* L) {
  * @tparam vector3.vector3 v1
  * @treturn quaternion
  */
-static int quaternion_from_vector3(lua_State* L) {
+static int modules_quaternion_from_vector3(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector3(L, 1);
     mfloat_t* v1 = luaL_checkvector3(L, 2);
 
@@ -393,7 +393,7 @@ static int quaternion_from_vector3(lua_State* L) {
  * @tparam matrix4.matrix4 m0
  * @treturn quaternion
  */
-static int quaternion_from_matrix4(lua_State* L) {
+static int modules_quaternion_from_matrix4(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     lua_settop(L, 0);
@@ -421,7 +421,7 @@ static int quaternion_from_matrix4(lua_State* L) {
  * @tparam number z
  * @treturn quaternion
  */
-static int quaternion_from_euler(lua_State* L) {
+static int modules_quaternion_from_euler(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t x_angle = 0.0f;
@@ -475,7 +475,7 @@ static int quaternion_from_euler(lua_State* L) {
  * @tparam quaternion q0
  * @treturn vector3.vector3
  */
-static int quaternion_to_euler(lua_State* L) {
+static int modules_quaternion_to_euler(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -520,7 +520,7 @@ static int quaternion_to_euler(lua_State* L) {
  * @tparam number t Value used to interpolate between q0 and q1.
  * @treturn quaternion
  */
-static int quaternion_lerp(lua_State* L) {
+static int modules_quaternion_lerp(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -543,7 +543,7 @@ static int quaternion_lerp(lua_State* L) {
  * @tparam number t Value used to interpolate between q0 and q1.
  * @treturn quaternion
  */
-static int quaternion_slerp(lua_State* L) {
+static int modules_quaternion_slerp(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -565,7 +565,7 @@ static int quaternion_slerp(lua_State* L) {
  * @tparam quaternion q1
  * @treturn number float
  */
-static int quaternion_angle(lua_State* L) {
+static int modules_quaternion_angle(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
     mfloat_t* q1 = luaL_checkquaternion(L, 2);
 
@@ -578,30 +578,30 @@ static int quaternion_angle(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
+static const struct luaL_Reg modules_quaternion_functions[] = {
     // Class functions
-    {"conjugate", quaternion_conjugate},
-    {"inverse", quaternion_inverse},
-    {"normalize", quaternion_normalize},
-    {"length", quaternion_length},
-    {"length_squared", quaternion_length_squared},
+    {"conjugate", modules_quaternion_conjugate},
+    {"inverse", modules_quaternion_inverse},
+    {"normalize", modules_quaternion_normalize},
+    {"length", modules_quaternion_length},
+    {"length_squared", modules_quaternion_length_squared},
     // Module functions
-    {"new", quaternion_new},
-    {"zero", quaternion_zero},
-    {"identity", quaternion_identity},
-    {"dot", quaternion_dot},
-    {"from_axis_angle", quaternion_from_axis_angle},
-    {"from_vector3", quaternion_from_vector3},
-    {"from_matrix4", quaternion_from_matrix4},
-    {"from_euler", quaternion_from_euler},
-    {"to_euler", quaternion_to_euler},
-    {"lerp", quaternion_lerp},
-    {"slerp", quaternion_slerp},
-    {"angle", quaternion_angle},
+    {"new", modules_quaternion_new},
+    {"zero", modules_quaternion_zero},
+    {"identity", modules_quaternion_identity},
+    {"dot", modules_quaternion_dot},
+    {"from_axis_angle", modules_quaternion_from_axis_angle},
+    {"from_vector3", modules_quaternion_from_vector3},
+    {"from_matrix4", modules_quaternion_from_matrix4},
+    {"from_euler", modules_quaternion_from_euler},
+    {"to_euler", modules_quaternion_to_euler},
+    {"lerp", modules_quaternion_lerp},
+    {"slerp", modules_quaternion_slerp},
+    {"angle", modules_quaternion_angle},
     {NULL, NULL}
 };
 
-static int quaternion_meta_index(lua_State* L) {
+static int modules_quaternion_meta_index(lua_State* L) {
     mfloat_t* quaternion = luaL_checkquaternion(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -633,7 +633,7 @@ static int quaternion_meta_index(lua_State* L) {
     return 1;
 }
 
-static int quaternion_meta_newindex(lua_State* L) {
+static int modules_quaternion_meta_newindex(lua_State* L) {
     mfloat_t* vector = luaL_checkquaternion(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -662,31 +662,31 @@ static int quaternion_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", quaternion_meta_index},
-    {"__newindex", quaternion_meta_newindex},
-    {"__mul", quaternion_multiply},
-    {"__div", quaternion_divide},
-    {"__unm", quaternion_negative},
-    {"__eq", quaternion_equal},
-    {"__pow", quaternion_power},
+static const struct luaL_Reg modules_quaternion_meta_functions[] = {
+    {"__index", modules_quaternion_meta_index},
+    {"__newindex", modules_quaternion_meta_newindex},
+    {"__mul", modules_quaternion_multiply},
+    {"__div", modules_quaternion_divide},
+    {"__unm", modules_quaternion_negative},
+    {"__eq", modules_quaternion_equal},
+    {"__pow", modules_quaternion_power},
     {NULL, NULL}
 };
 
 int luaopen_quaternion(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_quaternion_functions);
 
     luaL_newmetatable(L, "quaternion");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_quaternion_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
-    lua_pushcfunction(L, quaternion_gc);
+    lua_pushcfunction(L, modules_quaternion_gc);
     lua_settable(L, -3);
 
     lua_pop(L, 1);
 
     luaL_newmetatable(L, "quaternion_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_quaternion_meta_functions, 0);
 
     lua_pop(L, 1);
 

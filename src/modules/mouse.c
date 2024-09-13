@@ -20,7 +20,7 @@
  * secondary button is 3.
  * @treturn boolean True if button is down, false otherwise
  */
-static int bindings_mouse_button_get(lua_State* L) {
+static int modules_mouse_button_get(lua_State* L) {
     int button = luaL_checkinteger(L, 1);
 
     lua_pop(L, -1);
@@ -37,7 +37,7 @@ static int bindings_mouse_button_get(lua_State* L) {
  * @treturn[1] integer Mouse x coord
  * @treturn[2] integer Mouse y coord
  */
-static int bindings_mouse_position_get(lua_State* L) {
+static int modules_mouse_position_get(lua_State* L) {
     int x = 0;
     int y = 0;
 
@@ -55,7 +55,7 @@ static int bindings_mouse_position_get(lua_State* L) {
  * @treturn[1] integer Mouse x coord
  * @treturn[2] integer Mouse y coord
  */
-static int bindings_mouse_motion_get(lua_State* L) {
+static int modules_mouse_motion_get(lua_State* L) {
     int rel_x;
     int rel_y;
 
@@ -73,7 +73,7 @@ static int bindings_mouse_motion_get(lua_State* L) {
  * @treturn[1] integer Horizontal scroll amount
  * @treturn[2] integer Vertical scroll amount
  */
-static int bindings_mouse_wheel_get(lua_State* L) {
+static int modules_mouse_wheel_get(lua_State* L) {
     int horizontal;
     int vertical;
 
@@ -90,7 +90,7 @@ static int bindings_mouse_wheel_get(lua_State* L) {
  * @function set_grabbed
  * @tparam boolean grabbed True if mouse should be constrained to window.
  */
-static int bindings_mouse_grabbed_set(lua_State* L) {
+static int modules_mouse_grabbed_set(lua_State* L) {
     bool grabbed = lua_toboolean(L, 1);
 
     lua_settop(L, 0);
@@ -105,7 +105,7 @@ static int bindings_mouse_grabbed_set(lua_State* L) {
  *
  * @treturn boolean True if mouse is grabbed, false otherwise.
  */
-static int bindings_mouse_grabbed_get(lua_State* L) {
+static int modules_mouse_grabbed_get(lua_State* L) {
     bool grabbed = platform_mouse_grabbed_get();
 
     lua_pushboolean(L, grabbed);
@@ -113,17 +113,17 @@ static int bindings_mouse_grabbed_get(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"button", bindings_mouse_button_get},
-    {"position", bindings_mouse_position_get},
-    {"motion", bindings_mouse_motion_get},
-    {"wheel", bindings_mouse_wheel_get},
-    {"set_grabbed", bindings_mouse_grabbed_set},
-    {"get_grabbed", bindings_mouse_grabbed_get},
+static const struct luaL_Reg modules_mouse_functions[] = {
+    {"button", modules_mouse_button_get},
+    {"position", modules_mouse_position_get},
+    {"motion", modules_mouse_motion_get},
+    {"wheel", modules_mouse_wheel_get},
+    {"set_grabbed", modules_mouse_grabbed_set},
+    {"get_grabbed", modules_mouse_grabbed_get},
     {NULL, NULL}
 };
 
 int luaopen_mouse(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_mouse_functions);
     return 1;
 }

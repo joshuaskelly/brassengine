@@ -33,7 +33,7 @@ int lua_pushsound(lua_State* L, sound_t* sound) {
     return 1;
 }
 
-static int sound_gc(lua_State* L) {
+static int modules_sound_gc(lua_State* L) {
     sound_t** sound = lua_touserdata(L, 1);
     sounds_sound_free(*sound);
     *sound = NULL;
@@ -41,7 +41,7 @@ static int sound_gc(lua_State* L) {
     return 0;
 }
 
-static int sound_meta_index(lua_State* L) {
+static int modules_sound_meta_index(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -76,7 +76,7 @@ static int sound_meta_index(lua_State* L) {
     return 1;
 }
 
-static int sound_meta_newindex(lua_State* L) {
+static int modules_sound_meta_newindex(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -108,9 +108,9 @@ static int sound_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", sound_meta_index},
-    {"__newindex", sound_meta_newindex},
+static const struct luaL_Reg modules_sound_meta_functions[] = {
+    {"__index", modules_sound_meta_index},
+    {"__newindex", modules_sound_meta_newindex},
     {NULL, NULL}
 };
 
@@ -120,7 +120,7 @@ static const struct luaL_Reg meta_functions[] = {
  * @tparam integer frame_count Total number of PCM frames.
  * @treturn sound
  */
-static int new_sound(lua_State* L) {
+static int modules_sound_new(lua_State* L) {
     int frame_count = (int)luaL_checknumber(L, 1);
 
     sound_t** handle = (sound_t**)lua_newuserdata(L, sizeof(sound_t*));
@@ -139,7 +139,7 @@ static int new_sound(lua_State* L) {
  * @function play
  * @tparam integer channel Channel to play sound on. (optional)
  */
-static int play_sound(lua_State* L) {
+static int modules_sound_play(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     int channel = luaL_optnumber(L, 2, -1);
     sounds_sound_play(sound, channel);
@@ -152,7 +152,7 @@ static int play_sound(lua_State* L) {
  * @function copy
  * @treturn sound
  */
-static int copy_sound(lua_State* L) {
+static int modules_sound_copy(lua_State* L) {
     sound_t* source = luaL_checksound(L, 1);
 
     lua_pop(L, -1);
@@ -170,7 +170,7 @@ static int copy_sound(lua_State* L) {
  * @tparam integer index Frame index
  * @tparam integer value PCM data value
  */
-static int set_sound_frame(lua_State* L) {
+static int modules_sound_frame_set(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     int index = (int)luaL_checknumber(L, 2);
     sample_t value = (sample_t)luaL_checknumber(L, 3);
@@ -191,7 +191,7 @@ static int set_sound_frame(lua_State* L) {
  * @tparam integer index Frame index
  * @treturn integer PCM data
  */
-static int get_sound_frame(lua_State* L) {
+static int modules_sound_frame_get(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
     int index = (int)luaL_checknumber(L, 2);
 
@@ -215,31 +215,31 @@ static int get_sound_frame(lua_State* L) {
  * @tfield integer frame_count (read-only)
  */
 
-static const struct luaL_Reg module_functions[] = {
-    {"new", new_sound},
-    {"copy", copy_sound},
-    {"set_frame", set_sound_frame},
-    {"get_frame", get_sound_frame},
-    {"play", play_sound},
+static const struct luaL_Reg modules_sound_functions[] = {
+    {"new", modules_sound_new},
+    {"copy", modules_sound_copy},
+    {"set_frame", modules_sound_frame_set},
+    {"get_frame", modules_sound_frame_get},
+    {"play", modules_sound_play},
     {NULL, NULL}
 };
 
 int luaopen_sound(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_sound_functions);
 
     // Push sound userdata metatable
     luaL_newmetatable(L, "sound");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_sound_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
-    lua_pushcfunction(L, sound_gc);
+    lua_pushcfunction(L, modules_sound_gc);
     lua_settable(L, -3);
 
     lua_pop(L, 1);
 
     // Push sound userdata metatable
     luaL_newmetatable(L, "sound_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_sound_meta_functions, 0);
 
     lua_pop(L, 1);
 

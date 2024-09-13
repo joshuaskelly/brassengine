@@ -54,7 +54,7 @@ int lua_pushvector2(lua_State* L, mfloat_t* vector) {
     return 1;
 }
 
-static int vector2_gc(lua_State* L) {
+static int modules_vector2_gc(lua_State* L) {
     mfloat_t** handle = lua_touserdata(L, 1);
     free(*handle);
     *handle = NULL;
@@ -105,7 +105,7 @@ static int vector2_new(lua_State* L) {
     return 1;
 }
 
-static int vector2_equal(lua_State* L) {
+static int modules_vector2_equal(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
     mfloat_t* v1 = luaL_checkvector2(L, 2);
 
@@ -133,7 +133,7 @@ static int vector2_sign(lua_State* L) {
     return 1;
 }
 
-static int vector2_add(lua_State* L) {
+static int modules_vector2_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     if (lua_isnumber(L, 2)) {
@@ -160,7 +160,7 @@ static int vector2_add(lua_State* L) {
    return 1;
 }
 
-static int vector2_subtract(lua_State* L) {
+static int modules_vector2_subtract(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     if (lua_isnumber(L, 2)) {
@@ -187,7 +187,7 @@ static int vector2_subtract(lua_State* L) {
     return 1;
 }
 
-static int vector2_multiply(lua_State* L) {
+static int modules_vector2_multiply(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     // Scalar multiplication
@@ -217,7 +217,7 @@ static int vector2_multiply(lua_State* L) {
     return 1;
 }
 
-static int vector2_divide(lua_State* L) {
+static int modules_vector2_divide(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     // Scalar division
@@ -290,7 +290,7 @@ static int vector2_snap(lua_State* L) {
  * @tparam vector2 v0
  * @treturn vector2
  */
-static int vector2_negative(lua_State* L) {
+static int modules_vector2_negative(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector2(L, 1);
 
     lua_settop(L, 0);
@@ -696,7 +696,7 @@ static int vector2_distance_squared(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
+static const struct luaL_Reg modules_vector2_functions[] = {
     {"new", vector2_new},
     {"sign", vector2_sign},
     {"snap", vector2_snap},
@@ -723,7 +723,7 @@ static const struct luaL_Reg module_functions[] = {
     {NULL, NULL}
 };
 
-static int vector2_meta_index(lua_State* L) {
+static int modules_vector2_meta_index(lua_State* L) {
     mfloat_t* vector = luaL_checkvector2(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -752,7 +752,7 @@ static int vector2_meta_index(lua_State* L) {
     return 1;
 }
 
-static int vector2_meta_newindex(lua_State* L) {
+static int modules_vector2_meta_newindex(lua_State* L) {
     mfloat_t* vector = luaL_checkvector2(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -773,32 +773,32 @@ static int vector2_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", vector2_meta_index},
-    {"__newindex", vector2_meta_newindex},
-    {"__add", vector2_add},
-    {"__sub", vector2_subtract},
-    {"__mul", vector2_multiply},
-    {"__div", vector2_divide},
-    {"__unm", vector2_negative},
-    {"__eq", vector2_equal},
+static const struct luaL_Reg modules_vector2_meta_functions[] = {
+    {"__index", modules_vector2_meta_index},
+    {"__newindex", modules_vector2_meta_newindex},
+    {"__add", modules_vector2_add},
+    {"__sub", modules_vector2_subtract},
+    {"__mul", modules_vector2_multiply},
+    {"__div", modules_vector2_divide},
+    {"__unm", modules_vector2_negative},
+    {"__eq", modules_vector2_equal},
     {NULL, NULL}
 };
 
 int luaopen_vector2(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_vector2_functions);
 
     luaL_newmetatable(L, "vector2");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_vector2_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
-    lua_pushcfunction(L, vector2_gc);
+    lua_pushcfunction(L, modules_vector2_gc);
     lua_settable(L, -3);
 
     lua_pop(L, 1);
 
     luaL_newmetatable(L, "vector2_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_vector2_meta_functions, 0);
 
     lua_pop(L, 1);
 

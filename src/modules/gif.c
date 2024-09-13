@@ -17,7 +17,7 @@
  * @tparam string filename Name of GIF to save.
  * @tparam {texture.texture,...} frames Array of texture userdata.
  */
-static int bindings_gif_save(lua_State* L) {
+static int modules_gif_save(lua_State* L) {
     const char* filename = luaL_checkstring(L, 1);
 
     // Array of textures
@@ -57,13 +57,13 @@ static int bindings_gif_save(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"save", bindings_gif_save},
+static const struct luaL_Reg modules_gif_functions[] = {
+    {"save", modules_gif_save},
     {NULL, NULL}
 };
 
 int luaopen_gif(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_gif_functions);
 
     return 1;
 }

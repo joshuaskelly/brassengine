@@ -20,7 +20,7 @@
  * @tparam ?integer frame Index of frame (default 1)
  * @treturn texture.texture Texture userdata if found, nil otherwise.
  */
-static int bindings_assets_texture_get(lua_State* L) {
+static int modules_assets_texture_get(lua_State* L) {
     const char* texture_name = luaL_checkstring(L, 1);
     int frame = (int)luaL_optnumber(L, 2, 1);
     texture_t* texture = assets_texture_get(texture_name, frame - 1);
@@ -46,7 +46,7 @@ static int bindings_assets_texture_get(lua_State* L) {
  * @tparam string filename Name of sound asset to look for
  * @treturn sound.sound Sound userdata if found, nil otherwise.
  */
-static int bindings_assets_sound_get(lua_State* L) {
+static int modules_assets_sound_get(lua_State* L) {
     const char* sound_name = luaL_checkstring(L, 1);
     sound_t* sound = assets_sound_get(sound_name);
 
@@ -60,13 +60,13 @@ static int bindings_assets_sound_get(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"get_texture", bindings_assets_texture_get},
-    {"get_sound", bindings_assets_sound_get},
+static const struct luaL_Reg modules_asset_functions[] = {
+    {"get_texture", modules_assets_texture_get},
+    {"get_sound", modules_assets_sound_get},
     {NULL, NULL}
 };
 
 int luaopen_assets(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_asset_functions);
     return 1;
 }

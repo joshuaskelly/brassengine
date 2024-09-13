@@ -66,7 +66,7 @@ static int float_array_gc(lua_State* L) {
  * @tparam integer size Number of elements.
  * @treturn floatarray
  */
-static int module_float_array_new(lua_State* L) {
+static int modules_float_array_new(lua_State* L) {
     int size = luaL_checkinteger(L, 1);
 
     lua_pop(L, -1);
@@ -82,7 +82,7 @@ static int module_float_array_new(lua_State* L) {
  * @tparam floatarray array Array to modify.
  * @tparam number value Value to add
  */
-static int module_float_array_add(lua_State* L) {
+static int modules_float_array_add(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     float value = (float)luaL_checknumber(L, 2);
 
@@ -99,7 +99,7 @@ static int module_float_array_add(lua_State* L) {
  * @tparam floatarray array Float array to modify.
  * @tparam integer size New total number of elements
  */
-static int module_float_array_resize(lua_State* L) {
+static int modules_float_array_resize(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     int size = (int)luaL_checkinteger(L, 2);
 
@@ -112,7 +112,7 @@ static int module_float_array_resize(lua_State* L) {
     return 0;
 }
 
-static int module_float_array_get(lua_State* L) {
+static int modules_float_array_get(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     int index = luaL_checkinteger(L, 2);
 
@@ -123,7 +123,7 @@ static int module_float_array_get(lua_State* L) {
     return 1;
 }
 
-static int module_float_array_set(lua_State* L) {
+static int modules_float_array_set(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
     int index = luaL_checkinteger(L, 2);
     float value = luaL_checknumber(L, 3);
@@ -135,7 +135,7 @@ static int module_float_array_set(lua_State* L) {
     return 0;
 }
 
-static int module_float_array_size(lua_State* L) {
+static int modules_float_array_size(lua_State* L) {
     float_array_t* array = luaL_checkfloatarray(L, 1);
 
     lua_pushinteger(L, array->size);
@@ -143,26 +143,26 @@ static int module_float_array_size(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_float_array_meta_functions[] = {
-    {"__index", module_float_array_get},
-    {"__newindex", module_float_array_set},
-    {"__len", module_float_array_size},
+static const struct luaL_Reg modules_float_array_meta_functions[] = {
+    {"__index", modules_float_array_get},
+    {"__newindex", modules_float_array_set},
+    {"__len", modules_float_array_size},
     {NULL, NULL}
 };
 
-static const struct luaL_Reg module_functions[] = {
-    {"new", module_float_array_new},
-    {"add", module_float_array_add},
-    {"resize", module_float_array_resize},
+static const struct luaL_Reg modules_float_array_functions[] = {
+    {"new", modules_float_array_new},
+    {"add", modules_float_array_add},
+    {"resize", modules_float_array_resize},
     {NULL, NULL}
 };
 
 int luaopen_floatarray(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_float_array_functions);
 
     // Push floatarray userdata metatable
     luaL_newmetatable(L, "floatarray");
-    luaL_setfuncs(L, module_float_array_meta_functions, 0);
+    luaL_setfuncs(L, modules_float_array_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, float_array_gc);
@@ -172,7 +172,7 @@ int luaopen_floatarray(lua_State* L) {
 
     // Push floatarray_nogc userdata metatable
     luaL_newmetatable(L, "floatarray_nogc");
-    luaL_setfuncs(L, module_float_array_meta_functions, 0);
+    luaL_setfuncs(L, modules_float_array_meta_functions, 0);
 
     lua_pop(L, 1);
 

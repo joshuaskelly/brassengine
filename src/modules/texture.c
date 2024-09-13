@@ -70,16 +70,7 @@ static int texture_gc(lua_State* L) {
     return 0;
 }
 
-static int texture_size(lua_State* L) {
-    texture_t* texture = luaL_checktexture(L, 1);
-
-    lua_pushinteger(L, texture->width);
-    lua_pushinteger(L, texture->height);
-
-    return 2;
-}
-
-static int texture_meta_index(lua_State* L) {
+static int modules_texture_meta_index(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -114,7 +105,7 @@ static int texture_meta_index(lua_State* L) {
     return 1;
 }
 
-static int texture_meta_newindex(lua_State* L) {
+static int modules_texture_meta_newindex(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -146,9 +137,9 @@ static int texture_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", texture_meta_index},
-    {"__newindex", texture_meta_newindex},
+static const struct luaL_Reg modules_texture_meta_functions[] = {
+    {"__index", modules_texture_meta_index},
+    {"__newindex", modules_texture_meta_newindex},
     {NULL, NULL}
 };
 
@@ -159,7 +150,7 @@ static const struct luaL_Reg meta_functions[] = {
  * @tparam integer height Texture height
  * @treturn texture
  */
-static int bindings_texture_new(lua_State* L) {
+static int modules_texture_new(lua_State* L) {
     int width = (int)luaL_checknumber(L, 1);
     int height = (int)luaL_checknumber(L, 2);
 
@@ -179,7 +170,7 @@ static int bindings_texture_new(lua_State* L) {
  * @function copy
  * @treturn texture
  */
-static int bindings_texture_copy(lua_State* L) {
+static int modules_texture_copy(lua_State* L) {
     texture_t* source = luaL_checktexture(L, 1);
 
     lua_pop(L, -1);
@@ -196,7 +187,7 @@ static int bindings_texture_copy(lua_State* L) {
  * @function clear
  * @tparam integer color Fill color
  */
-static int bindings_texture_clear(lua_State* L) {
+static int modules_texture_clear(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     int color = (int)luaL_checknumber(L, 2);
 
@@ -214,7 +205,7 @@ static int bindings_texture_clear(lua_State* L) {
  * @tparam integer y Pixel y-coordinate
  * @tparam integer color Pixel color
  */
-static int bindings_texture_pixel_set(lua_State* L) {
+static int modules_texture_pixel_set(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
@@ -234,7 +225,7 @@ static int bindings_texture_pixel_set(lua_State* L) {
  * @tparam integer y Pixel y-coordinate
  * @treturn integer Pixel color
  */
-static int bindings_texture_pixel_get(lua_State* L) {
+static int modules_texture_pixel_get(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
@@ -254,7 +245,7 @@ static int bindings_texture_pixel_get(lua_State* L) {
  * @tparam integer x Destination x-offset
  * @tparam integer y Destination y-offset
  */
-static int bindings_texture_blit(lua_State* L) {
+static int modules_texture_blit(lua_State* L) {
     texture_t* dest = luaL_checktexture(L, 1);
     texture_t* source = luaL_checktexture(L, 2);
     int x = (int)luaL_checknumber(L, 3);
@@ -282,22 +273,22 @@ static int bindings_texture_blit(lua_State* L) {
  * @tfield integer height (read-only)
  */
 
-static const struct luaL_Reg module_functions[] = {
-    {"new", bindings_texture_new},
-    {"copy", bindings_texture_copy},
-    {"clear", bindings_texture_clear},
-    {"set_pixel", bindings_texture_pixel_set},
-    {"get_pixel", bindings_texture_pixel_get},
-    {"blit", bindings_texture_blit},
+static const struct luaL_Reg modules_texture_functions[] = {
+    {"new", modules_texture_new},
+    {"copy", modules_texture_copy},
+    {"clear", modules_texture_clear},
+    {"set_pixel", modules_texture_pixel_set},
+    {"get_pixel", modules_texture_pixel_get},
+    {"blit", modules_texture_blit},
     {NULL, NULL}
 };
 
 int luaopen_texture(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_texture_functions);
 
     // Push texture userdata metatable
     luaL_newmetatable(L, "texture");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_texture_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, texture_gc);
@@ -307,7 +298,7 @@ int luaopen_texture(lua_State* L) {
 
     // Push texture_nogc userdata metatable
     luaL_newmetatable(L, "texture_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_texture_meta_functions, 0);
 
     lua_pop(L, 1);
 

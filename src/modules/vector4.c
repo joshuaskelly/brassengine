@@ -104,7 +104,7 @@ static int vector4_gc(lua_State* L) {
  * @tparam ?number w
  * @treturn vector4
  */
-static int vector4_new(lua_State* L) {
+static int modules_vector4_new(lua_State* L) {
     float x = (float)luaL_optnumber(L, 1, 0);
     float y = (float)luaL_optnumber(L, 2, 0);
     float z = (float)luaL_optnumber(L, 3, 0);
@@ -117,7 +117,7 @@ static int vector4_new(lua_State* L) {
     return 1;
 }
 
-static int vector4_equal(lua_State* L) {
+static int modules_vector4_equal(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t* v1 = luaL_checkvector4(L, 2);
 
@@ -130,7 +130,7 @@ static int vector4_equal(lua_State* L) {
     return 1;
 }
 
-static int vector4_zero(lua_State* L) {
+static int modules_vector4_zero(lua_State* L) {
     lua_newvector4(L, 0, 0, 0, 0);
     mfloat_t* vector = luaL_checkvector4(L, 1);
     vec4_zero(vector);
@@ -138,7 +138,7 @@ static int vector4_zero(lua_State* L) {
     return 1;
 }
 
-static int vector4_one(lua_State* L) {
+static int modules_vector4_one(lua_State* L) {
     lua_newvector4(L, 0, 0, 0, 0);
     mfloat_t* vector = luaL_checkvector4(L, 1);
     vec4_one(vector);
@@ -152,7 +152,7 @@ static int vector4_one(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_sign(lua_State* L) {
+static int modules_vector4_sign(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t result[VEC4_SIZE];
     vec4_sign(result, v0);
@@ -161,7 +161,7 @@ static int vector4_sign(lua_State* L) {
     return 1;
 }
 
-static int vector4_add(lua_State* L) {
+static int modules_vector4_add(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     if (lua_isnumber(L, 2)) {
@@ -188,7 +188,7 @@ static int vector4_add(lua_State* L) {
     return 1;
 }
 
-static int vector4_subtract(lua_State* L) {
+static int modules_vector4_subtract(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     if (lua_isnumber(L, 2)) {
@@ -215,7 +215,7 @@ static int vector4_subtract(lua_State* L) {
     return 1;
 }
 
-static int vector4_multiply(lua_State* L) {
+static int modules_vector4_multiply(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     // Scalar multiplication
@@ -245,7 +245,7 @@ static int vector4_multiply(lua_State* L) {
     return 1;
 }
 
-static int vector4_divide(lua_State* L) {
+static int modules_vector4_divide(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     // Scalar division
@@ -282,7 +282,7 @@ static int vector4_divide(lua_State* L) {
  * @tparam number f Resolution of snap
  * @treturn vector4
  */
-static int vector4_snap(lua_State* L) {
+static int modules_vector4_snap(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     // Scalar snapping
@@ -318,7 +318,7 @@ static int vector4_snap(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_negative(lua_State* L) {
+static int modules_vector4_negative(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -337,7 +337,7 @@ static int vector4_negative(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_abs(lua_State* L) {
+static int modules_vector4_abs(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -356,7 +356,7 @@ static int vector4_abs(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_floor(lua_State* L) {
+static int modules_vector4_floor(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -375,7 +375,7 @@ static int vector4_floor(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_ceil(lua_State* L) {
+static int modules_vector4_ceil(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -394,7 +394,7 @@ static int vector4_ceil(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_round(lua_State* L) {
+static int modules_vector4_round(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -414,7 +414,7 @@ static int vector4_round(lua_State* L) {
  * @tparam vector4 v1
  * @treturn vector4
  */
-static int vector4_max(lua_State* L) {
+static int modules_vector4_max(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t* v1 = luaL_checkvector4(L, 2);
 
@@ -435,7 +435,7 @@ static int vector4_max(lua_State* L) {
  * @tparam vector4 v1
  * @treturn vector4
  */
-static int vector4_min(lua_State* L) {
+static int modules_vector4_min(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t* v1 = luaL_checkvector4(L, 2);
 
@@ -457,7 +457,7 @@ static int vector4_min(lua_State* L) {
  * @tparam vector4 max Max vector
  * @treturn vector4
  */
-static int vector4_clamp(lua_State* L) {
+static int modules_vector4_clamp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t* v1 = luaL_checkvector4(L, 2);
     mfloat_t* v2 = luaL_checkvector4(L, 3);
@@ -478,7 +478,7 @@ static int vector4_clamp(lua_State* L) {
  * @tparam vector4 v0
  * @treturn vector4
  */
-static int vector4_normalize(lua_State* L) {
+static int modules_vector4_normalize(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
 
     lua_settop(L, 0);
@@ -499,7 +499,7 @@ static int vector4_normalize(lua_State* L) {
  * @tparam number t Value used to interpolate between v0 and v1.
  * @treturn vector4
  */
-static int vector4_lerp(lua_State* L) {
+static int modules_vector4_lerp(lua_State* L) {
     mfloat_t* v0 = luaL_checkvector4(L, 1);
     mfloat_t* v1 = luaL_checkvector4(L, 2);
     float f = luaL_checknumber(L, 3);
@@ -514,30 +514,30 @@ static int vector4_lerp(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"new", vector4_new},
-    {"zero", vector4_zero},
-    {"one", vector4_one},
-    {"sign", vector4_sign},
-    {"add", vector4_add},
-    {"subtract", vector4_subtract},
-    {"multiply", vector4_multiply},
-    {"divide", vector4_divide},
-    {"snap", vector4_snap},
-    {"negative", vector4_negative},
-    {"abs", vector4_abs},
-    {"floor", vector4_floor},
-    {"ceil", vector4_ceil},
-    {"round", vector4_round},
-    {"max", vector4_max},
-    {"min", vector4_min},
-    {"clamp", vector4_clamp},
-    {"normalize", vector4_normalize},
-    {"lerp", vector4_lerp},
+static const struct luaL_Reg modules_vector4_functions[] = {
+    {"new", modules_vector4_new},
+    {"zero", modules_vector4_zero},
+    {"one", modules_vector4_one},
+    {"sign", modules_vector4_sign},
+    {"add", modules_vector4_add},
+    {"subtract", modules_vector4_subtract},
+    {"multiply", modules_vector4_multiply},
+    {"divide", modules_vector4_divide},
+    {"snap", modules_vector4_snap},
+    {"negative", modules_vector4_negative},
+    {"abs", modules_vector4_abs},
+    {"floor", modules_vector4_floor},
+    {"ceil", modules_vector4_ceil},
+    {"round", modules_vector4_round},
+    {"max", modules_vector4_max},
+    {"min", modules_vector4_min},
+    {"clamp", modules_vector4_clamp},
+    {"normalize", modules_vector4_normalize},
+    {"lerp", modules_vector4_lerp},
     {NULL, NULL}
 };
 
-static int vector4_meta_index(lua_State* L) {
+static int modules_vector4_meta_index(lua_State* L) {
     mfloat_t* vector = luaL_checkvector4(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -569,7 +569,7 @@ static int vector4_meta_index(lua_State* L) {
     return 1;
 }
 
-static int vector4_meta_newindex(lua_State* L) {
+static int modules_vector4_meta_newindex(lua_State* L) {
     mfloat_t* vector = luaL_checkvector4(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -598,23 +598,23 @@ static int vector4_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", vector4_meta_index},
-    {"__newindex", vector4_meta_newindex},
-    {"__add", vector4_add},
-    {"__sub", vector4_subtract},
-    {"__mul", vector4_multiply},
-    {"__div", vector4_divide},
-    {"__unm", vector4_negative},
-    {"__eq", vector4_equal},
+static const struct luaL_Reg modules_vector4_meta_functions[] = {
+    {"__index", modules_vector4_meta_index},
+    {"__newindex", modules_vector4_meta_newindex},
+    {"__add", modules_vector4_add},
+    {"__sub", modules_vector4_subtract},
+    {"__mul", modules_vector4_multiply},
+    {"__div", modules_vector4_divide},
+    {"__unm", modules_vector4_negative},
+    {"__eq", modules_vector4_equal},
     {NULL, NULL}
 };
 
 int luaopen_vector4(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_vector4_functions);
 
     luaL_newmetatable(L, "vector4");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_vector4_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, vector4_gc);
@@ -623,7 +623,7 @@ int luaopen_vector4(lua_State* L) {
     lua_pop(L, 1);
 
     luaL_newmetatable(L, "vector4_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_vector4_meta_functions, 0);
 
     lua_pop(L, 1);
 

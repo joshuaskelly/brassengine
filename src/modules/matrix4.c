@@ -100,7 +100,7 @@ int lua_pushmatrix4(lua_State* L, mfloat_t* matrix) {
     return 1;
 }
 
-static int matrix4_gc(lua_State* L) {
+static int modules_matrix4_gc(lua_State* L) {
     mfloat_t** handle = lua_touserdata(L, 1);
     free(*handle);
     *handle = NULL;
@@ -135,7 +135,7 @@ static int matrix4_gc(lua_State* L) {
  * @function determinant
  * @treturn number float
  */
-static int matrix4_determinant(lua_State* L) {
+static int modules_matrix4_determinant(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     float determinant = mat4_determinant(m0);
 
@@ -151,7 +151,7 @@ static int matrix4_determinant(lua_State* L) {
  * @function negative
  * @treturn matrix4
  */
-static int matrix4_negative(lua_State* L) {
+static int modules_matrix4_negative(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     lua_settop(L, 0);
@@ -169,7 +169,7 @@ static int matrix4_negative(lua_State* L) {
  * @function transpose
  * @treturn matrix4
  */
-static int matrix4_transpose(lua_State* L) {
+static int modules_matrix4_transpose(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     lua_settop(L, 0);
@@ -187,7 +187,7 @@ static int matrix4_transpose(lua_State* L) {
  * @function cofactor
  * @treturn matrix4
  */
-static int matrix4_cofactor(lua_State* L) {
+static int modules_matrix4_cofactor(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     lua_settop(L, 0);
@@ -205,7 +205,7 @@ static int matrix4_cofactor(lua_State* L) {
  * @function inverse
  * @treturn matrix4
  */
-static int matrix4_inverse(lua_State* L) {
+static int modules_matrix4_inverse(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     lua_settop(L, 0);
@@ -233,7 +233,7 @@ static int matrix4_inverse(lua_State* L) {
  * @tparam number z
  * @treturn matrix4
  */
-static int matrix4_translate(lua_State* L) {
+static int modules_matrix4_translate(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -278,7 +278,7 @@ static int matrix4_translate(lua_State* L) {
  * @tparam number z
  * @treturn matrix4
  */
-static int matrix4_scale(lua_State* L) {
+static int modules_matrix4_scale(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -334,7 +334,7 @@ static int matrix4_scale(lua_State* L) {
  * @tparam ?number m44
  * @treturn matrix4
  */
-static int matrix4_new(lua_State* L) {
+static int modules_matrix4_new(lua_State* L) {
     float m11 = (float)luaL_optnumber(L, 1, 0);
     float m21 = (float)luaL_optnumber(L, 2, 0);
     float m31 = (float)luaL_optnumber(L, 3, 0);
@@ -364,7 +364,7 @@ static int matrix4_new(lua_State* L) {
  * @function zero
  * @treturn matrix4
  */
-static int matrix4_zero(lua_State* L) {
+static int modules_matrix4_zero(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mat4_zero(m0);
@@ -377,7 +377,7 @@ static int matrix4_zero(lua_State* L) {
  * @function identity
  * @treturn matrix4
  */
-static int matrix4_identity(lua_State* L) {
+static int modules_matrix4_identity(lua_State* L) {
     lua_newmatrix4(L, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mat4_identity(m0);
@@ -385,7 +385,7 @@ static int matrix4_identity(lua_State* L) {
     return 1;
 }
 
-static int matrix4_rotate_x_axis(lua_State* L) {
+static int modules_matrix4_rotate_x_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -400,7 +400,7 @@ static int matrix4_rotate_x_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix4_rotate_y_axis(lua_State* L) {
+static int modules_matrix4_rotate_y_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -415,7 +415,7 @@ static int matrix4_rotate_y_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix4_rotate_z_axis(lua_State* L) {
+static int modules_matrix4_rotate_z_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -430,7 +430,7 @@ static int matrix4_rotate_z_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix4_rotate_around_axis(lua_State* L) {
+static int modules_matrix4_rotate_around_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t* v0 = luaL_checkvector3(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -452,7 +452,7 @@ static int matrix4_rotate_around_axis(lua_State* L) {
  * @tparam quaternion.quaternion q0
  * @treturn matrix4
  */
-static int matrix4_rotation_quaternion(lua_State* L) {
+static int modules_matrix4_rotation_quaternion(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -480,7 +480,7 @@ static int matrix4_rotation_quaternion(lua_State* L) {
  * @tparam number z
  * @treturn matrix4
  */
-static int matrix4_translation(lua_State* L) {
+static int modules_matrix4_translation(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -503,7 +503,7 @@ static int matrix4_translation(lua_State* L) {
 
     lua_settop(L, 0);
 
-    matrix4_identity(L);
+    modules_matrix4_identity(L);
     mfloat_t* result = luaL_checkmatrix4(L, 1);
 
     mat4_translation(result, result, v0);
@@ -526,7 +526,7 @@ static int matrix4_translation(lua_State* L) {
  * @tparam number z
  * @treturn matrix4
  */
-static int matrix4_scaling(lua_State* L) {
+static int modules_matrix4_scaling(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -549,7 +549,7 @@ static int matrix4_scaling(lua_State* L) {
 
     lua_settop(L, 0);
 
-    matrix4_identity(L);
+    modules_matrix4_identity(L);
     mfloat_t* result = luaL_checkmatrix4(L, 1);
 
     mat4_scaling(result, result, v0);
@@ -557,7 +557,7 @@ static int matrix4_scaling(lua_State* L) {
     return 1;
 }
 
-static int matrix4_multiply(lua_State* L) {
+static int modules_matrix4_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
 
     // vector4 multiplication
@@ -616,7 +616,7 @@ static int matrix4_multiply(lua_State* L) {
  * @tparam number f
  * @treturn matrix4
  */
-static int matrix4_lerp(lua_State* L) {
+static int modules_matrix4_lerp(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix4(L, 1);
     mfloat_t* m1 = luaL_checkmatrix4(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -639,7 +639,7 @@ static int matrix4_lerp(lua_State* L) {
  * @tparam vector3.vector3 up
  * @treturn matrix4
  */
-static int matrix4_look_at(lua_State* L) {
+static int modules_matrix4_look_at(lua_State* L) {
     mfloat_t* position = luaL_checkvector3(L, 1);
     mfloat_t* target = luaL_checkvector3(L, 2);
     mfloat_t* up = luaL_checkvector3(L, 3);
@@ -665,7 +665,7 @@ static int matrix4_look_at(lua_State* L) {
  * @tparam number f
  * @treturn matrix4
  */
-static int matrix4_ortho(lua_State* L) {
+static int modules_matrix4_ortho(lua_State* L) {
     mfloat_t l = luaL_checknumber(L, 1);
     mfloat_t r = luaL_checknumber(L, 2);
     mfloat_t b = luaL_checknumber(L, 3);
@@ -689,7 +689,7 @@ static int matrix4_ortho(lua_State* L) {
  * @tparam number f
  * @treturn matrix4
  */
-static int matrix4_perspective(lua_State* L) {
+static int modules_matrix4_perspective(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t aspect = luaL_checknumber(L, 2);
     mfloat_t n = luaL_checknumber(L, 3);
@@ -712,7 +712,7 @@ static int matrix4_perspective(lua_State* L) {
  * @tparam number f
  * @treturn matrix4
  */
-static int matrix4_perspective_fov(lua_State* L) {
+static int modules_matrix4_perspective_fov(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t w = luaL_checknumber(L, 2);
     mfloat_t h = luaL_checknumber(L, 3);
@@ -734,7 +734,7 @@ static int matrix4_perspective_fov(lua_State* L) {
  * @tparam number n
  * @treturn matrix4
  */
-static int matrix4_perspective_infinite(lua_State* L) {
+static int modules_matrix4_perspective_infinite(lua_State* L) {
     mfloat_t fov_y = luaL_checknumber(L, 1);
     mfloat_t aspect = luaL_checknumber(L, 2);
     mfloat_t n = luaL_checknumber(L, 3);
@@ -746,35 +746,35 @@ static int matrix4_perspective_infinite(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
+static const struct luaL_Reg modules_matrix4_functions[] = {
     // Class functions
-    {"cofactor", matrix4_cofactor},
-    {"determinant", matrix4_determinant},
-    {"scale", matrix4_scale},
-    {"translate", matrix4_translate},
-    {"transpose", matrix4_transpose},
+    {"cofactor", modules_matrix4_cofactor},
+    {"determinant", modules_matrix4_determinant},
+    {"scale", modules_matrix4_scale},
+    {"translate", modules_matrix4_translate},
+    {"transpose", modules_matrix4_transpose},
     // Module functions
-    {"new", matrix4_new},
-    {"zero", matrix4_zero},
-    {"identity", matrix4_identity},
-    {"rotate_x_axis", matrix4_rotate_x_axis},
-    {"rotate_y_axis", matrix4_rotate_y_axis},
-    {"rotate_z_axis", matrix4_rotate_z_axis},
-    {"rotate_around_axis", matrix4_rotate_around_axis},
-    {"rotation", matrix4_rotation_quaternion},
-    {"translation", matrix4_translation},
-    {"scaling", matrix4_scaling},
-    {"inverse", matrix4_inverse},
-    {"lerp", matrix4_lerp},
-    {"look_at", matrix4_look_at},
-    {"ortho", matrix4_ortho},
-    {"perspective", matrix4_perspective},
-    {"perspective_fov", matrix4_perspective_fov},
-    {"perspective_infinite", matrix4_perspective_infinite},
+    {"new", modules_matrix4_new},
+    {"zero", modules_matrix4_zero},
+    {"identity", modules_matrix4_identity},
+    {"rotate_x_axis", modules_matrix4_rotate_x_axis},
+    {"rotate_y_axis", modules_matrix4_rotate_y_axis},
+    {"rotate_z_axis", modules_matrix4_rotate_z_axis},
+    {"rotate_around_axis", modules_matrix4_rotate_around_axis},
+    {"rotation", modules_matrix4_rotation_quaternion},
+    {"translation", modules_matrix4_translation},
+    {"scaling", modules_matrix4_scaling},
+    {"inverse", modules_matrix4_inverse},
+    {"lerp", modules_matrix4_lerp},
+    {"look_at", modules_matrix4_look_at},
+    {"ortho", modules_matrix4_ortho},
+    {"perspective", modules_matrix4_perspective},
+    {"perspective_fov", modules_matrix4_perspective_fov},
+    {"perspective_infinite", modules_matrix4_perspective_infinite},
     {NULL, NULL}
 };
 
-static int matrix4_meta_index(lua_State* L) {
+static int modules_matrix4_meta_index(lua_State* L) {
     mfloat_t* matrix = luaL_checkmatrix4(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -842,7 +842,7 @@ static int matrix4_meta_index(lua_State* L) {
     return 1;
 }
 
-static int matrix4_meta_newindex(lua_State* L) {
+static int modules_matrix4_meta_newindex(lua_State* L) {
     mfloat_t* matrix = luaL_checkmatrix4(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -919,28 +919,28 @@ static int matrix4_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", matrix4_meta_index},
-    {"__newindex", matrix4_meta_newindex},
-    {"__mul", matrix4_multiply},
-    {"__unm", matrix4_negative},
+static const struct luaL_Reg modules_matrix4_meta_functions[] = {
+    {"__index", modules_matrix4_meta_index},
+    {"__newindex", modules_matrix4_meta_newindex},
+    {"__mul", modules_matrix4_multiply},
+    {"__unm", modules_matrix4_negative},
     {NULL, NULL}
 };
 
 int luaopen_matrix4(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_matrix4_functions);
 
     luaL_newmetatable(L, "matrix4");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_matrix4_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
-    lua_pushcfunction(L, matrix4_gc);
+    lua_pushcfunction(L, modules_matrix4_gc);
     lua_settable(L, -3);
 
     lua_pop(L, 1);
 
     luaL_newmetatable(L, "matrix4_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_matrix4_meta_functions, 0);
 
     lua_pop(L, 1);
 
