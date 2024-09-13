@@ -13,6 +13,7 @@
 #include "../files.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../math.h"
 #include "../platform.h"
 #include "../sounds.h"
 #include "../time.h"
@@ -255,12 +256,6 @@ void platform_draw(void) {
     glUseProgram(0);
 
     SDL_GL_SwapWindow(window);
-}
-
-static float clamp(float x, float min, float max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
 }
 
 static void sdl_handle_events(void) {

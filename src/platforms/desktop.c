@@ -10,6 +10,7 @@
 #include "../event.h"
 #include "../graphics.h"
 #include "../log.h"
+#include "../math.h"
 #include "../platform.h"
 #include "../sounds.h"
 
@@ -189,12 +190,6 @@ void platform_draw(void) {
     );
 
     SDL_RenderPresent(renderer);
-}
-
-static float clamp(float x, float min, float max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
 }
 
 static void sdl_handle_events(void) {
