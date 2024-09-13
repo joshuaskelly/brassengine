@@ -64,7 +64,7 @@ static raycaster_renderer_t* luaL_checkrayrenderer(lua_State* L, int index) {
 }
 
 static int lua_newrayrenderer(lua_State* L) {
-    texture_t* render_texture = luaL_opttexture(L, 2, graphics_get_render_texture());
+    texture_t* render_texture = luaL_opttexture(L, 2, graphics_render_texture_get());
     raycaster_renderer_t** handle = (raycaster_renderer_t**)lua_newuserdata(L, sizeof(raycaster_renderer_t*));
     *handle = raycaster_renderer_new(render_texture);
     luaL_setmetatable(L, "raycaster_renderer");

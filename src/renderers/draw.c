@@ -15,17 +15,17 @@ static int mod(int a, int b) {
     return a - floor(a / (float)b) * b;
 }
 
-static void pattern_set_pixel(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
+static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
     if (!pattern) return;
 
     int sx = mod(x - offset_x, pattern->width);
     int sy = mod(y - offset_y, pattern->height);
 
-    color_t pixel = graphics_texture_get_pixel(pattern, sx, sy);
+    color_t pixel = graphics_texture_pixel_get(pattern, sx, sy);
     color_t* draw_palette = graphics_draw_palette_get();
     pixel = draw_palette[pixel];
 
-    graphics_set_pixel(x, y, pixel);
+    graphics_pixel_set(x, y, pixel);
 }
 
 void draw_line(int x0, int y0, int x1, int y1, color_t color) {
@@ -41,7 +41,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        graphics_set_pixel(current_x, current_y, color);
+        graphics_pixel_set(current_x, current_y, color);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -60,7 +60,7 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
     float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        pattern_set_pixel(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
+        pattern_pixel_set(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -96,9 +96,9 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     float current_t = t0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        color_t c = graphics_texture_get_pixel(texture, current_s, current_t);
+        color_t c = graphics_texture_pixel_get(texture, current_s, current_t);
 
-        graphics_set_pixel(current_x, current_y, c);
+        graphics_pixel_set(current_x, current_y, c);
 
         current_x += x_inc;
         current_y += y_inc;
@@ -247,14 +247,14 @@ void draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_
  * @param color Line color
  */
 static void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
-    graphics_set_pixel( x + offset_x,  y + offset_y, color);
-    graphics_set_pixel( y + offset_x,  x + offset_y, color);
-    graphics_set_pixel(-x + offset_x,  y + offset_y, color);
-    graphics_set_pixel(-y + offset_x,  x + offset_y, color);
-    graphics_set_pixel( x + offset_x, -y + offset_y, color);
-    graphics_set_pixel( y + offset_x, -x + offset_y, color);
-    graphics_set_pixel(-x + offset_x, -y + offset_y, color);
-    graphics_set_pixel(-y + offset_x, -x + offset_y, color);
+    graphics_pixel_set( x + offset_x,  y + offset_y, color);
+    graphics_pixel_set( y + offset_x,  x + offset_y, color);
+    graphics_pixel_set(-x + offset_x,  y + offset_y, color);
+    graphics_pixel_set(-y + offset_x,  x + offset_y, color);
+    graphics_pixel_set( x + offset_x, -y + offset_y, color);
+    graphics_pixel_set( y + offset_x, -x + offset_y, color);
+    graphics_pixel_set(-x + offset_x, -y + offset_y, color);
+    graphics_pixel_set(-y + offset_x, -x + offset_y, color);
 }
 
 /**
@@ -307,14 +307,14 @@ void draw_circle(int x, int y, int radius, color_t color) {
 }
 
 static void draw_pattern_octave_symmetry(int x, int y, int offset_x, int offset_y, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
-    pattern_set_pixel( x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel( y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel(-x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel(-y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel( x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel( y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel(-x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_set_pixel(-y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set( x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set( y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(-x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(-y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set( x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set( y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(-x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(-y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
 }
 
 void draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
@@ -408,7 +408,7 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
 }
 
 void draw_text(const char* message, int x, int y) {
-    texture_t* font_texture = assets_get_texture("font.gif", 0);
+    texture_t* font_texture = assets_texture_get("font.gif", 0);
     if (!font_texture) {
         log_fatal("Missing font.gif asset");
     }
@@ -523,7 +523,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_
         for (int x = x_min; x <= x_max; x++) {
             // Check if inside the triangle
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                graphics_set_pixel(x, y, color);
+                graphics_pixel_set(x, y, color);
             }
 
             w0 += delta_w0_col;
@@ -573,7 +573,7 @@ void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2
         for (int x = x_min; x <= x_max; x++) {
             // Check if inside the triangle
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                pattern_set_pixel(x, y, pattern, pattern_offset_x, pattern_offset_y);
+                pattern_pixel_set(x, y, pattern, pattern_offset_x, pattern_offset_y);
             }
 
             w0 += delta_w0_col;
@@ -638,9 +638,9 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
                 int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
                 int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
 
-                color_t c = graphics_texture_get_pixel(texture, s, t);
+                color_t c = graphics_texture_pixel_get(texture, s, t);
 
-                graphics_set_pixel(x, y, c);
+                graphics_pixel_set(x, y, c);
             }
 
             w0 += delta_w0_col;

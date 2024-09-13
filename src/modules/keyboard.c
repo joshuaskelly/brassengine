@@ -19,7 +19,7 @@
  * @tparam integer|string code_or_symbol Key code or symbol to check.
  * @treturn boolean True if key is down.
  */
-static int bindings_get_keyboard_key(lua_State* L) {
+static int bindings_keyboard_key_get(lua_State* L) {
     // Key code
     if (lua_isinteger(L, 1)) {
         int key_code = luaL_checkinteger(L, 1);
@@ -40,7 +40,7 @@ static int bindings_get_keyboard_key(lua_State* L) {
 }
 
 static const struct luaL_Reg module_functions[] = {
-    {"key", bindings_get_keyboard_key},
+    {"key", bindings_keyboard_key_get},
     {NULL, NULL}
 };
 

@@ -214,7 +214,7 @@ static int bindings_texture_clear(lua_State* L) {
  * @tparam integer y Pixel y-coordinate
  * @tparam integer color Pixel color
  */
-static int bindings_texture_set_pixel(lua_State* L) {
+static int bindings_texture_pixel_set(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
@@ -222,7 +222,7 @@ static int bindings_texture_set_pixel(lua_State* L) {
 
     lua_pop(L, -1);
 
-    graphics_texture_set_pixel(texture, x, y, color);
+    graphics_texture_pixel_set(texture, x, y, color);
 
     return 0;
 }
@@ -234,14 +234,14 @@ static int bindings_texture_set_pixel(lua_State* L) {
  * @tparam integer y Pixel y-coordinate
  * @treturn integer Pixel color
  */
-static int bindings_texture_get_pixel(lua_State* L) {
+static int bindings_texture_pixel_get(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
 
-    color_t color = graphics_texture_get_pixel(texture, x, y);
+    color_t color = graphics_texture_pixel_get(texture, x, y);
     lua_pushinteger(L, color);
 
     return 1;
@@ -286,8 +286,8 @@ static const struct luaL_Reg module_functions[] = {
     {"new", bindings_texture_new},
     {"copy", bindings_texture_copy},
     {"clear", bindings_texture_clear},
-    {"set_pixel", bindings_texture_set_pixel},
-    {"get_pixel", bindings_texture_get_pixel},
+    {"set_pixel", bindings_texture_pixel_set},
+    {"get_pixel", bindings_texture_pixel_get},
     {"blit", bindings_texture_blit},
     {NULL, NULL}
 };

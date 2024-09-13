@@ -191,7 +191,7 @@ void platform_update(void) {
 }
 
 void platform_draw(void) {
-    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* render_texture = graphics_render_texture_get();
     uint32_t* palette = graphics_palette_get();
 
     // Convert core render buffer from indexed to rgba
@@ -491,7 +491,7 @@ static void load_shader_program(void) {
     frame_count = glGetUniformLocation(shader_program, "frame_count");
 }
 
-void platform_display_set_resolution(int width, int height) {
+void platform_display_resolution_set(int width, int height) {
     free(render_buffer);
 
     render_buffer = calloc(width * height, sizeof(uint32_t));
@@ -501,22 +501,22 @@ void platform_display_set_resolution(int width, int height) {
     }
 }
 
-void platform_display_set_size(int width, int height) {
+void platform_display_size_set(int width, int height) {
     SDL_SetWindowSize(window, width, height);
 }
 
-void platform_display_set_fullscreen(bool fullscreen) {
+void platform_display_fullscreen_set(bool fullscreen) {
     SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 }
 
-void platform_display_set_title(const char* title) {
+void platform_display_title_set(const char* title) {
     SDL_SetWindowTitle(window, title);
 }
 
-void platform_mouse_set_grabbed(bool grabbed) {
+void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetRelativeMouseMode(grabbed);
 }
 
-bool platform_mouse_get_grabbed(void) {
+bool platform_mouse_grabbed_get(void) {
     return SDL_GetRelativeMouseMode();
 }

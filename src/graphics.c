@@ -51,14 +51,14 @@ void graphics_texture_clear(texture_t* texture, color_t color) {
     memset(texture->pixels, color, number_of_bytes);
 }
 
-void graphics_texture_set_pixel(texture_t* texture, int x, int y, color_t color) {
+void graphics_texture_pixel_set(texture_t* texture, int x, int y, color_t color) {
     if (x < 0 || x >= texture->width) return;
     if (y < 0 || y >= texture->height) return;
 
     texture->pixels[y * texture->width + x] = color;
 }
 
-color_t graphics_texture_get_pixel(texture_t* texture, int x, int y) {
+color_t graphics_texture_pixel_get(texture_t* texture, int x, int y) {
     if (x < 0 || x >= texture->width) return 0;
     if (y < 0 || y >= texture->height) return 0;
 
@@ -66,8 +66,8 @@ color_t graphics_texture_get_pixel(texture_t* texture, int x, int y) {
 }
 
 static void texture_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
-    graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
+    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
 
 void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect) {
@@ -101,7 +101,7 @@ void graphics_destroy(void) {
     graphics_texture_free(render_texture);
 }
 
-texture_t* graphics_get_render_texture(void) {
+texture_t* graphics_render_texture_get(void) {
     return render_texture;
 }
 
@@ -137,19 +137,19 @@ int graphics_transparent_color_get(void) {
     return transparent_color;
 }
 
-void graphics_set_pixel(int x, int y, color_t color) {
+void graphics_pixel_set(int x, int y, color_t color) {
     if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
     if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
     if (color == transparent_color) return;
 
-    graphics_texture_set_pixel(render_texture, x, y, color);
+    graphics_texture_pixel_set(render_texture, x, y, color);
 }
 
 static void default_blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
-    color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
     pixel = draw_palette[pixel];
 
-    graphics_set_pixel(dx, dy, pixel);
+    graphics_pixel_set(dx, dy, pixel);
 }
 
 void graphics_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect, pixel_copy_func_t func) {
@@ -216,7 +216,7 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
     }
 }
 
-void graphics_set_resolution(int width, int height) {
+void graphics_resolution_set(int width, int height) {
     graphics_texture_free(render_texture);
 
     render_texture = graphics_texture_new(
@@ -235,7 +235,7 @@ void graphics_set_resolution(int width, int height) {
     clip_rect.height = config->resolution.height;
 }
 
-void graphics_set_clipping_rectangle(rect_t* rect) {
+void graphics_clipping_rectangle_set(rect_t* rect) {
     rect_t default_rect = {0, 0, render_texture->width, render_texture->height};
 
     if (!rect) {
@@ -245,6 +245,6 @@ void graphics_set_clipping_rectangle(rect_t* rect) {
     clip_rect = *rect;
 }
 
-rect_t* graphics_get_clipping_rectangle(void) {
+rect_t* graphics_clipping_rectangle_get(void) {
     return &clip_rect;
 }

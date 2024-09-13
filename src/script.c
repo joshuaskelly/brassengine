@@ -185,7 +185,7 @@ static void init_lua_vm(void) {
     luaL_openenginemodules(L);
 
    // Execute Lua script
-    const char* main = assets_get_script("main.lua");
+    const char* main = assets_script_get("main.lua");
     if (!main) {
         log_error("Failed to load main.lua file.");
         return;
@@ -391,7 +391,7 @@ static int lua_package_searcher(lua_State* L) {
     strcat(filename, ".lua\0");
 
     // Look for script asset
-    const char* script = assets_get_script(filename);
+    const char* script = assets_script_get(filename);
 
     if (script) {
         // We found a script asset, remove the module name from the stack.

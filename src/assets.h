@@ -34,7 +34,7 @@ void assets_reload(void);
  * @param filename Name to search for.
  * @return texture_t* texture if found, NULL otherwise
  */
-texture_t* assets_get_texture(const char* filename, int frame_count);
+texture_t* assets_texture_get(const char* filename, int frame_count);
 
 /**
  * Get script for given filename.
@@ -42,7 +42,7 @@ texture_t* assets_get_texture(const char* filename, int frame_count);
  * @param filename Name to search for.
  * @return const char* script text if found, NULL otherwise
  */
-const char* assets_get_script(const char* filename);
+const char* assets_script_get(const char* filename);
 
 /**
  * Get sound for given filename.
@@ -50,7 +50,7 @@ const char* assets_get_script(const char* filename);
  * @param filename Name to search for.
  * @return sound_t* sound if found, NULL otherwise
  */
-sound_t* assets_get_sound(const char* filename);
+sound_t* assets_sound_get(const char* filename);
 
 /**
  * Save sequence of textures as an animated GIF.

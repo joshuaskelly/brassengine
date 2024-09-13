@@ -45,7 +45,7 @@ static int api_clear(lua_State* L) {
  * @function delta_time
  * @treturn integer Time elapsed in milliseconds.
  */
-static int api_get_delta_time(lua_State* L) {
+static int api_delta_time_get(lua_State* L) {
     double delta_time = time_delta_time();
     lua_pushnumber(L, delta_time);
 
@@ -57,7 +57,7 @@ static int api_get_delta_time(lua_State* L) {
  * @function time
  * @treturn integer Time elapsed in milliseconds.
  */
-static int api_get_time_since_init(lua_State* L) {
+static int api_time_since_init_get(lua_State* L) {
     double time = time_since_init();
     lua_pushnumber(L, time);
 
@@ -87,8 +87,8 @@ static int api_reload(lua_State* L) {
 void luaL_openglobals(lua_State* L) {
     lua_register(L, "print", api_print);
     lua_register(L, "clear", api_clear);
-    lua_register(L, "delta_time", api_get_delta_time);
-    lua_register(L, "time", api_get_time_since_init);
+    lua_register(L, "delta_time", api_delta_time_get);
+    lua_register(L, "time", api_time_since_init_get);
     lua_register(L, "quit", api_quit);
     lua_register(L, "reload", api_reload);
 }

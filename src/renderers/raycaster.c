@@ -310,7 +310,7 @@ static color_t shade_pixel(color_t color, float brightness) {
 
     const int amount = brightness * (shade_table->width - 1);
 
-    return graphics_texture_get_pixel(
+    return graphics_texture_pixel_get(
         shade_table,
         amount,
         color
@@ -371,7 +371,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         int y = y0 + i;
         if (y >= bottom) break;
 
-        color_t c = graphics_texture_get_pixel(wall_texture, s, t + 0.0001f);
+        color_t c = graphics_texture_pixel_get(wall_texture, s, t + 0.0001f);
         t += t_step;
         if (c == graphics_transparent_color_get()) continue;
 
@@ -381,7 +381,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         set_depth_buffer_pixel(active_renderer, x, y, depth);
 
         c = shade_pixel(c, brightness);
-        graphics_texture_set_pixel(destination_texture, x, y, c);
+        graphics_texture_pixel_set(destination_texture, x, y, c);
     }
 }
 
@@ -399,7 +399,7 @@ static float sprite_depth = FLT_MAX;
  * @param dy Destination y-coordinate
  */
 static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    rect_t* clip_rect = graphics_get_clipping_rectangle();
+    rect_t* clip_rect = graphics_clipping_rectangle_get();
     if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
     if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
 
@@ -407,7 +407,7 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     float d = get_depth_buffer_pixel(active_renderer, dx, dy);
     if (d <= depth) return;
 
-    color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
     if (pixel == graphics_transparent_color_get()) return;
 
     set_depth_buffer_pixel(active_renderer, dx, dy, depth);
@@ -415,14 +415,14 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     float brightness = get_distance_based_brightness(sprite_depth);
     pixel = shade_pixel(pixel, brightness);
 
-    graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
+    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
 
 raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     raycaster_renderer_t* renderer = (raycaster_renderer_t*)malloc(sizeof(raycaster_renderer_t));
 
     if (!render_texture) {
-        render_texture = graphics_get_render_texture();
+        render_texture = graphics_render_texture_get();
     }
 
     size_t size = render_texture->width * render_texture->height;
@@ -484,7 +484,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
     texture_t* render_texture = renderer->render_texture;
     if (!render_texture) {
-        render_texture = graphics_get_render_texture();
+        render_texture = graphics_render_texture_get();
     }
 
     shade_table = renderer->features.shade_table;
@@ -656,10 +656,10 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     int x = frac(floor_next[0]) * texture->width;
                     int y = frac(floor_next[1]) * texture->height;
 
-                    color_t color = graphics_texture_get_pixel(texture, x, y);
+                    color_t color = graphics_texture_pixel_get(texture, x, y);
 
                     // Floor
-                    graphics_texture_set_pixel(
+                    graphics_texture_pixel_set(
                         render_texture, i, j, shade_pixel(color, brightness)
                     );
                     set_depth_buffer_pixel(active_renderer, i, j, distance);
@@ -676,10 +676,10 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     int x = frac(floor_next[0]) * texture->width;
                     int y = frac(floor_next[1]) * texture->height;
 
-                    color_t color = graphics_texture_get_pixel(texture, x, y);
+                    color_t color = graphics_texture_pixel_get(texture, x, y);
 
                     // Ceiling
-                    graphics_texture_set_pixel(
+                    graphics_texture_pixel_set(
                         render_texture, i, height - j - 1, shade_pixel(color, brightness)
                     );
                     set_depth_buffer_pixel(active_renderer, i, height - j - 1, distance);

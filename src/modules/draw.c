@@ -27,8 +27,8 @@ static int bindings_draw_pixel(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_get_render_texture();
-    graphics_texture_set_pixel(render_texture, x, y, color);
+    texture_t* render_texture = graphics_render_texture_get();
+    graphics_texture_pixel_set(render_texture, x, y, color);
 
     return 0;
 }
@@ -264,7 +264,7 @@ static int bindings_clear_screen(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* render_texture = graphics_render_texture_get();
     graphics_texture_clear(render_texture, color);
 
     return 0;
