@@ -228,7 +228,7 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
 
 void draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     int x0 = x;
-    int x1 = x + width;
+    int x1 = x + width - 1;
     int y0 = y;
 
     for (int i = 0; i < height; i++) {
