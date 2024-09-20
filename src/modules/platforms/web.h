@@ -167,6 +167,7 @@ static int modules_web_window_aspect_set(lua_State* L) {
 
 /**
  * Get window pixel aspect ratio
+ * @function window.get_aspect
  * @treturn number Pixel aspect ratio width / height
  */
 static int modules_web_window_aspect_get(lua_State* L) {
@@ -174,6 +175,11 @@ static int modules_web_window_aspect_get(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set window icon
+ * @function window.set_icon
+ * @tparam texture.texture icon Window icon
+ */
 static int modules_desktop_window_icon_set(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
 
