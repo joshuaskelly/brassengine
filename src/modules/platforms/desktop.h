@@ -19,7 +19,10 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "../texture.h"
+
 #include "../../configuration.h"
+#include "../../graphics.h"
 
 static SDL_Window* window_ = NULL;
 
@@ -173,6 +176,37 @@ static int modules_desktop_window_aspect_get(lua_State* L) {
     return 1;
 }
 
+static int modules_desktop_window_icon_set(lua_State* L) {
+    texture_t* texture = luaL_checktexture(L, 1);
+
+    SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(
+        texture->pixels,
+        texture->width,
+        texture->height,
+        8,
+        texture->width,
+        0, 0, 0, 0
+    );
+
+    uint32_t* palette = graphics_palette_get();
+    SDL_Color colors[256];
+    for (int i = 0; i < 256; i++) {
+        uint32_t swatch = palette[i];
+        colors[i].r = swatch & 255;
+        colors[i].g = (swatch >> 8) & 255;
+        colors[i].b = (swatch >> 16) & 255;
+        colors[i].a = 255;
+    }
+
+    SDL_SetPaletteColors(icon->format->palette, colors, 0, 256);
+
+    SDL_SetWindowIcon(window_, icon);
+
+    SDL_FreeSurface(icon);
+
+    return 0;
+}
+
 static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"set_position", modules_desktop_window_position_set},
     {"get_position", modules_desktop_window_position_get},
@@ -184,6 +218,7 @@ static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"get_fullscreen", modules_desktop_window_fullscreen_get},
     {"set_aspect", modules_desktop_window_aspect_set},
     {"get_aspect", modules_desktop_window_aspect_get},
+    {"set_icon", modules_desktop_window_icon_set},
     {NULL, NULL}
 };
 
