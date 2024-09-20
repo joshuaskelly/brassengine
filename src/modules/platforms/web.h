@@ -17,7 +17,10 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "../texture.h"
+
 #include "../../configuration.h"
+#include "../../graphics.h"
 
 static SDL_Window* window_ = NULL;
 
