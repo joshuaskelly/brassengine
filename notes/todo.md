@@ -1,6 +1,5 @@
 # TODO
 ## General
-- [ ] Add foreground/background color as optional args to draw text.
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Simplify web html wrapper
@@ -12,6 +11,7 @@
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
 - [x] Audit custom clamp() implementations
 - [x] Audit/fix draw rectangle functions. Width/height seems off?
