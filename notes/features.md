@@ -17,5 +17,5 @@ Uses open and durable formats for assets.
 3. JSON built-in.
 
 ## 4. Software Rendering
-Engine uses software rendering and presents an easy to understand immediate mode style API. Additional several renderers come built-in.
+Engine uses software rendering and presents an easy to understand immediate mode style API. Several additional renderers come built-in.
 1. Raycaster renderer
