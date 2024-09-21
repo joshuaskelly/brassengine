@@ -4,7 +4,6 @@
 - [ ] Fix "BAD!" errors
 - [ ] Gamepad input
 - [ ] Simplify web html wrapper
-- [ ] Platform specific Lua module
 - [ ] Polygon rasterization for draw module
 - [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
@@ -13,6 +12,7 @@
 - [ ] Default palette?
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [x] Platform specific Lua module
 - [x] Audit custom clamp() implementations
 - [x] Audit/fix draw rectangle functions. Width/height seems off?
 - [x] Support for loading all frames from GIF files.
@@ -31,11 +31,13 @@
 
 ## Raycaster Renderer
 - [ ] Improved demo assets
-- [ ] Direction aligned sprites
-- [ ] Pixels per unit feauture to support tall/short walls/sprites.
-- [ ] Support vertical offsets for entities/camera.
+- [ ] Support vertical offsets for camera.
 - [ ] Investigate sprite perf.
 - [ ] Clean up some workaround globals.
+- [ ] Ensure rendering pixel correctness. Position camera such that walls/sprites are exactly 32x32, 64x64, 128x128, and 256x256 in screen space.
+- [x] Pixels per unit feauture to support tall/short walls/sprites.
+- [x] Support vertical offsets for entities.
+- [x] Direction aligned sprites
 - [x] Render targets
 - [x] Ceiling/floor tile data
 - [x] Depth buffer? Work on sprite perf.
