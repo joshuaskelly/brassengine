@@ -45,9 +45,14 @@ static bool is_in_error_state = false;
 static double update_time;
 static double draw_time;
 
+#define MAX_SUGGESTIONS 128
+static char* suggestions[MAX_SUGGESTIONS];
+
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 static int call(lua_State* L, int narg, int nresults);
+
+static void clear_suggestions(void);
 
 static const luaL_Reg modules[] = {
     {"assets", luaopen_assets},
@@ -301,6 +306,8 @@ void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
     call_global_lua_function(L, "_init");
+
+    clear_suggestions();
 }
 
 void script_destroy(void) {
@@ -312,6 +319,8 @@ void script_reload(void) {
 
     init_lua_vm();
     call_global_lua_function(L, "_init");
+
+    clear_suggestions();
 }
 
 int script_evaluate(const char* script) {
@@ -347,6 +356,79 @@ int script_evaluate(const char* script) {
     }
 
     return status;
+}
+
+static void clear_suggestions(void) {
+    for (int i = 0; i < MAX_SUGGESTIONS; i++) {
+        suggestions[i] = NULL;
+    }
+}
+
+void script_complete(char* expression) {
+    char root[2048];
+    char* partial = expression;
+
+    char* last_dot = strrchr(expression, '.');
+    size_t dot_position = last_dot - expression + 1;
+    int suggestion_count = 0;
+
+    int top = lua_gettop(L);
+
+    // Global table
+    if (last_dot == NULL) {
+        dot_position = 0;
+        lua_getglobal(L, LUA_GNAME);
+        if (lua_type(L, 1) != LUA_TTABLE) return;
+    }
+    else {
+        strncpy(root, expression, dot_position - 1);
+        root[dot_position - 1] = '\0';
+        partial = expression + dot_position;
+
+        // Evaluate expression
+        char r[2048];
+        sprintf(r, "return %s;", root);
+        r[strlen(r)] = '\0';
+
+        // Ensure result is what we expect
+        int status = luaL_loadbuffer(L, r, strlen(r), NULL);
+        if (status != LUA_OK) return;
+        status = lua_pcall(L, 0, 1, 0);
+        if (status != LUA_OK) return;
+        if (lua_type(L, 1) != LUA_TTABLE) return;
+    }
+
+    // Iterate table key/value pairs
+    int base = lua_gettop(L);
+    lua_pushnil(L);
+    size_t size = strlen(partial);
+    while (lua_next(L, base) != 0) {
+        const char* key = luaL_checkstring(L, -2);
+        lua_pop(L, 1);
+
+        if (strncmp(partial, key, size) == 0) {
+            suggestions[suggestion_count++] = key;
+        }
+    }
+
+    if (suggestion_count == 1) {
+        const char* suggestion = suggestions[0];
+        int length = strlen(suggestion);
+        strncpy(expression + dot_position, suggestions[0], length);
+        expression[dot_position + length] = '\0';
+    }
+    else {
+        char* sep = dot_position ? "." : "";
+        for (int i = 0; i < suggestion_count; i++) {
+            log_info("%s%s%s", root, sep, suggestions[i]);
+        }
+
+        // TODO Complete as much of the command as possible
+    }
+
+    clear_suggestions();
+
+    lua_settop(L, top);
 }
 
 double script_update_time_get(void) {

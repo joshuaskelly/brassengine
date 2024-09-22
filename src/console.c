@@ -31,6 +31,7 @@ static bool visible = false;
 
 static void execute(void);
 static void clear_input(void);
+static void complete(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
@@ -210,6 +211,11 @@ static bool handle_key_down(event_t* event) {
             memmove(command + i, command + i + 1, -cursor_offset + 1);
             cursor_offset += 1;
 
+            return true;
+        }
+
+        case KEYCODE_TAB: {
+            complete();
             return true;
         }
 
@@ -499,4 +505,8 @@ static void clear_input(void) {
 
     // Clear command
     command[0] = '\0';
+}
+
+static void complete(void) {
+    script_complete(command);
 }
