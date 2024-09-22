@@ -394,20 +394,23 @@ void script_complete(char* expression) {
     }
     // Evaluate the root. If the result is a table, use it. Otherwise return.
     else {
+        // Set root + partial
         strncpy(root, expression, dot_position - 1);
         root[dot_position - 1] = '\0';
         partial = expression + dot_position;
 
-        // Evaluate expression
+        // Load expression as buffer
         char buffer[2048];
         sprintf(buffer, "return %s;", root);
         buffer[strlen(buffer)] = '\0';
-
-        // Ensure result is what we expect
         int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
         if (status != LUA_OK) return;
+
+        // Evaluate buffer
         status = lua_pcall(L, 0, 1, 0);
         if (status != LUA_OK) return;
+
+        // Ensure result is what we expect
         if (lua_type(L, 1) != LUA_TTABLE) return;
     }
 
