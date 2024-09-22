@@ -324,11 +324,11 @@ void script_reload(void) {
 }
 
 int script_evaluate(const char* script) {
-    char r[strlen(script)+9];
-    sprintf(r, "return %s;", script);
+    char buffer[strlen(script)+9];
+    sprintf(buffer, "return %s;", script);
 
     // Try to evaluate wrapped in a return statement.
-    int status = luaL_loadbuffer(L, r, strlen(r), "=console");
+    int status = luaL_loadbuffer(L, buffer, strlen(buffer), "=console");
 
     if (status != LUA_OK) {
         // Remove previous error message.
