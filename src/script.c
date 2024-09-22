@@ -446,6 +446,8 @@ void script_complete(char* expression) {
             log_info("%s%s%s", root, sep, suggestions[i]);
         }
 
+        log_info(" ");
+
         // TODO Complete as much of the command as possible
     }
 
