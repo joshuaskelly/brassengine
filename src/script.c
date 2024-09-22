@@ -416,6 +416,8 @@ void script_complete(char* expression) {
 
     const char* suggestions[MAX_SUGGESTIONS];
 
+    int min_suggestion_length = 2048;
+
     // Iterate table key/value pairs
     int base = lua_gettop(L);
     lua_pushnil(L);
@@ -426,6 +428,7 @@ void script_complete(char* expression) {
 
         if (strncmp(partial, key, size) == 0) {
             suggestions[suggestion_count++] = key;
+            min_suggestion_length = fminf(strlen(key), min_suggestion_length);
         }
     }
 
@@ -441,6 +444,7 @@ void script_complete(char* expression) {
     }
     // Otherwise complete as much as possible
     else {
+        // Display suggestions
         char* sep = dot_position ? "." : "";
         for (int i = 0; i < suggestion_count; i++) {
             log_info("%s%s%s", root, sep, suggestions[i]);
@@ -448,7 +452,20 @@ void script_complete(char* expression) {
 
         log_info(" ");
 
-        // TODO Complete as much of the command as possible
+        // Complete as much of the expression as possible.
+        int col = 0;
+        for (; col < min_suggestion_length; col++) {
+            char first = suggestions[0][col];
+            for (int row = 1; row < suggestion_count; row++) {
+                // When we hit a non-matching character we are done
+                if (suggestions[row][col] != first) {
+                    expression[dot_position + col] = '\0';
+                    goto done;
+                }
+            }
+            expression[dot_position + col] = first;
+        }
+        expression[dot_position + col] = '\0';
     }
 
 done:
