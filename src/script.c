@@ -390,9 +390,9 @@ void script_complete(char* expression) {
     if (last_dot == NULL) {
         dot_position = 0;
         lua_getglobal(L, LUA_GNAME);
-        if (lua_type(L, 1) != LUA_TTABLE) return;
+        if (lua_type(L, 1) != LUA_TTABLE) goto done;
     }
-    // Evaluate the root. If the result is a table, use it. Otherwise return.
+    // Evaluate the root. If the result is a table, use it.
     else {
         // Set root + partial
         strncpy(root, expression, dot_position - 1);
@@ -404,14 +404,14 @@ void script_complete(char* expression) {
         sprintf(buffer, "return %s;", root);
         buffer[strlen(buffer)] = '\0';
         int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
-        if (status != LUA_OK) return;
+        if (status != LUA_OK) goto done;
 
         // Evaluate buffer
         status = lua_pcall(L, 0, 1, 0);
-        if (status != LUA_OK) return;
+        if (status != LUA_OK) goto done;
 
         // Ensure result is what we expect
-        if (lua_type(L, 1) != LUA_TTABLE) return;
+        if (lua_type(L, 1) != LUA_TTABLE) goto done;
     }
 
     const char* suggestions[MAX_SUGGESTIONS];
@@ -449,6 +449,8 @@ void script_complete(char* expression) {
         // TODO Complete as much of the command as possible
     }
 
+done:
+    // Cleanup Lua VM state
     lua_settop(L, top);
 }
 
