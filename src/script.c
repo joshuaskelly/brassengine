@@ -365,6 +365,9 @@ static void clear_suggestions(void) {
 }
 
 void script_complete(char* expression) {
+    // TODO Potentially look for the equals symbol for the root? E.g.
+    // platform = require("platform")
+    // TODO Trim leading white space?
     char root[2048];
     char* partial = expression;
 
@@ -386,12 +389,12 @@ void script_complete(char* expression) {
         partial = expression + dot_position;
 
         // Evaluate expression
-        char r[2048];
-        sprintf(r, "return %s;", root);
-        r[strlen(r)] = '\0';
+        char buffer[2048];
+        sprintf(buffer, "return %s;", root);
+        buffer[strlen(buffer)] = '\0';
 
         // Ensure result is what we expect
-        int status = luaL_loadbuffer(L, r, strlen(r), NULL);
+        int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
         if (status != LUA_OK) return;
         status = lua_pcall(L, 0, 1, 0);
         if (status != LUA_OK) return;
