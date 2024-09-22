@@ -46,13 +46,10 @@ static double update_time;
 static double draw_time;
 
 #define MAX_SUGGESTIONS 128
-static char* suggestions[MAX_SUGGESTIONS];
 
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 static int call(lua_State* L, int narg, int nresults);
-
-static void clear_suggestions(void);
 
 static const luaL_Reg modules[] = {
     {"assets", luaopen_assets},
@@ -306,8 +303,6 @@ void script_init(void) {
     log_info("script init (" LUA_RELEASE ")");
     init_lua_vm();
     call_global_lua_function(L, "_init");
-
-    clear_suggestions();
 }
 
 void script_destroy(void) {
@@ -319,8 +314,6 @@ void script_reload(void) {
 
     init_lua_vm();
     call_global_lua_function(L, "_init");
-
-    clear_suggestions();
 }
 
 int script_evaluate(const char* script) {
@@ -358,16 +351,32 @@ int script_evaluate(const char* script) {
     return status;
 }
 
-static void clear_suggestions(void) {
-    for (int i = 0; i < MAX_SUGGESTIONS; i++) {
-        suggestions[i] = NULL;
-    }
+static int compare_strings(const void* a, const void* b) {
+    return strcmp(*(const char**)a, *(const char**)b);
 }
 
 void script_complete(char* expression) {
     // TODO Potentially look for the equals symbol for the root? E.g.
     // platform = require("platform")
     // TODO Trim leading white space?
+
+    /*
+     * Attempt to decompose given expression into a root and a partial. The
+     * root is used to determine which table to inspect. If no root is found,
+     * then use global table and treat entire expression as partial.
+     *
+     * Expression with root and partial:
+     *
+     *   module.submodule.my_functio
+     *   |-----root-----| |-partial-|
+     *
+     *
+     * Expression with only partial:
+     *
+     *   collectgarbag
+     *   |--partial--|
+     */
+
     char root[2048];
     char* partial = expression;
 
@@ -377,12 +386,13 @@ void script_complete(char* expression) {
 
     int top = lua_gettop(L);
 
-    // Global table
+    // No root found, use global table.
     if (last_dot == NULL) {
         dot_position = 0;
         lua_getglobal(L, LUA_GNAME);
         if (lua_type(L, 1) != LUA_TTABLE) return;
     }
+    // Evaluate the root. If the result is a table, use it. Otherwise return.
     else {
         strncpy(root, expression, dot_position - 1);
         root[dot_position - 1] = '\0';
@@ -401,6 +411,8 @@ void script_complete(char* expression) {
         if (lua_type(L, 1) != LUA_TTABLE) return;
     }
 
+    const char* suggestions[MAX_SUGGESTIONS];
+
     // Iterate table key/value pairs
     int base = lua_gettop(L);
     lua_pushnil(L);
@@ -414,12 +426,17 @@ void script_complete(char* expression) {
         }
     }
 
+    // Sort results
+    qsort(suggestions, suggestion_count, sizeof(char*), compare_strings);
+
+    // Only one valid result, complete the expression
     if (suggestion_count == 1) {
         const char* suggestion = suggestions[0];
         int length = strlen(suggestion);
         strncpy(expression + dot_position, suggestions[0], length);
         expression[dot_position + length] = '\0';
     }
+    // Otherwise complete as much as possible
     else {
         char* sep = dot_position ? "." : "";
         for (int i = 0; i < suggestion_count; i++) {
@@ -428,8 +445,6 @@ void script_complete(char* expression) {
 
         // TODO Complete as much of the command as possible
     }
-
-    clear_suggestions();
 
     lua_settop(L, top);
 }
