@@ -356,9 +356,13 @@ static int compare_strings(const void* a, const void* b) {
 }
 
 void script_complete(char* expression) {
-    // TODO Potentially look for the equals symbol for the root? E.g.
-    // platform = require("platform")
-    // TODO Trim leading white space?
+    // Don't evaluate function calls
+    if (strchr(expression, '(')) return;
+    if (strchr(expression, ')')) return;
+    if (strchr(expression, '{')) return;
+    if (strchr(expression, '}')) return;
+    // Don't evalute assigments
+    if (strchr(expression, '=')) return;
 
     /*
      * Attempt to decompose given expression into a root and a partial. The
