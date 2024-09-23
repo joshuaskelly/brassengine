@@ -317,6 +317,13 @@ static void sdl_handle_events(void) {
                 event.button.button = sdl_event.button.button;
                 event_post(&event);
                 break;
+
+            case SDL_MOUSEWHEEL:
+                event.type = EVENT_MOUSEWHEEL;
+                event.wheel.wheel_x = sdl_event.wheel.x;
+                event.wheel.wheel_y = sdl_event.wheel.y;
+                event_post(&event);
+                break;
         }
     }
 }

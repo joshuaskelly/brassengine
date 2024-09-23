@@ -330,6 +330,13 @@ static void sdl_handle_events(void) {
                 event_post(&event);
                 break;
 
+            case SDL_MOUSEWHEEL:
+                event.type = EVENT_MOUSEWHEEL;
+                event.wheel.wheel_x = sdl_event.wheel.x;
+                event.wheel.wheel_y = sdl_event.wheel.y;
+                event_post(&event);
+                break;
+
             case SDL_WINDOWEVENT_RESIZED:
             case SDL_WINDOWEVENT_SIZE_CHANGED:
                 display_rect.w = sdl_event.window.data1;
