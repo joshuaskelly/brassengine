@@ -45,6 +45,8 @@ static bool is_in_error_state = false;
 static double update_time;
 static double draw_time;
 
+#define MAX_SUGGESTIONS 128
+
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 static int call(lua_State* L, int narg, int nresults);
@@ -315,11 +317,11 @@ void script_reload(void) {
 }
 
 int script_evaluate(const char* script) {
-    char r[strlen(script)+9];
-    sprintf(r, "return %s;", script);
+    char buffer[strlen(script)+9];
+    sprintf(buffer, "return %s;", script);
 
     // Try to evaluate wrapped in a return statement.
-    int status = luaL_loadbuffer(L, r, strlen(r), "=console");
+    int status = luaL_loadbuffer(L, buffer, strlen(buffer), "=console");
 
     if (status != LUA_OK) {
         // Remove previous error message.
@@ -347,6 +349,134 @@ int script_evaluate(const char* script) {
     }
 
     return status;
+}
+
+static int compare_strings(const void* a, const void* b) {
+    return strcmp(*(const char**)a, *(const char**)b);
+}
+
+void script_complete(char* expression) {
+    // Don't evaluate function calls
+    if (strchr(expression, '(')) return;
+    if (strchr(expression, ')')) return;
+    if (strchr(expression, '{')) return;
+    if (strchr(expression, '}')) return;
+    // Don't evalute assigments
+    if (strchr(expression, '=')) return;
+
+    /*
+     * Attempt to decompose given expression into a root and a partial. The
+     * root is used to determine which table to inspect. If no root is found,
+     * then use global table and treat entire expression as partial.
+     *
+     * Expression with root and partial:
+     *
+     *   module.submodule.my_functio
+     *   |-----root-----| |-partial-|
+     *
+     *
+     * Expression with only partial:
+     *
+     *   collectgarbag
+     *   |--partial--|
+     */
+
+    char root[2048];
+    char* partial = expression;
+
+    char* last_dot = strrchr(expression, '.');
+    size_t dot_position = last_dot - expression + 1;
+    int suggestion_count = 0;
+
+    int top = lua_gettop(L);
+
+    // No root found, use global table.
+    if (last_dot == NULL) {
+        dot_position = 0;
+        lua_getglobal(L, LUA_GNAME);
+        if (lua_type(L, 1) != LUA_TTABLE) goto done;
+    }
+    // Evaluate the root. If the result is a table, use it.
+    else {
+        // Set root + partial
+        strncpy(root, expression, dot_position - 1);
+        root[dot_position - 1] = '\0';
+        partial = expression + dot_position;
+
+        // Load expression as buffer
+        char buffer[2048];
+        sprintf(buffer, "return %s;", root);
+        buffer[strlen(buffer)] = '\0';
+        int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
+        if (status != LUA_OK) goto done;
+
+        // Evaluate buffer
+        status = lua_pcall(L, 0, 1, 0);
+        if (status != LUA_OK) goto done;
+
+        // Ensure result is what we expect
+        if (lua_type(L, 1) != LUA_TTABLE) goto done;
+    }
+
+    const char* suggestions[MAX_SUGGESTIONS];
+
+    int min_suggestion_length = 2048;
+
+    // Iterate table key/value pairs
+    int base = lua_gettop(L);
+    lua_pushnil(L);
+    size_t size = strlen(partial);
+    while (lua_next(L, base) != 0) {
+        const char* key = luaL_checkstring(L, -2);
+        lua_pop(L, 1);
+
+        if (strncmp(partial, key, size) == 0) {
+            suggestions[suggestion_count++] = key;
+            min_suggestion_length = fminf(strlen(key), min_suggestion_length);
+        }
+    }
+
+    if (suggestion_count == 0) goto done;
+
+    // Sort results
+    qsort(suggestions, suggestion_count, sizeof(char*), compare_strings);
+
+    // Only one valid result, complete the expression
+    if (suggestion_count == 1) {
+        const char* suggestion = suggestions[0];
+        int length = strlen(suggestion);
+        strncpy(expression + dot_position, suggestions[0], length);
+        expression[dot_position + length] = '\0';
+    }
+    // Otherwise complete as much as possible
+    else {
+        // Display suggestions
+        char* sep = dot_position ? "." : "";
+        for (int i = 0; i < suggestion_count; i++) {
+            log_info("%s%s%s", root, sep, suggestions[i]);
+        }
+
+        log_info(" ");
+
+        // Complete as much of the expression as possible.
+        int col = 0;
+        for (; col < min_suggestion_length; col++) {
+            char first = suggestions[0][col];
+            for (int row = 1; row < suggestion_count; row++) {
+                // When we hit a non-matching character we are done
+                if (suggestions[row][col] != first) {
+                    expression[dot_position + col] = '\0';
+                    goto done;
+                }
+            }
+            expression[dot_position + col] = first;
+        }
+        expression[dot_position + col] = '\0';
+    }
+
+done:
+    // Cleanup Lua VM state
+    lua_settop(L, top);
 }
 
 double script_update_time_get(void) {
