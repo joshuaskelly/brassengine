@@ -280,26 +280,26 @@ static int modules_clear_screen(lua_State* L) {
  * @tparam ?integer background Background color
  */
 static int modules_draw_text(lua_State* L) {
+    color_t* palette = graphics_draw_palette_get();
+
     const char* message = (const char*)luaL_checkstring(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
-    int fg = (int)luaL_optnumber(L, 4, -1);
-    int bg = (int)luaL_optnumber(L, 5, -1);
+    int fg = (int)luaL_optnumber(L, 4, palette[1]);
+    int bg = (int)luaL_optnumber(L, 5, palette[0]);
 
     lua_settop(L, 0);
-
-    color_t* palette = graphics_draw_palette_get();
 
     int bg_old = palette[0];
     int fg_old = palette[1];
 
-    if (bg >= 0) palette[0] = bg;
-    if (fg >= 0) palette[1] = fg;
+    palette[0] = bg;
+    palette[1] = fg;
 
     draw_text(message, x, y);
 
-    if (bg >= 0) palette[0] = bg_old;
-    if (fg >= 0) palette[1] = fg_old;
+    palette[0] = bg_old;
+    palette[1] = fg_old;
 
     return 0;
 }
