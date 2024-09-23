@@ -510,4 +510,5 @@ static void clear_input(void) {
 static void complete(void) {
     script_complete(command);
     cursor_offset = 0;
+    output_buffer_offset = 0;
 }
