@@ -436,6 +436,8 @@ void script_complete(char* expression) {
         }
     }
 
+    if (suggestion_count == 0) goto done;
+
     // Sort results
     qsort(suggestions, suggestion_count, sizeof(char*), compare_strings);
 
