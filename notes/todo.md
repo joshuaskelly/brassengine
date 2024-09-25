@@ -61,8 +61,8 @@
 - [ ] Word navigation (ctrl + key) Needs to be alt + arrow on Mac 😫
   - [ ] Left/right
   - [ ] Delete/backspace
-- [ ] Tab completion?
 - [ ] Support for custom console background. Custom draw callback?
+- [x] Tab completion?
 - [x] Ensure console colors + clear colors are correct before draw
 - [x] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.
