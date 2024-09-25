@@ -347,6 +347,18 @@ int script_evaluate(const char* script) {
 
         return result;
     }
+    else {
+        // Print the error message on top of the stack
+        int n = lua_gettop(L);
+        if (n > 0) {
+            luaL_checkstack(L, LUA_MINSTACK, "too many results to print");
+            lua_getglobal(L, "print");
+            lua_insert(L, 1);
+            if (lua_pcall(L, n, 0, 0) != LUA_OK) {
+                log_error("error calling 'print'");
+            }
+        }
+    }
 
     return status;
 }
