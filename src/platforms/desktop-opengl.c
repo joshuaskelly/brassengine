@@ -503,6 +503,8 @@ void platform_display_resolution_set(int width, int height) {
     if (!render_buffer) {
         log_fatal("Error creating frame buffer.");
     }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, config->resolution.width, config->resolution.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
 }
 
 void platform_display_size_set(int width, int height) {
