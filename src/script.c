@@ -394,6 +394,7 @@ void script_complete(char* expression) {
      */
 
     char root[2048];
+    memset(root, 0, sizeof(root));
     char* partial = expression;
 
     char* last_dot = strrchr(expression, '.');
