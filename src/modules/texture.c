@@ -245,15 +245,70 @@ static int modules_texture_pixel_get(lua_State* L) {
  * @tparam integer x Destination x-offset
  * @tparam integer y Destination y-offset
  */
+
+/**
+ * Copy given source texture to this texture with given offset and size.
+ * @function blit
+ * @tparam texture.texture source Texture to copy from
+ * @tparam integer x Destination x-offset
+ * @tparam integer y Destination y-offset
+ * @tparam integer w Destination width
+ * @tparam integer h Destination height
+ */
+
+/**
+ * Copy given source texture to this texture with given source offset and size,
+ * and destination offset and size.
+ * @function blit
+ * @tparam texture.texture source Texture to copy from
+ * @tparam integer sx Source x-offset
+ * @tparam integer sy Source y-offset
+ * @tparam integer sw Source width
+ * @tparam integer sh Source height
+ * @tparam integer dx Destination x-offset
+ * @tparam integer dy Destination y-offset
+ * @tparam integer dw Destination width
+ * @tparam integer dh Destination height
+ */
 static int modules_texture_blit(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
     texture_t* dest = luaL_checktexture(L, 1);
     texture_t* source = luaL_checktexture(L, 2);
-    int x = (int)luaL_checknumber(L, 3);
-    int y = (int)luaL_checknumber(L, 4);
 
-    rect_t drect = {x, y, source->width, source->height};
+    rect_t drect = {0, 0, 0, 0};
+    rect_t srect = {0, 0, 0, 0};
 
-    graphics_texture_blit(source, dest, NULL, &drect);
+    rect_t* dest_rect = &drect;
+    rect_t* source_rect = NULL;
+
+    if (arg_count == 4) {
+        drect.x = (int)luaL_checknumber(L, 3);
+        drect.y = (int)luaL_checknumber(L, 4);
+        drect.width = source->width;
+        drect.height = source->height;
+    }
+    else if (arg_count == 6) {
+        drect.x = (int)luaL_checknumber(L, 3);
+        drect.y = (int)luaL_checknumber(L, 4);
+        drect.width = (int)luaL_checknumber(L, 5);
+        drect.height = (int)luaL_checknumber(L, 6);
+    }
+    else {
+        source_rect = &srect;
+
+        srect.x = (int)luaL_checknumber(L, 3);
+        srect.y = (int)luaL_checknumber(L, 4);
+        srect.width = (int)luaL_checknumber(L, 5);
+        srect.height = (int)luaL_checknumber(L, 6);
+
+        drect.x = (int)luaL_checknumber(L, 7);
+        drect.y = (int)luaL_checknumber(L, 8);
+        drect.width = (int)luaL_checknumber(L, 9);
+        drect.height = (int)luaL_checknumber(L, 10);
+    }
+
+    graphics_texture_blit(source, dest, source_rect, dest_rect);
 
     return 0;
 }

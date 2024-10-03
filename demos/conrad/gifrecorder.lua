@@ -8,7 +8,7 @@ local texture = require("texture")
 
 local gifrecorder = {}
 
-gifrecorder._VERSION = "1.0.0"
+gifrecorder._VERSION = "1.1.0"
 
 local KEY_F7 = 64
 local KEY_F8 = 65
@@ -16,14 +16,15 @@ local KEY_F8 = 65
 gifrecorder.Recorder = {}
 
 --- Create a new recorder object
-function gifrecorder.Recorder:new()
-    local recorder = {}
+function gifrecorder.Recorder:new(o)
+    local recorder = o or {}
     setmetatable(recorder, self)
     self.__index = self
 
     recorder.frames = {}
     recorder.is_recording = false
     recorder.is_key_down = keyboard.key(KEY_F8)
+    recorder.scale = recorder.scale or 1
 
     return recorder
 end
@@ -37,7 +38,18 @@ end
 --- Save gif with given filename
 ---@param filename string
 function gifrecorder.Recorder:save(filename)
-    gif.save(filename, self.frames)
+    local frames = {}
+
+    for _, frame in ipairs(self.frames) do
+        local w = frame.width * self.scale
+        local h = frame.height * self.scale
+        local t = texture.new(w, h)
+        t:blit(frame, 0, 0, w, h)
+
+        table.insert(frames, t)
+    end
+
+    gif.save(filename, frames)
 end
 
 --- Clear internal frame buffer
