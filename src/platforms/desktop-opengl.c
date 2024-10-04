@@ -90,6 +90,17 @@ void platform_init(void) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         log_fatal("Error initializing SDL");
     }
+    
+    // Set the scaling algorithm to nearest-neighbor for crisp pixel art rendering.
+    // This ensures that pixel art graphics remain sharp when scaled.
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+
+    // Disable the X11 net WM ping protocol to potentially improve rendering consistency.
+    // This is more relevant for X11 systems but doesn't hurt to include for broader compatibility.
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
+
+    // Force SDL to use OpenGL as the rendering driver.
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
 
     if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
         log_fatal("Error intializing SDL Mixer");
