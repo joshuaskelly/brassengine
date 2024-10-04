@@ -99,8 +99,19 @@ void platform_init(void) {
     // This is more relevant for X11 systems but doesn't hurt to include for broader compatibility.
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
 
-    // Force SDL to use OpenGL as the rendering driver.
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+#ifdef _WIN32
+    #define PLATFORM_RENDER_HINT "direct3d"
+#else
+    #define PLATFORM_RENDER_HINT "opengl"
+#endif
+
+    // Use a platform-specific rendering hint to optimize performance and compatibility
+    // while addressing issues with blurry rendering on some systems, particularly high-DPI displays.
+    // This approach allows for:
+    // 1. Improved performance and pixel-perfect rendering on most systems
+    // 2. Better compatibility across different platforms
+    // 3. Flexibility to change the hint based on the target platform
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, PLATFORM_RENDER_HINT);
 
     if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
         log_fatal("Error intializing SDL Mixer");
