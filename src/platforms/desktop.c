@@ -69,14 +69,6 @@ void platform_init(void) {
         log_fatal("Error initializing SDL");
     }
 
-    // Set the scaling algorithm to nearest-neighbor for crisp pixel art rendering.
-    // This ensures that pixel art graphics remain sharp when scaled.
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
-
-    // Disable the X11 net WM ping protocol to potentially improve rendering consistency.
-    // This is more relevant for X11 systems but doesn't hurt to include for broader compatibility.
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
-
 #ifdef _WIN32
     #define PLATFORM_RENDER_HINT "direct3d"
 #else
