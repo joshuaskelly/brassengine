@@ -2,6 +2,8 @@
 
 #include <mathc/mathc.h>
 
+#include "../math.h"
+
 #include "mode7.h"
 
 mode7_renderer_t* mode7_renderer_new(texture_t* render_texture) {
@@ -83,7 +85,19 @@ void draw_scanline(mode7_renderer_t* renderer, int y, float u0, float v0, float 
     float current_t = t0 + 0.5f;
 
     for (int x = 0; x <= width; x++) {
-        color_t c = graphics_texture_pixel_get(texture, current_s, current_t);
+        float s = current_s;
+        float t = current_t;
+
+        if (renderer->features.wrap_mode == WRAP_REPEAT) {
+            s = modulof(s, texture->width - 1);
+            t = modulof(t, texture->height - 1);
+        }
+        else if (renderer->features.wrap_mode == WRAP_CLAMP) {
+            s = clamp(s, 0, texture->width - 1);
+            t = clamp(t, 0, texture->height - 1);
+        }
+
+        color_t c = graphics_texture_pixel_get(texture, s, t);
 
         graphics_texture_pixel_set(renderer->render_texture, x, y, c);
 

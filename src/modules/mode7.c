@@ -102,6 +102,39 @@ static int modules_mode7_renderer_feature(lua_State* L) {
 
         return 1;
     }
+    else if (strcmp(key, "wrapmode") == 0) {
+        if (is_setter) {
+            const char* mode = luaL_checkstring(L, 3);
+
+            if (strcmp(mode, "NONE") == 0) {
+                renderer->features.wrap_mode = WRAP_NONE;
+            }
+            else if (strcmp(mode, "REPEAT") == 0) {
+                renderer->features.wrap_mode = WRAP_REPEAT;
+            }
+            else if (strcmp(mode, "CLAMP") == 0) {
+                renderer->features.wrap_mode = WRAP_CLAMP;
+            }
+
+            return 0;
+        }
+
+        switch (renderer->features.wrap_mode) {
+            case WRAP_NONE:
+                lua_pushstring(L, "NONE");
+                break;
+
+            case WRAP_REPEAT:
+                lua_pushstring(L, "REPEAT");
+                break;
+
+            case WRAP_CLAMP:
+                lua_pushstring(L, "CLAMP");
+                break;
+        }
+
+        return 1;
+    }
 
     return 0;
 }
