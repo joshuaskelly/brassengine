@@ -68,7 +68,7 @@ void draw_scanline(mode7_renderer_t* renderer, int y, float u0, float v0, float 
     // DDA based line drawing algorithm
     texture_t* render_texture = renderer->render_texture;
 
-    int width = render_texture->width - 1;
+    int scanline_width = render_texture->width - 1;
 
     float s0 = u0 * (texture->width - 1);
     float t0 = v0 * (texture->height - 1);
@@ -78,13 +78,13 @@ void draw_scanline(mode7_renderer_t* renderer, int y, float u0, float v0, float 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
 
-    float s_inc = delta_s / width;
-    float t_inc = delta_t / width;
+    float s_inc = delta_s / scanline_width;
+    float t_inc = delta_t / scanline_width;
 
     float current_s = s0 + 0.5f;
     float current_t = t0 + 0.5f;
 
-    for (int x = 0; x <= width; x++) {
+    for (int x = 0; x <= scanline_width; x++) {
         float s = current_s;
         float t = current_t;
 
