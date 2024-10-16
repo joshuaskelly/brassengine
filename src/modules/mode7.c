@@ -44,8 +44,8 @@ static int callback_reference = 0;
 static bool callback(int y) {
     lua_State* L = LL;
 
+    // Get Lua callback function
     lua_rawgeti(L, LUA_REGISTRYINDEX, callback_reference);
-    lua_pushvalue(L, 1);
     lua_pushinteger(L, y);
 
     if (lua_pcall(L, 1, 0, 0) != 0) {
@@ -60,8 +60,6 @@ static bool callback(int y) {
         return true;
     }
 
-    callback_reference = luaL_ref(L, LUA_REGISTRYINDEX);
-
     return false;
 }
 
@@ -73,14 +71,20 @@ static int modules_mode7_renderer_render(lua_State* L) {
         luaL_error(L, "missing callback");
     }
 
+    // Remove renderer and texture so the callback is on top of the stack
     lua_remove(L, 1);
     lua_remove(L, 1);
 
+    // Get a reference to the Lua callback function
     callback_reference = luaL_ref(L, LUA_REGISTRYINDEX);
 
+    // Cache pointer to Lua VM
     LL = L;
 
     mode7_renderer_render(renderer, texture, callback);
+
+    // Release reference to Lua callback function
+    luaL_unref(L, LUA_REGISTRYINDEX, callback_reference);
 
     return 0;
 }
