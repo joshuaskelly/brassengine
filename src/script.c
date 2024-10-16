@@ -30,6 +30,7 @@
 #include "modules/matrix3.h"
 #include "modules/matrix4.h"
 #include "modules/math_extensions.h"
+#include "modules/mode7.h"
 #include "modules/mouse.h"
 #include "modules/quaternion.h"
 #include "modules/raycaster.h"
@@ -64,6 +65,7 @@ static const luaL_Reg modules[] = {
     {"matrix2", luaopen_matrix2},
     {"matrix3", luaopen_matrix3},
     {"matrix4", luaopen_matrix4},
+    {"mode7", luaopen_mode7},
     {"mouse", luaopen_mouse},
     {"quaternion", luaopen_quaternion},
     {"raycaster", luaopen_raycaster},
@@ -510,6 +512,14 @@ void script_draw(void) {
     double start = time_millis_get();
     call_global_lua_function(L, "_draw");
     draw_time = time_millis_get() - start;
+}
+
+bool script_error_state_get(void) {
+    return is_in_error_state;
+}
+
+void script_error_state_set(bool state) {
+    is_in_error_state = state;
 }
 
 /**
