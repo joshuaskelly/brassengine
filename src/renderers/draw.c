@@ -10,16 +10,13 @@
 #include "../assets.h"
 #include "../graphics.h"
 #include "../log.h"
-
-static int mod(int a, int b) {
-    return a - floor(a / (float)b) * b;
-}
+#include "../math.h"
 
 static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
     if (!pattern) return;
 
-    int sx = mod(x - offset_x, pattern->width);
-    int sy = mod(y - offset_y, pattern->height);
+    int sx = modulo(x - offset_x, pattern->width);
+    int sy = modulo(y - offset_y, pattern->height);
 
     color_t pixel = graphics_texture_pixel_get(pattern, sx, sy);
     color_t* draw_palette = graphics_draw_palette_get();
