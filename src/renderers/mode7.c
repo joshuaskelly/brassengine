@@ -42,15 +42,16 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
     vec3_zero(work);
 
     for (int y = 0; y < renderer->render_texture->height; y++) {
-        if (callback(y)) {
-            return;
-        }
+        // Per scanline callback
+        if (callback(y)) return;
 
         mat3_inverse(inverse, renderer->matrix);
 
+        // Transform scanline start to texture space
         vec3(work, 0, y, 1);
         vec3_multiply_mat3(uv0, work, inverse);
 
+        // Transform scanline end to texture space
         vec3(work, renderer->render_texture->width - 1, y, 1);
         vec3_multiply_mat3(uv1, work, inverse);
 
