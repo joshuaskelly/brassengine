@@ -46,7 +46,9 @@
 - [x] Shading via color tables
 
 ## Mode7 Renderer
-- [ ] Initial implementation
+- [x] Initial implementation
+- [ ] Investigate memory leak
+- [ ] Investigate lua callback mechanism
 
 ## VoxelSpace Renderer
 - [ ] Initial implementation
