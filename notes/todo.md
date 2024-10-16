@@ -47,8 +47,8 @@
 
 ## Mode7 Renderer
 - [x] Initial implementation
-- [ ] Investigate memory leak
-- [ ] Investigate lua callback mechanism
+- [x] Investigate memory leak
+- [x] Investigate lua callback mechanism
 
 ## VoxelSpace Renderer
 - [ ] Initial implementation
