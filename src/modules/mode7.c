@@ -63,11 +63,39 @@ static bool callback(int y) {
     return false;
 }
 
+/**
+ * Returns true if value at given index is a function (C or Lua) or a table
+ * with __call as one of it's fields, and false otherwise.
+ */
+static bool lua_iscallable(lua_State*L, int index) {
+    if (lua_isfunction(L, index)) return true;
+
+    int base = lua_gettop(L);
+
+    if (lua_istable(L, index)) {
+        int type = lua_getfield(L, index, "__call");
+        // Remove whatever was put on the stack, we only care about the type
+        lua_settop(L, base);
+
+        return type == LUA_TFUNCTION;
+    }
+
+    return false;
+}
+
 static int modules_mode7_renderer_render(lua_State* L) {
     mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 1);
     texture_t* texture = luaL_checktexture(L, 2);
 
-    if (!lua_isfunction(L, 3)) {
+    if (lua_iscallable(L, 3)) {
+        if (lua_istable(L, 3)) {
+            // Put the table's __call function on stack
+            lua_getfield(L, 3, "__call");
+            // Remove the table
+            lua_remove(L, 3);
+        }
+    }
+    else {
         luaL_error(L, "missing callback");
     }
 
