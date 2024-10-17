@@ -39,6 +39,7 @@ static int modules_mode7_renderer_new(lua_State* L) {
 }
 
 static lua_State* LL;
+static int table_reference = 0;
 static int callback_reference = 0;
 
 static bool callback(int y) {
@@ -46,6 +47,12 @@ static bool callback(int y) {
 
     // Get Lua callback function
     lua_rawgeti(L, LUA_REGISTRYINDEX, callback_reference);
+
+    // Get table reference if callback is a method
+    if (table_reference > 0) {
+        lua_rawgeti(L, LUA_REGISTRYINDEX, table_reference);
+    }
+
     lua_pushinteger(L, y);
 
     if (lua_pcall(L, 1, 0, 0) != 0) {
@@ -87,12 +94,23 @@ static int modules_mode7_renderer_render(lua_State* L) {
     mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 1);
     texture_t* texture = luaL_checktexture(L, 2);
 
+    bool is_method = false;
+
     if (lua_iscallable(L, 3)) {
         if (lua_istable(L, 3)) {
             // Put the table's __call function on stack
             lua_getfield(L, 3, "__call");
-            // Remove the table
-            lua_remove(L, 3);
+            lua_pushvalue(L, -1);
+
+            // If function takes two params, assume it is a method
+            lua_Debug ar;
+            lua_getinfo(L, ">nu", &ar);
+            is_method = ar.nparams == 2;
+
+            // Remove the table if not a method
+            if (!is_method) {
+                lua_remove(L, 3);
+            }
         }
     }
     else {
@@ -106,6 +124,11 @@ static int modules_mode7_renderer_render(lua_State* L) {
     // Get a reference to the Lua callback function
     callback_reference = luaL_ref(L, LUA_REGISTRYINDEX);
 
+    // Get a reference to the table if a method
+    if (is_method) {
+        table_reference = luaL_ref(L, LUA_REGISTRYINDEX);
+    }
+
     // Cache pointer to Lua VM
     LL = L;
 
@@ -113,6 +136,13 @@ static int modules_mode7_renderer_render(lua_State* L) {
 
     // Release reference to Lua callback function
     luaL_unref(L, LUA_REGISTRYINDEX, callback_reference);
+    callback_reference = 0;
+
+    // Release reference to table
+    if (is_method) {
+        luaL_unref(L, LUA_REGISTRYINDEX, table_reference);
+        table_reference = 0;
+    }
 
     return 0;
 }
