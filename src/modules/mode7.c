@@ -96,7 +96,7 @@ static int modules_mode7_renderer_render(lua_State* L) {
         }
     }
     else {
-        luaL_error(L, "missing callback");
+        luaL_typeerror(L, 3, "function");
     }
 
     // Remove renderer and texture so the callback is on top of the stack
