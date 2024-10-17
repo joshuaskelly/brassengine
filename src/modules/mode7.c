@@ -105,7 +105,7 @@ static int modules_mode7_renderer_render(lua_State* L) {
             // If function takes two params, assume it is a method
             lua_Debug ar;
             lua_getinfo(L, ">nu", &ar);
-            is_method = ar.nparams == 2;
+            is_method = ar.nparams > 1;
 
             // Remove the table if not a method
             if (!is_method) {
