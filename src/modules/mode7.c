@@ -65,7 +65,7 @@ static bool callback(int y) {
 
 /**
  * Returns true if value at given index is a function (C or Lua) or a table
- * with __call as one of it's fields, and false otherwise.
+ * with the __call metamethod, and false otherwise.
  */
 static bool lua_iscallable(lua_State*L, int index) {
     if (lua_isfunction(L, index)) return true;
