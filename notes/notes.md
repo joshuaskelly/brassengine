@@ -9,6 +9,7 @@
 ## Mode 7
 - [Tonc: Mode 7 Part 1](http://www.coranac.com/tonc/text/mode7.htm)
 - [ModeMode 7 in Lite C](https://fenixfox-studios.com/content/mode_7/)
+- [Kulor's Guide to Mode 7 Perspective Planes](https://forums.nesdev.org/viewtopic.php?t=24053)
 
 ## GIFLIB Basic Example
 - [gif-lib basic example](https://gist.github.com/suzumura-ss/a5e922994513e44226d33c3a0c2c60d1)
