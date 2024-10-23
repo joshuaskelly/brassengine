@@ -456,10 +456,7 @@ void script_complete(char* expression) {
 
     // Only one valid result, complete the expression
     if (suggestion_count == 1) {
-        const char* suggestion = suggestions[0];
-        int length = strlen(suggestion);
-        strncpy(expression + dot_position, suggestions[0], length);
-        expression[dot_position + length] = '\0';
+        strcpy(expression + dot_position, suggestions[0]);
     }
     // Otherwise complete as much as possible
     else {
