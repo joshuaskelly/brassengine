@@ -67,6 +67,8 @@ color_t graphics_texture_pixel_get(texture_t* texture, int x, int y) {
 
 static void texture_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
+    if (pixel == transparent_color) return;
+
     graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
 
