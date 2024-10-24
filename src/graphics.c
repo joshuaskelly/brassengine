@@ -52,11 +52,6 @@ void graphics_texture_free(texture_t* texture) {
     texture = NULL;
 }
 
-size_t graphics_texture_sizeof(texture_t* texture) {
-    // TODO Remove this?
-    return sizeof(texture_t) + texture->width * texture->height * sizeof(color_t);
-}
-
 texture_t* graphics_texture_copy(texture_t* texture) {
     texture_t* copy = graphics_texture_new(
         texture->width,
