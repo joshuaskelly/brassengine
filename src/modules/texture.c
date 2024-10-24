@@ -183,6 +183,33 @@ static int modules_texture_copy(lua_State* L) {
 }
 
 /**
+ * Returns a subtexture that share pixels with this texture.
+ * @function sub
+ * @tparam integer x Subtexture x-offset
+ * @tparam integer y Subtexture y-offset
+ * @tparam integer width Subtexture width
+ * @tparam integer height Subtexture height
+ * @treturn texture
+ */
+static int modules_texture_sub(lua_State* L) {
+    texture_t* source = luaL_checktexture(L, 1);
+    int x = (int)luaL_checknumber(L, 2);
+    int y = (int)luaL_checknumber(L, 3);
+    int w = (int)luaL_checknumber(L, 4);
+    int h = (int)luaL_checknumber(L, 5);
+
+    lua_pop(L, -1);
+
+    rect_t rect = {x, y, w, h};
+
+    texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
+    *handle = graphics_texture_sub(source, &rect);
+    luaL_setmetatable(L, "texture");
+
+    return 1;
+}
+
+/**
  * Fill entire texture with color.
  * @function clear
  * @tparam integer color Fill color
@@ -331,6 +358,7 @@ static int modules_texture_blit(lua_State* L) {
 static const struct luaL_Reg modules_texture_functions[] = {
     {"new", modules_texture_new},
     {"copy", modules_texture_copy},
+    {"sub", modules_texture_sub},
     {"clear", modules_texture_clear},
     {"set_pixel", modules_texture_pixel_set},
     {"get_pixel", modules_texture_pixel_get},

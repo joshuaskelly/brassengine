@@ -6,6 +6,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
@@ -20,7 +21,9 @@ typedef uint8_t color_t;
 typedef struct {
     int width;
     int height;
-    color_t pixels[];
+    int stride;
+    bool is_subtexture;
+    color_t* pixels;
 } texture_t;
 
 /**
@@ -63,6 +66,15 @@ texture_t* graphics_texture_copy(texture_t* texture);
  * @param color Fill color
  */
 void graphics_texture_clear(texture_t* texture, color_t color);
+
+/**
+ * Creates a texture that shares pixels with the given texture.
+ *
+ * @param texture Texture to get subtexture from
+ * @param rect Sub region of given texture to use as subtexture.
+ * @return New texture if successful, NULL otherwise.
+ */
+texture_t* graphics_texture_sub(texture_t* texture, rect_t* rect);
 
 /**
  * Set pixel color.
