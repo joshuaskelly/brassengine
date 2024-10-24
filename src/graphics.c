@@ -79,6 +79,16 @@ void graphics_texture_clear(texture_t* texture, color_t color) {
 }
 
 texture_t* graphics_texture_sub(texture_t* texture, rect_t* rect) {
+    if (
+        rect->x < 0 ||
+        rect->y < 0 ||
+        rect->x + rect->width > texture->width ||
+        rect->y + rect->height > texture->height
+        ) {
+        log_error("Subtexture rect outside source texture bounds");
+        return NULL;
+    }
+
     texture_t* sub_texture = (texture_t*)malloc(sizeof(texture_t));
 
     if (!sub_texture) {

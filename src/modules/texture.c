@@ -49,6 +49,14 @@ texture_t* luaL_opttexture(lua_State* L, int index, texture_t* default_) {
 int lua_newtexture(lua_State* L, int width, int height) {
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = graphics_texture_new(width, height, NULL);
+
+    if (!*handle) {
+        luaL_error(L, "error creating texture");
+        lua_settop(L, 0);
+
+        return 0;
+    }
+
     luaL_setmetatable(L, "texture");
 
     return 1;
@@ -177,6 +185,14 @@ static int modules_texture_copy(lua_State* L) {
 
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = graphics_texture_copy(source);
+
+    if (!*handle) {
+        luaL_error(L, "error copying texture");
+        lua_settop(L, 0);
+
+        return 0;
+    }
+
     luaL_setmetatable(L, "texture");
 
     return 1;
@@ -204,6 +220,14 @@ static int modules_texture_sub(lua_State* L) {
 
     texture_t** handle = (texture_t**)lua_newuserdata(L, sizeof(texture_t*));
     *handle = graphics_texture_sub(source, &rect);
+
+    if (!*handle) {
+        luaL_error(L, "error creating subtexture");
+        lua_settop(L, 0);
+
+        return 0;
+    }
+
     luaL_setmetatable(L, "texture");
 
     return 1;
