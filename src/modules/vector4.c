@@ -514,6 +514,40 @@ static int modules_vector4_lerp(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector4 v0
+ * @tparam vector4 v1
+ */
+
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector4 v0
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ * @tparam number w
+ */
+static int modules_vector4_set(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector4(L, 1);
+
+    if (lua_isvector4(L, 2)) {
+        mfloat_t* v1 = luaL_checkvector4(L, 2);
+        vec4_assign(v0, v1);
+
+        return 0;
+    }
+
+    v0[0] = luaL_checknumber(L, 2);
+    v0[1] = luaL_checknumber(L, 3);
+    v0[2] = luaL_checknumber(L, 4);
+    v0[3] = luaL_checknumber(L, 5);
+
+    return 0;
+}
+
 static const struct luaL_Reg modules_vector4_functions[] = {
     {"new", modules_vector4_new},
     {"zero", modules_vector4_zero},
@@ -534,6 +568,7 @@ static const struct luaL_Reg modules_vector4_functions[] = {
     {"clamp", modules_vector4_clamp},
     {"normalize", modules_vector4_normalize},
     {"lerp", modules_vector4_lerp},
+    {"set", modules_vector4_set},
     {NULL, NULL}
 };
 
