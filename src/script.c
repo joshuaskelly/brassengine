@@ -452,7 +452,20 @@ void script_complete(char* expression) {
             const char* key = luaL_checkstring(L, -2);
             lua_pop(L, 1);
 
+            // Check if we have a partial match
             if (strncmp(partial, key, size) == 0) {
+                // Don't add duplicates
+                bool duplicate_found = false;
+                for (int i = 0; i < suggestion_count; i++) {
+                    if (strcmp(suggestions[i], key) == 0) {
+                        duplicate_found = true;
+                        break;
+                    }
+                }
+
+                if (duplicate_found) continue;
+
+                // Add to suggestions
                 suggestions[suggestion_count++] = key;
                 min_suggestion_length = fminf(strlen(key), min_suggestion_length);
             }
@@ -479,9 +492,6 @@ void script_complete(char* expression) {
         // Display suggestions
         char* sep = dot_position ? "." : "";
         for (int i = 0; i < suggestion_count; i++) {
-            // Skip if suggestion is same as previous
-            if (i > 0 && strcmp(suggestions[i], suggestions[i - 1]) == 0) continue;
-
             log_info("%s%s%s", root, sep, suggestions[i]);
         }
 
