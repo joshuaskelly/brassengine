@@ -248,12 +248,12 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
     // Adjust draw boundaries to destination texture
     if (dx < 0) {
         left = 0;
-        s_left = abs(dx) * x_step;
+        s_left += abs(dx) * x_step;
     }
 
     if (dy < 0) {
         top = 0;
-        s_top = abs(dy) * y_step;
+        s_top += abs(dy) * y_step;
     }
 
     // Sample source at pixel centers
