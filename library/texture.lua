@@ -6,7 +6,7 @@ local texture = {}
 --- Create new texture.
 --- @param width integer  Texture width
 --- @param height integer  Texture height
---- @return texture 
+--- @return texture
 function texture.new(width, height) end
 
 --- @class texture
@@ -16,7 +16,7 @@ function texture.new(width, height) end
 texture.texture = {}
 
 --- Returns a copy of this texture.
---- @return texture 
+--- @return texture
 function texture.texture:copy() end
 
 --- Returns a subtexture that share pixels with this texture.
@@ -24,7 +24,7 @@ function texture.texture:copy() end
 --- @param y integer  Subtexture y-offset
 --- @param width integer  Subtexture width
 --- @param height integer  Subtexture height
---- @return texture 
+--- @return texture
 function texture.texture:sub(x, y, width, height) end
 
 --- Fill entire texture with color.
@@ -58,7 +58,7 @@ function texture.texture:blit(source, x, y) end
 function texture.texture:blit(source, x, y, w, h) end
 
 --- Copy given source texture to this texture with given source offset and size,
- and destination offset and size.
+--- and destination offset and size.
 --- @param source texture  Texture to copy from
 --- @param sx integer  Source x-offset
 --- @param sy integer  Source y-offset
