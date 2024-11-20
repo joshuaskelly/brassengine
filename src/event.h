@@ -20,7 +20,10 @@ typedef enum {
     EVENT_MOUSEMOTION,
     EVENT_MOUSEDOWN,
     EVENT_MOUSEUP,
-    EVENT_MOUSEWHEEL
+    EVENT_MOUSEWHEEL,
+    EVENT_CONTROLLERBUTTONDOWN,
+    EVENT_CONTROLLERBUTTONUP,
+    EVENT_CONTROLLERAXISMOTION
 } event_type_t;
 
 typedef struct {
@@ -373,6 +376,17 @@ typedef struct {
     int wheel_y;
 } mouse_wheel_event_t;
 
+typedef struct {
+    event_type_t type;
+    uint8_t button;
+} controller_button_event_t;
+
+typedef struct {
+    event_type_t type;
+    uint8_t axis;
+    float value;
+} controller_axis_event_t;
+
 typedef union {
     event_type_t type;
     common_event_t common;
@@ -380,6 +394,8 @@ typedef union {
     mouse_motion_event_t motion;
     mouse_button_event_t button;
     mouse_wheel_event_t wheel;
+    controller_button_event_t controller_button;
+    controller_axis_event_t controller_axis;
 } event_t;
 
 /**

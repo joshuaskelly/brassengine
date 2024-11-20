@@ -17,6 +17,11 @@ static struct {
     uint32_t buttons;
 } mouse_state;
 
+static struct {
+    uint8_t buttons[16];
+    float axis[16];
+} controller_state;
+
 void input_init(void) {
     for (int i = 0; i < KEYCODE_NUM_CODES; i++) {
         keyboard_codes[i] = 0;
@@ -75,6 +80,15 @@ void input_handle_event(event_t* event) {
         mouse_state.wheel_x = event->wheel.wheel_x;
         mouse_state.wheel_y = event->wheel.wheel_y;
     }
+    else if (event->type == EVENT_CONTROLLERBUTTONDOWN) {
+        controller_state.buttons[event->controller_button.button] = 1;
+    }
+    else if (event->type == EVENT_CONTROLLERBUTTONUP) {
+        controller_state.buttons[event->controller_button.button] = 0;
+    }
+    else if (event->type == EVENT_CONTROLLERAXISMOTION) {
+        controller_state.axis[event->controller_axis.axis] = event->controller_axis.value;
+    }
 }
 
 bool input_keyboard_is_key_code_down(key_code_t code) {
@@ -108,4 +122,12 @@ void input_mouse_motion(int* x, int* y) {
 void input_mouse_wheel(int* x, int* y) {
     *x = mouse_state.wheel_x;
     *y = mouse_state.wheel_y;
+}
+
+bool input_controller_is_button_pressed(int button) {
+    return controller_state.buttons[button];
+}
+
+void input_controller_motion(int axis, float* value) {
+    *value = controller_state.axis[axis];
 }

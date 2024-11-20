@@ -360,7 +360,7 @@ bool console_handle_event(event_t* event) {
             break;
     }
 
-    return true;
+    return false;
 }
 
 void console_update(void) {

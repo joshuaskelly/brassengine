@@ -81,4 +81,8 @@ void input_mouse_motion(int* x, int* y);
 */
 void input_mouse_wheel(int* x, int* y);
 
+bool input_controller_is_button_pressed(int button);
+
+void input_controller_motion(int axis, float* value);
+
 #endif
