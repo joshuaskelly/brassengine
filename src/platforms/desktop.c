@@ -9,6 +9,7 @@
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
+#include "../input.h"
 #include "../log.h"
 #include "../math.h"
 #include "../platform.h"
@@ -25,7 +26,6 @@ static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t* render_buffer = NULL;
 static int ticks_last_frame;
 static SDL_Rect display_rect;
-static SDL_GameController* game_controller = NULL;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
@@ -126,13 +126,6 @@ void platform_init(void) {
     display_rect.h = window_height;
 
     SDL_ShowCursor(SDL_DISABLE);
-
-    for (int i = 0; i < SDL_NumJoysticks(); i++) {
-        if (SDL_IsGameController(i)) {
-            game_controller = SDL_GameControllerOpen(i);
-            break;
-        }
-    }
 }
 
 void platform_destroy(void) {
@@ -274,47 +267,33 @@ static void sdl_handle_events(void) {
                 break;
 
             case SDL_CONTROLLERDEVICEADDED:
-                if (!game_controller) {
-                    game_controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
-                }
+                SDL_GameController* controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                input_controller_connect(id);
                 break;
 
             case SDL_CONTROLLERDEVICEREMOVED:
-                if (!game_controller) break;
-                if (sdl_event.cdevice.which != SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_controller))) break;
-
-                SDL_GameControllerClose(game_controller);
-                game_controller = NULL;
-
-                for (int i = 0; i < SDL_NumJoysticks(); i++) {
-                    if (SDL_IsGameController(i)) {
-                        game_controller = SDL_GameControllerOpen(i);
-                        break;
-                    }
-                }
-
+                input_controller_disconnect(sdl_event.cdevice.which);
+                SDL_GameControllerClose(SDL_GameControllerFromInstanceID(sdl_event.cdevice.which));
                 break;
 
             case SDL_CONTROLLERBUTTONDOWN:
-                if (sdl_event.cdevice.which != SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_controller))) break;
-
                 event.type = EVENT_CONTROLLERBUTTONDOWN;
+                event.controller_button.which = sdl_event.cdevice.which;
                 event.controller_button.button = sdl_event.cbutton.button;
                 event_post(&event);
                 break;
 
             case SDL_CONTROLLERBUTTONUP:
-                if (sdl_event.cdevice.which != SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_controller))) break;
-
                 event.type = EVENT_CONTROLLERBUTTONUP;
+                event.controller_button.which = sdl_event.cdevice.which;
                 event.controller_button.button = sdl_event.cbutton.button;
                 event_post(&event);
                 break;
 
             case SDL_CONTROLLERAXISMOTION:
-                if (sdl_event.cdevice.which != SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(game_controller))) break;
-
                 event.type = EVENT_CONTROLLERAXISMOTION;
+                event.controller_axis.which = sdl_event.cdevice.which;
                 event.controller_axis.axis = sdl_event.caxis.axis;
                 if (sdl_event.caxis.value < 0) {
                     event.controller_axis.value = sdl_event.caxis.value / 32768.0f;

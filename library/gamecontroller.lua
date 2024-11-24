@@ -4,14 +4,29 @@
 local gamecontroller = {}
 
 --- Check if given button is down.
---- @param button integer  Button to check.
+--- @param id integer Controller id.
+--- @param button integer Button to check.
 --- @return boolean True if button is down.
-function gamecontroller.button(button) end
+function gamecontroller.button(id, button) end
 
 --- Get current value of given axis.
+--- @param id integer Controller id.
 --- @param axis integer  Axis to check.
 --- @return number
-function gamecontroller.axis(axis) end
+function gamecontroller.axis(id, axis) end
+
+--- Get number of connected controllers.
+--- @return integer
+function gamecontroller.count() end
+
+--- Get an array of connected controller ids.
+--- @return integer[]
+function gamecontroller.connected() end
+
+--- Check if given controller id is connected.
+--- @tparam id integer Controller id.
+--- @return boolean true if given id is connected, false otherwise.
+function gamecontroller.connected(id) end
 
 --- Axis enums
 gamecontroller.axes = {

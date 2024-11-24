@@ -25,10 +25,11 @@
  * @treturn boolean True if button is down.
  */
 static int modules_gamecontroller_button_get(lua_State* L) {
-    int button = luaL_checknumber(L, 1);
+    int id = luaL_checknumber(L, 1);
+    int button = luaL_checknumber(L, 2);
     lua_settop(L, 0);
 
-    bool is_down = input_controller_is_button_pressed(button);
+    bool is_down = input_controller_is_button_pressed(id, button);
     lua_pushboolean(L, is_down);
 
     return 1;
@@ -41,12 +42,58 @@ static int modules_gamecontroller_button_get(lua_State* L) {
  * @return number
  */
 static int modules_gamecontroller_axis_get(lua_State* L) {
-    int axis = luaL_checknumber(L, 1);
+    int id = luaL_checknumber(L, 1);
+    int axis = luaL_checknumber(L, 2);
     lua_settop(L, 0);
 
     float value = 0;
-    input_controller_motion(axis, &value);
+    input_controller_axis(id, axis, &value);
     lua_pushnumber(L, value);
+
+    return 1;
+}
+
+/**
+ * Get number of connected controllers.
+ * @function count
+ * @return int
+ */
+static int modules_gamecontroller_count_get(lua_State* L) {
+    int count = input_controller_count();
+    lua_pushinteger(L, count);
+
+    return 1;
+}
+
+/**
+ * Get an array of connected controller ids.
+ * @function connected
+ * @return {integer, ...}
+ */
+
+/**
+ * Check if given controller id is connected.
+ * @function connected
+ * @tparam integer id Controller id to check.
+ * @return true if given id is connected, false otherwise.
+ */
+static int modules_gamecontroller_connected_get(lua_State* L) {
+    if (lua_gettop(L) == 0) {
+        uint8_t ids[input_controller_count()];
+        input_controller_ids(ids);
+
+        lua_newtable(L);
+
+        for (int i = 0; i < input_controller_count(); i++) {
+            lua_pushinteger(L, i + 1);
+            lua_pushinteger(L, ids[i]);
+            lua_settable(L, -3);
+        }
+    }
+    else {
+        int id = luaL_checknumber(L, 1);
+        lua_pushboolean(L, input_controller_connected(id));
+    }
 
     return 1;
 }
@@ -185,6 +232,8 @@ static int make_readonly(lua_State* L) {
 static const struct luaL_Reg modules_gamecontroller_functions[] = {
     {"button", modules_gamecontroller_button_get},
     {"axis", modules_gamecontroller_axis_get},
+    {"count", modules_gamecontroller_count_get},
+    {"connected", modules_gamecontroller_connected_get},
     {NULL, NULL}
 };
 
