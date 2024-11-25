@@ -131,21 +131,21 @@ struct luaL_Field {
  */
 
 static const struct luaL_Field gamecontroller_buttons[] = {
-    {"A", 0},
-    {"B", 1},
-    {"X", 2},
-    {"Y", 3},
-    {"BACK", 4},
-    {"GUIDE", 5},
-    {"START", 6},
-    {"LEFTSTICK", 7},
-    {"RIGHTSTICK", 8},
-    {"LEFTSHOULDER", 9},
-    {"RIGHTSHOULDER", 10},
-    {"DPAD_UP", 11},
-    {"DPAD_DOWN", 12},
-    {"DPAD_LEFT", 13},
-    {"DPAD_RIGHT", 14},
+    {"A", CONTROLLER_BUTTON_A},
+    {"B", CONTROLLER_BUTTON_B},
+    {"X", CONTROLLER_BUTTON_X},
+    {"Y", CONTROLLER_BUTTON_Y},
+    {"BACK", CONTROLLER_BUTTON_BACK},
+    {"GUIDE", CONTROLLER_BUTTON_GUIDE},
+    {"START", CONTROLLER_BUTTON_START},
+    {"LEFTSTICK", CONTROLLER_BUTTON_LEFTSTICK},
+    {"RIGHTSTICK", CONTROLLER_BUTTON_RIGHTSTICK},
+    {"LEFTSHOULDER", CONTROLLER_BUTTON_LEFTSHOULDER},
+    {"RIGHTSHOULDER", CONTROLLER_BUTTON_RIGHTSHOULDER},
+    {"DPAD_UP", CONTROLLER_BUTTON_DPAD_UP},
+    {"DPAD_DOWN", CONTROLLER_BUTTON_DPAD_DOWN},
+    {"DPAD_LEFT", CONTROLLER_BUTTON_DPAD_LEFT},
+    {"DPAD_RIGHT", CONTROLLER_BUTTON_DPAD_RIGHT},
     {NULL, 0}
 };
 
@@ -174,12 +174,12 @@ static int gamecontroller_button_enums(lua_State*L) {
  */
 
 static const struct luaL_Field gamecontroller_axes[] = {
-    {"LEFTX", 0},
-    {"LEFTY", 1},
-    {"RIGHTX", 2},
-    {"RIGHTY", 3},
-    {"TRIGGERLEFT", 4},
-    {"TRIGGERRIGHT", 5},
+    {"LEFTX", CONTROLLER_AXIS_LEFTX},
+    {"LEFTY", CONTROLLER_AXIS_LEFTY},
+    {"RIGHTX", CONTROLLER_AXIS_RIGHTX},
+    {"RIGHTY", CONTROLLER_AXIS_RIGHTY},
+    {"TRIGGERLEFT", CONTROLLER_AXIS_TRIGGERLEFT},
+    {"TRIGGERRIGHT", CONTROLLER_AXIS_TRIGGERRIGHT},
     {NULL, 0}
 };
 
