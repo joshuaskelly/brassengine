@@ -30,12 +30,12 @@ function gamecontroller.connected(id) end
 
 --- Axis enums
 gamecontroller.axes = {
-    LEFTX = 0,
-    LEFTY = 1,
-    RIGHTX = 2,
-    RIGHTY = 3,
-    TRIGGERLEFT = 4,
-    TRIGGERRIGHT = 5,
+    LEFT_X = 0,
+    LEFT_Y = 1,
+    RIGHT_X = 2,
+    RIGHT_Y = 3,
+    TRIGGER_LEFT = 4,
+    TRIGGER_RIGHT = 5,
 }
 
 --- Button enums
@@ -47,10 +47,10 @@ gamecontroller.buttons = {
     BACK = 4,
     GUIDE = 5,
     START = 6,
-    LEFTSTICK = 7,
-    RIGHTSTICK = 8,
-    LEFTSHOULDER = 9,
-    RIGHTSHOULDER = 10,
+    LEFT_STICK = 7,
+    RIGHT_STICK = 8,
+    LEFT_SHOULDER = 9,
+    RIGHT_SHOULDER = 10,
     DPAD_UP = 11,
     DPAD_DOWN = 12,
     DPAD_LEFT = 13,
