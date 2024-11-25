@@ -77,7 +77,7 @@ void platform_init(void) {
     const int window_width = config->resolution.width * 3;
     const int window_height = config->resolution.height * 3;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
 
@@ -264,6 +264,7 @@ void platform_draw(void) {
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
+    SDL_GameController* controller = NULL;
 
     float aspect_width = config->resolution.width / (float)display_rect.w;
     float aspect_height = config->resolution.height / (float)display_rect.h;
@@ -327,7 +328,7 @@ static void sdl_handle_events(void) {
                 break;
 
             case SDL_CONTROLLERDEVICEADDED:
-                SDL_GameController* controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
                 int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
                 input_controller_connect(id);
                 break;
