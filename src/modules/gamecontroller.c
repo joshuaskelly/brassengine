@@ -21,6 +21,7 @@
 /**
  * Check if given button is down.
  * @function button
+ * @tparam integer id Controller id to check.
  * @tparam integer button Button to check.
  * @treturn boolean True if button is down.
  */
@@ -38,6 +39,7 @@ static int modules_gamecontroller_button_get(lua_State* L) {
 /**
  * Get current value of given axis.
  * @function axis
+ * @tparam integer id Controller id to check.
  * @tparam integer axis Axis to check.
  * @return number
  */
@@ -120,10 +122,10 @@ struct luaL_Field {
  * @tfield integer BACK
  * @tfield integer GUIDE
  * @tfield integer START
- * @tfield integer LEFTSTICK
- * @tfield integer RIGHTSTICK
- * @tfield integer LEFTSHOULDER
- * @tfield integer RIGHTSHOULDER
+ * @tfield integer LEFT_STICK
+ * @tfield integer RIGHT_STICK
+ * @tfield integer LEFT_SHOULDER
+ * @tfield integer RIGHT_SHOULDER
  * @tfield integer DPAD_UP
  * @tfield integer DPAD_DOWN
  * @tfield integer DPAD_LEFT
@@ -165,12 +167,12 @@ static int gamecontroller_button_enums(lua_State*L) {
  * Axes enums
  * @table axes
  *
- * @tfield integer LEFTX
- * @tfield integer LEFTY
- * @tfield integer RIGHTX
- * @tfield integer RIGHTY
- * @tfield integer TRIGGERLEFT
- * @tfield integer TRIGGERRIGHT
+ * @tfield integer LEFT_X
+ * @tfield integer LEFT_Y
+ * @tfield integer RIGHT_X
+ * @tfield integer RIGHT_Y
+ * @tfield integer TRIGGER_LEFT
+ * @tfield integer TRIGGER_RIGHT
  */
 
 static const struct luaL_Field gamecontroller_axes[] = {
