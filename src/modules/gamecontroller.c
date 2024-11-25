@@ -21,6 +21,7 @@
 /**
  * Check if given button is down.
  * @function button
+ * @tparam integer id Controller id to check.
  * @tparam integer button Button to check.
  * @treturn boolean True if button is down.
  */
@@ -38,6 +39,7 @@ static int modules_gamecontroller_button_get(lua_State* L) {
 /**
  * Get current value of given axis.
  * @function axis
+ * @tparam integer id Controller id to check.
  * @tparam integer axis Axis to check.
  * @return number
  */
