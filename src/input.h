@@ -81,4 +81,58 @@ void input_mouse_motion(int* x, int* y);
 */
 void input_mouse_wheel(int* x, int* y);
 
+/**
+ * Check if given button is pressed for given controller id.
+ *
+ * @param id Controller id.
+ * @param button Button to check.
+ * @return true if pressed, false otherwise.
+ */
+bool input_controller_is_button_pressed(uint8_t id, int button);
+
+/**
+ * Get given axis value for given controller id.
+ *
+ * @param id Controller id.
+ * @param axis Axis to check.
+ * @param value Axis value as reference.
+ */
+void input_controller_axis(uint8_t id, int axis, float* value);
+
+/**
+ * Notify input module a controller has been connected.
+ *
+ * @param id Contoller id.
+ */
+void input_controller_connect(uint8_t id);
+
+/**
+ * Notify input module a controller has been disconnected.
+ *
+ * @param id Controller id.
+ */
+void input_controller_disconnect(uint8_t id);
+
+/**
+ * Check if given controller id is connected.
+ *
+ * @param id Controller id to check.
+ * @return true if given controller id is conencted, false otherwise.
+ */
+bool input_controller_connected(uint8_t id);
+
+/**
+ * Get number of connected controllers.
+ *
+ * @return int Number of connected controllers.
+ */
+int input_controller_count(void);
+
+/**
+ * Get connected controller ids.
+ *
+ * @param ids Id array as reference. Assumes given array is correctly sized.
+ */
+void input_controller_ids(uint8_t* ids);
+
 #endif

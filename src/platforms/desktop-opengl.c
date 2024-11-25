@@ -12,6 +12,7 @@
 #include "../event.h"
 #include "../files.h"
 #include "../graphics.h"
+#include "../input.h"
 #include "../log.h"
 #include "../math.h"
 #include "../platform.h"
@@ -87,7 +88,7 @@ void platform_init(void) {
     const int window_width = config->resolution.width * 3;
     const int window_height = config->resolution.height * 3;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
 
@@ -275,6 +276,7 @@ void platform_draw(void) {
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
+    SDL_GameController* controller = NULL;
 
     float aspect_width = config->resolution.width / (float)display_rect.w;
     float aspect_height = config->resolution.height / (float)display_rect.h;
@@ -341,6 +343,44 @@ static void sdl_handle_events(void) {
             case SDL_WINDOWEVENT_SIZE_CHANGED:
                 display_rect.w = sdl_event.window.data1;
                 display_rect.h = sdl_event.window.data2;
+                break;
+
+            case SDL_CONTROLLERDEVICEADDED:
+                controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                input_controller_connect(id);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                input_controller_disconnect(sdl_event.cdevice.which);
+                SDL_GameControllerClose(SDL_GameControllerFromInstanceID(sdl_event.cdevice.which));
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                event.type = EVENT_CONTROLLERBUTTONDOWN;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERBUTTONUP:
+                event.type = EVENT_CONTROLLERBUTTONUP;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                event.type = EVENT_CONTROLLERAXISMOTION;
+                event.controller_axis.which = sdl_event.cdevice.which;
+                event.controller_axis.axis = sdl_event.caxis.axis;
+                if (sdl_event.caxis.value < 0) {
+                    event.controller_axis.value = sdl_event.caxis.value / 32768.0f;
+                }
+                else {
+                    event.controller_axis.value = sdl_event.caxis.value / 32767.0f;
+                }
+                event_post(&event);
                 break;
         }
     }
