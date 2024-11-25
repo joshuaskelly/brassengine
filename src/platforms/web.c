@@ -8,6 +8,7 @@
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
+#include "../input.h"
 #include "../log.h"
 #include "../math.h"
 #include "../platform.h"
@@ -240,6 +241,44 @@ static void sdl_handle_events(void) {
                 event.type = EVENT_MOUSEWHEEL;
                 event.wheel.wheel_x = sdl_event.wheel.x;
                 event.wheel.wheel_y = sdl_event.wheel.y;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERDEVICEADDED:
+                SDL_GameController* controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                input_controller_connect(id);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                input_controller_disconnect(sdl_event.cdevice.which);
+                SDL_GameControllerClose(SDL_GameControllerFromInstanceID(sdl_event.cdevice.which));
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                event.type = EVENT_CONTROLLERBUTTONDOWN;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERBUTTONUP:
+                event.type = EVENT_CONTROLLERBUTTONUP;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                event.type = EVENT_CONTROLLERAXISMOTION;
+                event.controller_axis.which = sdl_event.cdevice.which;
+                event.controller_axis.axis = sdl_event.caxis.axis;
+                if (sdl_event.caxis.value < 0) {
+                    event.controller_axis.value = sdl_event.caxis.value / 32768.0f;
+                }
+                else {
+                    event.controller_axis.value = sdl_event.caxis.value / 32767.0f;
+                }
                 event_post(&event);
                 break;
         }
