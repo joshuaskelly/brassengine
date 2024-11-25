@@ -113,6 +113,44 @@ static int modules_mouse_grabbed_get(lua_State* L) {
     return 1;
 }
 
+struct luaL_Field {
+  const char *name;
+  uint8_t value;
+};
+
+/**
+ * Enums
+ * @section Enums
+ */
+
+/**
+ * Button enums
+ * @table buttons
+ *
+ * @tfield integer LEFT
+ * @tfield integer MIDDLE
+ * @tfield integer RIGHT
+ */
+
+static const struct luaL_Field mouse_buttons[] = {
+    {"LEFT", 1},
+    {"MIDDLE", 2},
+    {"RIGHT", 3},
+    {NULL, 0}
+};
+
+static int mouse_button_enums(lua_State*L) {
+    lua_newtable(L);
+
+    const struct luaL_Field* button;
+    for (button = mouse_buttons; button->name; button++) {
+        lua_pushinteger(L, button->value);
+        lua_setfield(L, -2, button->name);
+    }
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_mouse_functions[] = {
     {"button", modules_mouse_button_get},
     {"position", modules_mouse_position_get},
@@ -125,5 +163,9 @@ static const struct luaL_Reg modules_mouse_functions[] = {
 
 int luaopen_mouse(lua_State* L) {
     luaL_newlib(L, modules_mouse_functions);
+
+    mouse_button_enums(L);
+    lua_setfield(L, -2, "buttons");
+
     return 1;
 }
