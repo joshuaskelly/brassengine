@@ -243,11 +243,9 @@ int luaopen_gamecontroller(lua_State* L) {
     luaL_newlib(L, modules_gamecontroller_functions);
 
     gamecontroller_button_enums(L);
-    //make_readonly(L);
     lua_setfield(L, -2, "buttons");
 
     gamecontroller_button_axes(L);
-    //make_readonly(L);
     lua_setfield(L, -2, "axes");
 
     return 1;

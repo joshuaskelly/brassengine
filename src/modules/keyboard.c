@@ -50,8 +50,8 @@ struct luaL_Field {
  */
 
 /**
- * Scancode enums
- * @table scancodes
+ * Key scancode enums
+ * @table keys
  *
  * @tfield integer A
  * @tfield integer B
@@ -564,7 +564,7 @@ int luaopen_keyboard(lua_State* L) {
     luaL_newlib(L, modules_keyboard_functions);
 
     keyboard_scan_code_table(L);
-    lua_setfield(L, -2, "scancodes");
+    lua_setfield(L, -2, "keys");
 
     return 1;
 }
