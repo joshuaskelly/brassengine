@@ -9,7 +9,7 @@ local keyboard = {}
 function keyboard.key(code_or_symbol) end
 
 --- Key scancode nums
-keyboard.scancodes = {
+keyboard.keys = {
     A = 4,
     B = 5,
     C = 6,
