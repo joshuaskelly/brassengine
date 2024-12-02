@@ -1,6 +1,5 @@
 /**
  * Global functions.
- * @module globals
  */
 #include <lua/lua.h>
 #include <lua/lauxlib.h>
