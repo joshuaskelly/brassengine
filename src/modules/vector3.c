@@ -751,6 +751,38 @@ static int modules_vector3_distance_squared(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector3 v0
+ * @tparam vector3 v1
+ */
+
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector3 v0
+ * @tparam number x
+ * @tparam number y
+ * @tparam number z
+ */
+static int modules_vector3_set(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector3(L, 1);
+
+    if (lua_isvector3(L, 2)) {
+        mfloat_t* v1 = luaL_checkvector3(L, 2);
+        vec3_assign(v0, v1);
+
+        return 0;
+    }
+
+    v0[0] = luaL_checknumber(L, 2);
+    v0[1] = luaL_checknumber(L, 3);
+    v0[2] = luaL_checknumber(L, 4);
+
+    return 0;
+}
+
 
 static const struct luaL_Reg modules_vector3_functions[] = {
     {"new", modules_vector3_new},
@@ -784,6 +816,7 @@ static const struct luaL_Reg modules_vector3_functions[] = {
     {"length_squared", modules_vector3_length_squared},
     {"distance", modules_vector3_distance},
     {"distance_squared", modules_vector3_distance_squared},
+    {"set", modules_vector3_set},
     {NULL, NULL}
 };
 

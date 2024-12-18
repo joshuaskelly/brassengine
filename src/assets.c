@@ -814,7 +814,8 @@ static size_t texture_asset_sizeof(texture_asset_t* asset) {
     size_t size = sizeof(texture_asset_t);
 
     for (size_t i = 0; i < asset->frame_count; i++) {
-        size += graphics_texture_sizeof(asset->frames[i]);
+        texture_t* frame = asset->frames[i];
+        size += sizeof(texture_t) + frame->width * frame->height * sizeof(color_t);
     }
 
     return size;

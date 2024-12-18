@@ -1,16 +1,16 @@
 # TODO
 ## General
 - [ ] Fix "BAD!" errors
-- [ ] Gamepad input
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
 - [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
-- [ ] Threaded rendering
-- [ ] iOS platform
 - [ ] Default palette?
+- [ ] iOS platform
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [ ] Threaded rendering
+- [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
 - [x] Audit custom clamp() implementations

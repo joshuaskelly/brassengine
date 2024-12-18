@@ -20,6 +20,7 @@
 #include "modules/assets.h"
 #include "modules/draw.h"
 #include "modules/float_array.h"
+#include "modules/gamecontroller.h"
 #include "modules/gif.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
@@ -57,6 +58,7 @@ static const luaL_Reg modules[] = {
     {"draw", luaopen_draw},
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
+    {"gamecontroller", luaopen_gamecontroller},
     {"gif", luaopen_gif},
     {"graphics", luaopen_graphics},
     {"intarray", luaopen_intarray},
@@ -409,7 +411,7 @@ void script_complete(char* expression) {
     if (last_dot == NULL) {
         dot_position = 0;
         lua_getglobal(L, LUA_GNAME);
-        if (lua_type(L, 1) != LUA_TTABLE) goto done;
+        if (!lua_istable(L, 1)) goto done;
     }
     // Evaluate the root. If the result is a table, use it.
     else {
@@ -430,25 +432,54 @@ void script_complete(char* expression) {
         if (status != LUA_OK) goto done;
 
         // Ensure result is what we expect
-        if (lua_type(L, 1) != LUA_TTABLE) goto done;
+        if (!(lua_type(L, 1) == LUA_TTABLE || lua_type(L, 1) == LUA_TUSERDATA)) goto done;
+    }
+
+    // If result is userdata, check if it has a metatable
+    if (lua_isuserdata(L, 1)) {
+        if (!lua_getmetatable(L, 1)) goto done;
+        lua_remove(L, 1);
     }
 
     const char* suggestions[MAX_SUGGESTIONS];
 
     int min_suggestion_length = 2048;
 
-    // Iterate table key/value pairs
     int base = lua_gettop(L);
-    lua_pushnil(L);
     size_t size = strlen(partial);
-    while (lua_next(L, base) != 0) {
-        const char* key = luaL_checkstring(L, -2);
-        lua_pop(L, 1);
 
-        if (strncmp(partial, key, size) == 0) {
-            suggestions[suggestion_count++] = key;
-            min_suggestion_length = fminf(strlen(key), min_suggestion_length);
+    // Traverse table + metatable
+    while (lua_istable(L, 1)) {
+        // Iterate table key/value pairs
+        lua_pushnil(L);
+        while (lua_next(L, base) != 0) {
+            const char* key = luaL_checkstring(L, -2);
+            lua_pop(L, 1);
+
+            // Check if we have a partial match
+            if (strncmp(partial, key, size) == 0) {
+                // Don't add duplicates
+                bool duplicate_found = false;
+                for (int i = 0; i < suggestion_count; i++) {
+                    if (strcmp(suggestions[i], key) == 0) {
+                        duplicate_found = true;
+                        break;
+                    }
+                }
+
+                if (duplicate_found) continue;
+
+                // Add to suggestions
+                suggestions[suggestion_count++] = key;
+                min_suggestion_length = fminf(strlen(key), min_suggestion_length);
+            }
         }
+
+        // If we have a metatable, iterate that next
+        if (!lua_getmetatable(L, 1)) break;
+
+        // Remove previous table
+        lua_remove(L, 1);
     }
 
     if (suggestion_count == 0) goto done;
@@ -458,10 +489,7 @@ void script_complete(char* expression) {
 
     // Only one valid result, complete the expression
     if (suggestion_count == 1) {
-        const char* suggestion = suggestions[0];
-        int length = strlen(suggestion);
-        strncpy(expression + dot_position, suggestions[0], length);
-        expression[dot_position + length] = '\0';
+        strcpy(expression + dot_position, suggestions[0]);
     }
     // Otherwise complete as much as possible
     else {

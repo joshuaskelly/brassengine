@@ -696,6 +696,36 @@ static int vector2_distance_squared(lua_State* L) {
     return 1;
 }
 
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector2 v0
+ * @tparam vector2 v1
+ */
+
+/**
+ * Set vector components in place.
+ * @function set
+ * @tparam vector2 v0
+ * @tparam number x
+ * @tparam number y
+ */
+static int vector2_set(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector2(L, 1);
+
+    if (lua_isvector2(L, 2)) {
+        mfloat_t* v1 = luaL_checkvector2(L, 2);
+        vec2_assign(v0, v1);
+
+        return 0;
+    }
+
+    v0[0] = luaL_checknumber(L, 2);
+    v0[1] = luaL_checknumber(L, 3);
+
+    return 0;
+}
+
 static const struct luaL_Reg modules_vector2_functions[] = {
     {"new", vector2_new},
     {"sign", vector2_sign},
@@ -720,6 +750,7 @@ static const struct luaL_Reg modules_vector2_functions[] = {
     {"length_squared", vector2_length_squared},
     {"distance", vector2_distance},
     {"distance_squared", vector2_distance_squared},
+    {"set", vector2_set},
     {NULL, NULL}
 };
 

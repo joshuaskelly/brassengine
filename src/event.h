@@ -20,7 +20,10 @@ typedef enum {
     EVENT_MOUSEMOTION,
     EVENT_MOUSEDOWN,
     EVENT_MOUSEUP,
-    EVENT_MOUSEWHEEL
+    EVENT_MOUSEWHEEL,
+    EVENT_CONTROLLERBUTTONDOWN,
+    EVENT_CONTROLLERBUTTONUP,
+    EVENT_CONTROLLERAXISMOTION
 } event_type_t;
 
 typedef struct {
@@ -373,6 +376,50 @@ typedef struct {
     int wheel_y;
 } mouse_wheel_event_t;
 
+typedef enum {
+    CONTROLLER_BUTTON_UNKNOWN = -1,
+    CONTROLLER_BUTTON_A = 0,
+    CONTROLLER_BUTTON_B = 1,
+    CONTROLLER_BUTTON_X = 2,
+    CONTROLLER_BUTTON_Y = 3,
+    CONTROLLER_BUTTON_BACK = 4,
+    CONTROLLER_BUTTON_GUIDE = 5,
+    CONTROLLER_BUTTON_START = 6,
+    CONTROLLER_BUTTON_LEFT_STICK = 7,
+    CONTROLLER_BUTTON_RIGHT_STICK = 8,
+    CONTROLLER_BUTTON_LEFT_SHOULDER = 9,
+    CONTROLLER_BUTTON_RIGHT_SHOULDER = 10,
+    CONTROLLER_BUTTON_DPAD_UP = 11,
+    CONTROLLER_BUTTON_DPAD_DOWN = 12,
+    CONTROLLER_BUTTON_DPAD_LEFT = 13,
+    CONTROLLER_BUTTON_DPAD_RIGHT = 14,
+    CONTROLLER_BUTTON_COUNT = 15
+} controller_button_t;
+
+typedef struct {
+    event_type_t type;
+    uint8_t which;
+    controller_button_t button;
+} controller_button_event_t;
+
+typedef enum {
+    CONTROLLER_AXIS_UNKNOWN = -1,
+    CONTROLLER_AXIS_LEFT_X = 0,
+    CONTROLLER_AXIS_LEFT_Y = 1,
+    CONTROLLER_AXIS_RIGHT_X = 2,
+    CONTROLLER_AXIS_RIGHT_Y = 3,
+    CONTROLLER_AXIS_TRIGGER_LEFT = 4,
+    CONTROLLER_AXIS_TRIGGER_RIGHT = 5,
+    CONTROLLER_AXIS_COUNT = 6
+} controller_axis_t;
+
+typedef struct {
+    event_type_t type;
+    controller_axis_t axis;
+    uint8_t which;
+    float value;
+} controller_axis_event_t;
+
 typedef union {
     event_type_t type;
     common_event_t common;
@@ -380,6 +427,8 @@ typedef union {
     mouse_motion_event_t motion;
     mouse_button_event_t button;
     mouse_wheel_event_t wheel;
+    controller_button_event_t controller_button;
+    controller_axis_event_t controller_axis;
 } event_t;
 
 /**

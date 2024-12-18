@@ -52,12 +52,7 @@ const char* files_read(const char* filename) {
 static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
     errno = 0;
 
-    // Get a temp file to write to
-    FILE* temp_file = tmpfile();
-    if (!temp_file) {
-        log_error("Failed to open temp file: %s", strerror(errno));
-        return NULL;
-    }
+    FILE* temp_file = NULL;
 
     struct zip_t* zip = zip_open(arguments_last(), 0, 'r');
     int total_zip_entries = zip_entries_total(zip);
@@ -75,6 +70,13 @@ static FILE* open_zip_entry_as_file(const char* filename, const char* mode) {
         if (strcmp(filename, name) != 0) {
             zip_entry_close(zip);
             continue;
+        }
+
+        // Get a temp file to write to
+        temp_file = tmpfile();
+        if (!temp_file) {
+            log_error("Failed to open temp file: %s", strerror(errno));
+            return NULL;
         }
 
         // Read zip entry data
