@@ -20,15 +20,15 @@
  * @tparam integer y Pixel y-coordinate
  * @tparam integer color Pixel color
  */
-static int bindings_draw_pixel(lua_State* L) {
+static int modules_draw_pixel(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int color = (int)luaL_checknumber(L, 3);
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_get_render_texture();
-    graphics_texture_set_pixel(render_texture, x, y, color);
+    texture_t* render_texture = graphics_render_texture_get();
+    graphics_texture_pixel_set(render_texture, x, y, color);
 
     return 0;
 }
@@ -42,7 +42,7 @@ static int bindings_draw_pixel(lua_State* L) {
  * @tparam integer y1 End y-coordinate
  * @tparam integer color Line color
  */
-static int bindings_draw_line(lua_State* L) {
+static int modules_draw_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
@@ -77,7 +77,7 @@ static int bindings_draw_line(lua_State* L) {
  * @tparam number v1 End v-coordinate
  * @tparam texture.texture texture Texture to map
  */
-static int bindings_draw_textured_line(lua_State* L) {
+static int modules_draw_textured_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     float u0 = luaL_checknumber(L, 3);
@@ -108,7 +108,7 @@ static int bindings_draw_textured_line(lua_State* L) {
  * @tparam integer y3 End anchor point y-coordinate
  * @tparam integer color Line color
  */
-static int bindings_draw_bezier(lua_State* L) {
+static int modules_draw_bezier(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
@@ -143,7 +143,7 @@ static int bindings_draw_bezier(lua_State* L) {
  * @tparam integer height Rect height
  * @tparam integer color Line color
  */
-static int bindings_draw_rectangle(lua_State* L) {
+static int modules_draw_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -174,7 +174,7 @@ static int bindings_draw_rectangle(lua_State* L) {
  * @tparam integer height Rect height
  * @tparam integer color Fill color
  */
-static int bindings_draw_filled_rectangle(lua_State* L) {
+static int modules_draw_filled_rectangle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int width = (int)luaL_checknumber(L, 3);
@@ -204,7 +204,7 @@ static int bindings_draw_filled_rectangle(lua_State* L) {
  * @tparam integer radius Circle radius
  * @tparam integer color Line color
  */
-static int bindings_draw_circle(lua_State* L) {
+static int modules_draw_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
@@ -233,7 +233,7 @@ static int bindings_draw_circle(lua_State* L) {
  * @tparam integer radius Circle radius
  * @tparam integer color Fill color
  */
-static int bindings_draw_filled_circle(lua_State* L) {
+static int modules_draw_filled_circle(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
@@ -259,12 +259,12 @@ static int bindings_draw_filled_circle(lua_State* L) {
  * @function clear
  * @tparam integer color Color to clear screen
  */
-static int bindings_clear_screen(lua_State* L) {
+static int modules_clear_screen(lua_State* L) {
     int color = (int)luaL_checknumber(L, 1);
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* render_texture = graphics_render_texture_get();
     graphics_texture_clear(render_texture, color);
 
     return 0;
@@ -276,15 +276,30 @@ static int bindings_clear_screen(lua_State* L) {
  * @tparam string message Text to draw
  * @tparam integer x Text top-left x-coordinate
  * @tparam integer y Text top-left y-coordinate
+ * @tparam ?integer foreground Foreground color
+ * @tparam ?integer background Background color
  */
-static int bindings_draw_text(lua_State* L) {
+static int modules_draw_text(lua_State* L) {
+    color_t* palette = graphics_draw_palette_get();
+
     const char* message = (const char*)luaL_checkstring(L, 1);
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
+    int fg = (int)luaL_optnumber(L, 4, palette[1]);
+    int bg = (int)luaL_optnumber(L, 5, palette[0]);
 
     lua_settop(L, 0);
 
+    int bg_old = palette[0];
+    int fg_old = palette[1];
+
+    palette[0] = bg;
+    palette[1] = fg;
+
     draw_text(message, x, y);
+
+    palette[0] = bg_old;
+    palette[1] = fg_old;
 
     return 0;
 }
@@ -300,7 +315,7 @@ static int bindings_draw_text(lua_State* L) {
  * @tparam integer y2 Vertex 2 y-coordinate
  * @tparam integer color Line color
  */
-static int bindings_draw_triangle(lua_State* L) {
+static int modules_draw_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
@@ -335,7 +350,7 @@ static int bindings_draw_triangle(lua_State* L) {
  * @tparam integer y2 Vertex 2 y-coordinate
  * @tparam integer color Fill color
  */
-static int bindings_draw_filled_triangle(lua_State* L) {
+static int modules_draw_filled_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     int x1 = (int)luaL_checknumber(L, 3);
@@ -376,7 +391,7 @@ static int bindings_draw_filled_triangle(lua_State* L) {
  * @tparam number v2 UV 2 v-coordinate
  * @tparam texture.texture texture Texture to map
  */
-static int bindings_draw_textured_triangle(lua_State* L) {
+static int modules_draw_textured_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
     float u0 = luaL_checknumber(L, 3);
@@ -398,24 +413,24 @@ static int bindings_draw_textured_triangle(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"pixel", bindings_draw_pixel},
-    {"line", bindings_draw_line},
-    {"textured_line", bindings_draw_textured_line},
-    {"bezier", bindings_draw_bezier},
-    {"rectangle", bindings_draw_rectangle},
-    {"filled_rectangle", bindings_draw_filled_rectangle},
-    {"circle", bindings_draw_circle},
-    {"filled_circle", bindings_draw_filled_circle},
-    {"clear", bindings_clear_screen},
-    {"text", bindings_draw_text},
-    {"triangle", bindings_draw_triangle},
-    {"filled_triangle", bindings_draw_filled_triangle},
-    {"textured_triangle", bindings_draw_textured_triangle},
+static const struct luaL_Reg modules_draw_functions[] = {
+    {"pixel", modules_draw_pixel},
+    {"line", modules_draw_line},
+    {"textured_line", modules_draw_textured_line},
+    {"bezier", modules_draw_bezier},
+    {"rectangle", modules_draw_rectangle},
+    {"filled_rectangle", modules_draw_filled_rectangle},
+    {"circle", modules_draw_circle},
+    {"filled_circle", modules_draw_filled_circle},
+    {"clear", modules_clear_screen},
+    {"text", modules_draw_text},
+    {"triangle", modules_draw_triangle},
+    {"filled_triangle", modules_draw_filled_triangle},
+    {"textured_triangle", modules_draw_textured_triangle},
     {NULL, NULL}
 };
 
 int luaopen_draw(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_draw_functions);
     return 1;
 }

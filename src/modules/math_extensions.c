@@ -26,7 +26,7 @@
  * @tparam number max
  * @treturn number Clamped value between min and max.
  */
-static int module_math_clamp(lua_State* L) {
+static int modules_math_clamp(lua_State* L) {
     float value = luaL_checknumber(L, 1);
     float min = luaL_checknumber(L, 2);
     float max = luaL_checknumber(L, 3);
@@ -45,7 +45,7 @@ static int module_math_clamp(lua_State* L) {
  * @tparam number t Interpolation value
  * @treturn number Interpolated value between a and b.
  */
-static int module_math_lerp(lua_State* L) {
+static int modules_math_lerp(lua_State* L) {
     float a = luaL_checknumber(L, 1);
     float b = luaL_checknumber(L, 2);
     float t = luaL_checknumber(L, 3);
@@ -69,7 +69,7 @@ static int module_math_lerp(lua_State* L) {
  * @tparam number z Z-coordinate of sample point. (optional)
  * @treturn number float Sampled point.
  */
-static int module_math_noise(lua_State* L) {
+static int modules_math_noise(lua_State* L) {
     float x = luaL_checknumber(L, 1);
     float y = luaL_optnumber(L, 2, 0);
     float z = luaL_optnumber(L, 3, 0);
@@ -88,7 +88,7 @@ static int module_math_noise(lua_State* L) {
  * @tparam number t Interpolation value
  * @treturn number float
  */
-static int module_math_smoothstep(lua_State* L) {
+static int modules_math_smoothstep(lua_State* L) {
     float a = luaL_checknumber(L, 1);
     float b = luaL_checknumber(L, 2);
     float t = luaL_checknumber(L, 3);
@@ -106,7 +106,7 @@ static int module_math_smoothstep(lua_State* L) {
  * @tparam number f
  * @return number float
  */
-static int module_math_sign(lua_State* L) {
+static int modules_math_sign(lua_State* L) {
     float a = luaL_checknumber(L, 1);
 
     lua_pushnumber(L, sign(a));
@@ -114,12 +114,12 @@ static int module_math_sign(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"clamp", module_math_clamp},
-    {"lerp", module_math_lerp},
-    {"noise", module_math_noise},
-    {"smoothstep", module_math_smoothstep},
-    {"sign", module_math_sign},
+static const struct luaL_Reg modules_math_functions[] = {
+    {"clamp", modules_math_clamp},
+    {"lerp", modules_math_lerp},
+    {"noise", modules_math_noise},
+    {"smoothstep", modules_math_smoothstep},
+    {"sign", modules_math_sign},
     {NULL, NULL}
 };
 
@@ -127,7 +127,7 @@ int luaopen_mathextensions(lua_State* L) {
     luaL_requiref(L, "math", NULL, false);
 
     const luaL_Reg *module;
-    for (module = module_functions; module->func; module++) {
+    for (module = modules_math_functions; module->func; module++) {
         lua_pushstring(L, module->name);
         lua_pushcfunction(L, module->func);
         lua_settable(L, -3);

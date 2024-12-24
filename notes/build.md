@@ -1,6 +1,13 @@
 # Build
 
-### Notes
+## Profiling
+
+1. Add `-pg -no-pie` to DFLAGS
+2. Make debug build
+3. Run brass
+4. Run `gprof ./build/bin/brass > out.text` to get profile info
+
+## Notes
 
 When building on Windows with mingw64 + msys you need to build Lua via:
 

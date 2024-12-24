@@ -66,7 +66,7 @@ static int int_array_gc(lua_State* L) {
  * @tparam integer size Number of elements.
  * @treturn intarray
  */
-static int module_int_array_new(lua_State* L) {
+static int modules_int_array_new(lua_State* L) {
     int size = luaL_checkinteger(L, 1);
 
     lua_pop(L, -1);
@@ -82,7 +82,7 @@ static int module_int_array_new(lua_State* L) {
  * @tparam intarray array Array to modify.
  * @tparam integer value Value to add
  */
-static int module_int_array_add(lua_State* L) {
+static int modules_int_array_add(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
     int value = (int)luaL_checknumber(L, 2);
 
@@ -99,7 +99,7 @@ static int module_int_array_add(lua_State* L) {
  * @tparam intarray array int array to modify.
  * @tparam integer size New total number of elements
  */
-static int module_int_array_resize(lua_State* L) {
+static int modules_int_array_resize(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
     int size = (int)luaL_checkinteger(L, 2);
 
@@ -112,7 +112,7 @@ static int module_int_array_resize(lua_State* L) {
     return 0;
 }
 
-static int module_int_array_get(lua_State* L) {
+static int modules_int_array_get(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
     int index = luaL_checkinteger(L, 2);
 
@@ -123,7 +123,7 @@ static int module_int_array_get(lua_State* L) {
     return 1;
 }
 
-static int module_int_array_set(lua_State* L) {
+static int modules_int_array_set(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
     int index = luaL_checkinteger(L, 2);
     int value = luaL_checknumber(L, 3);
@@ -135,7 +135,7 @@ static int module_int_array_set(lua_State* L) {
     return 0;
 }
 
-static int module_int_array_size(lua_State* L) {
+static int modules_int_array_size(lua_State* L) {
     int_array_t* array = luaL_checkintarray(L, 1);
 
     lua_pushinteger(L, array->size);
@@ -143,26 +143,26 @@ static int module_int_array_size(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_int_array_meta_functions[] = {
-    {"__index", module_int_array_get},
-    {"__newindex", module_int_array_set},
-    {"__len", module_int_array_size},
+static const struct luaL_Reg modules_int_array_meta_functions[] = {
+    {"__index", modules_int_array_get},
+    {"__newindex", modules_int_array_set},
+    {"__len", modules_int_array_size},
     {NULL, NULL}
 };
 
-static const struct luaL_Reg module_functions[] = {
-    {"new", module_int_array_new},
-    {"add", module_int_array_add},
-    {"resize", module_int_array_resize},
+static const struct luaL_Reg modules_int_array_functions[] = {
+    {"new", modules_int_array_new},
+    {"add", modules_int_array_add},
+    {"resize", modules_int_array_resize},
     {NULL, NULL}
 };
 
 int luaopen_intarray(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_int_array_functions);
 
     // Push intarray userdata metatable
     luaL_newmetatable(L, "intarray");
-    luaL_setfuncs(L, module_int_array_meta_functions, 0);
+    luaL_setfuncs(L, modules_int_array_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, int_array_gc);
@@ -172,7 +172,7 @@ int luaopen_intarray(lua_State* L) {
 
     // Push intarray_nogc userdata metatable
     luaL_newmetatable(L, "intarray_nogc");
-    luaL_setfuncs(L, module_int_array_meta_functions, 0);
+    luaL_setfuncs(L, modules_int_array_meta_functions, 0);
 
     lua_pop(L, 1);
 

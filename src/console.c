@@ -31,6 +31,7 @@ static bool visible = false;
 
 static void execute(void);
 static void clear_input(void);
+static void complete(void);
 
 void console_init(void) {
     output = circular_buffer_new(80);
@@ -213,6 +214,11 @@ static bool handle_key_down(event_t* event) {
             return true;
         }
 
+        case KEYCODE_TAB: {
+            complete();
+            return true;
+        }
+
         case KEYCODE_RETURN: {
             execute();
             return true;
@@ -354,7 +360,7 @@ bool console_handle_event(event_t* event) {
             break;
     }
 
-    return true;
+    return false;
 }
 
 void console_update(void) {
@@ -389,7 +395,7 @@ void console_draw(void) {
         config->console.colors.background
     );
 
-    graphics_set_clipping_rectangle(&console_rect);
+    graphics_clipping_rectangle_set(&console_rect);
 
     int line = 0;
     const int max_lines = (console_rect.height / 8) - 1;
@@ -426,7 +432,7 @@ void console_draw(void) {
     palette[1] = foreground;
     graphics_transparent_color_set(transparent_color);
 
-    graphics_set_clipping_rectangle(NULL);
+    graphics_clipping_rectangle_set(NULL);
 }
 
 void console_buffer_write(const char* line) {
@@ -499,4 +505,10 @@ static void clear_input(void) {
 
     // Clear command
     command[0] = '\0';
+}
+
+static void complete(void) {
+    script_complete(command);
+    cursor_offset = 0;
+    output_buffer_offset = 0;
 }

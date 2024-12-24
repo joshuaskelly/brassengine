@@ -46,7 +46,7 @@ typedef struct {
 static texture_asset_t* texture_asset_new(int frame_count);
 static void texture_asset_free(texture_asset_t* asset);
 static size_t texture_asset_sizeof(texture_asset_t* asset);
-static texture_t* texture_asset_get_frame(texture_asset_t* asset, int index);
+static texture_t* texture_asset_frame_get(texture_asset_t* asset, int index);
 
 static asset_entry_t* texture_assets = NULL;
 static int texture_asset_count = 0;
@@ -605,16 +605,16 @@ static void* asset_get(asset_entry_t* assets, int count, const char* name) {
     return NULL;
 }
 
-texture_t* assets_get_texture(const char* filename, int frame) {
+texture_t* assets_texture_get(const char* filename, int frame) {
     texture_asset_t* asset = (texture_asset_t*)asset_get(texture_assets, texture_asset_count, filename);
-    return texture_asset_get_frame(asset, frame);
+    return texture_asset_frame_get(asset, frame);
 }
 
-const char* assets_get_script(const char* filename) {
+const char* assets_script_get(const char* filename) {
     return(const char*)asset_get(script_assets, script_asset_count, filename);
 }
 
-sound_t* assets_get_sound(const char* filename) {
+sound_t* assets_sound_get(const char* filename) {
     return(sound_t*)asset_get(sound_assets, sound_asset_count, filename);
 }
 
@@ -814,7 +814,8 @@ static size_t texture_asset_sizeof(texture_asset_t* asset) {
     size_t size = sizeof(texture_asset_t);
 
     for (size_t i = 0; i < asset->frame_count; i++) {
-        size += graphics_texture_sizeof(asset->frames[i]);
+        texture_t* frame = asset->frames[i];
+        size += sizeof(texture_t) + frame->width * frame->height * sizeof(color_t);
     }
 
     return size;
@@ -827,7 +828,7 @@ static size_t texture_asset_sizeof(texture_asset_t* asset) {
  * @param int
  * @return Texture for given asset and frame is successful. NULL otherwise.
  */
-static texture_t* texture_asset_get_frame(texture_asset_t* asset, int index) {
+static texture_t* texture_asset_frame_get(texture_asset_t* asset, int index) {
     if (!asset) return NULL;
     if (index < 0) return NULL;
     if (index >= asset->frame_count) return NULL;

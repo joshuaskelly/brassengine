@@ -12,10 +12,14 @@
 #include "../event.h"
 #include "../files.h"
 #include "../graphics.h"
+#include "../input.h"
 #include "../log.h"
+#include "../math.h"
 #include "../platform.h"
 #include "../sounds.h"
 #include "../time.h"
+
+#include "../modules/platforms/web.h"
 
 static SDL_Window* window = NULL;
 static uint32_t* render_buffer = NULL;
@@ -73,7 +77,7 @@ void platform_init(void) {
     const int window_width = config->resolution.width * 3;
     const int window_height = config->resolution.height * 3;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
 
@@ -179,7 +183,7 @@ void platform_update(void) {
 }
 
 void platform_draw(void) {
-    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* render_texture = graphics_render_texture_get();
     uint32_t* palette = graphics_palette_get();
 
     // Convert core render buffer from indexed to rgba
@@ -257,15 +261,10 @@ void platform_draw(void) {
     SDL_GL_SwapWindow(window);
 }
 
-static float clamp(float x, float min, float max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
-}
-
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
+    SDL_GameController* controller = NULL;
 
     float aspect_width = config->resolution.width / (float)display_rect.w;
     float aspect_height = config->resolution.height / (float)display_rect.h;
@@ -318,6 +317,51 @@ static void sdl_handle_events(void) {
                 event.type = EVENT_MOUSEUP;
                 event.button.type = EVENT_MOUSEUP;
                 event.button.button = sdl_event.button.button;
+                event_post(&event);
+                break;
+
+            case SDL_MOUSEWHEEL:
+                event.type = EVENT_MOUSEWHEEL;
+                event.wheel.wheel_x = sdl_event.wheel.x;
+                event.wheel.wheel_y = sdl_event.wheel.y;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERDEVICEADDED:
+                controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                input_controller_connect(id);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                input_controller_disconnect(sdl_event.cdevice.which);
+                SDL_GameControllerClose(SDL_GameControllerFromInstanceID(sdl_event.cdevice.which));
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                event.type = EVENT_CONTROLLERBUTTONDOWN;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERBUTTONUP:
+                event.type = EVENT_CONTROLLERBUTTONUP;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                event.type = EVENT_CONTROLLERAXISMOTION;
+                event.controller_axis.which = sdl_event.cdevice.which;
+                event.controller_axis.axis = sdl_event.caxis.axis;
+                if (sdl_event.caxis.value < 0) {
+                    event.controller_axis.value = sdl_event.caxis.value / 32768.0f;
+                }
+                else {
+                    event.controller_axis.value = sdl_event.caxis.value / 32767.0f;
+                }
                 event_post(&event);
                 break;
         }
@@ -464,7 +508,7 @@ static void load_shader_program(void) {
     frame_count = glGetUniformLocation(shader_program, "frame_count");
 }
 
-void platform_display_set_resolution(int width, int height) {
+void platform_display_resolution_set(int width, int height) {
     free(render_buffer);
 
     render_buffer = calloc(width * height, sizeof(uint32_t));
@@ -472,24 +516,30 @@ void platform_display_set_resolution(int width, int height) {
     if (!render_buffer) {
         log_fatal("Error creating frame buffer.");
     }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, config->resolution.width, config->resolution.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
 }
 
-void platform_display_set_size(int width, int height) {
+void platform_display_size_set(int width, int height) {
     SDL_SetWindowSize(window, width, height);
 }
 
-void platform_display_set_fullscreen(bool fullscreen) {
+void platform_display_fullscreen_set(bool fullscreen) {
     SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 }
 
-void platform_display_set_title(const char* title) {
+void platform_display_title_set(const char* title) {
     SDL_SetWindowTitle(window, title);
 }
 
-void platform_mouse_set_grabbed(bool grabbed) {
+void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetWindowMouseGrab(window, grabbed);
 }
 
-bool platform_mouse_get_grabbed(void) {
+bool platform_mouse_grabbed_get(void) {
     return SDL_GetWindowMouseGrab(window);
+}
+
+void platform_open_module(void* arg) {
+    open_web_platform_module(arg, window);
 }

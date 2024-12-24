@@ -310,7 +310,7 @@ static color_t shade_pixel(color_t color, float brightness) {
 
     const int amount = brightness * (shade_table->width - 1);
 
-    return graphics_texture_get_pixel(
+    return graphics_texture_pixel_get(
         shade_table,
         amount,
         color
@@ -363,7 +363,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
 
-    const int s = wall_texture->width * offset;
+    const int s = (float)wall_texture->width * offset + 0.00001f;
     const float t_step = wall_texture->height / (float)length;
     float t = start * t_step;
 
@@ -371,7 +371,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         int y = y0 + i;
         if (y >= bottom) break;
 
-        color_t c = graphics_texture_get_pixel(wall_texture, s, t);
+        color_t c = graphics_texture_pixel_get(wall_texture, s, t + 0.0001f);
         t += t_step;
         if (c == graphics_transparent_color_get()) continue;
 
@@ -381,8 +381,7 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         set_depth_buffer_pixel(active_renderer, x, y, depth);
 
         c = shade_pixel(c, brightness);
-        graphics_texture_set_pixel(destination_texture, x, y, c);
-
+        graphics_texture_pixel_set(destination_texture, x, y, c);
     }
 }
 
@@ -400,7 +399,7 @@ static float sprite_depth = FLT_MAX;
  * @param dy Destination y-coordinate
  */
 static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    rect_t* clip_rect = graphics_get_clipping_rectangle();
+    rect_t* clip_rect = graphics_clipping_rectangle_get();
     if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
     if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
 
@@ -408,7 +407,7 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     float d = get_depth_buffer_pixel(active_renderer, dx, dy);
     if (d <= depth) return;
 
-    color_t pixel = graphics_texture_get_pixel(source_texture, sx, sy);
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
     if (pixel == graphics_transparent_color_get()) return;
 
     set_depth_buffer_pixel(active_renderer, dx, dy, depth);
@@ -416,14 +415,14 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     float brightness = get_distance_based_brightness(sprite_depth);
     pixel = shade_pixel(pixel, brightness);
 
-    graphics_texture_set_pixel(destination_texture, dx, dy, pixel);
+    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
 
 raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     raycaster_renderer_t* renderer = (raycaster_renderer_t*)malloc(sizeof(raycaster_renderer_t));
 
     if (!render_texture) {
-        render_texture = graphics_get_render_texture();
+        render_texture = graphics_render_texture_get();
     }
 
     size_t size = render_texture->width * render_texture->height;
@@ -437,6 +436,7 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     renderer->features.draw_ceilings = true;
     renderer->features.horizontal_wall_brightness = 1.0f;
     renderer->features.vertical_wall_brightness = 0.5f;
+    renderer->features.pixels_per_unit = 64.0f;
 
     vec2(renderer->camera.position, 0, 0);
     vec2(renderer->camera.direction, 0, 0);
@@ -484,7 +484,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
     texture_t* render_texture = renderer->render_texture;
     if (!render_texture) {
-        render_texture = graphics_get_render_texture();
+        render_texture = graphics_render_texture_get();
     }
 
     shade_table = renderer->features.shade_table;
@@ -492,6 +492,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
     const float width = render_texture->width;
     const float height = render_texture->height;
+    const float half_height = height / 2.0f;
 
     // Ensure direction is normalized
     vec2_normalize(direction, direction);
@@ -569,6 +570,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
             float half_wall_height = wall_height / 2.0f;
+            float top = half_height - half_wall_height;
+            top += sign(top) * 0.5f;
+            float bottom = top + wall_height;
 
             // Calculate the texture normalized horizontal offset (u-coordinate).
             float offset = 0.0f;
@@ -599,8 +603,8 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     wall_texture,
                     render_texture,
                     i,
-                    height / 2.0f - half_wall_height - 0.5f,
-                    height / 2.0f + half_wall_height + 1.5f,
+                    top,
+                    bottom,
                     offset,
                     brightness,
                     corrected_distance
@@ -652,13 +656,13 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     int x = frac(floor_next[0]) * texture->width;
                     int y = frac(floor_next[1]) * texture->height;
 
-                    color_t color = graphics_texture_get_pixel(texture, x, y);
+                    color_t color = graphics_texture_pixel_get(texture, x, y);
 
                     // Floor
-                    graphics_texture_set_pixel(
+                    graphics_texture_pixel_set(
                         render_texture, i, j, shade_pixel(color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, j, d);
+                    set_depth_buffer_pixel(active_renderer, i, j, distance);
                 }
             }
 
@@ -672,13 +676,13 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
                     int x = frac(floor_next[0]) * texture->width;
                     int y = frac(floor_next[1]) * texture->height;
 
-                    color_t color = graphics_texture_get_pixel(texture, x, y);
+                    color_t color = graphics_texture_pixel_get(texture, x, y);
 
                     // Ceiling
-                    graphics_texture_set_pixel(
+                    graphics_texture_pixel_set(
                         render_texture, i, height - j - 1, shade_pixel(color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, d);
+                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, distance);
                 }
             }
 
@@ -700,48 +704,53 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     shade_table = renderer->features.shade_table;
     fog_distance = renderer->features.fog_distance;
 
-    const float width = render_texture->width;
-    const float height = render_texture->height;
-
     const float fov = renderer->camera.fov;
-    const float distance_to_projection_plane = (width / 2.0f) / tanf(to_radians(fov) / 2.0f);
-
-    // Calculate step vector, we need it to move along the projection plane
-    mfloat_t step[VEC2_SIZE];
-    vec2_tangent(step, direction);
-    vec2_negative(step, step);
+    const float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
     // Calculate sprite projected distance
-    mfloat_t dir[VEC2_SIZE];
-    vec2_subtract(dir, position, camera_position);
-    float distance = vec2_dot(direction, dir);
+    mfloat_t camera_space_position[VEC2_SIZE];
+    vec2_subtract(camera_space_position, position, camera_position);
+    float distance = vec2_dot(direction, camera_space_position);
 
     // Cull sprites outside near/far planes
     if (distance < 0) return;
     if (distance >= fog_distance) return;
 
-    // Frustum culling
-    mfloat_t d[VEC2_SIZE];
-    vec2_assign(d, dir);
-    vec2_normalize(d, d);
-
-    float ang = acos(vec2_dot(direction, d));
-    if (ang > (to_radians(fov) / 2.0f) + 0.175f) return;
-
     // Scale to put point on projection plane.
-    vec2_multiply_f(dir, dir, distance_to_projection_plane / distance);
+    vec2_multiply_f(camera_space_position, camera_space_position, distance_to_projection_plane / distance);
 
-    // Find x offset
-    float x_offset = vec2_dot(dir, step);
+    // Get x-offset
+    mfloat_t tangent[VEC2_SIZE];
+    vec2_tangent(tangent, direction);
+    float x_projection = vec2_dot(camera_space_position, tangent);
 
-    float s_height = 1.0f / distance * distance_to_projection_plane;
-    float half_height = s_height / 2.0f;
+    // Get scale for perspective effect
+    float scale = distance_to_projection_plane / distance;
+    float half_scale = scale / 2.0f;
+
+    // Get sprite dimensions relative to unit 64x64
+    float pixels_per_unit = renderer->features.pixels_per_unit;
+    float sprite_height = (float)sprite->height / pixels_per_unit * scale;
+    float sprite_width = (float)sprite->width / pixels_per_unit * scale;
+    float sprite_y_offset = ((float)sprite->height - pixels_per_unit) / pixels_per_unit;
+    float sprite_x_offset = ((float)sprite->width - pixels_per_unit) / pixels_per_unit;
+
+    // Get screen space offsets
+    float y_offset = (sprite_y_offset + position[2]) * scale;
+    float x_offset = x_projection + (sprite_x_offset * half_scale);
+    float top = (render_texture->height / 2.0f) - half_scale - y_offset;
+    top += sign(top) * 0.5f;
+    float left = (render_texture->width / 2.0f) - half_scale - x_offset + 0.5f;
+
+    // Frustum culling
+    if (left > render_texture->width) return;
+    if (left + sprite_width < 0) return;
 
     rect_t rect = {
-        (width / 2.0f) + x_offset - half_height,
-        (height / 2.0f) - half_height,
-        s_height,
-        s_height
+        left,
+        top,
+        sprite_width,
+        sprite_height
     };
 
     // Set sprite depth for blit func
@@ -811,6 +820,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
     float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
+    float ppu = renderer->features.pixels_per_unit;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
@@ -892,6 +902,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
     // Calculate half-tangent
     mfloat_t half_tangent[VEC3_SIZE];
     vec3_divide_f(half_tangent, tangent, 2.0f);
+    // Scale half tangent by sprite width
+    vec3_multiply_f(half_tangent, half_tangent, (float)sprite->width / ppu);
 
     /** First sprite endpoint. */
     mfloat_t a[VEC3_SIZE];
@@ -1005,6 +1017,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
 
     // Recalculate tangent. This is to ensure correct texture mapping.
     vec3_subtract(tangent, b, a);
+    vec3_normalize(tangent, tangent);
+    float sprite_width = vec3_distance(b, a);
 
     // 5. Render sprite as raycast columns.
 
@@ -1029,22 +1043,35 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
             brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
 
-            float half_sprite_height = ((distance_to_projection_plane / distance) * 0.5f);
+            // Project intersection point along sprite to find tex coord.
             vec3_subtract(p, intersection, a);
             p[2] = 0;
-
-            float offset = vec3_dot(p, tangent);
+            float offset = vec3_dot(p, tangent) / sprite_width;
 
             // TODO: Fix this hack. My hunch is related to pixel centers and
             // calculating the left and right bounds.
             if (offset < 0 || offset > 1.0f) continue;
 
+            // Get scale for perspective effect
+            float scale = distance_to_projection_plane / distance;
+
+            float sprite_height = (float)sprite->height / ppu * scale;
+            float sprite_y_offset = position[2] * scale;
+
+            // Bias to reduce hairy pixels
+            const float bias = 0.11109375f;
+
+            // Get screen space offsets
+            float bottom = half_height + (scale / 2.0f) - sprite_y_offset + bias + 1;
+            float top = bottom - sprite_height;
+            float x = half_width - i;
+
             draw_wall_strip(
                 sprite,
                 render_texture,
-                half_width - i,
-                half_height - half_sprite_height - 0.5f,
-                half_height + half_sprite_height + 1.5f,
+                x,
+                top,
+                bottom,
                 offset,
                 brightness,
                 distance

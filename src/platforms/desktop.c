@@ -9,9 +9,13 @@
 #include "../core.h"
 #include "../event.h"
 #include "../graphics.h"
+#include "../input.h"
 #include "../log.h"
+#include "../math.h"
 #include "../platform.h"
 #include "../sounds.h"
+
+#include "../modules/platforms/desktop.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
@@ -62,7 +66,7 @@ void platform_init(void) {
     const int window_width = config->resolution.width * 3;
     const int window_height = config->resolution.height * 3;
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
 
@@ -142,7 +146,7 @@ void platform_update(void) {
 }
 
 void platform_draw(void) {
-    texture_t* render_texture = graphics_get_render_texture();
+    texture_t* render_texture = graphics_render_texture_get();
     uint32_t* palette = graphics_palette_get();
 
     // Convert core render buffer from indexed to rgba
@@ -191,15 +195,10 @@ void platform_draw(void) {
     SDL_RenderPresent(renderer);
 }
 
-static float clamp(float x, float min, float max) {
-    if (x < min) return min;
-    if (x > max) return max;
-    return x;
-}
-
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
+    SDL_GameController* controller = NULL;
 
     float aspect_width = config->resolution.width / (float)display_rect.w;
     float aspect_height = config->resolution.height / (float)display_rect.h;
@@ -267,6 +266,44 @@ static void sdl_handle_events(void) {
                 display_rect.w = sdl_event.window.data1;
                 display_rect.h = sdl_event.window.data2;
                 break;
+
+            case SDL_CONTROLLERDEVICEADDED:
+                controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
+                int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+                input_controller_connect(id);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                input_controller_disconnect(sdl_event.cdevice.which);
+                SDL_GameControllerClose(SDL_GameControllerFromInstanceID(sdl_event.cdevice.which));
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                event.type = EVENT_CONTROLLERBUTTONDOWN;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERBUTTONUP:
+                event.type = EVENT_CONTROLLERBUTTONUP;
+                event.controller_button.which = sdl_event.cdevice.which;
+                event.controller_button.button = sdl_event.cbutton.button;
+                event_post(&event);
+                break;
+
+            case SDL_CONTROLLERAXISMOTION:
+                event.type = EVENT_CONTROLLERAXISMOTION;
+                event.controller_axis.which = sdl_event.cdevice.which;
+                event.controller_axis.axis = sdl_event.caxis.axis;
+                if (sdl_event.caxis.value < 0) {
+                    event.controller_axis.value = sdl_event.caxis.value / 32768.0f;
+                }
+                else {
+                    event.controller_axis.value = sdl_event.caxis.value / 32767.0f;
+                }
+                event_post(&event);
+                break;
         }
     }
 }
@@ -285,7 +322,7 @@ void platform_sound_play(sound_t* sound, int channel) {
     Mix_PlayChannel(channel, chunk, 0);
 }
 
-void platform_display_set_resolution(int width, int height) {
+void platform_display_resolution_set(int width, int height) {
     SDL_DestroyTexture(render_buffer_texture);
     free(render_buffer);
 
@@ -308,22 +345,26 @@ void platform_display_set_resolution(int width, int height) {
     }
 }
 
-void platform_display_set_size(int width, int height) {
+void platform_display_size_set(int width, int height) {
     SDL_SetWindowSize(window, width, height);
 }
 
-void platform_display_set_fullscreen(bool fullscreen) {
+void platform_display_fullscreen_set(bool fullscreen) {
     SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 }
 
-void platform_display_set_title(const char* title) {
+void platform_display_title_set(const char* title) {
     SDL_SetWindowTitle(window, title);
 }
 
-void platform_mouse_set_grabbed(bool grabbed) {
+void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetRelativeMouseMode(grabbed);
 }
 
-bool platform_mouse_get_grabbed(void) {
+bool platform_mouse_grabbed_get(void) {
     return SDL_GetRelativeMouseMode();
+}
+
+void platform_open_module(void* arg) {
+    open_desktop_platform_module(arg, window);
 }

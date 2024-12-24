@@ -23,15 +23,15 @@
  * @tparam integer y Pixel y-coordinate
  * @tparam integer color Pixel color
  */
-static int bindings_graphics_set_pixel(lua_State* L) {
+static int modules_graphics_pixel_set(lua_State* L) {
     int x = (int)luaL_checknumber(L, 1);
     int y = (int)luaL_checknumber(L, 2);
     int color = (int)luaL_checknumber(L, 3);
 
     lua_pop(L, -1);
 
-    texture_t* render_texture = graphics_get_render_texture();
-    graphics_texture_set_pixel(render_texture, x, y, color);
+    texture_t* render_texture = graphics_render_texture_get();
+    graphics_texture_pixel_set(render_texture, x, y, color);
 
     return 0;
 }
@@ -57,7 +57,7 @@ static int bindings_graphics_set_pixel(lua_State* L) {
  * @tparam integer dw Destination width
  * @tparam integer dh Destination height
  */
-static int bindings_graphics_blit(lua_State* L) {
+static int modules_graphics_blit(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     texture_t* texture = luaL_checktexture(L, 1);
@@ -105,11 +105,11 @@ static int bindings_graphics_blit(lua_State* L) {
  * @tparam integer width Rect width
  * @tparam integer height Rect height
  */
-static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
+static int modules_graphics_clipping_rectangle_set(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     if (arg_count == 0) {
-        graphics_set_clipping_rectangle(NULL);
+        graphics_clipping_rectangle_set(NULL);
         return 0;
     }
 
@@ -122,7 +122,7 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
 
     rect_t clip_rect = {x, y, width, height};
 
-    graphics_set_clipping_rectangle(&clip_rect);
+    graphics_clipping_rectangle_set(&clip_rect);
 
     return 0;
 }
@@ -132,8 +132,8 @@ static int bindings_graphics_set_clipping_rectangle(lua_State* L) {
  * @function get_render_texture
  * @treturn texture.texture Render texture userdata.
  */
-static int bindings_graphics_get_render_texture(lua_State* L) {
-    lua_pushtexture(L, graphics_get_render_texture());
+static int modules_graphics_render_texture_get(lua_State* L) {
+    lua_pushtexture(L, graphics_render_texture_get());
     return 1;
 }
 
@@ -143,7 +143,7 @@ static int bindings_graphics_get_render_texture(lua_State* L) {
  * @tparam integer index Palette index to change.
  * @tparam integer color New color to set.
  */
-static int bindings_graphics_set_draw_palette_color(lua_State* L) {
+static int modules_graphics_draw_palette_color_set(lua_State* L) {
     int index = (int)luaL_checknumber(L, 1);
     int color = (int)luaL_checknumber(L, 2);
 
@@ -158,7 +158,7 @@ static int bindings_graphics_set_draw_palette_color(lua_State* L) {
  * @function set_transparent_color
  * @tparam integer color Color set set as transparent.
  */
-static int bindings_graphics_set_transparent_color(lua_State* L) {
+static int modules_graphics_transparent_color_set(lua_State* L) {
     int color = luaL_optinteger(L, 1, -1);
     graphics_transparent_color_set(color);
 
@@ -175,7 +175,7 @@ static int bindings_graphics_set_transparent_color(lua_State* L) {
  * @tparam integer g Green value. [0, 255]
  * @tparam integer b Blue value. [0, 255]
  */
-static int bindings_graphics_set_palette_color(lua_State* L) {
+static int modules_graphics_palette_color_set(lua_State* L) {
     int index = (int)lua_tonumber(L, -4);
     int r = (int)lua_tonumber(L, -3) & 0xFF;
     int g = (int)lua_tonumber(L, -2) & 0xFF;
@@ -199,7 +199,7 @@ static int bindings_graphics_set_palette_color(lua_State* L) {
  * @tparam integer width Resolution width
  * @tparam integer height Resolution height
  */
-static int bindings_graphics_set_resolution(lua_State* L) {
+static int modules_graphics_resolution_set(lua_State* L) {
     int width = (int)luaL_checknumber(L, 1);
     int height = (int)luaL_checknumber(L, 2);
 
@@ -208,25 +208,25 @@ static int bindings_graphics_set_resolution(lua_State* L) {
     config->resolution.width = width;
     config->resolution.height = height;
 
-    graphics_set_resolution(width, height);
-    platform_display_set_resolution(width, height);
+    graphics_resolution_set(width, height);
+    platform_display_resolution_set(width, height);
 
     return 0;
 }
 
-static const struct luaL_Reg module_functions[] = {
-    {"set_pixel", bindings_graphics_set_pixel},
-    {"blit", bindings_graphics_blit},
-    {"set_clipping_rectangle", bindings_graphics_set_clipping_rectangle},
-    {"get_render_texture", bindings_graphics_get_render_texture},
-    {"set_palette_color", bindings_graphics_set_draw_palette_color},
-    {"set_transparent_color", bindings_graphics_set_transparent_color},
-    {"set_global_palette_color", bindings_graphics_set_palette_color},
-    {"set_resolution", bindings_graphics_set_resolution},
+static const struct luaL_Reg modules_graphics_functions[] = {
+    {"set_pixel", modules_graphics_pixel_set},
+    {"blit", modules_graphics_blit},
+    {"set_clipping_rectangle", modules_graphics_clipping_rectangle_set},
+    {"get_render_texture", modules_graphics_render_texture_get},
+    {"set_palette_color", modules_graphics_draw_palette_color_set},
+    {"set_transparent_color", modules_graphics_transparent_color_set},
+    {"set_global_palette_color", modules_graphics_palette_color_set},
+    {"set_resolution", modules_graphics_resolution_set},
     {NULL, NULL}
 };
 
 int luaopen_graphics(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_graphics_functions);
     return 1;
 }

@@ -27,4 +27,11 @@ function mouse.wheel() end
 --- @param grabbed boolean  True if mouse should be constrained to window.
 function mouse.set_grabbed(grabbed) end
 
+--- Mouse button enums
+mouse.buttons = {
+    LEFT = 1,
+    MIDDLE = 2,
+    RIGHT = 3
+}
+
 return mouse

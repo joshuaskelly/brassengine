@@ -13,13 +13,14 @@
 #include "graphics.h"
 #include "input.h"
 #include "log.h"
+#include "platform.h"
 #include "script.h"
 #include "time.h"
 
 #include "modules/assets.h"
-#include "modules/display.h"
 #include "modules/draw.h"
 #include "modules/float_array.h"
+#include "modules/gamecontroller.h"
 #include "modules/gif.h"
 #include "modules/globals.h"
 #include "modules/graphics.h"
@@ -45,16 +46,18 @@ static bool is_in_error_state = false;
 static double update_time;
 static double draw_time;
 
+#define MAX_SUGGESTIONS 128
+
 static int lua_package_searcher(lua_State* L);
 static int io_open(lua_State* L);
 static int call(lua_State* L, int narg, int nresults);
 
 static const luaL_Reg modules[] = {
     {"assets", luaopen_assets},
-    {"display", luaopen_display},
     {"draw", luaopen_draw},
     {"json", luaopen_json},
     {"floatarray", luaopen_floatarray},
+    {"gamecontroller", luaopen_gamecontroller},
     {"gif", luaopen_gif},
     {"graphics", luaopen_graphics},
     {"intarray", luaopen_intarray},
@@ -184,8 +187,11 @@ static void init_lua_vm(void) {
     // Load modules
     luaL_openenginemodules(L);
 
+    // Load platform specific module
+    platform_open_module(L);
+
    // Execute Lua script
-    const char* main = assets_get_script("main.lua");
+    const char* main = assets_script_get("main.lua");
     if (!main) {
         log_error("Failed to load main.lua file.");
         return;
@@ -313,11 +319,11 @@ void script_reload(void) {
 }
 
 int script_evaluate(const char* script) {
-    char r[strlen(script)+9];
-    sprintf(r, "return %s;", script);
+    char buffer[strlen(script)+9];
+    sprintf(buffer, "return %s;", script);
 
     // Try to evaluate wrapped in a return statement.
-    int status = luaL_loadbuffer(L, r, strlen(r), "=console");
+    int status = luaL_loadbuffer(L, buffer, strlen(buffer), "=console");
 
     if (status != LUA_OK) {
         // Remove previous error message.
@@ -343,8 +349,175 @@ int script_evaluate(const char* script) {
 
         return result;
     }
+    else {
+        // Print the error message on top of the stack
+        int n = lua_gettop(L);
+        if (n > 0) {
+            luaL_checkstack(L, LUA_MINSTACK, "too many results to print");
+            lua_getglobal(L, "print");
+            lua_insert(L, 1);
+            if (lua_pcall(L, n, 0, 0) != LUA_OK) {
+                log_error("error calling 'print'");
+            }
+        }
+    }
 
     return status;
+}
+
+static int compare_strings(const void* a, const void* b) {
+    return strcmp(*(const char**)a, *(const char**)b);
+}
+
+void script_complete(char* expression) {
+    // Don't evaluate function calls
+    if (strchr(expression, '(')) return;
+    if (strchr(expression, ')')) return;
+    if (strchr(expression, '{')) return;
+    if (strchr(expression, '}')) return;
+    // Don't evalute assigments
+    if (strchr(expression, '=')) return;
+
+    /*
+     * Attempt to decompose given expression into a root and a partial. The
+     * root is used to determine which table to inspect. If no root is found,
+     * then use global table and treat entire expression as partial.
+     *
+     * Expression with root and partial:
+     *
+     *   module.submodule.my_functio
+     *   |-----root-----| |-partial-|
+     *
+     *
+     * Expression with only partial:
+     *
+     *   collectgarbag
+     *   |--partial--|
+     */
+
+    char root[2048];
+    memset(root, 0, sizeof(root));
+    char* partial = expression;
+
+    char* last_dot = strrchr(expression, '.');
+    size_t dot_position = last_dot - expression + 1;
+    int suggestion_count = 0;
+
+    int top = lua_gettop(L);
+
+    // No root found, use global table.
+    if (last_dot == NULL) {
+        dot_position = 0;
+        lua_getglobal(L, LUA_GNAME);
+        if (!lua_istable(L, 1)) goto done;
+    }
+    // Evaluate the root. If the result is a table, use it.
+    else {
+        // Set root + partial
+        strncpy(root, expression, dot_position - 1);
+        root[dot_position - 1] = '\0';
+        partial = expression + dot_position;
+
+        // Load expression as buffer
+        char buffer[2048];
+        sprintf(buffer, "return %s;", root);
+        buffer[strlen(buffer)] = '\0';
+        int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
+        if (status != LUA_OK) goto done;
+
+        // Evaluate buffer
+        status = lua_pcall(L, 0, 1, 0);
+        if (status != LUA_OK) goto done;
+
+        // Ensure result is what we expect
+        if (!(lua_type(L, 1) == LUA_TTABLE || lua_type(L, 1) == LUA_TUSERDATA)) goto done;
+    }
+
+    // If result is userdata, check if it has a metatable
+    if (lua_isuserdata(L, 1)) {
+        if (!lua_getmetatable(L, 1)) goto done;
+        lua_remove(L, 1);
+    }
+
+    const char* suggestions[MAX_SUGGESTIONS];
+
+    int min_suggestion_length = 2048;
+
+    int base = lua_gettop(L);
+    size_t size = strlen(partial);
+
+    // Traverse table + metatable
+    while (lua_istable(L, 1)) {
+        // Iterate table key/value pairs
+        lua_pushnil(L);
+        while (lua_next(L, base) != 0) {
+            const char* key = luaL_checkstring(L, -2);
+            lua_pop(L, 1);
+
+            // Check if we have a partial match
+            if (strncmp(partial, key, size) == 0) {
+                // Don't add duplicates
+                bool duplicate_found = false;
+                for (int i = 0; i < suggestion_count; i++) {
+                    if (strcmp(suggestions[i], key) == 0) {
+                        duplicate_found = true;
+                        break;
+                    }
+                }
+
+                if (duplicate_found) continue;
+
+                // Add to suggestions
+                suggestions[suggestion_count++] = key;
+                min_suggestion_length = fminf(strlen(key), min_suggestion_length);
+            }
+        }
+
+        // If we have a metatable, iterate that next
+        if (!lua_getmetatable(L, 1)) break;
+
+        // Remove previous table
+        lua_remove(L, 1);
+    }
+
+    if (suggestion_count == 0) goto done;
+
+    // Sort results
+    qsort(suggestions, suggestion_count, sizeof(char*), compare_strings);
+
+    // Only one valid result, complete the expression
+    if (suggestion_count == 1) {
+        strcpy(expression + dot_position, suggestions[0]);
+    }
+    // Otherwise complete as much as possible
+    else {
+        // Display suggestions
+        char* sep = dot_position ? "." : "";
+        for (int i = 0; i < suggestion_count; i++) {
+            log_info("%s%s%s", root, sep, suggestions[i]);
+        }
+
+        log_info(" ");
+
+        // Complete as much of the expression as possible.
+        int col = 0;
+        for (; col < min_suggestion_length; col++) {
+            char first = suggestions[0][col];
+            for (int row = 1; row < suggestion_count; row++) {
+                // When we hit a non-matching character we are done
+                if (suggestions[row][col] != first) {
+                    expression[dot_position + col] = '\0';
+                    goto done;
+                }
+            }
+            expression[dot_position + col] = first;
+        }
+        expression[dot_position + col] = '\0';
+    }
+
+done:
+    // Cleanup Lua VM state
+    lua_settop(L, top);
 }
 
 double script_update_time_get(void) {
@@ -391,7 +564,7 @@ static int lua_package_searcher(lua_State* L) {
     strcat(filename, ".lua\0");
 
     // Look for script asset
-    const char* script = assets_get_script(filename);
+    const char* script = assets_script_get(filename);
 
     if (script) {
         // We found a script asset, remove the module name from the stack.

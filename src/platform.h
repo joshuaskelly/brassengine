@@ -52,7 +52,7 @@ void platform_draw(void);
  */
 void platform_sound_play(sound_t* sound, int channel);
 
-void platform_display_set_resolution(int width, int height);
+void platform_display_resolution_set(int width, int height);
 
 /**
  * Set display size.
@@ -60,34 +60,42 @@ void platform_display_set_resolution(int width, int height);
  * @param width Display width.
  * @param height Display height.
  */
-void platform_display_set_size(int width, int height);
+void platform_display_size_set(int width, int height);
 
 /**
  * Set display fullscreen.
  *
  * @param fullscreen True to set to fullscreen, False for windowed.
  */
-void platform_display_set_fullscreen(bool fullscreen);
+void platform_display_fullscreen_set(bool fullscreen);
 
 /**
  * Set display title.
  *
  * @param title Text to set as title.
  */
-void platform_display_set_title(const char* title);
+void platform_display_title_set(const char* title);
 
 /**
  * Set mouse grab state. If true, mouse will be constrained to window.
  *
  * @param grabbed
  */
-void platform_mouse_set_grabbed(bool grabbed);
+void platform_mouse_grabbed_set(bool grabbed);
 
 /**
  * Get mouse grab state.
  *
  * @return bool Is mouse grabbed?
  */
-bool platform_mouse_get_grabbed(void);
+bool platform_mouse_grabbed_get(void);
+
+/**
+ * Open platform specific module.
+ *
+ * @param arg Scipting engine specific context data. Typically this is a
+ * lua_State pointer.
+ */
+void platform_open_module(void* arg);
 
 #endif

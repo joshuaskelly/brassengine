@@ -46,6 +46,14 @@ void script_reload(void);
 int script_evaluate(const char* script);
 
 /**
+ * Complete the given expression
+ *
+ * @param expression String representing a Lua expression. The given expression
+ * will be modified to be more complete if possible.
+ */
+void script_complete(char* expression);
+
+/**
  * Gets time used by _update function call in milliseconds
  *
  * @return Time in milliseconds

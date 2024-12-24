@@ -85,7 +85,7 @@ int lua_pushmatrix3(lua_State* L, mfloat_t* matrix) {
     return 1;
 }
 
-static int matrix3_gc(lua_State* L) {
+static int modules_matrix3_gc(lua_State* L) {
     mfloat_t** handle = lua_touserdata(L, 1);
     free(*handle);
     *handle = NULL;
@@ -113,7 +113,7 @@ static int matrix3_gc(lua_State* L) {
  * @function determinant
  * @treturn number float
  */
-static int matrix3_determinant(lua_State* L) {
+static int modules_matrix3_determinant(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     float determinant = mat3_determinant(m0);
 
@@ -129,7 +129,7 @@ static int matrix3_determinant(lua_State* L) {
  * @function negative
  * @treturn matrix3
  */
-static int matrix3_negative(lua_State* L) {
+static int modules_matrix3_negative(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
     lua_settop(L, 0);
@@ -147,7 +147,7 @@ static int matrix3_negative(lua_State* L) {
  * @function transpose
  * @treturn matrix3
  */
-static int matrix3_transpose(lua_State* L) {
+static int modules_matrix3_transpose(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
     lua_settop(L, 0);
@@ -165,7 +165,7 @@ static int matrix3_transpose(lua_State* L) {
  * @function cofactor
  * @treturn matrix3
  */
-static int matrix3_cofactor(lua_State* L) {
+static int modules_matrix3_cofactor(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
     lua_settop(L, 0);
@@ -183,7 +183,7 @@ static int matrix3_cofactor(lua_State* L) {
  * @function inverse
  * @treturn matrix3
  */
-static int matrix3_inverse(lua_State* L) {
+static int modules_matrix3_inverse(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
     lua_settop(L, 0);
@@ -211,7 +211,7 @@ static int matrix3_inverse(lua_State* L) {
  * @tparam number z
  * @treturn matrix3
  */
-static int matrix3_scale(lua_State* L) {
+static int modules_matrix3_scale(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -260,7 +260,7 @@ static int matrix3_scale(lua_State* L) {
  * @tparam ?number m33
  * @treturn matrix3
  */
-static int matrix3_new(lua_State* L) {
+static int modules_matrix3_new(lua_State* L) {
     float m11 = (float)luaL_optnumber(L, 1, 0);
     float m21 = (float)luaL_optnumber(L, 2, 0);
     float m31 = (float)luaL_optnumber(L, 3, 0);
@@ -283,7 +283,7 @@ static int matrix3_new(lua_State* L) {
  * @function zero
  * @treturn matrix3
  */
-static int matrix3_zero(lua_State* L) {
+static int modules_matrix3_zero(lua_State* L) {
     lua_newmatrix3(L, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mat3_zero(m0);
@@ -296,7 +296,7 @@ static int matrix3_zero(lua_State* L) {
  * @function identity
  * @treturn matrix3
  */
-static int matrix3_identity(lua_State* L) {
+static int modules_matrix3_identity(lua_State* L) {
     lua_newmatrix3(L, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mat3_identity(m0);
@@ -304,7 +304,7 @@ static int matrix3_identity(lua_State* L) {
     return 1;
 }
 
-static int matrix3_rotate_x_axis(lua_State* L) {
+static int modules_matrix3_rotate_x_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -319,7 +319,7 @@ static int matrix3_rotate_x_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix3_rotate_y_axis(lua_State* L) {
+static int modules_matrix3_rotate_y_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -334,7 +334,7 @@ static int matrix3_rotate_y_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix3_rotate_z_axis(lua_State* L) {
+static int modules_matrix3_rotate_z_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mfloat_t f = luaL_checknumber(L, 2);
 
@@ -349,7 +349,7 @@ static int matrix3_rotate_z_axis(lua_State* L) {
     return 1;
 }
 
-static int matrix3_rotate_around_axis(lua_State* L) {
+static int modules_matrix3_rotate_around_axis(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mfloat_t* v0 = luaL_checkvector3(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -371,7 +371,7 @@ static int matrix3_rotate_around_axis(lua_State* L) {
  * @tparam quaternion.quaternion q0
  * @treturn matrix3
  */
-static int matrix3_rotation_quaternion(lua_State* L) {
+static int modules_matrix3_rotation_quaternion(lua_State* L) {
     mfloat_t* q0 = luaL_checkquaternion(L, 1);
 
     lua_settop(L, 0);
@@ -399,7 +399,7 @@ static int matrix3_rotation_quaternion(lua_State* L) {
  * @tparam number z
  * @treturn matrix3
  */
-static int matrix3_scaling(lua_State* L) {
+static int modules_matrix3_scaling(lua_State* L) {
     int arg_count = lua_gettop(L);
 
     mfloat_t* v0 = NULL;
@@ -422,7 +422,7 @@ static int matrix3_scaling(lua_State* L) {
 
     lua_settop(L, 0);
 
-    matrix3_identity(L);
+    modules_matrix3_identity(L);
     mfloat_t* result = luaL_checkmatrix3(L, 1);
 
     mat3_scaling(result, v0);
@@ -430,7 +430,7 @@ static int matrix3_scaling(lua_State* L) {
     return 1;
 }
 
-static int matrix3_multiply(lua_State* L) {
+static int modules_matrix3_multiply(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
 
     // vector3 multiplication
@@ -478,7 +478,7 @@ static int matrix3_multiply(lua_State* L) {
  * @tparam number f
  * @treturn matrix3
  */
-static int matrix3_lerp(lua_State* L) {
+static int modules_matrix3_lerp(lua_State* L) {
     mfloat_t* m0 = luaL_checkmatrix3(L, 1);
     mfloat_t* m1 = luaL_checkmatrix3(L, 2);
     mfloat_t f = luaL_checknumber(L, 3);
@@ -493,28 +493,28 @@ static int matrix3_lerp(lua_State* L) {
     return 1;
 }
 
-static const struct luaL_Reg module_functions[] = {
+static const struct luaL_Reg modules_matrix3_functions[] = {
     // Class functions
-    {"cofactor", matrix3_cofactor},
-    {"determinant", matrix3_determinant},
-    {"scale", matrix3_scale},
-    {"transpose", matrix3_transpose},
+    {"cofactor", modules_matrix3_cofactor},
+    {"determinant", modules_matrix3_determinant},
+    {"scale", modules_matrix3_scale},
+    {"transpose", modules_matrix3_transpose},
     // Module functions
-    {"new", matrix3_new},
-    {"zero", matrix3_zero},
-    {"identity", matrix3_identity},
-    {"rotate_x_axis", matrix3_rotate_x_axis},
-    {"rotate_y_axis", matrix3_rotate_y_axis},
-    {"rotate_z_axis", matrix3_rotate_z_axis},
-    {"rotate_around_axis", matrix3_rotate_around_axis},
-    {"rotation", matrix3_rotation_quaternion},
-    {"scaling", matrix3_scaling},
-    {"inverse", matrix3_inverse},
-    {"lerp", matrix3_lerp},
+    {"new", modules_matrix3_new},
+    {"zero", modules_matrix3_zero},
+    {"identity", modules_matrix3_identity},
+    {"rotate_x_axis", modules_matrix3_rotate_x_axis},
+    {"rotate_y_axis", modules_matrix3_rotate_y_axis},
+    {"rotate_z_axis", modules_matrix3_rotate_z_axis},
+    {"rotate_around_axis", modules_matrix3_rotate_around_axis},
+    {"rotation", modules_matrix3_rotation_quaternion},
+    {"scaling", modules_matrix3_scaling},
+    {"inverse", modules_matrix3_inverse},
+    {"lerp", modules_matrix3_lerp},
     {NULL, NULL}
 };
 
-static int matrix3_meta_index(lua_State* L) {
+static int modules_matrix3_meta_index(lua_State* L) {
     mfloat_t* matrix = luaL_checkmatrix3(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -561,7 +561,7 @@ static int matrix3_meta_index(lua_State* L) {
     return 1;
 }
 
-static int matrix3_meta_newindex(lua_State* L) {
+static int modules_matrix3_meta_newindex(lua_State* L) {
     mfloat_t* matrix = luaL_checkmatrix3(L, 1);
     const char* key = luaL_checkstring(L, 2);
 
@@ -610,28 +610,28 @@ static int matrix3_meta_newindex(lua_State* L) {
     return 0;
 }
 
-static const struct luaL_Reg meta_functions[] = {
-    {"__index", matrix3_meta_index},
-    {"__newindex", matrix3_meta_newindex},
-    {"__mul", matrix3_multiply},
-    {"__unm", matrix3_negative},
+static const struct luaL_Reg modules_matrix3_meta_functions[] = {
+    {"__index", modules_matrix3_meta_index},
+    {"__newindex", modules_matrix3_meta_newindex},
+    {"__mul", modules_matrix3_multiply},
+    {"__unm", modules_matrix3_negative},
     {NULL, NULL}
 };
 
 int luaopen_matrix3(lua_State* L) {
-    luaL_newlib(L, module_functions);
+    luaL_newlib(L, modules_matrix3_functions);
 
     luaL_newmetatable(L, "matrix3");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_matrix3_meta_functions, 0);
 
     lua_pushstring(L, "__gc");
-    lua_pushcfunction(L, matrix3_gc);
+    lua_pushcfunction(L, modules_matrix3_gc);
     lua_settable(L, -3);
 
     lua_pop(L, 1);
 
     luaL_newmetatable(L, "matrix3_nogc");
-    luaL_setfuncs(L, meta_functions, 0);
+    luaL_setfuncs(L, modules_matrix3_meta_functions, 0);
 
     lua_pop(L, 1);
 

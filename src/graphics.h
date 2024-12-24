@@ -6,6 +6,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
@@ -20,7 +21,9 @@ typedef uint8_t color_t;
 typedef struct {
     int width;
     int height;
-    color_t pixels[];
+    int stride;
+    bool is_subtexture;
+    color_t* pixels;
 } texture_t;
 
 /**
@@ -41,14 +44,6 @@ texture_t* graphics_texture_new(int width, int height, const color_t* pixels);
 void graphics_texture_free(texture_t* texture);
 
 /**
- * Returns size of given texture in bytes.
- *
- * @param texture Texture to get sizeof.
- * @return Size of texture in bytes.
- */
-size_t graphics_texture_sizeof(texture_t* texture);
-
-/**
  * Copy given texture
  *
  * @param texture Texture to copy
@@ -65,6 +60,15 @@ texture_t* graphics_texture_copy(texture_t* texture);
 void graphics_texture_clear(texture_t* texture, color_t color);
 
 /**
+ * Creates a texture that shares pixels with the given texture.
+ *
+ * @param texture Texture to get subtexture from
+ * @param rect Sub region of given texture to use as subtexture.
+ * @return New texture if successful, NULL otherwise.
+ */
+texture_t* graphics_texture_sub(texture_t* texture, rect_t* rect);
+
+/**
  * Set pixel color.
  *
  * @param texture Texture to set pixel
@@ -72,7 +76,7 @@ void graphics_texture_clear(texture_t* texture, color_t color);
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-void graphics_texture_set_pixel(texture_t* texture, int x, int y, color_t color);
+void graphics_texture_pixel_set(texture_t* texture, int x, int y, color_t color);
 
 /**
  * Get pixel color.
@@ -82,7 +86,7 @@ void graphics_texture_set_pixel(texture_t* texture, int x, int y, color_t color)
  * @param y Pixel y-coordinate
  * @return Color at given coordinates
  */
-color_t graphics_texture_get_pixel(texture_t* texture, int x, int y);
+color_t graphics_texture_pixel_get(texture_t* texture, int x, int y);
 
 /**
  * Copy a portion of one texture to another.
@@ -109,7 +113,7 @@ void graphics_destroy(void);
  *
  * @return Render texture.
  */
-texture_t* graphics_get_render_texture(void);
+texture_t* graphics_render_texture_get(void);
 
 /**
  * Get palette.
@@ -169,7 +173,7 @@ int graphics_transparent_color_get(void);
  * @param y Pixel y-coordinate
  * @param color Pixel color
  */
-void graphics_set_pixel(int x, int y, color_t color);
+void graphics_pixel_set(int x, int y, color_t color);
 
 /**
  * Function to copy a pixel from the source texture to the destination texture.
@@ -206,7 +210,7 @@ void graphics_blit(
  * @param width Width of render buffer in pixels.
  * @param height Height of render buffer in pixels.
  */
-void graphics_set_resolution(int width, int height);
+void graphics_resolution_set(int width, int height);
 
 /**
  * Sets clipping rectangle which defines drawable area.
@@ -216,8 +220,13 @@ void graphics_set_resolution(int width, int height);
  * @param width Rect width
  * @param height Rect height
  */
-void graphics_set_clipping_rectangle(rect_t* rect);
+void graphics_clipping_rectangle_set(rect_t* rect);
 
-rect_t* graphics_get_clipping_rectangle(void);
+/**
+ * Gets clipping rectangle which defines the drawable area.
+ *
+ * @return rect_t Clipping rectangle
+ */
+rect_t* graphics_clipping_rectangle_get(void);
 
 #endif

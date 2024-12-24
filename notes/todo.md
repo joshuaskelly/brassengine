@@ -1,19 +1,19 @@
 # TODO
 ## General
-- [ ] Add foreground/background color as optional args to draw text.
 - [ ] Fix "BAD!" errors
-- [ ] Gamepad input
 - [ ] Simplify web html wrapper
-- [ ] Platform specific Lua module
 - [ ] Polygon rasterization for draw module
-- [ ] Audit custom clamp() implementations
 - [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
-- [ ] Threaded rendering
-- [ ] iOS platform
 - [ ] Default palette?
+- [ ] iOS platform
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
+- [ ] Threaded rendering
+- [x] Gamepad input
+- [x] Add foreground/background color as optional args to draw text.
+- [x] Platform specific Lua module
+- [x] Audit custom clamp() implementations
 - [x] Audit/fix draw rectangle functions. Width/height seems off?
 - [x] Support for loading all frames from GIF files.
 - [x] Support for creating/modifiying sound objects.
@@ -31,11 +31,13 @@
 
 ## Raycaster Renderer
 - [ ] Improved demo assets
-- [ ] Direction aligned sprites
-- [ ] Pixels per unit feauture to support tall/short walls/sprites.
-- [ ] Support vertical offsets for entities/camera.
+- [ ] Support vertical offsets for camera.
 - [ ] Investigate sprite perf.
 - [ ] Clean up some workaround globals.
+- [ ] Ensure rendering pixel correctness. Position camera such that walls/sprites are exactly 32x32, 64x64, 128x128, and 256x256 in screen space.
+- [x] Pixels per unit feauture to support tall/short walls/sprites.
+- [x] Support vertical offsets for entities.
+- [x] Direction aligned sprites
 - [x] Render targets
 - [x] Ceiling/floor tile data
 - [x] Depth buffer? Work on sprite perf.
@@ -59,8 +61,8 @@
 - [ ] Word navigation (ctrl + key) Needs to be alt + arrow on Mac 😫
   - [ ] Left/right
   - [ ] Delete/backspace
-- [ ] Tab completion?
 - [ ] Support for custom console background. Custom draw callback?
+- [x] Tab completion?
 - [x] Ensure console colors + clear colors are correct before draw
 - [x] Refactor event handling. Right now the script system reaches directly into the input system and still gets event data when console is down.
 - [x] Fix errors being output twice.

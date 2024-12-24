@@ -28,6 +28,8 @@ void core_init(void) {
     graphics_init();
     input_init();
     script_init();
+
+    log_info(" ");
 }
 
 void core_destroy(void) {
@@ -66,6 +68,8 @@ void core_reload(void) {
     assets_reload();
     platform_reload();
     script_reload();
+
+    log_info(" ");
 }
 
 /**
