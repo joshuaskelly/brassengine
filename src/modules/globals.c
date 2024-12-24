@@ -64,6 +64,18 @@ static int modules_time_since_init_get(lua_State* L) {
 }
 
 /**
+ * Get frames since app launch
+ * @function frames
+ * @treturn integer Total frames since app launch.
+ */
+static int modules_frame_get(lua_State* L) {
+    double frames = time_frames_get();
+    lua_pushinteger(L, frames);
+
+    return 1;
+}
+
+/**
  * Quits app.
  * @function quit
  */
@@ -88,6 +100,7 @@ void luaL_openglobals(lua_State* L) {
     lua_register(L, "clear", modules_clear);
     lua_register(L, "delta_time", modules_delta_time_get);
     lua_register(L, "time", modules_time_since_init_get);
+    lua_register(L, "frames", modules_frame_get);
     lua_register(L, "quit", modules_quit);
     lua_register(L, "reload", modules_reload);
 }
