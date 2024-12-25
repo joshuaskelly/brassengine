@@ -22,7 +22,7 @@ typedef struct {
     } features;
 } mode7_renderer_t;
 
-typedef bool(*mode7_callback_t)(int);
+typedef void(*mode7_callback_t)(int);
 
 mode7_renderer_t* mode7_renderer_new(texture_t* render_texture);
 

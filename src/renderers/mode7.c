@@ -40,7 +40,7 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
 
     for (int y = 0; y < renderer->render_texture->height; y++) {
         // Per scanline callback
-        if (callback(y)) return;
+        callback(y);
 
         // Transform scanline start
         vec3(work, 0, y, 1);

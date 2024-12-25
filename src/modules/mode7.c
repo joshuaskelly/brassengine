@@ -42,7 +42,7 @@ static lua_State* LL;
 static int table_reference = 0;
 static int callback_reference = 0;
 
-static bool callback(int y) {
+static void callback(int y) {
     lua_State* L = LL;
 
     // Get Lua callback function
@@ -63,11 +63,7 @@ static bool callback(int y) {
         lua_pop(L, -1);
 
         script_error_state_set(true);
-
-        return true;
     }
-
-    return false;
 }
 
 /**
