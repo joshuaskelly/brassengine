@@ -28,7 +28,7 @@ void mode7_renderer_free(mode7_renderer_t* renderer) {
     renderer = NULL;
 }
 
-void draw_scanline(mode7_renderer_t* renderer, int y, float u0, float v0, float u1, float v1, texture_t* texture);
+static void draw_scanline(mode7_renderer_t* renderer, int y, float u0, float v0, float u1, float v1, texture_t* texture);
 
 void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7_callback_t callback) {
     mfloat_t st0[VEC3_SIZE];
@@ -60,7 +60,7 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
     }
 }
 
-void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0, float s1, float t1, texture_t* texture) {
+static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0, float s1, float t1, texture_t* texture) {
     // DDA based line drawing algorithm
     texture_t* render_texture = renderer->render_texture;
 
