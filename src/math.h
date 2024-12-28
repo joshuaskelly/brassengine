@@ -63,4 +63,22 @@ float smoothstep(float a, float b, float t);
  */
 float sign(float f);
 
+/**
+ * Returns modulo of a by b.
+ *
+ * @param a
+ * @param b
+ * @return int
+ */
+int modulo(int a, int b);
+
+/**
+ * Returns modulo of a by b.
+ *
+ * @param a
+ * @param b
+ * @return float
+ */
+float modulof(float a, float b);
+
 #endif

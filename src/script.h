@@ -67,4 +67,8 @@ double script_update_time_get(void);
  */
 double script_draw_time_get(void);
 
+bool script_error_state_get(void);
+
+void script_error_state_set(bool state);
+
 #endif
