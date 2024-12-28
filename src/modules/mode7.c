@@ -54,6 +54,19 @@ static int modules_mode7_renderer_new(lua_State* L) {
     return lua_newmode7renderer(L);
 }
 
+/**
+ * Clears color buffer.
+ * @function Renderer:clear
+ * @tparam ?integer color Color to fill buffer with.
+ */
+static int modules_mode7_renderer_clear(lua_State* L) {
+    mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 1);
+    color_t color = (color_t)luaL_optnumber(L, 2, 0);
+    mode7_renderer_clear_color(renderer, color);
+
+    return 0;
+}
+
 static lua_State* LL;
 static int table_reference = 0;
 static int callback_reference = 0;
@@ -252,6 +265,7 @@ static int modules_mode7_renderer_meta_index(lua_State* L) {
 
 static const struct luaL_Reg modules_mode7_renderer_functions[] = {
     {"new", modules_mode7_renderer_new},
+    {"clear", modules_mode7_renderer_clear},
     {"render", modules_mode7_renderer_render},
     {"feature", modules_mode7_renderer_feature},
     {NULL, NULL}

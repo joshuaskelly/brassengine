@@ -23,6 +23,10 @@ mode7_renderer_t* mode7_renderer_new(texture_t* render_texture) {
     return renderer;
 }
 
+void mode7_renderer_clear_color(mode7_renderer_t* renderer, color_t color) {
+    graphics_texture_clear(renderer->render_texture, color);
+}
+
 void mode7_renderer_free(mode7_renderer_t* renderer) {
     free(renderer);
     renderer = NULL;
