@@ -1,3 +1,9 @@
+/**
+ * Module for mode7 renderer
+ *
+ * @module mode7
+ */
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +40,16 @@ static int lua_newmode7renderer(lua_State* L) {
     return 1;
 }
 
+/**
+ * @type Renderer
+ */
+
+/**
+ * Creates a mode7 renderer object.
+ * @function Renderer:new
+ * @tparam ?texture.texture render_texture Optional texture to render to. If none given, will default to global render texture.
+ * @treturn Renderer
+ */
 static int modules_mode7_renderer_new(lua_State* L) {
     return lua_newmode7renderer(L);
 }
@@ -86,6 +102,12 @@ static bool lua_iscallable(lua_State*L, int index) {
     return false;
 }
 
+/**
+ * Renders given texture.
+ * @function render
+ * @tparam texture.texture texture Texture to render
+ * @tparam function(integer):nil callback Horizontal scanline callback. Given the scanline as integer, and does not return a value.
+ */
 static int modules_mode7_renderer_render(lua_State* L) {
     mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 1);
     texture_t* texture = luaL_checktexture(L, 2);
@@ -143,6 +165,19 @@ static int modules_mode7_renderer_render(lua_State* L) {
     return 0;
 }
 
+/**
+ * Access renderer's features. If just the feature name is provided, the value of
+ * that feature will be returned. If a value is provided, the feature will be set to that value.
+ *
+ * **Features:**
+ *
+ *  * <span class="parameter">'matrix'</span> (@{matrix3}) Matrix used to transform scanline.
+ *  * <span class="parameter">'wrapmode'</span> (@{string}) Mode defining how the texture is wrapped. One of: 'NONE', 'REPEAT', or 'CLAMP'
+ *
+ * @function Renderer:feature
+ * @tparam string name Feature name.
+ * @tparam ?any value Value to set feature to.
+ */
 static int modules_mode7_renderer_feature(lua_State* L) {
     mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
