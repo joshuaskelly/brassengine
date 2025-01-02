@@ -21,8 +21,12 @@
 
 #include "../modules/platforms/web.h"
 
+#define FPS 60
+#define FRAME_TIME_LENGTH (1000 / FPS)
+
 static SDL_Window* window = NULL;
 static uint32_t* render_buffer = NULL;
+static int ticks_last_frame;
 static SDL_Rect display_rect;
 
 static char* fragment_shader_source = NULL;
@@ -42,6 +46,7 @@ static GLuint index_buffer_object = 0;
 static GLuint texture = 0;
 
 static void sdl_handle_events(void);
+static void sdl_fix_frame_rate(void);
 static void load_shader_program(void);
 
 static const char default_shader[] = "#version 100\nprecision mediump float;uniform sampler2D screen_texture;varying mediump vec2 uv;void main() {gl_FragColor = texture2D(screen_texture, uv);}";
@@ -366,6 +371,15 @@ static void sdl_handle_events(void) {
                 break;
         }
     }
+}
+
+static void sdl_fix_frame_rate(void) {
+    int time_to_wait = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks_last_frame);
+    if (0 < time_to_wait && time_to_wait < FRAME_TIME_LENGTH) {
+        SDL_Delay(time_to_wait);
+    }
+
+    ticks_last_frame = SDL_GetTicks();
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
