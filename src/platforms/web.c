@@ -27,6 +27,7 @@ static void sdl_handle_events(void);
 int platform_main(int argc, char* argv[]) {
     core_init();
     emscripten_set_main_loop(core_main_loop, 0, 1);
+    emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 16);
 
     return 0;
 }
