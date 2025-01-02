@@ -3,6 +3,8 @@
 - [ ] Fix "BAD!" errors
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
+- [ ] Move to SDL3?
+- [ ] MIDI music
 - [ ] Event based input?
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] Default palette?
@@ -10,6 +12,7 @@
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Threaded rendering
+- [ ] Fix web-opengl platform
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
