@@ -16,22 +16,18 @@
 
 #include "../modules/platforms/web.h"
 
-#define FPS 60
-#define FRAME_TIME_LENGTH (1000 / FPS)
-
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t* render_buffer = NULL;
-static int ticks_last_frame;
 static SDL_Rect display_rect;
 
 static void sdl_handle_events(void);
-static void sdl_fix_frame_rate(void);
 
 int platform_main(int argc, char* argv[]) {
     core_init();
     emscripten_set_main_loop(core_main_loop, 0, 1);
+    emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 16);
 
     return 0;
 }
@@ -289,15 +285,6 @@ static void sdl_handle_events(void) {
                 break;
         }
     }
-}
-
-static void sdl_fix_frame_rate(void) {
-    int time_to_wait = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks_last_frame);
-    if (0 < time_to_wait && time_to_wait < FRAME_TIME_LENGTH) {
-        SDL_Delay(time_to_wait);
-    }
-
-    ticks_last_frame = SDL_GetTicks();
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
