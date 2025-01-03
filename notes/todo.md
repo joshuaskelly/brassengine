@@ -3,6 +3,7 @@
 - [ ] Fix "BAD!" errors
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
+- [ ] Sprite drawing with affine transformation
 - [ ] Move to SDL3?
 - [ ] MIDI music
 - [ ] Event based input?
