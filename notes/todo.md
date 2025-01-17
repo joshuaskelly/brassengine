@@ -14,6 +14,7 @@
 - [ ] Dreamcast platform?!
 - [ ] Threaded rendering
 - [ ] Fix web-opengl platform
+- [ ] Scripted assets? Would support custom file types obj, wad, etc
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
@@ -62,6 +63,7 @@
 - [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
 
 ## Console
+- [ ] Autocomplete support for colon operator
 - [ ] Word navigation (ctrl + key) Needs to be alt + arrow on Mac 😫
   - [ ] Left/right
   - [ ] Delete/backspace
