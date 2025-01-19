@@ -1,5 +1,6 @@
 # TODO
 ## General
+- [ ] Keyboard pressed/released api?
 - [ ] Fix "BAD!" errors
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
@@ -82,7 +83,7 @@
 
 ## Sound
 - [ ] Streaming audio support?
-- [ ] Remove SDL Mixer dependency?
+- [ ] ~~Remove SDL Mixer dependency?~~
 
 ## Documentation
 - [ ] Fix how Language Server definition script treats global functions. (fix globals.lua and math.lua)
