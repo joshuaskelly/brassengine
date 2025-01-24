@@ -22,11 +22,13 @@ static SDL_Texture* render_buffer_texture = NULL;
 static uint32_t* render_buffer = NULL;
 static SDL_Rect display_rect;
 
+static Mix_Chunk chunks[MIX_CHANNELS];
+
 static void sdl_handle_events(void);
 
 int platform_main(int argc, char* argv[]) {
     core_init();
-    emscripten_set_main_loop(core_main_loop, 0, 1);
+    emscripten_set_main_loop(core_main_loop, 60, 1);
 
     return 0;
 }
@@ -287,7 +289,30 @@ static void sdl_handle_events(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
-    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
+    // Search for a free channel if channel not specified
+    if (channel == -1) {
+        for (int i = 0; i < MIX_CHANNELS; i++) {
+            if (!Mix_Playing(i)) {
+                channel = i;
+                break;
+            }
+        }
+    }
+
+    if (channel == -1) {
+        log_error("No free channels available");
+        return;
+    }
+
+    size_t size = sound->frame_count * sound->channel_count * sizeof(sample_t);
+
+    // Configure chunk with sound data
+    Mix_Chunk* chunk = &chunks[channel];
+    chunk->allocated = 0;
+    chunk->alen = size;
+    chunk->abuf = (uint8_t*)sound->pcm;
+    chunk->volume = 128;
+
     Mix_PlayChannel(channel, chunk, 0);
 }
 
