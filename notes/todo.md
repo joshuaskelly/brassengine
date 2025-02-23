@@ -52,7 +52,11 @@
 - [x] Shading via color tables
 
 ## Mode7 Renderer
-- [ ] Initial implementation
+- [x] Initial implementation
+- [x] Investigate memory leak
+- [x] Investigate lua callback mechanism
+- [ ] Rework how the callback is invoke + better error handling. Ideally would live inside script.c
+- [ ] Demo!
 
 ## VoxelSpace Renderer
 - [ ] Initial implementation
