@@ -94,7 +94,9 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
 
         color_t c = graphics_texture_pixel_get(texture, s, t);
 
-        graphics_texture_pixel_set(renderer->render_texture, x, y, c);
+        if (c != graphics_transparent_color_get()) {
+            graphics_texture_pixel_set(renderer->render_texture, x, y, c);
+        }
 
         current_s += s_inc;
         current_t += t_inc;
