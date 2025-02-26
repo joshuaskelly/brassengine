@@ -12,6 +12,39 @@
 #include "../log.h"
 #include "../math.h"
 
+static texture_t* render_texture = NULL;
+
+static inline void pixel_set(int x, int y, color_t color) {
+    graphics_texture_pixel_set(render_texture, x, y, color);
+}
+
+static void blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
+
+    color_t* draw_palette = graphics_draw_palette_get();
+    pixel = draw_palette[pixel];
+
+    pixel_set(dx, dy, pixel);
+}
+
+static inline void blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect, pixel_copy_func_t func) {
+    if (!destination_texture) {
+        destination_texture = render_texture;
+    }
+
+    if (!func) {
+        func = blit_func;
+    }
+
+    graphics_blit(
+        source_texture,
+        destination_texture,
+        source_rect,
+        destination_rect,
+        func
+    );
+}
+
 static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
     if (!pattern) return;
 
@@ -22,7 +55,27 @@ static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, in
     color_t* draw_palette = graphics_draw_palette_get();
     pixel = draw_palette[pixel];
 
-    graphics_pixel_set(x, y, pixel);
+    pixel_set(x, y, pixel);
+}
+
+void draw_init(void) {
+    render_texture = graphics_render_texture_get();
+}
+
+texture_t* draw_render_texture_get(void) {
+    return render_texture;
+}
+
+void draw_render_texture_set(texture_t* texture) {
+    if (texture == NULL) {
+        texture = graphics_render_texture_get();
+    }
+
+    render_texture = texture;
+}
+
+void draw_clear(color_t color) {
+    graphics_texture_clear(render_texture, color);
 }
 
 void draw_line(int x0, int y0, int x1, int y1, color_t color) {
@@ -38,7 +91,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        graphics_pixel_set(current_x, current_y, color);
+        pixel_set(current_x, current_y, color);
         current_x += x_inc;
         current_y += y_inc;
     }
@@ -95,7 +148,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
     for (int i = 0; i <= longest_side; i++) {
         color_t c = graphics_texture_pixel_get(texture, current_s, current_t);
 
-        graphics_pixel_set(current_x, current_y, c);
+        pixel_set(current_x, current_y, c);
 
         current_x += x_inc;
         current_y += y_inc;
@@ -244,14 +297,14 @@ void draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_
  * @param color Line color
  */
 static void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
-    graphics_pixel_set( x + offset_x,  y + offset_y, color);
-    graphics_pixel_set( y + offset_x,  x + offset_y, color);
-    graphics_pixel_set(-x + offset_x,  y + offset_y, color);
-    graphics_pixel_set(-y + offset_x,  x + offset_y, color);
-    graphics_pixel_set( x + offset_x, -y + offset_y, color);
-    graphics_pixel_set( y + offset_x, -x + offset_y, color);
-    graphics_pixel_set(-x + offset_x, -y + offset_y, color);
-    graphics_pixel_set(-y + offset_x, -x + offset_y, color);
+    pixel_set( x + offset_x,  y + offset_y, color);
+    pixel_set( y + offset_x,  x + offset_y, color);
+    pixel_set(-x + offset_x,  y + offset_y, color);
+    pixel_set(-y + offset_x,  x + offset_y, color);
+    pixel_set( x + offset_x, -y + offset_y, color);
+    pixel_set( y + offset_x, -x + offset_y, color);
+    pixel_set(-x + offset_x, -y + offset_y, color);
+    pixel_set(-y + offset_x, -x + offset_y, color);
 }
 
 /**
@@ -438,7 +491,7 @@ void draw_text(const char* message, int x, int y) {
 
         dest_x += 8;
 
-        graphics_blit(
+        blit(
             font_texture,
             NULL,
             &source_rect,
@@ -520,7 +573,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_
         for (int x = x_min; x <= x_max; x++) {
             // Check if inside the triangle
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                graphics_pixel_set(x, y, color);
+                pixel_set(x, y, color);
             }
 
             w0 += delta_w0_col;
@@ -637,7 +690,7 @@ void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, 
 
                 color_t c = graphics_texture_pixel_get(texture, s, t);
 
-                graphics_pixel_set(x, y, c);
+                pixel_set(x, y, c);
             }
 
             w0 += delta_w0_col;

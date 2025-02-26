@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -531,6 +532,7 @@ double script_draw_time_get(void) {
 }
 
 void script_update(void) {
+    assert(lua_gettop(L) == 0);
     double start = time_millis_get();
     call_global_lua_function(L, "_update");
     update_time = time_millis_get() - start;

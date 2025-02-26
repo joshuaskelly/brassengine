@@ -369,6 +369,9 @@ void console_update(void) {
 void console_draw(void) {
     if (!visible) return;
 
+    texture_t* rt = draw_render_texture_get();
+    draw_render_texture_set(NULL);
+
     // Preserve palette + transparent color
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
@@ -433,6 +436,8 @@ void console_draw(void) {
     graphics_transparent_color_set(transparent_color);
 
     graphics_clipping_rectangle_set(NULL);
+
+    draw_render_texture_set(rt);
 }
 
 void console_buffer_write(const char* line) {

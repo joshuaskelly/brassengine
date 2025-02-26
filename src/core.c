@@ -11,6 +11,7 @@
 #include "platform.h"
 #include "script.h"
 #include "time.h"
+#include "renderers/draw.h"
 
 static bool is_running = true;
 
@@ -26,6 +27,7 @@ void core_init(void) {
     assets_init();
     platform_init();
     graphics_init();
+    draw_init();
     input_init();
     script_init();
 

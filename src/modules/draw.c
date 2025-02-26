@@ -264,8 +264,7 @@ static int modules_clear_screen(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_render_texture_get();
-    graphics_texture_clear(render_texture, color);
+    draw_clear(color);
 
     return 0;
 }
@@ -413,6 +412,24 @@ static int modules_draw_textured_triangle(lua_State* L) {
     return 0;
 }
 
+static int modules_draw_render_texture(lua_State* L) {
+    if (lua_gettop(L) == 0) {
+        lua_pushtexture(L, draw_render_texture_get());
+
+        return 1;
+    }
+
+    if (lua_isnil(L, 1)) {
+        draw_render_texture_set(NULL);
+    }
+    else {
+        texture_t* texture = luaL_checktexture(L, 1);
+        draw_render_texture_set(texture);
+    }
+
+    return 0;
+};
+
 static const struct luaL_Reg modules_draw_functions[] = {
     {"pixel", modules_draw_pixel},
     {"line", modules_draw_line},
@@ -427,6 +444,7 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"triangle", modules_draw_triangle},
     {"filled_triangle", modules_draw_filled_triangle},
     {"textured_triangle", modules_draw_textured_triangle},
+    {"render_texture", modules_draw_render_texture},
     {NULL, NULL}
 };
 

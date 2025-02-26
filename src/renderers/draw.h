@@ -3,6 +3,14 @@
 
 #include "../graphics.h"
 
+void draw_init(void);
+
+texture_t* draw_render_texture_get(void);
+
+void draw_render_texture_set(texture_t* texture);
+
+void draw_clear(color_t color);
+
 /**
  * Draw line from x0, y0 to x1, y1.
  *
