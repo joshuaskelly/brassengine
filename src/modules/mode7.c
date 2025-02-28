@@ -105,16 +105,12 @@ static bool lua_iscallable(lua_State*L, int index) {
 
     int base = lua_gettop(L);
 
-    if (lua_istable(L, index)) {
-        int type = lua_getfield(L, index, "__call");
-        // Remove whatever was put on the stack, we only care about the type
-        lua_settop(L, base);
-
-        return type == LUA_TFUNCTION;
+    // If given userdata, get it's metatable
+    if (lua_isuserdata(L, index)) {
+        lua_getmetatable(L, index);
     }
-    else if (lua_isuserdata(L, index)) {
-        if (!lua_getmetatable(L, index)) return false;
 
+    if (lua_istable(L, -1)) {
         int type = lua_getfield(L, -1, "__call");
         // Remove whatever was put on the stack, we only care about the type
         lua_settop(L, base);
@@ -139,8 +135,6 @@ static int modules_mode7_renderer_render(lua_State* L) {
 
     if (lua_iscallable(L, 3)) {
         if (lua_istable(L, 3)) {
-            // TODO: Audit the lua stack for this branch
-
             // Put the table's __call function on stack
             lua_getfield(L, 3, "__call");
             lua_pushvalue(L, -1);
