@@ -102,3 +102,100 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
         current_t += t_inc;
     }
 }
+
+mode7_camera_t* mode7_camera_new(mode7_renderer_t* renderer) {
+    mode7_camera_t* camera = (mode7_camera_t*)malloc(sizeof(mode7_camera_t));
+
+    vec3_zero(camera->position);
+
+    camera->fov = 72.0f;
+    camera->near = 0.0f;
+    camera->far = 10000.0f;
+
+    camera->renderer = renderer;
+
+    return camera;
+}
+
+void mode7_camera_free(mode7_camera_t* camera) {
+    camera->renderer = NULL;
+    free(camera);
+    camera = NULL;
+}
+
+void mode7_camera_call(mode7_camera_t* camera, int scanline) {
+    mode7_renderer_t* renderer = camera->renderer;
+    texture_t* rt = renderer->render_texture;
+
+    float top = rt->height / 2.0f;
+    float left = -rt->width / 2.0f;
+
+    mfloat_t m[MAT3_SIZE];
+    mat3_zero(m);
+
+    float D = (rt->width / 2.0f) / tanf(camera->fov / 2.0f * MPI / 180.0f);
+
+    float wy = sinf(camera->pitch * MPI / 180.0f);
+    float vy = cosf(camera->pitch * MPI / 180.0f);
+
+    // Calculate horizon location
+    int horizon = 0;
+    if (vy != 0) {
+        horizon = camera->far * wy - camera->position[1];
+        horizon = top - ((horizon * D) / (camera->far * vy));
+    }
+    else {
+        horizon = wy > 0 ? INT_MIN : INT_MAX;
+    }
+
+    // Early out if horizon below screen
+    if (horizon > rt->height) {
+        mat3_assign(camera->renderer->matrix, m);
+        return;
+    }
+
+    // Early out if scanline above horizon
+    if (scanline < horizon) {
+        mat3_assign(camera->renderer->matrix, m);
+        return;
+    }
+
+    float xc = camera->position[0];
+    float yc = camera->position[1];
+    float zc = camera->position[2];
+
+    float cf = cosf(camera->yaw * MPI / 180.0f);
+    float sf = sinf(camera->yaw * MPI / 180.0f);
+    float ct = cosf(camera->pitch * MPI / 180.0f);
+    float st = sinf(camera->pitch * MPI / 180.0f);
+
+    float yb = (scanline - top) * ct + D * st;
+    float lam = yc / yb;
+
+    float lcf = lam * cf;
+    float lsf = lam * sf;
+
+    float a = lcf;
+    float c = lsf;
+
+    float zb = (scanline - top) * st - D * ct;
+
+    float x = xc + lcf * left - lsf * zb;
+    float y = zc + lsf * left + lcf * zb;
+
+    mfloat_t basis[MAT3_SIZE];
+    mat3_identity(basis);
+    basis[0] = a;
+    basis[1] = c;
+    basis[3] = 0.0f;
+    basis[4] = 0.0f;
+
+    mfloat_t translation[MAT3_SIZE];
+    mat3_identity(translation);
+    translation[6] = x;
+    translation[7] = y;
+
+    mat3_multiply(m, translation, basis);
+
+    mat3_assign(camera->renderer->matrix, m);
+}

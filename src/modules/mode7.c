@@ -14,6 +14,7 @@
 
 #include "matrix3.h"
 #include "texture.h"
+#include "vector3.h"
 
 #include "../log.h"
 #include "../script.h"
@@ -111,6 +112,15 @@ static bool lua_iscallable(lua_State*L, int index) {
 
         return type == LUA_TFUNCTION;
     }
+    else if (lua_isuserdata(L, index)) {
+        if (!lua_getmetatable(L, index)) return false;
+
+        int type = lua_getfield(L, -1, "__call");
+        // Remove whatever was put on the stack, we only care about the type
+        lua_settop(L, base);
+
+        return type == LUA_TFUNCTION;
+    }
 
     return false;
 }
@@ -129,6 +139,8 @@ static int modules_mode7_renderer_render(lua_State* L) {
 
     if (lua_iscallable(L, 3)) {
         if (lua_istable(L, 3)) {
+            // TODO: Audit the lua stack for this branch
+
             // Put the table's __call function on stack
             lua_getfield(L, 3, "__call");
             lua_pushvalue(L, -1);
@@ -141,6 +153,16 @@ static int modules_mode7_renderer_render(lua_State* L) {
             // Remove the table if not a method
             if (!is_method) {
                 lua_remove(L, 3);
+            }
+        }
+        else if (lua_isuserdata(L, 3)) {
+            if (lua_getmetatable(L, 3)) {
+                lua_getfield(L, -1, "__call");
+
+                // Remove metatable
+                lua_remove(L, -2);
+
+                is_method = true;
             }
         }
     }
@@ -276,6 +298,126 @@ static const struct luaL_Reg modules_mode7_renderer_meta_functions[] = {
     {NULL, NULL}
 };
 
+static mode7_camera_t* luaL_checkmode7camera(lua_State* L, int index) {
+    mode7_camera_t** handle = NULL;
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    handle = (mode7_camera_t**)luaL_checkudata(L, index, "mode7_camera");
+
+    if (!handle) {
+        luaL_typeerror(L, index, "mode7_camera");
+    }
+
+    return *handle;
+}
+
+static int lua_newmode7camera(lua_State* L) {
+    mode7_renderer_t* renderer = luaL_checkmode7renderer(L, 2);
+    mode7_camera_t** handle = (mode7_camera_t**)lua_newuserdata(L, sizeof(mode7_camera_t*));
+    *handle = mode7_camera_new(renderer);
+    luaL_setmetatable(L, "mode7_camera");
+
+    return 1;
+}
+
+static int modules_mode7_camera_new(lua_State* L) {
+    return lua_newmode7camera(L);
+}
+
+static int modules_mode7_camera_call(lua_State* L) {
+    mode7_camera_t* camera = luaL_checkmode7camera(L, 1);
+    int scanline = luaL_checkinteger(L, 2);
+    mode7_camera_call(camera, scanline);
+
+    return 0;
+}
+
+static int modules_mode7_camera_meta_index(lua_State* L) {
+    mode7_camera_t* camera = luaL_checkmode7camera(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    lua_settop(L, 0);
+
+    if (strcmp(key, "position") == 0) {
+        lua_pushvector3(L, camera->position);
+    }
+    else if (strcmp(key, "pitch") == 0) {
+        lua_pushnumber(L, camera->pitch);
+    }
+    else if (strcmp(key, "yaw") == 0) {
+        lua_pushnumber(L, camera->yaw);
+    }
+    else if (strcmp(key, "fov") == 0) {
+        lua_pushnumber(L, camera->fov);
+    }
+    else if (strcmp(key, "near") == 0) {
+        lua_pushnumber(L, camera->near);
+    }
+    else if (strcmp(key, "far") == 0) {
+        lua_pushnumber(L, camera->far);
+    }
+    else {
+        luaL_requiref(L, "mode7", NULL, false);
+        lua_getfield(L, -1, "Camera");
+        if (lua_type(L, -1) == LUA_TTABLE) {
+            lua_getfield(L, -1, key);
+        }
+        else {
+            lua_pushnil(L);
+        }
+    }
+
+    return 1;
+}
+
+static int modules_mode7_camera_meta_newindex(lua_State* L) {
+    mode7_camera_t* camera = luaL_checkmode7camera(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strcmp(key, "position") == 0) {
+        mfloat_t* position = luaL_checkvector3(L, 3);
+        vec3_assign(camera->position, position);
+    }
+    else if (strcmp(key, "pitch") == 0) {
+        float pitch = luaL_checknumber(L, 3);
+        camera->pitch = pitch;
+    }
+    else if (strcmp(key, "yaw") == 0) {
+        float yaw = luaL_checknumber(L, 3);
+        camera->yaw = yaw;
+    }
+    else if (strcmp(key, "fov") == 0) {
+        float fov = luaL_checknumber(L, 3);
+        camera->fov = fov;
+    }
+    else if (strcmp(key, "near") == 0) {
+        float near = luaL_checknumber(L, 3);
+        camera->near = near;
+    }
+    else if (strcmp(key, "far") == 0) {
+        float far = luaL_checknumber(L, 3);
+        camera->far = far;
+    }
+    else {
+        luaL_error(L, "attempt to index a mode7_camera value");
+    }
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+static const struct luaL_Reg modules_mode7_camera_functions[] = {
+    {"new", modules_mode7_camera_new},
+    {NULL, NULL}
+};
+
+static const struct luaL_Reg modules_mode7_camera_meta_functions[] = {
+    {"__index", modules_mode7_camera_meta_index},
+    {"__newindex", modules_mode7_camera_meta_newindex},
+    {"__call", modules_mode7_camera_call},
+    {NULL, NULL}
+};
+
 int luaopen_mode7(lua_State* L) {
     lua_newtable(L);
 
@@ -285,6 +427,14 @@ int luaopen_mode7(lua_State* L) {
 
     luaL_newmetatable(L, "mode7_renderer");
     luaL_setfuncs(L, modules_mode7_renderer_meta_functions, 0);
+    lua_pop(L, 1);
+
+    lua_pushstring(L, "Camera");
+    luaL_newlib(L, modules_mode7_camera_functions);
+    lua_settable(L, -3);
+
+    luaL_newmetatable(L, "mode7_camera");
+    luaL_setfuncs(L, modules_mode7_camera_meta_functions, 0);
     lua_pop(L, 1);
 
     return 1;
