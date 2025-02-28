@@ -157,7 +157,7 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
     int horizon = 0;
     if (cos_yaw != 0) {
         horizon = camera->far * sin_pitch - camera_y;
-        horizon = top - ((horizon * distance_to_projection_plane) / (camera->far * cos_pitch));
+        horizon = top - (horizon * distance_to_projection_plane) / (camera->far * cos_pitch);
     }
     else {
         horizon = sin_pitch > 0 ? INT_MIN : INT_MAX;
