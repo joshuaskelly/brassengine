@@ -133,19 +133,28 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
     mfloat_t m[MAT3_SIZE];
     mat3_zero(m);
 
-    float D = (rt->width / 2.0f) / tanf(camera->fov / 2.0f * MPI / 180.0f);
+    float distance_to_projection_plane = (rt->width / 2.0f) / tanf(camera->fov / 2.0f * MPI / 180.0f);
 
-    float wy = sinf(camera->pitch * MPI / 180.0f);
-    float vy = cosf(camera->pitch * MPI / 180.0f);
+    float yaw_radians = camera->yaw * MPI / 180.0f;
+    float pitch_radians = camera->pitch * MPI / 180.0f;
+
+    float cos_yaw = cosf(yaw_radians);
+    float sin_yaw = sinf(yaw_radians);
+    float cos_pitch = cosf(pitch_radians);
+    float sin_pitch = sinf(pitch_radians);
+
+    float camera_x = camera->position[0];
+    float camera_y = camera->position[1];
+    float camera_z = camera->position[2];
 
     // Calculate horizon location
     int horizon = 0;
-    if (vy != 0) {
-        horizon = camera->far * wy - camera->position[1];
-        horizon = top - ((horizon * D) / (camera->far * vy));
+    if (cos_yaw != 0) {
+        horizon = camera->far * sin_pitch - camera_y;
+        horizon = top - ((horizon * distance_to_projection_plane) / (camera->far * cos_pitch));
     }
     else {
-        horizon = wy > 0 ? INT_MIN : INT_MAX;
+        horizon = sin_pitch > 0 ? INT_MIN : INT_MAX;
     }
 
     // Early out if horizon below screen
@@ -160,33 +169,21 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
         return;
     }
 
-    float xc = camera->position[0];
-    float yc = camera->position[1];
-    float zc = camera->position[2];
+    float yb = (scanline - top) * cos_pitch + distance_to_projection_plane * sin_pitch;
+    float scale = camera_y / yb;
 
-    float cf = cosf(camera->yaw * MPI / 180.0f);
-    float sf = sinf(camera->yaw * MPI / 180.0f);
-    float ct = cosf(camera->pitch * MPI / 180.0f);
-    float st = sinf(camera->pitch * MPI / 180.0f);
+    float scy = scale * cos_yaw;
+    float ssy = scale * sin_yaw;
 
-    float yb = (scanline - top) * ct + D * st;
-    float lam = yc / yb;
+    float forward = (scanline - top) * sin_pitch - distance_to_projection_plane * cos_pitch;
 
-    float lcf = lam * cf;
-    float lsf = lam * sf;
-
-    float a = lcf;
-    float c = lsf;
-
-    float zb = (scanline - top) * st - D * ct;
-
-    float x = xc + lcf * left - lsf * zb;
-    float y = zc + lsf * left + lcf * zb;
+    float x = camera_x + scy * left - ssy * forward;
+    float y = camera_z + ssy * left + scy * forward;
 
     mfloat_t basis[MAT3_SIZE];
     mat3_identity(basis);
-    basis[0] = a;
-    basis[1] = c;
+    basis[0] = scy;
+    basis[1] = ssy;
     basis[3] = 0.0f;
     basis[4] = 0.0f;
 
