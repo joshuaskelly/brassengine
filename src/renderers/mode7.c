@@ -139,10 +139,10 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
     mfloat_t m[MAT3_SIZE];
     mat3_zero(m);
 
-    float distance_to_projection_plane = (rt->width / 2.0f) / tanf(camera->fov / 2.0f * MPI / 180.0f);
+    float distance_to_projection_plane = (rt->width / 2.0f) / tanf(to_radians(camera->fov) / 2.0f);
 
-    float yaw_radians = camera->yaw * MPI / 180.0f;
-    float pitch_radians = camera->pitch * MPI / 180.0f;
+    float yaw_radians = to_radians(camera->yaw);
+    float pitch_radians = to_radians(camera->pitch);
 
     float cos_yaw = cosf(yaw_radians);
     float sin_yaw = sinf(yaw_radians);
