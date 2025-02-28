@@ -124,6 +124,12 @@ void mode7_camera_free(mode7_camera_t* camera) {
 }
 
 void mode7_camera_call(mode7_camera_t* camera, int scanline) {
+    /**
+     * Perspective camera implementation.
+     *
+     * Adapated from: https://www.coranac.com/tonc/text/mode7ex.htm
+     */
+
     mode7_renderer_t* renderer = camera->renderer;
     texture_t* rt = renderer->render_texture;
 
