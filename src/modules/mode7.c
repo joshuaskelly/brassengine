@@ -1,5 +1,5 @@
 /**
- * Module for mode7 renderer
+ * Module for Mode7 renderer
  *
  * @module mode7
  */
@@ -123,7 +123,7 @@ static bool lua_iscallable(lua_State*L, int index) {
 
 /**
  * Renders given texture.
- * @function render
+ * @function Renderer:render
  * @tparam texture.texture texture Texture to render
  * @tparam function(integer):nil callback Horizontal scanline callback. Given the scanline as integer, and does not return a value.
  */
@@ -292,6 +292,41 @@ static const struct luaL_Reg modules_mode7_renderer_meta_functions[] = {
     {NULL, NULL}
 };
 
+/**
+ * @type Camera
+ */
+
+/**
+ * Camera position. Y-axis is up.
+ * @tfield vector3 position
+ */
+
+/**
+ * Camera pitch (up/down) in degrees. [-90, 90]
+ * @tfield number pitch
+ */
+
+/**
+ * Camera yaw (left/right) in degrees.
+ * @tfield number yaw
+ */
+
+/**
+ * Camera fov in degrees. [1, 180]
+ * @tfield number fov
+ */
+
+/**
+ * Camera near clip distance.
+ * @tfield number near
+ */
+
+/**
+ * Camera far clip distance.
+ * @tfield number far
+ */
+
+
 static mode7_camera_t* luaL_checkmode7camera(lua_State* L, int index) {
     mode7_camera_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -313,6 +348,12 @@ static int lua_newmode7camera(lua_State* L) {
     return 1;
 }
 
+/**
+ * Creates a mode7 camera object.
+ * @function Camera:new
+ * @tparam Renderer renderer
+ * @treturn Camera
+ */
 static int modules_mode7_camera_new(lua_State* L) {
     return lua_newmode7camera(L);
 }

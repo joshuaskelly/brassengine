@@ -1,6 +1,6 @@
 --- @meta
 
---- Module for mode7 renderer
+--- Module for Mode7 renderer
 local mode7 = {}
 
 --- @class Renderer
@@ -24,5 +24,19 @@ function mode7.Renderer:render(texture, callback) end
 --- @param name string  Feature name.
 --- @param value any?  Value to set feature to.
 function mode7.Renderer:feature(name, value) end
+
+--- @class Camera
+--- @field position vector3
+--- @field pitch number
+--- @field yaw number
+--- @field fov number
+--- @field near number
+--- @field far number
+mode7.Camera = {}
+
+--- Creates a mode7 camera object.
+--- @param renderer Renderer 
+--- @return Camera 
+function mode7.Camera:new(renderer) end
 
 return mode7
