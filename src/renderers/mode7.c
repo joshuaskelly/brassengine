@@ -102,3 +102,103 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
         current_t += t_inc;
     }
 }
+
+mode7_camera_t* mode7_camera_new(mode7_renderer_t* renderer) {
+    mode7_camera_t* camera = (mode7_camera_t*)malloc(sizeof(mode7_camera_t));
+
+    vec3_zero(camera->position);
+
+    camera->fov = 72.0f;
+    camera->near = 0.0f;
+    camera->far = 10000.0f;
+
+    camera->renderer = renderer;
+
+    return camera;
+}
+
+void mode7_camera_free(mode7_camera_t* camera) {
+    camera->renderer = NULL;
+    free(camera);
+    camera = NULL;
+}
+
+void mode7_camera_call(mode7_camera_t* camera, int scanline) {
+    /**
+     * Perspective camera implementation.
+     *
+     * Adapated from: https://www.coranac.com/tonc/text/mode7ex.htm
+     */
+
+    mode7_renderer_t* renderer = camera->renderer;
+    texture_t* rt = renderer->render_texture;
+
+    float top = rt->height / 2.0f;
+    float left = -rt->width / 2.0f;
+
+    mfloat_t m[MAT3_SIZE];
+    mat3_zero(m);
+
+    float distance_to_projection_plane = (rt->width / 2.0f) / tanf(to_radians(camera->fov) / 2.0f);
+
+    float yaw_radians = to_radians(camera->yaw);
+    float pitch_radians = to_radians(camera->pitch);
+
+    float cos_yaw = cosf(yaw_radians);
+    float sin_yaw = sinf(yaw_radians);
+    float cos_pitch = cosf(pitch_radians);
+    float sin_pitch = sinf(pitch_radians);
+
+    float camera_x = camera->position[0];
+    float camera_y = camera->position[1];
+    float camera_z = camera->position[2];
+
+    // Calculate horizon location
+    int horizon = 0;
+    if (cos_yaw != 0) {
+        horizon = camera->far * sin_pitch - camera_y;
+        horizon = top - (horizon * distance_to_projection_plane) / (camera->far * cos_pitch);
+    }
+    else {
+        horizon = sin_pitch > 0 ? INT_MIN : INT_MAX;
+    }
+
+    // Early out if horizon below screen
+    if (horizon > rt->height) {
+        mat3_assign(camera->renderer->matrix, m);
+        return;
+    }
+
+    // Early out if scanline above horizon
+    if (scanline < horizon) {
+        mat3_assign(camera->renderer->matrix, m);
+        return;
+    }
+
+    float yb = (scanline - top) * cos_pitch + distance_to_projection_plane * sin_pitch;
+    float scale = camera_y / yb;
+
+    float scy = scale * cos_yaw;
+    float ssy = scale * sin_yaw;
+
+    float forward = (scanline - top) * sin_pitch - distance_to_projection_plane * cos_pitch;
+
+    float x = camera_x + scy * left - ssy * forward;
+    float y = camera_z + ssy * left + scy * forward;
+
+    mfloat_t basis[MAT3_SIZE];
+    mat3_identity(basis);
+    basis[0] = scy;
+    basis[1] = ssy;
+    basis[3] = 0.0f;
+    basis[4] = 0.0f;
+
+    mfloat_t translation[MAT3_SIZE];
+    mat3_identity(translation);
+    translation[6] = x;
+    translation[7] = y;
+
+    mat3_multiply(m, translation, basis);
+
+    mat3_assign(camera->renderer->matrix, m);
+}
