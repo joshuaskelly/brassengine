@@ -188,8 +188,8 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
 
     float forward = (scanline - top) * sin_pitch - distance_to_projection_plane * cos_pitch;
 
-    float x = camera_x + scy * left - ssy * forward;
-    float y = camera_z + ssy * left + scy * forward;
+    float x = camera_x - 0.5f + scy * left - ssy * forward;
+    float y = camera_z - 0.5f + ssy * left + scy * forward;
 
     mfloat_t basis[MAT3_SIZE];
     mat3_identity(basis);
