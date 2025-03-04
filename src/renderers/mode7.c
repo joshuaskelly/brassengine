@@ -175,7 +175,7 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
     }
 
     // Early out if scanline above horizon
-    if (scanline < horizon) {
+    if (scanline <= horizon) {
         mat3_assign(camera->renderer->matrix, m);
         return;
     }
