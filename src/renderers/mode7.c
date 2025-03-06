@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdlib.h>
 
 #include <mathc/mathc.h>
