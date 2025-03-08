@@ -9,7 +9,7 @@
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
 static color_t draw_palette[256];
-static int transparent_color = -1;
+static color_t transparent_color = 0;
 
 static rect_t clip_rect;
 
@@ -116,8 +116,8 @@ void graphics_texture_pixel_set(texture_t* texture, int x, int y, color_t color)
 }
 
 color_t graphics_texture_pixel_get(texture_t* texture, int x, int y) {
-    if (x < 0 || x >= texture->width) return 0;
-    if (y < 0 || y >= texture->height) return 0;
+    if (x < 0 || x >= texture->width) return transparent_color;
+    if (y < 0 || y >= texture->height) return transparent_color;
 
     return texture->pixels[y * texture->stride + x];
 }

@@ -48,11 +48,11 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
         callback(y);
 
         // Transform scanline start
-        vec3(work, 0, y, 1);
+        vec3(work, 0.5f, y + 0.5f, 1);
         vec3_multiply_mat3(st0, work, renderer->matrix);
 
         // Transform scanline end
-        vec3(work, renderer->render_texture->width - 1, y, 1);
+        vec3(work, renderer->render_texture->width - 0.5f, y + 0.5f, 1);
         vec3_multiply_mat3(st1, work, renderer->matrix);
 
         draw_scanline(
@@ -91,6 +91,11 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
         else if (renderer->features.wrap_mode == WRAP_CLAMP) {
             s = clamp(s, 0, texture->width - 1);
             t = clamp(t, 0, texture->height - 1);
+        }
+        else if (renderer->features.wrap_mode == WRAP_NONE) {
+            // Avoid rounding up to zero
+            if (s < 0 && s > -1.0f) s = -1.0f;
+            if (t < 0 && t > -1.0f) t = -1.0f;
         }
 
         color_t c = graphics_texture_pixel_get(texture, s, t);
@@ -171,7 +176,7 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
     }
 
     // Early out if scanline above horizon
-    if (scanline < horizon) {
+    if (scanline <= horizon) {
         mat3_assign(camera->renderer->matrix, m);
         return;
     }
@@ -184,8 +189,8 @@ void mode7_camera_call(mode7_camera_t* camera, int scanline) {
 
     float forward = (scanline - top) * sin_pitch - distance_to_projection_plane * cos_pitch;
 
-    float x = camera_x + scy * left - ssy * forward;
-    float y = camera_z + ssy * left + scy * forward;
+    float x = camera_x - 0.5f + scy * left - ssy * forward;
+    float y = camera_z - 0.5f + ssy * left + scy * forward;
 
     mfloat_t basis[MAT3_SIZE];
     mat3_identity(basis);
