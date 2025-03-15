@@ -48,11 +48,11 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
         callback(y);
 
         // Transform scanline start
-        vec3(work, 0.5f, y + 0.5f, 1);
+        vec3(work, 0, y, 1);
         vec3_multiply_mat3(st0, work, renderer->matrix);
 
         // Transform scanline end
-        vec3(work, renderer->render_texture->width - 0.5f, y + 0.5f, 1);
+        vec3(work, renderer->render_texture->width, y, 1);
         vec3_multiply_mat3(st1, work, renderer->matrix);
 
         draw_scanline(
@@ -69,7 +69,7 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
     // DDA based line drawing algorithm
     texture_t* render_texture = renderer->render_texture;
 
-    int scanline_width = render_texture->width - 1;
+    int scanline_width = render_texture->width;
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
@@ -85,8 +85,8 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
         float t = current_t;
 
         if (renderer->features.wrap_mode == WRAP_REPEAT) {
-            s = modulof(s, texture->width - 1);
-            t = modulof(t, texture->height - 1);
+            s = modulof(s, texture->width);
+            t = modulof(t, texture->height);
         }
         else if (renderer->features.wrap_mode == WRAP_CLAMP) {
             s = clamp(s, 0, texture->width - 1);
