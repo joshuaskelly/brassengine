@@ -892,7 +892,7 @@ static gif_t* gif_load(const char* filename) {
  */
 static void gif_free(gif_t* gif) {
     for (int i = 0; i < gif->frame_count; i++) {
-        free(gif->frames[i]);
+        graphics_texture_free(gif->frames[i]);
         gif->frames[i] = NULL;
     }
 
