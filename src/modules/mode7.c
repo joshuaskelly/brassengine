@@ -41,6 +41,14 @@ static int lua_newmode7renderer(lua_State* L) {
     return 1;
 }
 
+static int modules_mode7_renderer_free(lua_State* L) {
+    mode7_renderer_t** handle = lua_touserdata(L, 1);
+    mode7_renderer_free(*handle);
+    *handle = NULL;
+
+    return 0;
+}
+
 /**
  * @type Renderer
  */
@@ -289,6 +297,7 @@ static const struct luaL_Reg modules_mode7_renderer_functions[] = {
 
 static const struct luaL_Reg modules_mode7_renderer_meta_functions[] = {
     {"__index", modules_mode7_renderer_meta_index},
+    {"__gc", modules_mode7_renderer_free},
     {NULL, NULL}
 };
 

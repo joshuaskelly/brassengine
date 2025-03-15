@@ -802,6 +802,7 @@ static void texture_asset_free(texture_asset_t* asset) {
         graphics_texture_free(asset->frames[i]);
     }
 
+    free(asset->frames);
     asset->frames = NULL;
 
     free(asset);
@@ -891,7 +892,7 @@ static gif_t* gif_load(const char* filename) {
  */
 static void gif_free(gif_t* gif) {
     for (int i = 0; i < gif->frame_count; i++) {
-        free(gif->frames[i]);
+        graphics_texture_free(gif->frames[i]);
         gif->frames[i] = NULL;
     }
 
