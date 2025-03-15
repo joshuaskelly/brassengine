@@ -48,11 +48,11 @@ void mode7_renderer_render(mode7_renderer_t* renderer, texture_t* texture, mode7
         callback(y);
 
         // Transform scanline start
-        vec3(work, 0, y, 1);
+        vec3(work, 0.5f, y + 0.5f, 1);
         vec3_multiply_mat3(st0, work, renderer->matrix);
 
         // Transform scanline end
-        vec3(work, renderer->render_texture->width, y, 1);
+        vec3(work, renderer->render_texture->width + 0.5f, y + 0.5f, 1);
         vec3_multiply_mat3(st1, work, renderer->matrix);
 
         draw_scanline(
@@ -77,8 +77,8 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
     float s_inc = delta_s / scanline_width;
     float t_inc = delta_t / scanline_width;
 
-    float current_s = s0 + 0.5f;
-    float current_t = t0 + 0.5f;
+    float current_s = s0;
+    float current_t = t0;
 
     for (int x = 0; x <= scanline_width; x++) {
         float s = current_s;
