@@ -7,6 +7,10 @@
 3. Run brass
 4. Run `gprof ./build/bin/brass > out.text` to get profile info
 
+## Finding Memory Leaks (MacOS)
+1. Make debug build
+2. `$ leaks -quiet --atExit -- ./build/bin/brass path/to/assets`
+
 ## Notes
 
 When building on Windows with mingw64 + msys you need to build Lua via:

@@ -141,6 +141,8 @@ static void init_from_assets_directory(const char* directory) {
 
     cJSON_Delete(json);
 
+    free(data);
+
     fclose(fp);
 }
 
