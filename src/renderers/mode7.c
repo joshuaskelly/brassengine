@@ -69,6 +69,8 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
     // DDA based line drawing algorithm
     texture_t* render_texture = renderer->render_texture;
 
+    color_t* draw_palette = graphics_draw_palette_get();
+
     int scanline_width = render_texture->width;
 
     float delta_s = s1 - s0;
@@ -99,6 +101,7 @@ static void draw_scanline(mode7_renderer_t* renderer, int y, float s0, float t0,
         }
 
         color_t c = graphics_texture_pixel_get(texture, s, t);
+        c = draw_palette[c];
 
         if (c != graphics_transparent_color_get()) {
             graphics_texture_pixel_set(renderer->render_texture, x, y, c);
