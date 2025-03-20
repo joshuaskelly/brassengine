@@ -109,6 +109,11 @@ void graphics_init(void);
 void graphics_destroy(void);
 
 /**
+ * Reload graphics system.
+ */
+void graphics_reload(void);
+
+/**
  * Gets render texture.
  *
  * @return Render texture.

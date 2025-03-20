@@ -160,6 +160,12 @@ void graphics_destroy(void) {
     graphics_texture_free(render_texture);
 }
 
+void graphics_reload(void) {
+    for (int i = 0; i < 256; i++) {
+        draw_palette[i] = i;
+    }
+}
+
 texture_t* graphics_render_texture_get(void) {
     return render_texture;
 }
