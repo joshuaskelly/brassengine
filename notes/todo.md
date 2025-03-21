@@ -16,6 +16,7 @@
 - [ ] Threaded rendering
 - [ ] Fix web-opengl platform
 - [ ] Scripted assets? Would support custom file types obj, wad, etc
+- [ ] Is the clip rect still needed now with subtextures?
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
