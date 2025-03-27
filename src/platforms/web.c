@@ -316,41 +316,6 @@ void platform_sound_play(sound_t* sound, int channel) {
     Mix_PlayChannel(channel, chunk, 0);
 }
 
-void platform_display_resolution_set(int width, int height) {
-    SDL_DestroyTexture(render_buffer_texture);
-    free(render_buffer);
-
-    render_buffer = calloc(width * height, sizeof(uint32_t));
-
-    if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
-    }
-
-    render_buffer_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_RGBA32,
-        SDL_TEXTUREACCESS_STREAMING,
-        width,
-        height
-    );
-
-    if (!render_buffer_texture) {
-        log_fatal("Error creating SDL frame buffer texture");
-    }
-}
-
-void platform_display_size_set(int width, int height) {
-    SDL_SetWindowSize(window, width, height);
-}
-
-void platform_display_fullscreen_set(bool fullscreen) {
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-}
-
-void platform_display_title_set(const char* title) {
-    SDL_SetWindowTitle(window, title);
-}
-
 void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetWindowMouseGrab(window, grabbed);
 }

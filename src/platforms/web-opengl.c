@@ -533,30 +533,6 @@ static void load_shader_program(void) {
     frame_count = glGetUniformLocation(shader_program, "frame_count");
 }
 
-void platform_display_resolution_set(int width, int height) {
-    free(render_buffer);
-
-    render_buffer = calloc(width * height, sizeof(uint32_t));
-
-    if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, config->resolution.width, config->resolution.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
-}
-
-void platform_display_size_set(int width, int height) {
-    SDL_SetWindowSize(window, width, height);
-}
-
-void platform_display_fullscreen_set(bool fullscreen) {
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-}
-
-void platform_display_title_set(const char* title) {
-    SDL_SetWindowTitle(window, title);
-}
-
 void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetWindowMouseGrab(window, grabbed);
 }
