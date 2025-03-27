@@ -209,7 +209,6 @@ static int modules_graphics_resolution_set(lua_State* L) {
     config->resolution.height = height;
 
     graphics_resolution_set(width, height);
-    platform_display_resolution_set(width, height);
 
     return 0;
 }
