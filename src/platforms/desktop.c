@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <SDL_error.h>
 
 #include "../arguments.h"
 #include "../assets.h"
@@ -28,6 +29,7 @@ static int ticks_last_frame;
 static SDL_Rect display_rect;
 
 static Mix_Chunk chunks[MIX_CHANNELS];
+static bool audio_enabled = true;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
@@ -73,7 +75,10 @@ void platform_init(void) {
     }
 
     if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
-        log_fatal("Error intializing SDL Mixer");
+        log_error("Error intializing SDL Mixer");
+        log_error(SDL_GetError());
+        log_info("Sound playback will be disabled");
+        audio_enabled = false;
     }
 
     window = SDL_CreateWindow(
@@ -320,6 +325,8 @@ static void sdl_fix_frame_rate(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
+    if (!audio_enabled) return;
+    
     // Search for a free channel if channel not specified
     if (channel == -1) {
         for (int i = 0; i < MIX_CHANNELS; i++) {
