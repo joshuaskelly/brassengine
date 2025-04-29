@@ -8,7 +8,6 @@
 #include "../graphics.h"
 #include "../log.h"
 #include "../math.h"
-#include "draw.h"
 
 #include "raycaster.h"
 

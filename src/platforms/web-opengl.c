@@ -41,6 +41,8 @@ static GLuint vertex_buffer_object = 0;
 static GLuint index_buffer_object = 0;
 static GLuint texture = 0;
 
+static Mix_Chunk chunks[MIX_CHANNELS];
+
 static void sdl_handle_events(void);
 static void load_shader_program(void);
 
@@ -48,8 +50,7 @@ static const char default_shader[] = "#version 100\nprecision mediump float;unif
 
 int platform_main(int argc, char* argv[]) {
     core_init();
-    emscripten_set_main_loop(core_main_loop, 0, 1);
-    emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, 16);
+    emscripten_set_main_loop(core_main_loop, 60, 1);
 
     return 0;
 }
@@ -370,7 +371,30 @@ static void sdl_handle_events(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
-    Mix_Chunk* chunk = Mix_QuickLoad_RAW((uint8_t*)sound->pcm, sound->frame_count * sound->channel_count * sizeof(sample_t));
+    // Search for a free channel if channel not specified
+    if (channel == -1) {
+        for (int i = 0; i < MIX_CHANNELS; i++) {
+            if (!Mix_Playing(i)) {
+                channel = i;
+                break;
+            }
+        }
+    }
+
+    if (channel == -1) {
+        log_error("No free channels available");
+        return;
+    }
+
+    size_t size = sound->frame_count * sound->channel_count * sizeof(sample_t);
+
+    // Configure chunk with sound data
+    Mix_Chunk* chunk = &chunks[channel];
+    chunk->allocated = 0;
+    chunk->alen = size;
+    chunk->abuf = (uint8_t*)sound->pcm;
+    chunk->volume = 128;
+
     Mix_PlayChannel(channel, chunk, 0);
 }
 
@@ -507,30 +531,6 @@ static void load_shader_program(void) {
     screen_texture = glGetUniformLocation(shader_program, "screen_texture");
     output_size = glGetUniformLocation(shader_program, "output_size");
     frame_count = glGetUniformLocation(shader_program, "frame_count");
-}
-
-void platform_display_resolution_set(int width, int height) {
-    free(render_buffer);
-
-    render_buffer = calloc(width * height, sizeof(uint32_t));
-
-    if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, config->resolution.width, config->resolution.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
-}
-
-void platform_display_size_set(int width, int height) {
-    SDL_SetWindowSize(window, width, height);
-}
-
-void platform_display_fullscreen_set(bool fullscreen) {
-    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-}
-
-void platform_display_title_set(const char* title) {
-    SDL_SetWindowTitle(window, title);
 }
 
 void platform_mouse_grabbed_set(bool grabbed) {

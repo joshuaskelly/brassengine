@@ -52,30 +52,6 @@ void platform_draw(void);
  */
 void platform_sound_play(sound_t* sound, int channel);
 
-void platform_display_resolution_set(int width, int height);
-
-/**
- * Set display size.
- *
- * @param width Display width.
- * @param height Display height.
- */
-void platform_display_size_set(int width, int height);
-
-/**
- * Set display fullscreen.
- *
- * @param fullscreen True to set to fullscreen, False for windowed.
- */
-void platform_display_fullscreen_set(bool fullscreen);
-
-/**
- * Set display title.
- *
- * @param title Text to set as title.
- */
-void platform_display_title_set(const char* title);
-
 /**
  * Set mouse grab state. If true, mouse will be constrained to window.
  *

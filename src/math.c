@@ -133,3 +133,11 @@ float smoothstep(float a, float b, float t) {
 float sign(float f) {
     return (0 < f) - (f < 0);
 }
+
+int modulo(int a, int b) {
+    return a - floor(a / (float)b) * b;
+}
+
+float modulof(float a, float b) {
+    return a - floor(a / b) * b;
+}

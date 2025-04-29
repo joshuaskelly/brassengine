@@ -91,18 +91,22 @@ void assets_destroy(void) {
     unload_assets();
 }
 
-sound_t* sound_from_wav(drwav* wav) {
+static sound_t* sound_from_wav(drwav* wav, const char* name) {
+    if (wav->sampleRate != 11025) {
+        log_error("Bad sample rate %i for sound: %s", wav->sampleRate, name);
+    }
+
     size_t total_frames = wav->totalPCMFrameCount;
     size_t size = total_frames * wav->channels * sizeof(sample_t);
     sample_t* pcm = (sample_t*)malloc(size);
     if (!pcm) {
-        log_error("Failed to allocate memory for sound");
+        log_error("Failed to allocate memory for sound: %s", name);
         return NULL;
     }
 
     size_t frames_read = drwav_read_pcm_frames(wav, total_frames, pcm);
     if (frames_read != total_frames) {
-        log_error("Failed to read PCM data.");
+        log_error("Failed to read PCM data for sound: %s", name);
         free(pcm);
         return NULL;
     }
@@ -291,7 +295,7 @@ static bool load_from_zip(void) {
                 continue;
             }
 
-            sound_t* sound = sound_from_wav(&wav);
+            sound_t* sound = sound_from_wav(&wav, name);
 
             if (sound) {
                 // Add script asset
@@ -446,12 +450,12 @@ static void add_sounds(const char* filename) {
         return;
     }
 
-    sound_t* sound = sound_from_wav(&wav);
+    // Normalize filename
+    char* asset_name = normalize_filename(filename);
+
+    sound_t* sound = sound_from_wav(&wav, asset_name);
 
     if (sound) {
-        // Normalize filename
-        char* asset_name = normalize_filename(filename);
-
         // Add script asset
         sound_assets[asset_count++] = assets_entry_new(asset_name, sound);
     }
@@ -798,6 +802,7 @@ static void texture_asset_free(texture_asset_t* asset) {
         graphics_texture_free(asset->frames[i]);
     }
 
+    free(asset->frames);
     asset->frames = NULL;
 
     free(asset);
@@ -887,7 +892,7 @@ static gif_t* gif_load(const char* filename) {
  */
 static void gif_free(gif_t* gif) {
     for (int i = 0; i < gif->frame_count; i++) {
-        free(gif->frames[i]);
+        graphics_texture_free(gif->frames[i]);
         gif->frames[i] = NULL;
     }
 

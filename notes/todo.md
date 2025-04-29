@@ -1,8 +1,10 @@
 # TODO
 ## General
+- [ ] Keyboard pressed/released api?
 - [ ] Fix "BAD!" errors
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
+- [ ] Sprite drawing with affine transformation
 - [ ] Move to SDL3?
 - [ ] MIDI music
 - [ ] Event based input?
@@ -13,6 +15,8 @@
 - [ ] Dreamcast platform?!
 - [ ] Threaded rendering
 - [ ] Fix web-opengl platform
+- [ ] Scripted assets? Would support custom file types obj, wad, etc
+- [ ] Is the clip rect still needed now with subtextures?
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module
@@ -49,7 +53,11 @@
 - [x] Shading via color tables
 
 ## Mode7 Renderer
-- [ ] Initial implementation
+- [x] Initial implementation
+- [x] Investigate memory leak
+- [x] Investigate lua callback mechanism
+- [ ] Rework how the callback is invoke + better error handling. Ideally would live inside script.c
+- [ ] Demo!
 
 ## VoxelSpace Renderer
 - [ ] Initial implementation
@@ -61,6 +69,7 @@
 - [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
 
 ## Console
+- [ ] Autocomplete support for colon operator
 - [ ] Word navigation (ctrl + key) Needs to be alt + arrow on Mac 😫
   - [ ] Left/right
   - [ ] Delete/backspace
@@ -79,7 +88,7 @@
 
 ## Sound
 - [ ] Streaming audio support?
-- [ ] Remove SDL Mixer dependency?
+- [ ] ~~Remove SDL Mixer dependency?~~
 
 ## Documentation
 - [ ] Fix how Language Server definition script treats global functions. (fix globals.lua and math.lua)

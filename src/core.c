@@ -67,6 +67,7 @@ void core_reload(void) {
     time_reload();
     assets_reload();
     platform_reload();
+    graphics_reload();
     script_reload();
 
     log_info(" ");

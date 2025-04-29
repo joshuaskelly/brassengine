@@ -72,6 +72,14 @@ static int lua_newrayrenderer(lua_State* L) {
     return 1;
 }
 
+static int modules_raycaster_renderer_free(lua_State* L) {
+    raycaster_renderer_t** handle = lua_touserdata(L, 1);
+    raycaster_renderer_free(*handle);
+    *handle = NULL;
+
+    return 0;
+}
+
 /**
  * @type Renderer
  */
@@ -501,6 +509,7 @@ static const struct luaL_Reg modules_raycaster_renderer_functions[] = {
 
 static const struct luaL_Reg modules_raycaster_renderer_meta_functions[] = {
     {"__index", modules_raycaster_renderer_meta_index},
+    {"__gc", modules_raycaster_renderer_free},
     {NULL, NULL}
 };
 
