@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_error.h>
 #include <emscripten.h>
 
 #include "../configuration.h"
@@ -23,6 +24,7 @@ static uint32_t* render_buffer = NULL;
 static SDL_Rect display_rect;
 
 static Mix_Chunk chunks[MIX_CHANNELS];
+static bool audio_disabled = false;
 
 static void sdl_handle_events(void);
 
@@ -60,7 +62,10 @@ void platform_init(void) {
     }
 
     if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
-        log_fatal("Error intializing SDL Mixer");
+        log_error("Error intializing SDL Mixer");
+        log_error(SDL_GetError());
+        log_info("Sound playback will be disabled");
+        audio_disabled = true;
     }
 
     window = SDL_CreateWindow(
@@ -289,6 +294,13 @@ static void sdl_handle_events(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
+    if (audio_disabled) return;
+
+    if (channel >= MIX_CHANNELS) {
+        log_error("Error playing sound: channel %i does not exist", channel);
+        return;
+    }
+    
     // Search for a free channel if channel not specified
     if (channel == -1) {
         for (int i = 0; i < MIX_CHANNELS; i++) {
@@ -300,7 +312,7 @@ void platform_sound_play(sound_t* sound, int channel) {
     }
 
     if (channel == -1) {
-        log_error("No free channels available");
+        log_error("Error playing sound: no free channels available");
         return;
     }
 
