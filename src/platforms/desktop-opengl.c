@@ -405,6 +405,11 @@ static void sdl_fix_frame_rate(void) {
 void platform_sound_play(sound_t* sound, int channel) {
     if (audio_disabled) return;
 
+    if (channel >= MIX_CHANNELS) {
+        log_error("Error playing sound: channel %i does not exist", channel);
+        return;
+    }
+
     // Search for a free channel if channel not specified
     if (channel == -1) {
         for (int i = 0; i < MIX_CHANNELS; i++) {
@@ -416,7 +421,7 @@ void platform_sound_play(sound_t* sound, int channel) {
     }
 
     if (channel == -1) {
-        log_error("No free channels available");
+        log_error("Error playing sound: no free channels available");
         return;
     }
 
