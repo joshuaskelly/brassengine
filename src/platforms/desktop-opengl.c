@@ -47,7 +47,7 @@ static GLuint index_buffer_object = 0;
 static GLuint texture = 0;
 
 static Mix_Chunk chunks[MIX_CHANNELS];
-static bool audio_enabled = true;
+static bool audio_disabled = false;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
@@ -100,7 +100,7 @@ void platform_init(void) {
         log_error("Error intializing SDL Mixer");
         log_error(SDL_GetError());
         log_info("Sound playback will be disabled");
-        audio_enabled = false;
+        audio_disabled = true;
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
@@ -403,7 +403,7 @@ static void sdl_fix_frame_rate(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
-    if (!audio_enabled) return;
+    if (audio_disabled) return;
 
     // Search for a free channel if channel not specified
     if (channel == -1) {

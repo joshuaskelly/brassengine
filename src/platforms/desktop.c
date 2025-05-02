@@ -29,7 +29,7 @@ static int ticks_last_frame;
 static SDL_Rect display_rect;
 
 static Mix_Chunk chunks[MIX_CHANNELS];
-static bool audio_enabled = true;
+static bool audio_disabled = false;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
@@ -78,7 +78,7 @@ void platform_init(void) {
         log_error("Error intializing SDL Mixer");
         log_error(SDL_GetError());
         log_info("Sound playback will be disabled");
-        audio_enabled = false;
+        audio_disabled = true;
     }
 
     window = SDL_CreateWindow(
@@ -325,7 +325,7 @@ static void sdl_fix_frame_rate(void) {
 }
 
 void platform_sound_play(sound_t* sound, int channel) {
-    if (!audio_enabled) return;
+    if (audio_disabled) return;
     
     // Search for a free channel if channel not specified
     if (channel == -1) {
