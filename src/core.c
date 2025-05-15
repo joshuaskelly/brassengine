@@ -22,9 +22,9 @@ void core_init(void) {
     log_info("%s", ENGINE_COPYRIGHT);
 
     configuration_init();
-    time_init();
     assets_init();
     platform_init();
+    time_init();
     graphics_init();
     input_init();
     script_init();
