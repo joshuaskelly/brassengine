@@ -49,10 +49,7 @@ static void set(cJSON* json) {
             config->resolution.width = width->valueint;
             config->resolution.height = height->valueint;
         }
-    }
 
-    cJSON* display = cJSON_GetObjectItemCaseSensitive(json, "resolution");
-    if (display) {
         cJSON* aspect = cJSON_GetObjectItemCaseSensitive(resolution, "aspect");
         if (cJSON_IsNumber(aspect)) {
             config->display.aspect = aspect->valuedouble;
