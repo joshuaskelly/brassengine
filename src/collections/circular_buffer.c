@@ -5,7 +5,7 @@
 #include "circular_buffer.h"
 
 circular_buffer_t* circular_buffer_new(size_t capacity) {
-    circular_buffer_t* buffer = (circular_buffer_t*)malloc(sizeof(int) * 2 + sizeof(size_t) * 2 + sizeof(void*) * capacity);
+    circular_buffer_t* buffer = (circular_buffer_t*)malloc(sizeof(circular_buffer_t) + sizeof(void*) * capacity);
     buffer->capacity = capacity;
     memset(buffer->data, 0, sizeof(void*) * capacity);
     circular_buffer_clear(buffer);
