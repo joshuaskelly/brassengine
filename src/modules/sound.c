@@ -141,8 +141,22 @@ static int modules_sound_new(lua_State* L) {
  */
 static int modules_sound_play(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
-    int channel = luaL_optnumber(L, 2, -1);
-    sounds_sound_play(sound, channel);
+
+    int arg = 2;
+
+    int channel = -1;
+    if (lua_isinteger(L, arg)) {
+        channel = luaL_checkinteger(L, arg);
+        arg++;
+    }
+
+    bool looping = false;
+    if (lua_isboolean(L, arg)) {
+        looping = lua_toboolean(L, arg);
+        arg++;
+    }
+
+    sounds_sound_play(sound, channel, looping);
 
     return 0;
 }

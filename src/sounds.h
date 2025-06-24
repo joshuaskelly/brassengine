@@ -6,6 +6,7 @@
 #ifndef SOUNDS_H
 #define SOUNDS_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -48,6 +49,6 @@ sound_t* sounds_sound_copy(sound_t* sound);
  * @param sound Sound to play
  * @param channel Channel to play sound on
 */
-void sounds_sound_play(sound_t* sound, int channel);
+void sounds_sound_play(sound_t* sound, int channel, bool looping);
 
 #endif
