@@ -58,4 +58,12 @@ void sounds_sound_play(sound_t* sound, int channel, bool looping);
  */
 void sounds_sound_stop(int channel);
 
+/**
+ * Set volume level for given channel and volume.
+ *
+ * @param channel Channel to set
+ * @param volume Volume level. Range 0.0 to 1.0
+ */
+void sounds_sound_volume(int channel, float volume);
+
 #endif

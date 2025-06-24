@@ -189,6 +189,7 @@ void platform_reload(void) {
     if (fragment_shader_source) free(fragment_shader_source);
     load_shader_program();
     Mix_HaltChannel(-1);
+    Mix_Volume(-1, MIX_MAX_VOLUME);
 }
 
 void platform_update(void) {
@@ -435,6 +436,17 @@ void platform_sound_stop(int channel) {
     }
 
     Mix_HaltChannel(channel);
+}
+
+void platform_sound_volume(int channel, float volume) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    volume = clamp(volume, 0.0f, 1.0f);
+
+    Mix_Volume(channel, volume * MIX_MAX_VOLUME);
 }
 
 /**

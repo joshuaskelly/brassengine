@@ -46,3 +46,6 @@ void sounds_sound_stop(int channel) {
     platform_sound_stop(channel);
 }
 
+void sounds_sound_volume(int channel, float volume) {
+    platform_sound_volume(channel, volume);
+}

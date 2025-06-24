@@ -176,6 +176,21 @@ static int modules_sound_stop(lua_State* L) {
 }
 
 /**
+ * Sets volume.
+ * @function volume
+ * @tparam integer channel Channel to set volume for.
+ * @tparam number volume Volume level to set. Range 0.0 to 1.0
+ */
+static int modules_sound_volume(lua_State* L) {
+    int channel = luaL_checkinteger(L, 1);
+    float volume = luaL_checknumber(L, 2);
+
+    sounds_sound_volume(channel, volume);
+
+    return 0;
+}
+
+/**
  * Returns a copy of this sound.
  * @function copy
  * @treturn sound
@@ -250,6 +265,7 @@ static const struct luaL_Reg modules_sound_functions[] = {
     {"get_frame", modules_sound_frame_get},
     {"play", modules_sound_play},
     {"stop", modules_sound_stop},
+    {"volume", modules_sound_volume},
     {NULL, NULL}
 };
 
