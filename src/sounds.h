@@ -51,4 +51,11 @@ sound_t* sounds_sound_copy(sound_t* sound);
 */
 void sounds_sound_play(sound_t* sound, int channel, bool looping);
 
+/**
+ * Stop playback for given channel.
+ *
+ * @param channel Channel to stop
+ */
+void sounds_sound_stop(int channel);
+
 #endif

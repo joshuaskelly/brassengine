@@ -346,6 +346,15 @@ void platform_sound_play(sound_t* sound, int channel, bool looping) {
     Mix_PlayChannel(channel, chunk, loops);
 }
 
+void platform_sound_stop(int channel) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    Mix_HaltChannel(channel);
+}
+
 void platform_mouse_grabbed_set(bool grabbed) {
     SDL_SetWindowMouseGrab(window, grabbed);
 }

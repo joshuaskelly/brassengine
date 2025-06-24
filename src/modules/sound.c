@@ -162,6 +162,20 @@ static int modules_sound_play(lua_State* L) {
 }
 
 /**
+ * Stops sound.
+ * @function stop
+ * @tparam integer channel Channel to stop playing. If omitted all sounds will
+ * be stopped. (optional)
+ */
+static int modules_sound_stop(lua_State* L) {
+    int channel = luaL_optinteger(L, 1, -1);
+
+    sounds_sound_stop(channel);
+
+    return 0;
+}
+
+/**
  * Returns a copy of this sound.
  * @function copy
  * @treturn sound
@@ -235,6 +249,7 @@ static const struct luaL_Reg modules_sound_functions[] = {
     {"set_frame", modules_sound_frame_set},
     {"get_frame", modules_sound_frame_get},
     {"play", modules_sound_play},
+    {"stop", modules_sound_stop},
     {NULL, NULL}
 };
 
