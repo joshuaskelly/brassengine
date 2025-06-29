@@ -98,7 +98,7 @@ static int modules_sound_meta_newindex(lua_State* L) {
             lua_settop(L, 0);
         }
         else {
-            luaL_error(L, "BAD!");
+            luaL_error(L, "pcm array length does not match expected length of %I", sample_count);
         }
     }
     else {
