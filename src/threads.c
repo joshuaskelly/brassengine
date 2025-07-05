@@ -84,6 +84,7 @@ static void thread_pool_work_free(thread_pool_work_t* work) {
     if (work == NULL) return;
 
     free(work);
+    work = NULL;
 }
 
 struct thread_pool {
@@ -201,6 +202,7 @@ void threads_thread_pool_free(thread_pool_t* thread_pool) {
     threads_thread_condition_free(thread_pool->work_finished);
 
     free(thread_pool);
+    thread_pool = NULL;
 }
 
 static thread_pool_work_t* work_get(thread_pool_t* pool) {
