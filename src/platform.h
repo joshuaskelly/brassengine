@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 #include "sounds.h"
+#include "threads.h"
 
 /**
  * Platform specific engine main entry point.
@@ -73,5 +74,31 @@ bool platform_mouse_grabbed_get(void);
  * lua_State pointer.
  */
 void platform_open_module(void* arg);
+
+thread_t* platform_thread_new(void* (function)(void*), void* args);
+
+void platform_thread_free(thread_t* thread);
+
+void platform_thread_detatch(thread_t* thread);
+
+void* platform_thread_join(thread_t* thread);
+
+void platform_thread_exit(void* result);
+
+thread_lock_t* platform_thread_lock_new(void);
+
+void platform_thread_lock_free(thread_lock_t* lock);
+
+void platform_thread_lock_lock(thread_lock_t* lock);
+
+void platform_thread_lock_unlock(thread_lock_t* lock);
+
+thread_condition_t* platform_thread_condition_new(void);
+
+void platform_thread_condition_free(thread_condition_t* condition);
+
+void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock);
+
+void platform_thread_condition_alert(thread_condition_t* condition);
 
 #endif
