@@ -273,8 +273,13 @@ static void* worker_thread_main(void* arg) {
     // Update total thread count
     pool->thread_count--;
 
-    // Let other threads know to clean themselves up
+    // Alert other threads to clean themselves up
     threads_thread_condition_alert(pool->work_available);
+
+    // Alert pool that all threads are cleaned up
+    if (pool->thread_count == 0) {
+        threads_thread_condition_alert(pool->work_finished);
+    }
 
     threads_lock_unlock(pool->lock);
 
