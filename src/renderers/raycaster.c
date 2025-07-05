@@ -378,39 +378,6 @@ static void renderer_draw_wall_strip(raycaster_renderer_t* renderer, texture_t* 
     }
 }
 
-/** Depth of currently rendering sprite. */
-static float sprite_depth = FLT_MAX;
-
-/**
- * Pixel drawing function that respects ray depth.
- *
- * @param source_texture Texture to copy from
- * @param destination_texture Texture to copy to
- * @param sx Source x-coordinate
- * @param sy Source y-coordinate
- * @param dx Destination x-coordinate
- * @param dy Destination y-coordinate
- */
-static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    rect_t* clip_rect = graphics_clipping_rectangle_get();
-    if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
-    if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
-
-    float depth = sprite_depth;
-    float d = renderer_depth_buffer_pixel_get(active_renderer, dx, dy);
-    if (d <= depth) return;
-
-    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    if (pixel == graphics_transparent_color_get()) return;
-
-    renderer_depth_buffer_pixel_set(active_renderer, dx, dy, depth);
-
-    float brightness = renderer_distance_based_brightness_get(active_renderer, sprite_depth);
-    pixel = renderer_shade_pixel(active_renderer, pixel, brightness);
-
-    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
-}
-
 raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     raycaster_renderer_t* renderer = (raycaster_renderer_t*)malloc(sizeof(raycaster_renderer_t));
 
@@ -680,6 +647,39 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             vec2_add(floor_next, floor_next, floor_step);
         }
     }
+}
+
+/** Depth of currently rendering sprite. */
+static float sprite_depth = FLT_MAX;
+
+/**
+ * Pixel drawing function that respects ray depth.
+ *
+ * @param source_texture Texture to copy from
+ * @param destination_texture Texture to copy to
+ * @param sx Source x-coordinate
+ * @param sy Source y-coordinate
+ * @param dx Destination x-coordinate
+ * @param dy Destination y-coordinate
+ */
+static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
+    rect_t* clip_rect = graphics_clipping_rectangle_get();
+    if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
+    if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
+
+    float depth = sprite_depth;
+    float d = renderer_depth_buffer_pixel_get(active_renderer, dx, dy);
+    if (d <= depth) return;
+
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
+    if (pixel == graphics_transparent_color_get()) return;
+
+    renderer_depth_buffer_pixel_set(active_renderer, dx, dy, depth);
+
+    float brightness = renderer_distance_based_brightness_get(active_renderer, sprite_depth);
+    pixel = renderer_shade_pixel(active_renderer, pixel, brightness);
+
+    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
 
 void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t* sprite, mfloat_t* position) {
