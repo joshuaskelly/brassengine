@@ -13,16 +13,6 @@
 
 typedef int map_data_t;
 
-/**
- * Shade table. Used for shading a given pixel. The y-coordinate corresponds
- * to original color and the x-coordinate corresponds to desired brightness.
- */
-static texture_t* shade_table;
-
-static float fog_distance = 32.0f;
-
-static raycaster_renderer_t* active_renderer;
-
 raycaster_map_t* raycaster_map_new(int width, int height) {
     raycaster_map_t* map = (raycaster_map_t*)malloc(sizeof(raycaster_map_t));
     map->width = width;
@@ -293,6 +283,8 @@ static void ray_cast(ray_t* ray, raycaster_map_t* map) {
     }
 }
 
+static raycaster_renderer_t* active_renderer;
+
 /**
  * Shades given pixel to given brightness using the shade table.
  *
@@ -300,7 +292,9 @@ static void ray_cast(ray_t* ray, raycaster_map_t* map) {
  * @param brightness Amount to shade pixel. 1.0 = full bright 0.0 = full dark
  * @return color_t Shaded color
  */
-static color_t shade_pixel(color_t color, float brightness) {
+static color_t renderer_shade_pixel(raycaster_renderer_t* renderer, color_t color, float brightness) {
+    texture_t* shade_table = renderer->features.shade_table;
+
     if (!shade_table) return color;
     if (color >= shade_table->height) return color;
 
@@ -322,11 +316,11 @@ static color_t shade_pixel(color_t color, float brightness) {
  * @param distance Distance from camera
  * @return float Brightness where 1.0 is full bright and 0.0 is full dark.
  */
-static float get_distance_based_brightness(float distance) {
-    return 1.0f - distance / fog_distance;
+static float renderer_distance_based_brightness_get(raycaster_renderer_t* renderer, float distance) {
+    return 1.0f - distance / renderer->features.fog_distance;
 }
 
-static void set_depth_buffer_pixel(raycaster_renderer_t* renderer, int x, int y, float depth) {
+static void renderer_depth_buffer_pixel_set(raycaster_renderer_t* renderer, int x, int y, float depth) {
     texture_t* texture = renderer->render_texture;
     float* depth_buffer = renderer->depth_buffer;
 
@@ -336,7 +330,7 @@ static void set_depth_buffer_pixel(raycaster_renderer_t* renderer, int x, int y,
     depth_buffer[y * texture->width + x] = depth;
 }
 
-static float get_depth_buffer_pixel(raycaster_renderer_t* renderer, int x, int y) {
+static float renderer_depth_buffer_pixel_get(raycaster_renderer_t* renderer, int x, int y) {
     texture_t* texture = renderer->render_texture;
     float* depth_buffer = renderer->depth_buffer;
 
@@ -357,7 +351,7 @@ static float get_depth_buffer_pixel(raycaster_renderer_t* renderer, int x, int y
  * @param offset Wall texture x-coordinate offset.
  * @param brightness How light/dark to shade wall.
  */
-static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float brightness, float depth) {
+static void renderer_draw_wall_strip(raycaster_renderer_t* renderer, texture_t* wall_texture, texture_t* destination_texture, int x, int y0, int y1, float offset, float brightness, float depth) {
     const int length = y1 - y0;
     const int start = y0 < 0 ? abs(y0) : 0;
     const int bottom = destination_texture->height;
@@ -374,12 +368,12 @@ static void draw_wall_strip(texture_t* wall_texture, texture_t* destination_text
         t += t_step;
         if (c == graphics_transparent_color_get()) continue;
 
-        float d = get_depth_buffer_pixel(active_renderer, x, y);
+        float d = renderer_depth_buffer_pixel_get(renderer, x, y);
         if (d <= depth) continue;
 
-        set_depth_buffer_pixel(active_renderer, x, y, depth);
+        renderer_depth_buffer_pixel_set(renderer, x, y, depth);
 
-        c = shade_pixel(c, brightness);
+        c = renderer_shade_pixel(renderer, c, brightness);
         graphics_texture_pixel_set(destination_texture, x, y, c);
     }
 }
@@ -403,16 +397,16 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
 
     float depth = sprite_depth;
-    float d = get_depth_buffer_pixel(active_renderer, dx, dy);
+    float d = renderer_depth_buffer_pixel_get(active_renderer, dx, dy);
     if (d <= depth) return;
 
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
     if (pixel == graphics_transparent_color_get()) return;
 
-    set_depth_buffer_pixel(active_renderer, dx, dy, depth);
+    renderer_depth_buffer_pixel_set(active_renderer, dx, dy, depth);
 
-    float brightness = get_distance_based_brightness(sprite_depth);
-    pixel = shade_pixel(pixel, brightness);
+    float brightness = renderer_distance_based_brightness_get(active_renderer, sprite_depth);
+    pixel = renderer_shade_pixel(active_renderer, pixel, brightness);
 
     graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }
@@ -485,9 +479,6 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     if (!render_texture) {
         render_texture = graphics_render_texture_get();
     }
-
-    shade_table = renderer->features.shade_table;
-    fog_distance = renderer->features.fog_distance;
 
     const float width = render_texture->width;
     const float height = render_texture->height;
@@ -594,11 +585,12 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
             texture_t* wall_texture = palette[ray.hit_info.data];
             if (wall_texture) {
-                float brightness = get_distance_based_brightness(ray.hit_info.distance);
+                float brightness = renderer_distance_based_brightness_get(renderer, ray.hit_info.distance);
                 // Darken vertically aligned walls.
                 brightness *= ray.hit_info.was_vertical ? vertical_wall_brightness : horizontal_wall_brightness;
 
-                draw_wall_strip(
+                renderer_draw_wall_strip(
+                    renderer,
                     wall_texture,
                     render_texture,
                     i,
@@ -638,7 +630,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
         // Determine floor horizontal step.
         vec2_multiply_f(floor_step, step, scale);
 
-        float brightness = get_distance_based_brightness(distance);
+        float brightness = renderer_distance_based_brightness_get(renderer, distance);
 
         // Draw current scanline for both floor and ceiling
         for (int i = 0; i < width; i++) {
@@ -646,7 +638,7 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
             int ty = (int)floor_next[1];
 
             // Draw floor
-            float d = get_depth_buffer_pixel(active_renderer, i, j);
+            float d = renderer_depth_buffer_pixel_get(renderer, i, j);
             if (d > distance && renderer->features.draw_floors && map->floors) {
                 int index = map_get_floor(map, tx, ty);
                 texture_t* texture = palette[index];
@@ -659,14 +651,14 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
                     // Floor
                     graphics_texture_pixel_set(
-                        render_texture, i, j, shade_pixel(color, brightness)
+                        render_texture, i, j, renderer_shade_pixel(renderer, color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, j, distance);
+                    renderer_depth_buffer_pixel_set(renderer, i, j, distance);
                 }
             }
 
             // Draw ceiling
-            d = get_depth_buffer_pixel(active_renderer, i, height - j - 1);
+            d = renderer_depth_buffer_pixel_get(renderer, i, height - j - 1);
             if (d > distance && renderer->features.draw_ceilings && map->ceilings) {
                 int index = map_get_ceiling(map, tx, ty);
                 texture_t* texture = palette[index];
@@ -679,9 +671,9 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
 
                     // Ceiling
                     graphics_texture_pixel_set(
-                        render_texture, i, height - j - 1, shade_pixel(color, brightness)
+                        render_texture, i, height - j - 1, renderer_shade_pixel(renderer, color, brightness)
                     );
-                    set_depth_buffer_pixel(active_renderer, i, height - j - 1, distance);
+                    renderer_depth_buffer_pixel_set(renderer, i, height - j - 1, distance);
                 }
             }
 
@@ -700,9 +692,6 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
     mfloat_t* direction = renderer->camera.direction;
     mfloat_t* camera_position = renderer->camera.position;
 
-    shade_table = renderer->features.shade_table;
-    fog_distance = renderer->features.fog_distance;
-
     const float fov = renderer->camera.fov;
     const float distance_to_projection_plane = (render_texture->width / 2.0f) / tanf(to_radians(fov) / 2.0f);
 
@@ -713,7 +702,7 @@ void raycaster_renderer_render_sprite(raycaster_renderer_t* renderer, texture_t*
 
     // Cull sprites outside near/far planes
     if (distance < 0) return;
-    if (distance >= fog_distance) return;
+    if (distance >= renderer->features.fog_distance) return;
 
     // Scale to put point on projection plane.
     vec2_multiply_f(camera_space_position, camera_space_position, distance_to_projection_plane / distance);
@@ -1038,7 +1027,7 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             if (distance <= 0) continue;
 
             // Darken vertically aligned walls.
-            float brightness = get_distance_based_brightness(distance);
+            float brightness = renderer_distance_based_brightness_get(renderer, distance);
             float t = fabsf(vec2_dot(forward, vec2(p, 1, 0)));
             brightness *= lerp(horizontal_wall_brightness, vertical_wall_brightness, t);
 
@@ -1065,7 +1054,8 @@ void raycaster_renderer_render_sprite_oriented(raycaster_renderer_t* renderer, t
             float top = bottom - sprite_height;
             float x = half_width - i;
 
-            draw_wall_strip(
+            renderer_draw_wall_strip(
+                renderer,
                 sprite,
                 render_texture,
                 x,
