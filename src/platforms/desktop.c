@@ -414,6 +414,8 @@ thread_lock_t* platform_thread_lock_new(void) {
     thread_lock_t* lock = NULL;
     lock = (thread_lock_t*)malloc(sizeof(thread_lock_t));
 
+    pthread_mutex_init(&lock->mutex, NULL);
+
     return lock;
 }
 
