@@ -57,6 +57,9 @@ void threads_thread_condition_alert(thread_condition_t* condition) {
 
 typedef void(thread_pool_work_function_t)(void*);
 
+/**
+ * Internal structure used to represent a unit of work.
+ */
 typedef struct thread_pool_work {
     thread_pool_work_function_t* function;
     void* arg;
@@ -64,6 +67,11 @@ typedef struct thread_pool_work {
 
 } thread_pool_work_t;
 
+/**
+ * Create a new thread pool work object.
+ *
+ * @return New thread pool work object if successful, NULL otherwise
+ */
 static thread_pool_work_t* thread_pool_work_new(thread_pool_work_function_t function, void* arg) {
     thread_pool_work_t* work = NULL;
 
@@ -80,6 +88,11 @@ static thread_pool_work_t* thread_pool_work_new(thread_pool_work_function_t func
     return work;
 }
 
+/**
+ * Frees a thread pool work object.
+ *
+ * @param work Thread pool work object to free
+ */
 static void thread_pool_work_free(thread_pool_work_t* work) {
     if (work == NULL) return;
 
@@ -205,6 +218,11 @@ void threads_thread_pool_free(thread_pool_t* thread_pool) {
     thread_pool = NULL;
 }
 
+/**
+ * Get first available work object.
+ *
+ * @return Thread work object if any work available, NULL otherwise
+ */
 static thread_pool_work_t* work_get(thread_pool_t* pool) {
     thread_pool_work_t* work = NULL;
 
@@ -228,6 +246,13 @@ static thread_pool_work_t* work_get(thread_pool_t* pool) {
     return work;
 }
 
+/**
+ * Main worker thread processing loop. Will attempt to get work from the pool
+ * to work on, otherwise will wait until work becomes available.
+ *
+ * @param arg Thread pool that owns the thread
+ * @return Always NULL
+ */
 static void* worker_thread_main(void* arg) {
     thread_pool_t* pool = (thread_pool_t*)arg;
     thread_pool_work_t* work = NULL;
