@@ -35,9 +35,9 @@ void core_init(void) {
 void core_destroy(void) {
     input_destroy();
     script_destroy();
+    platform_destroy();
     assets_destroy();
     graphics_destroy();
-    platform_destroy();
     time_destroy();
     configuration_destroy();
     console_destroy();
@@ -65,8 +65,8 @@ void core_main_loop(void) {
 
 void core_reload(void) {
     time_reload();
-    assets_reload();
     platform_reload();
+    assets_reload();
     graphics_reload();
     script_reload();
 

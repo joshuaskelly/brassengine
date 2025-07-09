@@ -147,6 +147,8 @@ void platform_destroy(void) {
 }
 
 void platform_reload(void) {
+    Mix_HaltChannel(-1);
+    Mix_Volume(-1, MIX_MAX_VOLUME);
 }
 
 void platform_update(void) {
@@ -326,7 +328,7 @@ static void sdl_fix_frame_rate(void) {
     ticks_last_frame = SDL_GetTicks();
 }
 
-void platform_sound_play(sound_t* sound, int channel) {
+void platform_sound_play(sound_t* sound, int channel, bool looping) {
     if (audio_disabled) return;
 
     if (channel >= MIX_CHANNELS) {
@@ -358,7 +360,29 @@ void platform_sound_play(sound_t* sound, int channel) {
     chunk->abuf = (uint8_t*)sound->pcm;
     chunk->volume = 128;
 
-    Mix_PlayChannel(channel, chunk, 0);
+    int loops = looping ? -1 : 0;
+
+    Mix_PlayChannel(channel, chunk, loops);
+}
+
+void platform_sound_stop(int channel) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    Mix_HaltChannel(channel);
+}
+
+void platform_sound_volume(int channel, float volume) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    volume = clamp(volume, 0.0f, 1.0f);
+
+    Mix_Volume(channel, volume * MIX_MAX_VOLUME);
 }
 
 void platform_mouse_grabbed_set(bool grabbed) {
