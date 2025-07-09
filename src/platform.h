@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 #include "sounds.h"
+#include "threads.h"
 
 /**
  * Platform specific engine main entry point.
@@ -84,5 +85,104 @@ bool platform_mouse_grabbed_get(void);
  * lua_State pointer.
  */
 void platform_open_module(void* arg);
+
+/**
+ * Create a new thread.
+ *
+ * @param function Thread main entry point function
+ * @param args Single argument passed to entry point function
+ * @return New thread if successful, NULL otherwise
+ */
+thread_t* platform_thread_new(void* (function)(void*), void* args);
+
+/**
+ * Frees a thread.
+ *
+ * @param thread Thread to free
+ */
+void platform_thread_free(thread_t* thread);
+
+/**
+ * Detatches a thread. Once detatched a thread can no longer be joined.
+ *
+ * @param thread Thread to detatch
+ */
+void platform_thread_detatch(thread_t* thread);
+
+/**
+ * Wait until given thread finishes execution.
+ *
+ * @param thread Thread to join
+ * @return Result from thread upon finishing execution
+ */
+void* platform_thread_join(thread_t* thread);
+
+/**
+ * Terminate given thread and return result to join. Called from inside
+ * exiting thread.
+ *
+ * @param result Result to make availble to threads_thread_join call
+ */
+void platform_thread_exit(void* result);
+
+/**
+ * Creates a new thread lock.
+ *
+ * @return New thread lock if successful, NULL otherwise
+ */
+thread_lock_t* platform_thread_lock_new(void);
+
+/**
+ * Frees a thread lock.
+ *
+ * @param lock Thread lock to free
+ */
+void platform_thread_lock_free(thread_lock_t* lock);
+
+/**
+ * Locks given thread lock. Only one thread at a time may have access to a
+ * lock. This function will wait until the lock can be acquired.
+ *
+ * @param lock Thread lock to lock
+ */
+void platform_thread_lock_lock(thread_lock_t* lock);
+
+/**
+ * Unlocks given thread lock. This must be done to allow other threads to
+ * continue their execution.
+ *
+ * @param lock Thread lock to unlock
+ */
+void platform_thread_lock_unlock(thread_lock_t* lock);
+
+/**
+ * Creates a new thread condition.
+ *
+ * @return New thread condition if successful, NULL otherwise
+ */
+thread_condition_t* platform_thread_condition_new(void);
+
+/**
+ * Frees a thread condition.
+ *
+ * @param condition Thread condition to free
+ */
+void platform_thread_condition_free(thread_condition_t* condition);
+
+/**
+ * Pause thread execution until given condition has been alerted. A thread lock
+ * can be given to ensure only one thread will respond to the alert.
+ *
+ * @param condition Condition to wait for
+ * @param lock Lock to lock once waiting is over
+ */
+void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock);
+
+/**
+ * Notify threads waiting on given condition.
+ *
+ * @param condition Condition to notify threads about
+ */
+void platform_thread_condition_notify(thread_condition_t* condition);
 
 #endif
