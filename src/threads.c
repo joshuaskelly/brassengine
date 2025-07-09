@@ -51,8 +51,8 @@ void threads_thread_condition_wait(thread_condition_t* condition, thread_lock_t*
     platform_thread_condition_wait(condition, lock);
 }
 
-void threads_thread_condition_alert(thread_condition_t* condition) {
-    platform_thread_condition_alert(condition);
+void threads_thread_condition_notify(thread_condition_t* condition) {
+    platform_thread_condition_notify(condition);
 }
 
 typedef void(thread_pool_work_function_t)(void*);
@@ -159,7 +159,7 @@ void threads_thread_pool_add_work(thread_pool_t* thread_pool, void(function)(voi
 
     thread_pool->tail = work;
 
-    threads_thread_condition_alert(thread_pool->work_available);
+    threads_thread_condition_notify(thread_pool->work_available);
     threads_lock_unlock(thread_pool->lock);
 }
 
@@ -204,7 +204,7 @@ void threads_thread_pool_free(thread_pool_t* thread_pool) {
     thread_pool->stop = true;
 
     // Alert threads to exit
-    threads_thread_condition_alert(thread_pool->work_available);
+    threads_thread_condition_notify(thread_pool->work_available);
     threads_lock_unlock(thread_pool->lock);
 
     // Wait for threads to exit
@@ -289,7 +289,7 @@ static void* worker_thread_main(void* arg) {
 
         // Alert if all available work is finished
         if (!pool->stop && pool->active_thread_count == 0 && pool->head == NULL) {
-            threads_thread_condition_alert(pool->work_finished);
+            threads_thread_condition_notify(pool->work_finished);
         }
 
         threads_lock_unlock(pool->lock);
@@ -299,11 +299,11 @@ static void* worker_thread_main(void* arg) {
     pool->thread_count--;
 
     // Alert other threads to clean themselves up
-    threads_thread_condition_alert(pool->work_available);
+    threads_thread_condition_notify(pool->work_available);
 
     // Alert pool that all threads are cleaned up
     if (pool->thread_count == 0) {
-        threads_thread_condition_alert(pool->work_finished);
+        threads_thread_condition_notify(pool->work_finished);
     }
 
     threads_lock_unlock(pool->lock);

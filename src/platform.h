@@ -179,10 +179,10 @@ void platform_thread_condition_free(thread_condition_t* condition);
 void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock);
 
 /**
- * Alert threads waiting on given condition.
+ * Notify threads waiting on given condition.
  *
- * @param condition Condition to alert
+ * @param condition Condition to notify threads about
  */
-void platform_thread_condition_alert(thread_condition_t* condition);
+void platform_thread_condition_notify(thread_condition_t* condition);
 
 #endif

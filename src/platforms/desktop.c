@@ -478,6 +478,6 @@ void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t
     pthread_cond_wait(&(condition->cond), &(lock->mutex));
 }
 
-void platform_thread_condition_alert(thread_condition_t* condition) {
+void platform_thread_condition_notify(thread_condition_t* condition) {
     pthread_cond_signal(&(condition->cond));
 }
