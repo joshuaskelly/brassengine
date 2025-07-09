@@ -610,7 +610,6 @@ void platform_open_module(void* arg) {
     open_desktop_platform_module(arg, window);
 }
 
-
 struct thread {
     pthread_t pthread;
 };

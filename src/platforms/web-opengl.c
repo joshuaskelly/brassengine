@@ -598,7 +598,6 @@ void platform_open_module(void* arg) {
     open_web_platform_module(arg, window);
 }
 
-
 struct thread {
     pthread_t pthread;
 };
