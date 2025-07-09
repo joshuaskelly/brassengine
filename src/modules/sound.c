@@ -141,8 +141,51 @@ static int modules_sound_new(lua_State* L) {
  */
 static int modules_sound_play(lua_State* L) {
     sound_t* sound = luaL_checksound(L, 1);
-    int channel = luaL_optnumber(L, 2, -1);
-    sounds_sound_play(sound, channel);
+
+    int arg = 2;
+
+    int channel = -1;
+    if (lua_isinteger(L, arg)) {
+        channel = luaL_checkinteger(L, arg);
+        arg++;
+    }
+
+    bool looping = false;
+    if (lua_isboolean(L, arg)) {
+        looping = lua_toboolean(L, arg);
+        arg++;
+    }
+
+    sounds_sound_play(sound, channel, looping);
+
+    return 0;
+}
+
+/**
+ * Stops sound.
+ * @function stop
+ * @tparam integer channel Channel to stop playing. If omitted all sounds will
+ * be stopped. (optional)
+ */
+static int modules_sound_stop(lua_State* L) {
+    int channel = luaL_optinteger(L, 1, -1);
+
+    sounds_sound_stop(channel);
+
+    return 0;
+}
+
+/**
+ * Sets volume.
+ * @function volume
+ * @tparam integer channel Channel to set volume for.
+ * @tparam number volume Volume level to set. Range 0.0 to 1.0
+ */
+static int modules_sound_volume(lua_State* L) {
+    int channel = luaL_checkinteger(L, 1);
+    float volume = luaL_checknumber(L, 2);
+
+    sounds_sound_volume(channel, volume);
 
     return 0;
 }
@@ -221,6 +264,8 @@ static const struct luaL_Reg modules_sound_functions[] = {
     {"set_frame", modules_sound_frame_set},
     {"get_frame", modules_sound_frame_get},
     {"play", modules_sound_play},
+    {"stop", modules_sound_stop},
+    {"volume", modules_sound_volume},
     {NULL, NULL}
 };
 

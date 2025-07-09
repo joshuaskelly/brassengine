@@ -38,6 +38,14 @@ sound_t* sounds_sound_copy(sound_t* sound) {
     );
 }
 
-void sounds_sound_play(sound_t* sound, int channel) {
-    platform_sound_play(sound, channel);
+void sounds_sound_play(sound_t* sound, int channel, bool looping) {
+    platform_sound_play(sound, channel, looping);
+}
+
+void sounds_sound_stop(int channel) {
+    platform_sound_stop(channel);
+}
+
+void sounds_sound_volume(int channel, float volume) {
+    platform_sound_volume(channel, volume);
 }

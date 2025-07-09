@@ -50,7 +50,18 @@ void platform_draw(void);
 /**
  * Plays given sound.
  */
-void platform_sound_play(sound_t* sound, int channel);
+void platform_sound_play(sound_t* sound, int channel, bool looping);
+
+/**
+ * Stops playback for given channel. If channel is -1 all channels will be
+ * stopped.
+ */
+void platform_sound_stop(int channel);
+
+/**
+ * Sets volume for given channel.
+ */
+void platform_sound_volume(int channel, float volume);
 
 /**
  * Set mouse grab state. If true, mouse will be constrained to window.
