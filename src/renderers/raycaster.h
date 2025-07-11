@@ -5,6 +5,7 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
+#include "../threads.h"
 #include "../collections/list.h"
 
 typedef struct {
@@ -33,6 +34,7 @@ void raycaster_map_free(raycaster_map_t* map);
 typedef struct {
     texture_t* render_texture;
     float* depth_buffer;
+    thread_pool_t* pool;
 
     struct {
         texture_t* shade_table;
@@ -43,6 +45,7 @@ typedef struct {
         float horizontal_wall_brightness;
         float vertical_wall_brightness;
         float pixels_per_unit;
+        bool threaded;
     } features;
 
     struct {

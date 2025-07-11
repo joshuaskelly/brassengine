@@ -333,6 +333,18 @@ static int modules_raycaster_renderer_feature(lua_State* L) {
 
         return 1;
     }
+    if (strcmp(key, "threaded") == 0) {
+        if (is_setter) {
+            bool threaded = lua_toboolean(L, 3);
+            renderer->features.threaded = threaded;
+
+            return 0;
+        }
+
+        lua_pushboolean(L, renderer->features.threaded);
+
+        return 1;
+    }
     else {
         luaL_argerror(L, 2, lua_pushfstring(L, "invalid feature '%s'", key));
     }

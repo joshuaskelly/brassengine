@@ -8,6 +8,7 @@
 #include "../graphics.h"
 #include "../log.h"
 #include "../math.h"
+#include "../threads.h"
 
 #include "raycaster.h"
 
@@ -385,6 +386,8 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
         render_texture = graphics_render_texture_get();
     }
 
+    renderer->pool = threads_thread_pool_new(1);
+
     size_t size = render_texture->width * render_texture->height;
 
     renderer->render_texture = render_texture;
@@ -397,6 +400,7 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
     renderer->features.horizontal_wall_brightness = 1.0f;
     renderer->features.vertical_wall_brightness = 0.5f;
     renderer->features.pixels_per_unit = 64.0f;
+    renderer->features.threaded = false;
 
     vec2(renderer->camera.position, 0, 0);
     vec2(renderer->camera.direction, 0, 0);
@@ -408,6 +412,9 @@ raycaster_renderer_t* raycaster_renderer_new(texture_t* render_texture) {
 void raycaster_renderer_free(raycaster_renderer_t* renderer) {
     free(renderer->depth_buffer);
     renderer->depth_buffer = NULL;
+
+    threads_thread_pool_free(renderer->pool);
+    renderer->pool = NULL;
 
     free(renderer);
     renderer = NULL;
@@ -429,6 +436,131 @@ void raycaster_renderer_camera(raycaster_renderer_t* renderer, mfloat_t* positio
     vec2_assign(renderer->camera.position, position);
     vec2_assign(renderer->camera.direction, direction);
     renderer->camera.fov = fov;
+}
+
+typedef struct {
+    raycaster_renderer_t* renderer;
+    raycaster_map_t* map;
+    texture_t** palette;
+    texture_t* render_texture;
+    float half_height;
+    float distance_to_projection_plane;
+    int index;
+    int span;
+} thread_wall_info_t;
+
+void thread_draw_walls(void* arg) {
+    thread_wall_info_t* info = (thread_wall_info_t*)arg;
+
+    raycaster_renderer_t* renderer = info->renderer;
+    mfloat_t* direction = renderer->camera.direction;
+    mfloat_t* position = renderer->camera.position;
+    raycaster_map_t* map = info->map;
+    texture_t* render_texture = info->render_texture;
+    texture_t** palette = info->palette;
+    float distance_to_projection_plane = info->distance_to_projection_plane;
+    float half_height = info->half_height;
+    float horizontal_wall_brightness = renderer->features.horizontal_wall_brightness;
+    float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
+    int i = info->index;
+    const float width = render_texture->width;
+
+    // Calculate step vector, we need it to move along the projection plane
+    mfloat_t step[VEC2_SIZE];
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
+
+    // 2. Calculate left bound.
+
+    // left_bound = position + (direction * distance_to_projection_plane) - (step * width / 2)
+    mfloat_t left_bound[VEC2_SIZE];
+    vec2_multiply_f(left_bound, direction, distance_to_projection_plane);
+    vec2_multiply_f(step, step, width * 0.5f);
+    vec2_subtract(left_bound, left_bound, step);
+
+    // 3. Find step vector
+    vec2_tangent(step, direction);
+    vec2_negative(step, step);
+
+    if (i != 0)
+        vec2_multiply_f(step, step, i);
+
+    // Adjust left bound by step
+    vec2_add(left_bound, left_bound, step);
+
+    if (i != 0)
+    vec2_divide_f(step, step, i);
+
+    // Track where the next ray needs to point
+    mfloat_t next[VEC2_SIZE];
+    vec2_add(next, left_bound, position);
+
+    // Initialize ray to point to left bound
+    ray_t ray;
+    ray_set(&ray, position, ray.direction);
+    vec2_subtract(ray.direction, next, position);
+    vec2_normalize(ray.direction, ray.direction);
+
+    for (int j = i; j < i + info->span; j++) {
+        ray_cast(&ray, map);
+
+        // Calculate wall height
+        mfloat_t hit_vector[VEC2_SIZE];
+        vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
+        float corrected_distance = vec2_dot(hit_vector, direction);
+
+        float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
+        float half_wall_height = wall_height / 2.0f;
+        float top = half_height - half_wall_height;
+        top += sign(top) * 0.5f;
+        float bottom = top + wall_height;
+
+        // Calculate the texture normalized horizontal offset (u-coordinate).
+        float offset = 0.0f;
+        if (ray.hit_info.was_vertical) {
+            offset = frac(ray.hit_info.position[1]);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[0] < 0) {
+                offset = 1.0f - offset;
+            }
+        }
+        else {
+            offset = frac(ray.hit_info.position[0]);
+
+            // Flip texture to maintain correct orienation
+            if (ray.direction[1] > 0) {
+                offset = 1.0f - offset;
+            }
+        }
+
+        texture_t* wall_texture = palette[ray.hit_info.data];
+        if (wall_texture) {
+            float brightness = renderer_distance_based_brightness_get(renderer, ray.hit_info.distance);
+            // Darken vertically aligned walls.
+            brightness *= ray.hit_info.was_vertical ? vertical_wall_brightness : horizontal_wall_brightness;
+
+            renderer_draw_wall_strip(
+                renderer,
+                wall_texture,
+                render_texture,
+                j,
+                top,
+                bottom,
+                offset,
+                brightness,
+                corrected_distance
+            );
+        }
+
+        // Orient ray to next position along plane
+        vec2_add(next, next, step);
+        vec2_subtract(ray.direction, next, position);
+        vec2_normalize(ray.direction, ray.direction);
+
+        // Clear out hit info
+        ray_hit_info_reset(&ray.hit_info);
+    }
 }
 
 void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map_t* map, texture_t** palette) {
@@ -516,66 +648,88 @@ void raycaster_renderer_render_map(raycaster_renderer_t* renderer, raycaster_map
     float vertical_wall_brightness = renderer->features.vertical_wall_brightness;
 
     // Draw walls
-    if (renderer->features.draw_walls && map->walls) {
-        for (int i = 0; i < width; i++) {
-            ray_cast(&ray, map);
+    if (renderer->features.threaded) {
+        const int spans = 1;
+        int span = width / spans;
+        thread_wall_info_t infos[spans];
 
-            // Calculate wall height
-            mfloat_t hit_vector[VEC2_SIZE];
-            vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
-            float corrected_distance = vec2_dot(hit_vector, direction);
+        for (int i = 0; i < spans; i++) {
+            infos[i].renderer = renderer;
+            infos[i].map = map;
+            infos[i].palette = palette;
+            infos[i].render_texture = render_texture;
+            infos[i].half_height = half_height;
+            infos[i].distance_to_projection_plane = distance_to_projection_plane;
+            infos[i].index = i * span;
+            infos[i].span = span;
 
-            float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
-            float half_wall_height = wall_height / 2.0f;
-            float top = half_height - half_wall_height;
-            top += sign(top) * 0.5f;
-            float bottom = top + wall_height;
+            threads_thread_pool_add_work(renderer->pool, thread_draw_walls, &infos[i]);
+        }
 
-            // Calculate the texture normalized horizontal offset (u-coordinate).
-            float offset = 0.0f;
-            if (ray.hit_info.was_vertical) {
-                offset = frac(ray.hit_info.position[1]);
+        threads_thread_pool_wait(renderer->pool);
+    }
+    else {
+        if (renderer->features.draw_walls && map->walls) {
+            for (int i = 0; i < width; i++) {
+                ray_cast(&ray, map);
 
-                // Flip texture to maintain correct orienation
-                if (ray.direction[0] < 0) {
-                    offset = 1.0f - offset;
+                // Calculate wall height
+                mfloat_t hit_vector[VEC2_SIZE];
+                vec2_multiply_f(hit_vector, ray.direction, ray.hit_info.distance);
+                float corrected_distance = vec2_dot(hit_vector, direction);
+
+                float wall_height = 1.0f / corrected_distance * distance_to_projection_plane;
+                float half_wall_height = wall_height / 2.0f;
+                float top = half_height - half_wall_height;
+                top += sign(top) * 0.5f;
+                float bottom = top + wall_height;
+
+                // Calculate the texture normalized horizontal offset (u-coordinate).
+                float offset = 0.0f;
+                if (ray.hit_info.was_vertical) {
+                    offset = frac(ray.hit_info.position[1]);
+
+                    // Flip texture to maintain correct orienation
+                    if (ray.direction[0] < 0) {
+                        offset = 1.0f - offset;
+                    }
                 }
-            }
-            else {
-                offset = frac(ray.hit_info.position[0]);
+                else {
+                    offset = frac(ray.hit_info.position[0]);
 
-                // Flip texture to maintain correct orienation
-                if (ray.direction[1] > 0) {
-                    offset = 1.0f - offset;
+                    // Flip texture to maintain correct orienation
+                    if (ray.direction[1] > 0) {
+                        offset = 1.0f - offset;
+                    }
                 }
+
+                texture_t* wall_texture = palette[ray.hit_info.data];
+                if (wall_texture) {
+                    float brightness = renderer_distance_based_brightness_get(renderer, ray.hit_info.distance);
+                    // Darken vertically aligned walls.
+                    brightness *= ray.hit_info.was_vertical ? vertical_wall_brightness : horizontal_wall_brightness;
+
+                    renderer_draw_wall_strip(
+                        renderer,
+                        wall_texture,
+                        render_texture,
+                        i,
+                        top,
+                        bottom,
+                        offset,
+                        brightness,
+                        corrected_distance
+                    );
+                }
+
+                // Orient ray to next position along plane
+                vec2_add(next, next, step);
+                vec2_subtract(ray.direction, next, position);
+                vec2_normalize(ray.direction, ray.direction);
+
+                // Clear out hit info
+                ray_hit_info_reset(&ray.hit_info);
             }
-
-            texture_t* wall_texture = palette[ray.hit_info.data];
-            if (wall_texture) {
-                float brightness = renderer_distance_based_brightness_get(renderer, ray.hit_info.distance);
-                // Darken vertically aligned walls.
-                brightness *= ray.hit_info.was_vertical ? vertical_wall_brightness : horizontal_wall_brightness;
-
-                renderer_draw_wall_strip(
-                    renderer,
-                    wall_texture,
-                    render_texture,
-                    i,
-                    top,
-                    bottom,
-                    offset,
-                    brightness,
-                    corrected_distance
-                );
-            }
-
-            // Orient ray to next position along plane
-            vec2_add(next, next, step);
-            vec2_subtract(ray.direction, next, position);
-            vec2_normalize(ray.direction, ray.direction);
-
-            // Clear out hit info
-            ray_hit_info_reset(&ray.hit_info);
         }
     }
 
