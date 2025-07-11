@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_error.h>
 #include <emscripten.h>
@@ -34,7 +34,7 @@ static SDL_Rect display_rect;
 
 static char* fragment_shader_source = NULL;
 
-#define OPENGL_VERSION_MAJOR 3
+#define OPENGL_VERSION_MAJOR 2
 #define OPENGL_VERSION_MINOR 0
 
 static GLuint shader_program;
@@ -54,8 +54,6 @@ static bool audio_disabled = false;
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
 static void load_shader_program(void);
-
-static const char default_shader[] = "#version 100\nprecision mediump float;uniform sampler2D screen_texture;varying mediump vec2 uv;void main() {gl_FragColor = texture2D(screen_texture, uv);}";
 
 int platform_main(int argc, char* argv[]) {
     core_init();
@@ -534,13 +532,30 @@ static bool compile_shader(GLuint shader, const GLchar* source) {
     return true;
 }
 
+static const char* default_fragment_shader =
+    "#version 100\n"
+    "precision mediump float;"
+    "uniform sampler2D screen_texture;"
+    "varying mediump vec2 uv;"
+    "void main() {"
+    "    gl_FragColor = texture2D(screen_texture, uv);"
+    "}";
+
+static const char* vertex_shader_source =
+    "#version 100\n"
+    "attribute vec2 position;"
+    "attribute vec2 texture_coordinates;"
+    "varying vec2 uv;"
+    "void main() {"
+    "    uv = texture_coordinates;"
+    "    gl_Position = vec4(position.x, position.y, 0, 1);"
+    "}";
+
 static void load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
     // Vertex shader
-    const GLchar* vertex_shader_source = "#version 100\nattribute vec2 position;attribute vec2 texture_coordinates;varying vec2 uv;void main(){uv=texture_coordinates;gl_Position=vec4(position.x,position.y,0,1);}";
-
     if (!compile_shader(vertex_shader, vertex_shader_source)) {
         log_fatal("Error compiling vertex shader");
     }
@@ -557,7 +572,7 @@ static void load_shader_program(void) {
     }
 
     if (use_default) {
-        if (!compile_shader(fragment_shader, default_shader)) {
+        if (!compile_shader(fragment_shader, default_fragment_shader)) {
             log_fatal("Error compiling default fragment shader");
         }
     }
