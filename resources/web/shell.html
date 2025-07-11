@@ -8,6 +8,7 @@
         body {
             margin: 0;
             padding: 0;
+            height: 100vh;
         }
 
         .emscripten {
@@ -30,8 +31,17 @@
         canvas.emscripten {
             border: 0px none;
             background-color: black;
-            aspect-ratio: 16 / 10;
-            width: min(100%, 100vh * 16 / 10);
+            aspect-ratio: 320 / 200;
+            height: 100%;
+            width: auto;
+        }
+
+        /* Handle tall windows */
+        @media(max-aspect-ratio: 320 / 200) {
+            canvas.emscripten {
+                height: auto;
+                width: 100%;
+            }
         }
     </style>
 </head>
