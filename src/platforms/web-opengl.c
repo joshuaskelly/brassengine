@@ -5,7 +5,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_error.h>
 #include <emscripten.h>
@@ -34,7 +34,7 @@ static SDL_Rect display_rect;
 
 static char* fragment_shader_source = NULL;
 
-#define OPENGL_VERSION_MAJOR 3
+#define OPENGL_VERSION_MAJOR 2
 #define OPENGL_VERSION_MINOR 0
 
 static GLuint shader_program;
