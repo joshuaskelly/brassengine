@@ -564,9 +564,9 @@ static const char* vertex_shader_source =
     "attribute vec2 position;"
     "attribute vec2 texture_coordinates;"
     "varying vec2 uv;"
-    "void main(){"
-    "    uv=texture_coordinates;"
-    "    gl_Position=vec4(position.x,position.y,0,1);"
+    "void main() {"
+    "    uv = texture_coordinates;"
+    "    gl_Position = vec4(position.x, position.y, 0, 1);"
     "}";
 
 static void load_shader_program(void) {
