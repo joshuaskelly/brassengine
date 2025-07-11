@@ -551,7 +551,6 @@ static const char* vertex_shader_source =
     "    gl_Position=vec4(position.x,position.y,0,1);"
     "}";
 
-
 static void load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
