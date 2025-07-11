@@ -29,3 +29,6 @@
   - Disable resample dither
   - Resample track to 11025
   - Save as unsigned 8bit PCM
+
+- Audio conversion with FFMPEG
+  - `ffmpeg -i input.mp3 -vn -acodec pcm_u8 -ar 11025 -ac 1 output.wav`

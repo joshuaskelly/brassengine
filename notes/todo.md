@@ -1,7 +1,6 @@
 # TODO
 ## General
 - [ ] Keyboard pressed/released api?
-- [ ] Fix "BAD!" errors
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
 - [ ] Sprite drawing with affine transformation
@@ -17,6 +16,7 @@
 - [ ] Fix web-opengl platform
 - [ ] Scripted assets? Would support custom file types obj, wad, etc
 - [ ] Is the clip rect still needed now with subtextures?
+- [x] Fix "BAD!" errors
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
 - [x] Platform specific Lua module

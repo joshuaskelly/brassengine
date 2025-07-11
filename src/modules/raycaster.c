@@ -436,7 +436,7 @@ static int modules_raycaster_map_meta_newindex(lua_State* L) {
             lua_settop(L, 0);
         }
         else {
-            luaL_error(L, "BAD!");
+            luaL_error(L, "%s array length does not match expected length of %I", key, size);
         }
     }
     else {

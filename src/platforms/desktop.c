@@ -1,7 +1,10 @@
 #include <stdbool.h>
 
+#include <pthread.h>
+
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <SDL_error.h>
 
 #include "../arguments.h"
 #include "../assets.h"
@@ -28,6 +31,7 @@ static int ticks_last_frame;
 static SDL_Rect display_rect;
 
 static Mix_Chunk chunks[MIX_CHANNELS];
+static bool audio_disabled = false;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
@@ -72,8 +76,11 @@ void platform_init(void) {
         log_fatal("Error initializing SDL");
     }
 
-    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 2048, NULL, 0) < 0) {
-        log_fatal("Error intializing SDL Mixer");
+    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 256, NULL, 0) < 0) {
+        log_error("Error intializing SDL Mixer");
+        log_error(SDL_GetError());
+        log_info("Sound playback will be disabled");
+        audio_disabled = true;
     }
 
     window = SDL_CreateWindow(
@@ -140,6 +147,8 @@ void platform_destroy(void) {
 }
 
 void platform_reload(void) {
+    Mix_HaltChannel(-1);
+    Mix_Volume(-1, MIX_MAX_VOLUME);
 }
 
 void platform_update(void) {
@@ -319,7 +328,14 @@ static void sdl_fix_frame_rate(void) {
     ticks_last_frame = SDL_GetTicks();
 }
 
-void platform_sound_play(sound_t* sound, int channel) {
+void platform_sound_play(sound_t* sound, int channel, bool looping) {
+    if (audio_disabled) return;
+
+    if (channel >= MIX_CHANNELS) {
+        log_error("Error playing sound: channel %i does not exist", channel);
+        return;
+    }
+
     // Search for a free channel if channel not specified
     if (channel == -1) {
         for (int i = 0; i < MIX_CHANNELS; i++) {
@@ -331,7 +347,7 @@ void platform_sound_play(sound_t* sound, int channel) {
     }
 
     if (channel == -1) {
-        log_error("No free channels available");
+        log_error("Error playing sound: no free channels available");
         return;
     }
 
@@ -344,7 +360,29 @@ void platform_sound_play(sound_t* sound, int channel) {
     chunk->abuf = (uint8_t*)sound->pcm;
     chunk->volume = 128;
 
-    Mix_PlayChannel(channel, chunk, 0);
+    int loops = looping ? -1 : 0;
+
+    Mix_PlayChannel(channel, chunk, loops);
+}
+
+void platform_sound_stop(int channel) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    Mix_HaltChannel(channel);
+}
+
+void platform_sound_volume(int channel, float volume) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    volume = clamp(volume, 0.0f, 1.0f);
+
+    Mix_Volume(channel, volume * MIX_MAX_VOLUME);
 }
 
 void platform_mouse_grabbed_set(bool grabbed) {
@@ -357,4 +395,89 @@ bool platform_mouse_grabbed_get(void) {
 
 void platform_open_module(void* arg) {
     open_desktop_platform_module(arg, window);
+}
+
+struct thread {
+    pthread_t pthread;
+};
+
+thread_t* platform_thread_new(void* (function)(void*), void* args) {
+    thread_t* thread = (thread_t*)malloc(sizeof(thread_t));
+    pthread_create(&thread->pthread, NULL, function, args);
+
+    return thread;
+}
+
+void platform_thread_free(thread_t* thread) {
+    if (thread == NULL) return;
+
+    free(thread);
+}
+
+void platform_thread_detatch(thread_t* thread) {
+    pthread_detach(thread->pthread);
+}
+
+void* platform_thread_join(thread_t* thread) {
+    void* result = NULL;
+    pthread_join(thread->pthread, result);
+    free(thread);
+
+    return result;
+}
+
+void platform_thread_exit(void* result) {
+    pthread_exit(result);
+}
+
+struct thread_lock {
+    pthread_mutex_t mutex;
+};
+
+thread_lock_t* platform_thread_lock_new(void) {
+    thread_lock_t* lock = NULL;
+    lock = (thread_lock_t*)malloc(sizeof(thread_lock_t));
+
+    pthread_mutex_init(&lock->mutex, NULL);
+
+    return lock;
+}
+
+void platform_thread_lock_free(thread_lock_t* lock) {
+    free(lock);
+}
+
+void platform_thread_lock_lock(thread_lock_t* lock) {
+    pthread_mutex_lock(&(lock->mutex));
+}
+
+void platform_thread_lock_unlock(thread_lock_t* lock) {
+    pthread_mutex_unlock(&(lock->mutex));
+}
+
+struct thread_condition {
+    pthread_cond_t cond;
+};
+
+thread_condition_t* platform_thread_condition_new(void) {
+    thread_condition_t* condition = (thread_condition_t*)malloc(sizeof(thread_condition_t));
+
+    pthread_cond_init(&(condition->cond), NULL);
+
+    return condition;
+}
+
+void platform_thread_condition_free(thread_condition_t* condition) {
+    if (condition == NULL) return;
+
+    pthread_cond_destroy(&(condition->cond));
+    free(condition);
+}
+
+void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock) {
+    pthread_cond_wait(&(condition->cond), &(lock->mutex));
+}
+
+void platform_thread_condition_notify(thread_condition_t* condition) {
+    pthread_cond_signal(&(condition->cond));
 }
