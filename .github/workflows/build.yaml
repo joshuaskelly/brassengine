@@ -3,6 +3,8 @@ name: Build Brass Engine
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - '**'
   pull_request:
