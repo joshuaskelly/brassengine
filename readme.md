@@ -1,3 +1,5 @@
+# [![brass engine](https://raw.githubusercontent.com/joshuaskelly/brassengine/master/.media/logo.svg?sanitize=true)](https://github.com/JoshuaSkelly/brassengine)
+
 # Brass Engine
 
 ## Install
