@@ -12,11 +12,11 @@ Official binaries can be found on the [releases page](https://github.com/joshuas
 
 ## Screenshots
 
-![Platformer Demo](.media/screenshot1.gif)
-_Platformer Demo_
+<img src=".media/screenshot1.gif" width="100%" />_Platformer Demo_
 
-![Mode 7 Demo](.media/screenshot2.gif)
-_Mode 7 Demo_
 
-![Raycaster Demo](.media/screenshot3.gif)
-_Raycaster Demo_
+<img src=".media/screenshot2.gif" width="100%" />_Mode 7 Demo_
+
+
+<img src=".media/screenshot3.gif" width="100%" />_Raycaster Demo_
+
