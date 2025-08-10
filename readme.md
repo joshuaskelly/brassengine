@@ -12,8 +12,11 @@ Official binaries can be found on the [releases page](https://github.com/joshuas
 
 ## Screenshots
 
-![Lines Demo](.media/3d-dot-party.gif)
-_3D Dot Party Demo_
+![Platformer Demo](.media/screenshot1.gif)
+_Platformer Demo_
 
-![Lines Demo](.media/lines-demo.gif)
-_Lines Demo_
+![Mode 7 Demo](.media/screenshot2.gif)
+_Mode 7 Demo_
+
+![Raycaster Demo](.media/screenshot3.gif)
+_Raycaster Demo_
