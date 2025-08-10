@@ -2,7 +2,7 @@
 
 # Brass Engine
 
-## Lo-fi cross platform game engine
+## Lo-fi cross-platform game engine
 
 Brass Engine is a light weight game engine with an emphasis on software rendering using pre-gpu techniques. It prioritizes quick iteration, obvious ways to do things, and direct feedback.
 
@@ -19,4 +19,5 @@ Official binaries can be found on the [releases page](https://github.com/joshuas
 
 
 <img src=".media/screenshot3.gif" width="100%" />_Raycaster Demo_
+
 
