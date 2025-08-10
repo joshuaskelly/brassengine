@@ -2,58 +2,18 @@
 
 # Brass Engine
 
-## Install
+## Lo-fi cross platform game engine
 
-###  Clone
+Brass Engine is a light weight game engine with an emphasis on software rendering using pre-gpu techniques. It prioritizes quick iteration, obvious ways to do things, and direct feedback.
 
-`$ git clone https://github.com/joshuaskelly/brassengine.git`
+## Getting Brass Engine
 
-### Init Submodules
+Official binaries can be found on the [releases page](https://github.com/joshuaskelly/brassengine/releases).
 
-`$ git submodule update --init`
-
-### Clean
-
-`$ make clean`
-
-## Building
-
-Currently development is primarily being done on MacOS and assumes you have SDL2 installed somewhere.
-
-### Desktop
-
-Requires SDL2 and SDL2_mixer
-
-Build:
-
-`$ make desktop`
-
-Run:
-
-`$ ./build/bin/brass`
-
-### Web
-
-Requires emscripten
-
-Build:
-
-`$ make web`
-
-Run:
-
-`$ make web-run`
-
-## Demos
-
-3D Dot Party Demo
+## Screenshots
 
 ![Lines Demo](.media/3d-dot-party.gif)
-
-`$ ./build/bin/brass demos/3d_dot_party`
-
-Lines Demo
+_3D Dot Party Demo_
 
 ![Lines Demo](.media/lines-demo.gif)
-
-`$ ./build/bin/brass demos/lines`
+_Lines Demo_
