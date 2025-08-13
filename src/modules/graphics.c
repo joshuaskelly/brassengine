@@ -212,6 +212,12 @@ static int modules_graphics_resolution_set(lua_State* L) {
     return 0;
 }
 
+/**
+ * Get render buffer resolution.
+ * @function get_resolution
+ * @treturn[1] integer Resolution width
+ * @treturn[2] integer Resolution height
+ */
 static int modules_graphics_resolution_get(lua_State* L) {
     int width = 0;
     int height = 0;
