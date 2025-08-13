@@ -344,6 +344,13 @@ static bool handle_key_up(event_t* event) {
 }
 
 bool console_handle_event(event_t* event) {
+    // Toggle console
+    if (event->type == EVENT_KEYDOWN && event->key.code == KEYCODE_GRAVE) {
+        console_buffer_toggle();
+        return true;
+    }
+
+    // Don't handle events if console is hidden
     if (!visible) return false;
 
     switch (event->type) {
