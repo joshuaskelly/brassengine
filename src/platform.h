@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 
+#include "event.h"
 #include "sounds.h"
 #include "threads.h"
 
@@ -47,6 +48,11 @@ void platform_update(void);
  * Draw system. Called at the end of an engine update cycle.
  */
 void platform_draw(void);
+
+/**
+ * Handle given event.
+ */
+bool platform_handle_event(event_t* event);
 
 /**
  * Plays given sound.

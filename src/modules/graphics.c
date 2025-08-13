@@ -67,8 +67,10 @@ static int modules_graphics_blit(lua_State* L) {
     int sh = texture->height;
     int dx = 0;
     int dy = 0;
-    int dw = config->resolution.width;
-    int dh = config->resolution.height;
+    int dw;
+    int dh;
+
+    graphics_resolution_get(&dw, &dh);
 
     if (arg_count == 3) {
         dx = (int)luaL_checknumber(L, 2);
@@ -205,12 +207,21 @@ static int modules_graphics_resolution_set(lua_State* L) {
 
     lua_pop(L, -1);
 
-    config->resolution.width = width;
-    config->resolution.height = height;
-
     graphics_resolution_set(width, height);
 
     return 0;
+}
+
+static int modules_graphics_resolution_get(lua_State* L) {
+    int width = 0;
+    int height = 0;
+
+    graphics_resolution_get(&width, &height);
+
+    lua_pushinteger(L, width);
+    lua_pushinteger(L, height);
+
+    return 2;
 }
 
 static const struct luaL_Reg modules_graphics_functions[] = {
@@ -222,6 +233,7 @@ static const struct luaL_Reg modules_graphics_functions[] = {
     {"set_transparent_color", modules_graphics_transparent_color_set},
     {"set_global_palette_color", modules_graphics_palette_color_set},
     {"set_resolution", modules_graphics_resolution_set},
+    {"get_resolution", modules_graphics_resolution_get},
     {NULL, NULL}
 };
 

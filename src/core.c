@@ -91,6 +91,8 @@ static void handle_events() {
             continue;
         }
 
+        if (platform_handle_event(&event)) continue;
+
         if (console_handle_event(&event)) continue;
 
         input_handle_event(&event);

@@ -218,6 +218,14 @@ void graphics_blit(
 void graphics_resolution_set(int width, int height);
 
 /**
+ * Gets render buffer resolution.
+ *
+ * @param width Width of render buffer in pixels. Can be NULL.
+ * @param height Heigh of render buffer in pixels. Can be NULL.
+ */
+void graphics_resolution_get(int* width, int* height);
+
+/**
  * Sets clipping rectangle which defines drawable area.
  *
  * @param x Rect top left x-coordinate
