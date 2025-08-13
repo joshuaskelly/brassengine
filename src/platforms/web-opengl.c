@@ -154,12 +154,6 @@ void platform_update(void) {
 }
 
 static void opengl_init(int width, int height) {
-    glewExperimental = GL_TRUE;
-    GLenum glewError = glewInit();
-    if (glewError != GLEW_OK) {
-        log_fatal("Error initializing GLEW");
-    }
-
     load_shader_program();
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
