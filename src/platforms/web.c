@@ -112,8 +112,8 @@ void platform_init(void) {
         renderer,
         SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
-        config->resolution.width,
-        config->resolution.height
+        width,
+        height
     );
 
     if (!render_buffer_texture) {
