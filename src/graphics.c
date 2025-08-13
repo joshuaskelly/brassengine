@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "configuration.h"
+#include "event.h"
 #include "graphics.h"
 #include "log.h"
 
@@ -283,21 +284,33 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
 
 void graphics_resolution_set(int width, int height) {
     graphics_texture_free(render_texture);
-
-    render_texture = graphics_texture_new(
-        config->resolution.width,
-        config->resolution.height,
-        NULL
-    );
+    render_texture = graphics_texture_new(width, height, NULL);
 
     if (!render_texture) {
         log_fatal("Failed to create frame buffer");
     }
 
+    // Post event on successfully changing resolution
+    event_t event;
+    event.type = EVENT_GRAPHICSRESOLUTIONCHANGED;
+    event.graphics_resolution_change.width = width;
+    event.graphics_resolution_change.height = height;
+    event_post(&event);
+
     clip_rect.x = 0;
     clip_rect.y = 0;
-    clip_rect.width = config->resolution.width;
-    clip_rect.height = config->resolution.height;
+    clip_rect.width = width;
+    clip_rect.height = height;
+}
+
+void graphics_resolution_get(int* width, int* height) {
+    if (width) {
+        *width = render_texture->width;
+    }
+
+    if (height) {
+        *height = render_texture->height;
+    }
 }
 
 void graphics_clipping_rectangle_set(rect_t* rect) {

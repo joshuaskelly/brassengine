@@ -35,6 +35,7 @@ static bool audio_disabled = false;
 
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
+static void render_buffer_set(int width, int height);
 
 int platform_main(int argc, char* argv[]) {
     if (arguments_check("-v") || arguments_check("--version")) {
@@ -69,8 +70,10 @@ void platform_init(void) {
 
     log_info(buffer);
 
-    const int window_width = config->resolution.width * 3;
-    const int window_height = config->resolution.height * 3;
+    const int width = config->resolution.width;
+    const int height = config->resolution.height;
+    const int window_width = width * 3;
+    const int window_height = height * 3;
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
@@ -111,18 +114,14 @@ void platform_init(void) {
         SDL_BLENDMODE_BLEND
     );
 
-    render_buffer = calloc(config->resolution.width * config->resolution.height, sizeof(uint32_t));
-
-    if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
-    }
+    render_buffer_set(width, height);
 
     render_buffer_texture = SDL_CreateTexture(
         renderer,
         SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
-        config->resolution.width,
-        config->resolution.height
+        width,
+        height
     );
 
     if (!render_buffer_texture) {
@@ -166,13 +165,17 @@ void platform_draw(void) {
     }
 
     // Maintain aspect ratio and center in window
+    int width;
+    int height;
+    graphics_resolution_get(&width, &height);
+
     int window_width;
     int window_height;
 
     SDL_GetWindowSize(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
-    float buffer_aspect = config->resolution.width / (float)config->resolution.height * config->display.aspect;
+    float buffer_aspect = width / (float)height * config->display.aspect;
 
     display_rect.w = window_width;
     display_rect.h = window_height;
@@ -206,13 +209,60 @@ void platform_draw(void) {
     SDL_RenderPresent(renderer);
 }
 
+bool platform_handle_event(event_t* event) {
+    if (event->type == EVENT_GRAPHICSRESOLUTIONCHANGED) {
+        int width = event->graphics_resolution_change.width;
+        int height = event->graphics_resolution_change.height;
+
+        render_buffer_set(width, height);
+
+        SDL_DestroyTexture(render_buffer_texture);
+
+        render_buffer_texture = SDL_CreateTexture(
+            renderer,
+            SDL_PIXELFORMAT_RGBA32,
+            SDL_TEXTUREACCESS_STREAMING,
+            width,
+            height
+        );
+
+        if (!render_buffer_texture) {
+            log_fatal("Error creating SDL frame buffer texture");
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+static void render_buffer_set(int width, int height) {
+    if (sizeof(render_buffer) == width * height * sizeof(uint32_t)) return;
+
+    // Free if not NULL
+    if (render_buffer) {
+        free(render_buffer);
+        render_buffer = NULL;
+    }
+
+    render_buffer = calloc(width * height, sizeof(uint32_t));
+
+    if (!render_buffer) {
+        log_fatal("Error creating frame buffer.");
+    }
+}
+
 static void sdl_handle_events(void) {
     SDL_Event sdl_event;
     event_t event;
     SDL_GameController* controller = NULL;
 
-    float aspect_width = config->resolution.width / (float)display_rect.w;
-    float aspect_height = config->resolution.height / (float)display_rect.h;
+    int width;
+    int height;
+    graphics_resolution_get(&width, &height);
+
+    float aspect_width = width / (float)display_rect.w;
+    float aspect_height = height / (float)display_rect.h;
 
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
@@ -245,8 +295,8 @@ static void sdl_handle_events(void) {
                 event.motion.motion_x = (sdl_event.motion.xrel) * aspect_width;
                 event.motion.motion_y = (sdl_event.motion.yrel) * aspect_height;
 
-                event.motion.x = clamp(event.motion.x, 0, config->resolution.width - 1);
-                event.motion.y = clamp(event.motion.y, 0, config->resolution.height - 1);
+                event.motion.x = clamp(event.motion.x, 0, width - 1);
+                event.motion.y = clamp(event.motion.y, 0, height - 1);
 
                 event_post(&event);
                 break;

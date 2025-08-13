@@ -59,4 +59,9 @@ function graphics.set_global_palette_color(index, r, g, b) end
 --- @param height integer  Resolution height
 function graphics.set_resolution(width, height) end
 
+--- Get render buffer resolution.
+--- @return integer Resolution width
+--- @return integer Resolution height
+function graphics.get_resolution() end
+
 return graphics
