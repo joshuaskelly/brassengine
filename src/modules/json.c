@@ -1078,6 +1078,10 @@ static void json_check_encode_depth(lua_State *l, json_config_t *cfg,
 static void json_append_data(lua_State *l, json_config_t *cfg,
                              int current_depth, strbuf_t *json);
 
+static int json_valid_key_type(lua_State* l, int idx);
+
+static int json_valid_data_type(lua_State* l, int idx);
+
 /* json_append_array args:
  * - lua_State
  * - JSON strbuf
@@ -1154,6 +1158,12 @@ static void json_append_object(lua_State *l, json_config_t *cfg,
     /* table, startkey */
     comma = 0;
     while (lua_next(l, -2) != 0) {
+        /* Skip over keys/values we cannot encode */
+        if (!json_valid_key_type(l, -2) || !json_valid_data_type(l, -1)) {
+            lua_pop(l, 1);
+            continue;
+        }
+
         if (comma)
             strbuf_append_char(json, ',');
         else
@@ -1224,6 +1234,30 @@ static void json_append_data(lua_State *l, json_config_t *cfg,
          * and LUA_TLIGHTUSERDATA) cannot be serialised */
         json_encode_exception(l, cfg, json, -1, "type not supported");
         /* never returns */
+    }
+}
+
+static int json_valid_key_type(lua_State* l, int idx) {
+    switch (lua_type(l, idx)) {
+        case LUA_TSTRING:
+        case LUA_TNUMBER:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+static int json_valid_data_type(lua_State* l, int idx) {
+    switch (lua_type(l, idx)) {
+        case LUA_TSTRING:
+        case LUA_TNUMBER:
+        case LUA_TBOOLEAN:
+        case LUA_TTABLE:
+        case LUA_TNIL:
+        case LUA_TLIGHTUSERDATA:
+            return 1;
+        default:
+            return 0;
     }
 }
 
