@@ -66,7 +66,8 @@
 - [ ] Initial implementation
 
 ## OpenGL Platform
-- [ ] Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.
+- [ ] Double buffer texture data being sent to GPU?
+- [ ] ~~Indexed shader. Send texture data as unsigned bytes, and the palette is RGB.~~
 
 ## Console
 - [ ] Autocomplete support for colon operator
