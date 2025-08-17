@@ -445,13 +445,6 @@ static void sdl_handle_events(void) {
                 event_post(&event);
                 break;
 
-            // Mac OS will repaint while resizing
-            case SDL_WINDOWEVENT_RESIZED:
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
-                display_rect.w = sdl_event.window.data1;
-                display_rect.h = sdl_event.window.data2;
-                break;
-
             case SDL_CONTROLLERDEVICEADDED:
                 controller = SDL_GameControllerOpen(sdl_event.cdevice.which);
                 int id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
