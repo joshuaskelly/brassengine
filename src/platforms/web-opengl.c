@@ -190,7 +190,7 @@ bool platform_handle_event(event_t* event) {
 
         opengl_destroy();
         sdl_pixels_resize(width, height);
-        opengl_init(width, height);
+        opengl_init();
 
         return true;
     }
