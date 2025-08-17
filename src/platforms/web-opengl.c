@@ -28,7 +28,7 @@
 #define FRAME_TIME_LENGTH (1000 / FPS)
 
 static SDL_Window* window = NULL;
-static uint32_t* render_buffer = NULL;
+static uint32_t* pixels = NULL;
 static int ticks_last_frame;
 static SDL_Rect display_rect;
 
@@ -51,12 +51,20 @@ static GLuint texture = 0;
 static Mix_Chunk chunks[MIX_CHANNELS];
 static bool audio_disabled = false;
 
+static void sdl_init(void);
+static void sdl_destroy(void);
 static void sdl_handle_events(void);
 static void sdl_fix_frame_rate(void);
-static void load_shader_program(void);
-static void opengl_init(int width, int height);
+static void sdl_pixels_resize(int width, int height);
+
+static void mixer_init(void);
+static void mixer_destroy(void);
+
+static void opengl_init(void);
 static void opengl_destroy(void);
-static void render_buffer_set(int width, int height);
+static void opengl_load_shader_program(void);
+
+static void log_platform_info(void);
 
 int platform_main(int argc, char* argv[]) {
     core_init();
@@ -66,77 +74,16 @@ int platform_main(int argc, char* argv[]) {
 }
 
 void platform_init(void) {
-    // Get platform version info
-    SDL_version version;
-    SDL_GetVersion(&version);
-
-    const SDL_version* mix_version = Mix_Linked_Version();
-
-    char buffer[128];
-
-    snprintf(
-        buffer,
-        sizeof(buffer),
-        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL ES %i.%i)",
-        __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__,
-        version.major, version.minor, version.patch,
-        mix_version->major, mix_version->minor, mix_version->patch,
-        OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR
-    );
-
-    log_info(buffer);
-
-    const int width = config->resolution.width;
-    const int height = config->resolution.height;
-    const int window_width = width * 3;
-    const int window_height = height * 3;
-
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
-        log_fatal("Error initializing SDL");
-    }
-
-    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 256, NULL, 0) < 0) {
-        log_error("Error intializing SDL Mixer");
-        log_error(SDL_GetError());
-        log_info("Sound playback will be disabled");
-        audio_disabled = true;
-    }
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-
-    window = SDL_CreateWindow(
-        NULL,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        window_width,
-        window_height,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
-    );
-
-    if (!window) {
-        log_fatal("Error creating SDL window");
-    }
-
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-    if (!context) {
-        log_fatal("Error creating OpenGL context");
-    }
-
-    render_buffer_set(width, height);
-
-    opengl_init(width, height);
-
-    SDL_ShowCursor(SDL_DISABLE);
+    mixer_init();
+    sdl_init();
+    opengl_init();
+    log_platform_info();
 }
 
 void platform_destroy(void) {
+    mixer_destroy();
     opengl_destroy();
-    free(render_buffer);
-    SDL_DestroyWindow(window);
-    Mix_Quit();
-    SDL_Quit();
+    sdl_destroy();
 }
 
 void platform_reload(void) {
@@ -144,8 +91,8 @@ void platform_reload(void) {
     Mix_HaltChannel(-1);
     Mix_Volume(-1, MIX_MAX_VOLUME);
 
-    render_buffer_set(config->resolution.width, config->resolution.height);
-    opengl_init(config->resolution.width, config->resolution.height);
+    sdl_pixels_resize(config->resolution.width, config->resolution.height);
+    opengl_init();
 }
 
 void platform_update(void) {
@@ -153,62 +100,13 @@ void platform_update(void) {
     sdl_fix_frame_rate();
 }
 
-static void opengl_init(int width, int height) {
-    load_shader_program();
-
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    GLfloat vertex_data[] = {
-        -1.0f, -1.0f, 0.0f, 1.0f,
-        1.0f, -1.0f, 1.0f, 1.0f,
-        1.0f,  1.0f, 1.0f, 0.0f,
-        -1.0f,  1.0f, 0.0f, 0.0f
-    };
-
-    GLuint index_data[] = {
-        0, 1, 2, 3
-    };
-
-    // Create vertex buffer object
-    glGenBuffers(1, &vertex_buffer_object);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
-
-    // Create index buffer object
-    glGenBuffers(1, &index_buffer_object);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), index_data, GL_STATIC_DRAW);
-
-    // Create texture
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, render_buffer);
-
-    // Set texture paramters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-}
-
-static void opengl_destroy(void) {
-    glDeleteTextures(1, &texture);
-    glDeleteBuffers(1, &index_buffer_object);
-    glDeleteBuffers(1, &vertex_buffer_object);
-    glDeleteProgram(shader_program);
-
-    if (fragment_shader_source) {
-        free(fragment_shader_source);
-    }
-}
-
 void platform_draw(void) {
     texture_t* render_texture = graphics_render_texture_get();
     uint32_t* palette = graphics_palette_get();
 
-    // Convert core render buffer from indexed to rgba
+    // Convert core render buffer from indexed to rgba pixels
     for (int i = 0; i < render_texture->width * render_texture->height; i++) {
-        render_buffer[i] = palette[render_texture->pixels[i]];
+        pixels[i] = palette[render_texture->pixels[i]];
     }
 
     // Maintain aspect ratio and center in window
@@ -257,7 +155,7 @@ void platform_draw(void) {
         render_texture->height, // height
         GL_RGBA,                // format
         GL_UNSIGNED_BYTE,       // type,
-        render_buffer
+        pixels
     );
 
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -291,7 +189,7 @@ bool platform_handle_event(event_t* event) {
         int height = event->graphics_resolution_change.height;
 
         opengl_destroy();
-        render_buffer_set(width, height);
+        sdl_pixels_resize(width, height);
         opengl_init(width, height);
 
         return true;
@@ -300,20 +198,202 @@ bool platform_handle_event(event_t* event) {
     return false;
 }
 
-static void render_buffer_set(int width, int height) {
-    if (sizeof(render_buffer) == width * height * sizeof(uint32_t)) return;
+void platform_sound_play(sound_t* sound, int channel, bool looping) {
+    if (audio_disabled) return;
 
-    // Free if not NULL
-    if (render_buffer) {
-        free(render_buffer);
-        render_buffer = NULL;
+    if (channel >= MIX_CHANNELS) {
+        log_error("Error playing sound: channel %i does not exist", channel);
+        return;
     }
 
-    render_buffer = calloc(width * height, sizeof(uint32_t));
-
-    if (!render_buffer) {
-        log_fatal("Error creating frame buffer.");
+    // Search for a free channel if channel not specified
+    if (channel == -1) {
+        for (int i = 0; i < MIX_CHANNELS; i++) {
+            if (!Mix_Playing(i)) {
+                channel = i;
+                break;
+            }
+        }
     }
+
+    if (channel == -1) {
+        log_error("Error playing sound: no free channels available");
+        return;
+    }
+
+    size_t size = sound->frame_count * sound->channel_count * sizeof(sample_t);
+
+    // Configure chunk with sound data
+    Mix_Chunk* chunk = &chunks[channel];
+    chunk->allocated = 0;
+    chunk->alen = size;
+    chunk->abuf = (uint8_t*)sound->pcm;
+    chunk->volume = 128;
+
+    int loops = looping ? -1 : 0;
+
+    Mix_PlayChannel(channel, chunk, loops);
+}
+
+void platform_sound_stop(int channel) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    Mix_HaltChannel(channel);
+}
+
+void platform_sound_volume(int channel, float volume) {
+    if (channel < -1 || channel >= MIX_CHANNELS) {
+        log_error("Error stopping channel: channel %i does not exist", channel);
+        return;
+    }
+
+    volume = clamp(volume, 0.0f, 1.0f);
+
+    Mix_Volume(channel, volume * MIX_MAX_VOLUME);
+}
+
+void platform_mouse_grabbed_set(bool grabbed) {
+    SDL_SetWindowMouseGrab(window, grabbed);
+}
+
+bool platform_mouse_grabbed_get(void) {
+    return SDL_GetWindowMouseGrab(window);
+}
+
+void platform_open_module(void* arg) {
+    open_web_platform_module(arg, window);
+}
+
+struct thread {
+    pthread_t pthread;
+};
+
+thread_t* platform_thread_new(void* (function)(void*), void* args) {
+    thread_t* thread = (thread_t*)malloc(sizeof(thread_t));
+    pthread_create(&thread->pthread, NULL, function, args);
+
+    return thread;
+}
+
+void platform_thread_free(thread_t* thread) {
+    if (thread == NULL) return;
+
+    free(thread);
+}
+
+void platform_thread_detatch(thread_t* thread) {
+    pthread_detach(thread->pthread);
+}
+
+void* platform_thread_join(thread_t* thread) {
+    void* result = NULL;
+    pthread_join(thread->pthread, result);
+    free(thread);
+
+    return result;
+}
+
+void platform_thread_exit(void* result) {
+    pthread_exit(result);
+}
+
+struct thread_lock {
+    pthread_mutex_t mutex;
+};
+
+thread_lock_t* platform_thread_lock_new(void) {
+    thread_lock_t* lock = NULL;
+    lock = (thread_lock_t*)malloc(sizeof(thread_lock_t));
+
+    pthread_mutex_init(&lock->mutex, NULL);
+
+    return lock;
+}
+
+void platform_thread_lock_free(thread_lock_t* lock) {
+    free(lock);
+}
+
+void platform_thread_lock_lock(thread_lock_t* lock) {
+    pthread_mutex_lock(&(lock->mutex));
+}
+
+void platform_thread_lock_unlock(thread_lock_t* lock) {
+    pthread_mutex_unlock(&(lock->mutex));
+}
+
+struct thread_condition {
+    pthread_cond_t cond;
+};
+
+thread_condition_t* platform_thread_condition_new(void) {
+    thread_condition_t* condition = (thread_condition_t*)malloc(sizeof(thread_condition_t));
+
+    pthread_cond_init(&(condition->cond), NULL);
+
+    return condition;
+}
+
+void platform_thread_condition_free(thread_condition_t* condition) {
+    if (condition == NULL) return;
+
+    pthread_cond_destroy(&(condition->cond));
+    free(condition);
+}
+
+void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock) {
+    pthread_cond_wait(&(condition->cond), &(lock->mutex));
+}
+
+void platform_thread_condition_notify(thread_condition_t* condition) {
+    pthread_cond_signal(&(condition->cond));
+}
+
+static void sdl_init(void) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
+        log_fatal("Error initializing SDL");
+    }
+
+    const int width = config->resolution.width;
+    const int height = config->resolution.height;
+    const int default_window_scale = 3;
+
+    // Create SDL window
+    window = SDL_CreateWindow(
+        NULL,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width * default_window_scale,
+        height * default_window_scale,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+    );
+
+    if (!window) {
+        log_fatal("Error creating SDL window");
+    }
+
+    // Create OpenGL context
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
+    if (!SDL_GL_CreateContext(window)) {
+        log_fatal("Error creating OpenGL context");
+    }
+
+    sdl_pixels_resize(width, height);
+
+    // Hide cursor by default
+    SDL_ShowCursor(SDL_DISABLE);
+}
+
+static void sdl_destroy(void) {
+    free(pixels);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 static void sdl_handle_events(void) {
@@ -436,61 +516,86 @@ static void sdl_fix_frame_rate(void) {
     ticks_last_frame = SDL_GetTicks();
 }
 
-void platform_sound_play(sound_t* sound, int channel, bool looping) {
-    if (audio_disabled) return;
+static void sdl_pixels_resize(int width, int height) {
+    if (sizeof(pixels) == width * height * sizeof(uint32_t)) return;
 
-    if (channel >= MIX_CHANNELS) {
-        log_error("Error playing sound: channel %i does not exist", channel);
-        return;
+    // Free if not NULL
+    if (pixels) {
+        free(pixels);
+        pixels = NULL;
     }
 
-    // Search for a free channel if channel not specified
-    if (channel == -1) {
-        for (int i = 0; i < MIX_CHANNELS; i++) {
-            if (!Mix_Playing(i)) {
-                channel = i;
-                break;
-            }
-        }
+    pixels = calloc(width * height, sizeof(uint32_t));
+
+    if (!pixels) {
+        log_fatal("Error creating frame buffer.");
     }
-
-    if (channel == -1) {
-        log_error("Error playing sound: no free channels available");
-        return;
-    }
-
-    size_t size = sound->frame_count * sound->channel_count * sizeof(sample_t);
-
-    // Configure chunk with sound data
-    Mix_Chunk* chunk = &chunks[channel];
-    chunk->allocated = 0;
-    chunk->alen = size;
-    chunk->abuf = (uint8_t*)sound->pcm;
-    chunk->volume = 128;
-
-    int loops = looping ? -1 : 0;
-
-    Mix_PlayChannel(channel, chunk, loops);
 }
 
-void platform_sound_stop(int channel) {
-    if (channel < -1 || channel >= MIX_CHANNELS) {
-        log_error("Error stopping channel: channel %i does not exist", channel);
-        return;
+static void mixer_init(void) {
+    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 256, NULL, 0) < 0) {
+        log_error("Error intializing SDL Mixer");
+        log_error(SDL_GetError());
+        log_info("Sound playback will be disabled");
+        audio_disabled = true;
     }
-
-    Mix_HaltChannel(channel);
 }
 
-void platform_sound_volume(int channel, float volume) {
-    if (channel < -1 || channel >= MIX_CHANNELS) {
-        log_error("Error stopping channel: channel %i does not exist", channel);
-        return;
+static void mixer_destroy(void) {
+    Mix_HaltChannel(-1);
+    Mix_Quit();
+}
+
+static void opengl_init(void) {
+    opengl_load_shader_program();
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    GLfloat vertex_data[] = {
+        -1.0f, -1.0f, 0.0f, 1.0f,
+        1.0f, -1.0f, 1.0f, 1.0f,
+        1.0f,  1.0f, 1.0f, 0.0f,
+        -1.0f,  1.0f, 0.0f, 0.0f
+    };
+
+    GLuint index_data[] = {
+        0, 1, 2, 3
+    };
+
+    // Create vertex buffer object
+    glGenBuffers(1, &vertex_buffer_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 4 * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW);
+
+    // Create index buffer object
+    glGenBuffers(1, &index_buffer_object);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), index_data, GL_STATIC_DRAW);
+
+    const int width = config->resolution.width;
+    const int height = config->resolution.height;
+
+    // Create texture
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    // Set texture paramters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
+static void opengl_destroy(void) {
+    glDeleteTextures(1, &texture);
+    glDeleteBuffers(1, &index_buffer_object);
+    glDeleteBuffers(1, &vertex_buffer_object);
+    glDeleteProgram(shader_program);
+
+    if (fragment_shader_source) {
+        free(fragment_shader_source);
     }
-
-    volume = clamp(volume, 0.0f, 1.0f);
-
-    Mix_Volume(channel, volume * MIX_MAX_VOLUME);
 }
 
 /**
@@ -601,7 +706,7 @@ static const char* vertex_shader_source =
     "    gl_Position = vec4(position.x, position.y, 0, 1);"
     "}";
 
-static void load_shader_program(void) {
+static void opengl_load_shader_program(void) {
     shader_program = glCreateProgram();
     GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -645,99 +750,28 @@ static void load_shader_program(void) {
     frame_count = glGetUniformLocation(shader_program, "frame_count");
 }
 
-void platform_mouse_grabbed_set(bool grabbed) {
-    SDL_SetWindowMouseGrab(window, grabbed);
-}
+static void log_platform_info(void) {
+    // Get SDL version info
+    SDL_version version;
+    SDL_GetVersion(&version);
 
-bool platform_mouse_grabbed_get(void) {
-    return SDL_GetWindowMouseGrab(window);
-}
+    // Get SDL Mixer version info
+    const SDL_version* mix_version = Mix_Linked_Version();
 
-void platform_open_module(void* arg) {
-    open_web_platform_module(arg, window);
-}
+    // Get OpenGL version info
+    const GLubyte* opengl_version = glGetString(GL_VERSION);
 
-struct thread {
-    pthread_t pthread;
-};
+    // Build info string
+    char buffer[128];
+    snprintf(
+        buffer,
+        sizeof(buffer),
+        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i, SDL Mixer %i.%i.%i, %s)",
+        __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__,
+        version.major, version.minor, version.patch,
+        mix_version->major, mix_version->minor, mix_version->patch,
+        opengl_version
+    );
 
-thread_t* platform_thread_new(void* (function)(void*), void* args) {
-    thread_t* thread = (thread_t*)malloc(sizeof(thread_t));
-    pthread_create(&thread->pthread, NULL, function, args);
-
-    return thread;
-}
-
-void platform_thread_free(thread_t* thread) {
-    if (thread == NULL) return;
-
-    free(thread);
-}
-
-void platform_thread_detatch(thread_t* thread) {
-    pthread_detach(thread->pthread);
-}
-
-void* platform_thread_join(thread_t* thread) {
-    void* result = NULL;
-    pthread_join(thread->pthread, result);
-    free(thread);
-
-    return result;
-}
-
-void platform_thread_exit(void* result) {
-    pthread_exit(result);
-}
-
-struct thread_lock {
-    pthread_mutex_t mutex;
-};
-
-thread_lock_t* platform_thread_lock_new(void) {
-    thread_lock_t* lock = NULL;
-    lock = (thread_lock_t*)malloc(sizeof(thread_lock_t));
-
-    pthread_mutex_init(&lock->mutex, NULL);
-
-    return lock;
-}
-
-void platform_thread_lock_free(thread_lock_t* lock) {
-    free(lock);
-}
-
-void platform_thread_lock_lock(thread_lock_t* lock) {
-    pthread_mutex_lock(&(lock->mutex));
-}
-
-void platform_thread_lock_unlock(thread_lock_t* lock) {
-    pthread_mutex_unlock(&(lock->mutex));
-}
-
-struct thread_condition {
-    pthread_cond_t cond;
-};
-
-thread_condition_t* platform_thread_condition_new(void) {
-    thread_condition_t* condition = (thread_condition_t*)malloc(sizeof(thread_condition_t));
-
-    pthread_cond_init(&(condition->cond), NULL);
-
-    return condition;
-}
-
-void platform_thread_condition_free(thread_condition_t* condition) {
-    if (condition == NULL) return;
-
-    pthread_cond_destroy(&(condition->cond));
-    free(condition);
-}
-
-void platform_thread_condition_wait(thread_condition_t* condition, thread_lock_t* lock) {
-    pthread_cond_wait(&(condition->cond), &(lock->mutex));
-}
-
-void platform_thread_condition_notify(thread_condition_t* condition) {
-    pthread_cond_signal(&(condition->cond));
+    log_info(buffer);
 }
