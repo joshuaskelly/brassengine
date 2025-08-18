@@ -360,6 +360,8 @@ void platform_thread_condition_notify(thread_condition_t* condition) {
 }
 
 static void sdl_init(void) {
+    SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS , "permonitorv2");
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
