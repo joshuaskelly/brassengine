@@ -379,7 +379,7 @@ static void sdl_init(void) {
         SDL_WINDOWPOS_CENTERED,
         width * default_window_scale,
         height * default_window_scale,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE  | SDL_WINDOW_ALLOW_HIGHDPI
     );
 
     if (!window) {
