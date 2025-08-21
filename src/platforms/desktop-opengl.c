@@ -9,6 +9,8 @@
 #include <SDL_opengl.h>
 #include <SDL_error.h>
 
+#include "extensions/sdl-extensions.h"
+
 #include "../arguments.h"
 #include "../configuration.h"
 #include "../core.h"
@@ -124,7 +126,7 @@ void platform_draw(void) {
     int window_width;
     int window_height;
 
-    SDL_GetWindowSize(window, &window_width, &window_height);
+    SDL_GetWindowSizeInPixels(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
     float buffer_aspect = width / (float)height * config->display.aspect;
@@ -360,6 +362,8 @@ void platform_thread_condition_notify(thread_condition_t* condition) {
 }
 
 static void sdl_init(void) {
+    SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS , "permonitorv2");
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) != 0) {
         log_fatal("Error initializing SDL");
     }
@@ -375,7 +379,7 @@ static void sdl_init(void) {
         SDL_WINDOWPOS_CENTERED,
         width * default_window_scale,
         height * default_window_scale,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE  | SDL_WINDOW_ALLOW_HIGHDPI
     );
 
     if (!window) {

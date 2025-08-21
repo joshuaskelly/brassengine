@@ -24,6 +24,8 @@
 #include "../../configuration.h"
 #include "../../graphics.h"
 
+#include "../../platforms/extensions/sdl-extensions.h"
+
 static SDL_Window* window_ = NULL;
 
 /**
@@ -77,7 +79,7 @@ static int modules_desktop_window_size_set(lua_State* L) {
     int w = luaL_checknumber(L, 1);
     int h = luaL_checknumber(L, 2);
 
-    SDL_SetWindowSize(window_, w, h);
+    SDL_SetWindowSizeInPixels(window_, w, h);
 
     return 0;
 }
@@ -91,7 +93,7 @@ static int modules_desktop_window_size_set(lua_State* L) {
 static int modules_desktop_window_size_get(lua_State* L) {
     int w;
     int h;
-    SDL_GetWindowSize(window_, &w, &h);
+    SDL_GetWindowSizeInPixels(window_, &w, &h);
 
     lua_pushinteger(L, w);
     lua_pushinteger(L, h);
