@@ -7,6 +7,8 @@
 #include <SDL2/SDL_error.h>
 #include <emscripten.h>
 
+#include "extensions/sdl-extensions.h"
+
 #include "../configuration.h"
 #include "../core.h"
 #include "../event.h"
@@ -88,7 +90,7 @@ void platform_draw(void) {
     int window_width;
     int window_height;
 
-    SDL_GetWindowSize(window, &window_width, &window_height);
+    SDL_GetWindowSizeInPixels(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
     float buffer_aspect = width / (float)height * config->display.aspect;
