@@ -6,6 +6,8 @@
 #include <SDL_mixer.h>
 #include <SDL_error.h>
 
+#include "extensions/sdl-extensions.h"
+
 #include "../arguments.h"
 #include "../assets.h"
 #include "../configuration.h"
@@ -96,7 +98,7 @@ void platform_draw(void) {
     int window_width;
     int window_height;
 
-    SDL_GetWindowSize(window, &window_width, &window_height);
+    SDL_GetWindowSizeInPixels(window, &window_width, &window_height);
 
     float window_aspect = window_width / (float)window_height;
     float buffer_aspect = width / (float)height * config->display.aspect;
@@ -332,12 +334,18 @@ static void sdl_init(void) {
         SDL_WINDOWPOS_CENTERED,
         width * default_window_scale,
         height * default_window_scale,
-        SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
     );
 
     if (!window) {
         log_fatal("Error creating SDL window");
     }
+
+    SDL_SetWindowSizeInPixels(
+        window,
+        width * default_window_scale,
+        height * default_window_scale
+    );
 
     // Create SDL renderer
     renderer = SDL_CreateRenderer(
