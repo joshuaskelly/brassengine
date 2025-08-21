@@ -1,5 +1,9 @@
 # Build
 
+## Dependencies
+
+Platforms using SDL have a min required version of 2.26.0
+
 ## Profiling
 
 1. Add `-pg -no-pie` to DFLAGS
