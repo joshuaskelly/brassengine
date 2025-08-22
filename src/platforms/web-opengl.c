@@ -62,7 +62,7 @@ static void sdl_pixels_resize(int width, int height);
 static void mixer_init(void);
 static void mixer_destroy(void);
 
-static void opengl_init(void);
+static void opengl_init(int width, int height);
 static void opengl_destroy(void);
 static void opengl_load_shader_program(void);
 
@@ -78,7 +78,7 @@ int platform_main(int argc, char* argv[]) {
 void platform_init(void) {
     mixer_init();
     sdl_init();
-    opengl_init();
+    opengl_init(config->resolution.width, config->resolution.height);
     log_platform_info();
 }
 
@@ -94,7 +94,7 @@ void platform_reload(void) {
     Mix_Volume(-1, MIX_MAX_VOLUME);
 
     sdl_pixels_resize(config->resolution.width, config->resolution.height);
-    opengl_init();
+    opengl_init(config->resolution.width, config->resolution.height);
 }
 
 void platform_update(void) {
@@ -192,7 +192,7 @@ bool platform_handle_event(event_t* event) {
 
         opengl_destroy();
         sdl_pixels_resize(width, height);
-        opengl_init();
+        opengl_init(width, height);
 
         return true;
     }
@@ -548,7 +548,7 @@ static void mixer_destroy(void) {
     Mix_Quit();
 }
 
-static void opengl_init(void) {
+static void opengl_init(int width, int height) {
     opengl_load_shader_program();
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -573,9 +573,6 @@ static void opengl_init(void) {
     glGenBuffers(1, &index_buffer_object);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), index_data, GL_STATIC_DRAW);
-
-    const int width = config->resolution.width;
-    const int height = config->resolution.height;
 
     // Create texture
     glGenTextures(1, &texture);
