@@ -402,7 +402,7 @@ void console_draw(void) {
         (height / 2) / 8 * 8
     };
 
-    draw_filled_rectangle(
+    graphics_draw_filled_rectangle(
         console_rect.x,
         console_rect.y,
         console_rect.width,
@@ -423,23 +423,23 @@ void console_draw(void) {
         const int history_end = output->count + output_buffer_offset;
         for (int i = history_begin; i < history_end; i++)  {
             char* s = circular_buffer_get(output, i);
-            draw_text(s, 0, line * 8);
+            graphics_draw_text(s, 0, line * 8);
             line++;
         }
     }
 
     // Draw prompt
     int prompt_length = strlen(config->console.prompt);
-    draw_text(config->console.prompt, 0, line * 8);
+    graphics_draw_text(config->console.prompt, 0, line * 8);
 
     // Draw input string
-    draw_text(command, prompt_length * 8, line * 8);
+    graphics_draw_text(command, prompt_length * 8, line * 8);
 
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
     if (show_cursor) {
-        draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
+        graphics_draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
     }
 
     // Restore palette + transparent color

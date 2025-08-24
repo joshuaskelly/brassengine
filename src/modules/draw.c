@@ -50,13 +50,13 @@ static int modules_draw_line(lua_State* L) {
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
-        draw_line(x0, y0, x1, y1, color);
+        graphics_draw_line(x0, y0, x1, y1, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 5);
         int offset_x = (int)luaL_optnumber(L, 6, 0);
         int offset_y = (int)luaL_optnumber(L, 7, 0);
-        draw_pattern_line(x0, y0, x1, y1, pattern, offset_x, offset_y);
+        graphics_draw_pattern_line(x0, y0, x1, y1, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -90,7 +90,7 @@ static int modules_draw_textured_line(lua_State* L) {
 
     lua_settop(L, 0);
 
-    draw_textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture);
+    graphics_draw_textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture);
 
     return 0;
 }
@@ -120,13 +120,13 @@ static int modules_draw_bezier(lua_State* L) {
 
     if (lua_isnumber(L, 9)) {
         int color = (int)luaL_checknumber(L, 9);
-        draw_bezier(x0, y0, x1, y1, x2, y2, x3, y3, color);
+        graphics_draw_bezier(x0, y0, x1, y1, x2, y2, x3, y3, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 9);
         int offset_x = (int)luaL_optnumber(L, 10, 0);
         int offset_y = (int)luaL_optnumber(L, 11, 0);
-        draw_pattern_bezier(x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
+        graphics_draw_pattern_bezier(x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -151,13 +151,13 @@ static int modules_draw_rectangle(lua_State* L) {
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
-        draw_rectangle(x, y, width, height, color);
+        graphics_draw_rectangle(x, y, width, height, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 5);
         int offset_x = (int)luaL_optnumber(L, 6, 0);
         int offset_y = (int)luaL_optnumber(L, 7, 0);
-        draw_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
+        graphics_draw_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -182,13 +182,13 @@ static int modules_draw_filled_rectangle(lua_State* L) {
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
-        draw_filled_rectangle(x, y, width, height, color);
+        graphics_draw_filled_rectangle(x, y, width, height, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 5);
         int offset_x = (int)luaL_optnumber(L, 6, 0);
         int offset_y = (int)luaL_optnumber(L, 7, 0);
-        draw_filled_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
+        graphics_draw_filled_pattern_rectangle(x, y, width, height, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -211,13 +211,13 @@ static int modules_draw_circle(lua_State* L) {
 
     if (lua_isnumber(L, 4)) {
         int color = (int)luaL_checknumber(L, 4);
-        draw_circle(x, y, radius, color);
+        graphics_draw_circle(x, y, radius, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 4);
         int offset_x = (int)luaL_optnumber(L, 5, 0);
         int offset_y = (int)luaL_optnumber(L, 6, 0);
-        draw_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
+        graphics_draw_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -240,13 +240,13 @@ static int modules_draw_filled_circle(lua_State* L) {
 
     if (lua_isnumber(L, 4)) {
         int color = (int)luaL_checknumber(L, 4);
-        draw_filled_circle(x, y, radius, color);
+        graphics_draw_filled_circle(x, y, radius, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 4);
         int offset_x = (int)luaL_optnumber(L, 5, 0);
         int offset_y = (int)luaL_optnumber(L, 6, 0);
-        draw_filled_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
+        graphics_draw_filled_pattern_circle(x, y, radius, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -296,7 +296,7 @@ static int modules_draw_text(lua_State* L) {
     palette[0] = bg;
     palette[1] = fg;
 
-    draw_text(message, x, y);
+    graphics_draw_text(message, x, y);
 
     palette[0] = bg_old;
     palette[1] = fg_old;
@@ -325,13 +325,13 @@ static int modules_draw_triangle(lua_State* L) {
 
     if (lua_isnumber(L, 7)) {
         int color = (int)luaL_checknumber(L, 7);
-        draw_triangle(x0, y0, x1, y1, x2, y2, color);
+        graphics_draw_triangle(x0, y0, x1, y1, x2, y2, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 7);
         int offset_x = (int)luaL_optnumber(L, 8, 0);
         int offset_y = (int)luaL_optnumber(L, 9, 0);
-        draw_pattern_triangle(x0, y0, x1, y1, x2, y2, pattern, offset_x, offset_y);
+        graphics_draw_pattern_triangle(x0, y0, x1, y1, x2, y2, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -360,13 +360,13 @@ static int modules_draw_filled_triangle(lua_State* L) {
 
     if (lua_isnumber(L, 7)) {
         int color = (int)luaL_checknumber(L, 7);
-        draw_filled_triangle(x0, y0, x1, y1, x2, y2, color);
+        graphics_draw_filled_triangle(x0, y0, x1, y1, x2, y2, color);
     }
     else {
         texture_t* pattern = luaL_checktexture(L, 7);
         int offset_x = (int)luaL_optnumber(L, 8, 0);
         int offset_y = (int)luaL_optnumber(L, 9, 0);
-        draw_filled_pattern_triangle(x0, y0, x1, y1, x2, y2, pattern, offset_x, offset_y);
+        graphics_draw_filled_pattern_triangle(x0, y0, x1, y1, x2, y2, pattern, offset_x, offset_y);
     }
 
     lua_settop(L, 0);
@@ -408,7 +408,7 @@ static int modules_draw_textured_triangle(lua_State* L) {
 
     lua_settop(L, 0);
 
-    draw_textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
+    graphics_draw_textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
 
     return 0;
 }

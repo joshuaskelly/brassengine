@@ -12,7 +12,7 @@
  * @param y1 End y-coordinate
  * @param color Line color
  */
-void draw_line(int x0, int y0, int x1, int y1, color_t color);
+void graphics_draw_line(int x0, int y0, int x1, int y1, color_t color);
 
 /**
  * Draw line from x0, y0 to x1, y1 with given pattern.
@@ -25,7 +25,7 @@ void draw_line(int x0, int y0, int x1, int y1, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw line using affine texture mapping.
@@ -40,7 +40,7 @@ void draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int p
  * @param v1 End v-coordinate
  * @param texture Texture to map
  */
-void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture);
+void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture);
 
 /**
  * Draw bezier curve
@@ -55,7 +55,7 @@ void draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, floa
  * @param y3 End anchor point y-coordinate
  * @param color Cuve color
  */
-void draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+void graphics_draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
 
 /**
  * Draw bezier curve
@@ -72,7 +72,7 @@ void draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3,
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw rectangle.
@@ -83,7 +83,7 @@ void draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3,
  * @param height Rect height
  * @param color Line color
  */
-void draw_rectangle(int x, int y, int width, int height, color_t color);
+void graphics_draw_rectangle(int x, int y, int width, int height, color_t color);
 
 /**
  * Draw rectangle with given pattern.
@@ -96,7 +96,7 @@ void draw_rectangle(int x, int y, int width, int height, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled rectangle.
@@ -107,7 +107,7 @@ void draw_pattern_rectangle(int x, int y, int width, int height, texture_t* patt
  * @param height Rect height
  * @param color Fill color
  */
-void draw_filled_rectangle(int x, int y, int width, int height, color_t color);
+void graphics_draw_filled_rectangle(int x, int y, int width, int height, color_t color);
 
 /**
  * Draw filled rectangle with given pattern.
@@ -120,7 +120,7 @@ void draw_filled_rectangle(int x, int y, int width, int height, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw circle.
@@ -130,7 +130,7 @@ void draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_
  * @param radius Circle radius
  * @param color Line color
  */
-void draw_circle(int x, int y, int radius, color_t color);
+void graphics_draw_circle(int x, int y, int radius, color_t color);
 
 /**
  * Draw circle with given pattern.
@@ -142,7 +142,7 @@ void draw_circle(int x, int y, int radius, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled circle.
@@ -152,7 +152,7 @@ void draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int patte
  * @param radius Circle radius
  * @param color Fill color
  */
-void draw_filled_circle(int x, int y, int radius, color_t color);
+void graphics_draw_filled_circle(int x, int y, int radius, color_t color);
 
 /**
  * Draw filled circle with given pattern.
@@ -164,7 +164,7 @@ void draw_filled_circle(int x, int y, int radius, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw text.
@@ -173,7 +173,7 @@ void draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, in
  * @param x Text top-left x-coordinate
  * @param y Text top-left y-coordinate
  */
-void draw_text(const char* message, int x, int y);
+void graphics_draw_text(const char* message, int x, int y);
 
 /**
  * Draw triangle.
@@ -186,7 +186,7 @@ void draw_text(const char* message, int x, int y);
  * @param y2 Vertex 2 y-coordinate
  * @param color Line color
  */
-void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
+void graphics_draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
 
 /**
  * Draw triangle with given pattern.
@@ -201,7 +201,7 @@ void draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled triangle.
@@ -214,7 +214,7 @@ void draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, textu
  * @param y2 Vertex 2 y-coordinate
  * @param color_t Fill color
  */
-void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
+void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
 
 /**
  * Draw filled triangle with given pattern.
@@ -229,7 +229,7 @@ void draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw textured triangle using affine texture mapping.
@@ -248,6 +248,6 @@ void draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2
  * @param v2 UV 2 v-coordinate
  * @param texture Texture to
  */
-void draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture);
+void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture);
 
 #endif
