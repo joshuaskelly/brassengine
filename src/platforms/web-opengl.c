@@ -535,7 +535,7 @@ static void sdl_pixels_resize(int width, int height) {
 }
 
 static void mixer_init(void) {
-    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 256, NULL, 0) < 0) {
+    if (Mix_OpenAudioDevice(11025, AUDIO_U8, 1, 512, NULL, 0) < 0) {
         log_error("Error intializing SDL Mixer");
         log_error(SDL_GetError());
         log_info("Sound playback will be disabled");
