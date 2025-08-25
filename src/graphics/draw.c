@@ -9,14 +9,15 @@
 #include "draw.h"
 #include "../assets.h"
 #include "../graphics.h"
+#include "../graphics/texture.h"
 #include "../log.h"
 #include "../math.h"
 
 static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
     if (!pattern) return;
 
-    int sx = modulo(x - offset_x, pattern->width);
-    int sy = modulo(y - offset_y, pattern->height);
+    int sx = modulo(x - offset_x, graphics_texture_width_get(pattern));
+    int sy = modulo(y - offset_y, graphics_texture_height_get(pattern));
 
     color_t pixel = graphics_texture_pixel_get(pattern, sx, sy);
     color_t* draw_palette = graphics_draw_palette_get();
@@ -75,10 +76,10 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
     float current_x = x0 + 0.5f;
     float current_y = y0 + 0.5f;
 
-    float s0 = u0 * texture->width;
-    float t0 = v0 * texture->height;
-    float s1 = u1 * texture->width;
-    float t1 = v1 * texture->height;
+    float s0 = u0 * graphics_texture_width_get(texture);
+    float t0 = v0 * graphics_texture_height_get(texture);
+    float s1 = u1 * graphics_texture_width_get(texture);
+    float t1 = v1 * graphics_texture_height_get(texture);
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
@@ -429,8 +430,8 @@ void graphics_draw_text(const char* message, int x, int y) {
             continue;
         }
 
-        int cx = c % (font_texture->width / 8) * 8;
-        int cy = c / (font_texture->width / 8) * 8;
+        int cx = c % (graphics_texture_width_get(font_texture) / 8) * 8;
+        int cy = c / (graphics_texture_width_get(font_texture) / 8) * 8;
 
         source_rect.x = cx;
         source_rect.y = cy;
@@ -632,8 +633,8 @@ void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1,
                 float gamma = w2 * inverse_area;
 
                 // Calculate st coords
-                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * texture->width;
-                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * texture->height;
+                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * graphics_texture_width_get(texture);
+                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * graphics_texture_height_get(texture);
 
                 color_t c = graphics_texture_pixel_get(texture, s, t);
 

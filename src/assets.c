@@ -11,6 +11,7 @@
 #include "assets.h"
 #include "files.h"
 #include "graphics.h"
+#include "graphics/texture.h"
 #include "log.h"
 #include "sounds.h"
 
@@ -820,7 +821,7 @@ static size_t texture_asset_sizeof(texture_asset_t* asset) {
 
     for (size_t i = 0; i < asset->frame_count; i++) {
         texture_t* frame = asset->frames[i];
-        size += sizeof(texture_t) + frame->width * frame->height * sizeof(color_t);
+        size += graphics_texture_sizeof(frame);
     }
 
     return size;
@@ -913,8 +914,8 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
 
     texture_t* texture = frames[0];
 
-    gif_file->SWidth = texture->width;
-    gif_file->SHeight = texture->height;
+    gif_file->SWidth = graphics_texture_width_get(texture);
+    gif_file->SHeight = graphics_texture_height_get(texture);
     gif_file->SBackGroundColor = 0;
     gif_file->SColorResolution = 8;
 
@@ -936,14 +937,14 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
 
     saved_image.ImageDesc.Left = 0;
     saved_image.ImageDesc.Top = 0;
-    saved_image.ImageDesc.Width = texture->width;
-    saved_image.ImageDesc.Height = texture->height;
+    saved_image.ImageDesc.Width = graphics_texture_width_get(texture);
+    saved_image.ImageDesc.Height = graphics_texture_height_get(texture);
     saved_image.ImageDesc.Interlace = false;
     saved_image.ImageDesc.ColorMap = NULL;
 
-    size_t size = sizeof(color_t) * texture->width * texture->height;
+    size_t size = sizeof(color_t) * graphics_texture_width_get(texture) * graphics_texture_height_get(texture);
     saved_image.RasterBits = malloc(size);
-    memcpy(saved_image.RasterBits, texture->pixels, size);
+    memcpy(saved_image.RasterBits, graphics_texture_pixels_get(texture), size);
 
     int extension_block_count = 0;
     ExtensionBlock* extension_blocks = NULL;
@@ -1007,14 +1008,14 @@ void assets_gif_save(const char* filename, int frame_count, texture_t** frames) 
 
         saved_image.ImageDesc.Left = 0;
         saved_image.ImageDesc.Top = 0;
-        saved_image.ImageDesc.Width = texture->width;
-        saved_image.ImageDesc.Height = texture->height;
+        saved_image.ImageDesc.Width = graphics_texture_width_get(texture);
+        saved_image.ImageDesc.Height = graphics_texture_height_get(texture);
         saved_image.ImageDesc.Interlace = false;
         saved_image.ImageDesc.ColorMap = NULL;
 
-        size_t size = sizeof(color_t) * texture->width * texture->height;
+        size_t size = sizeof(color_t) * graphics_texture_width_get(texture) * graphics_texture_height_get(texture);
         saved_image.RasterBits = malloc(size);
-        memcpy(saved_image.RasterBits, texture->pixels, size);
+        memcpy(saved_image.RasterBits, graphics_texture_pixels_get(texture), size);
 
         // Graphics control block
         GraphicsControlBlock gcb;
