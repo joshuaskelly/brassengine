@@ -38,9 +38,9 @@ void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* patte
  * @param y1 End y-coordinate
  * @param u1 End u-coordinate
  * @param v1 End v-coordinate
- * @param texture Texture to map
+ * @param texture_map Texture to map
  */
-void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture);
+void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map);
 
 /**
  * Draw bezier curve
@@ -246,8 +246,8 @@ void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x
  * @param y2 Vertex 2 y-coordinate
  * @param u2 UV 2 u-coordinate
  * @param v2 UV 2 v-coordinate
- * @param texture Texture to
+ * @param texture_map Texture to
  */
-void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture);
+void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
 
 #endif

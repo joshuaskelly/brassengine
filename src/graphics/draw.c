@@ -63,7 +63,7 @@ void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* patte
     }
 }
 
-void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture) {
+void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map) {
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
@@ -75,10 +75,10 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
     float current_x = x0 + 0.5f;
     float current_y = y0 + 0.5f;
 
-    float s0 = u0 * graphics_texture_width_get(texture);
-    float t0 = v0 * graphics_texture_height_get(texture);
-    float s1 = u1 * graphics_texture_width_get(texture);
-    float t1 = v1 * graphics_texture_height_get(texture);
+    float s0 = u0 * graphics_texture_width_get(texture_map);
+    float t0 = v0 * graphics_texture_height_get(texture_map);
+    float s1 = u1 * graphics_texture_width_get(texture_map);
+    float t1 = v1 * graphics_texture_height_get(texture_map);
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
@@ -93,7 +93,7 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
     float current_t = t0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        color_t c = graphics_texture_pixel_get(texture, current_s, current_t);
+        color_t c = graphics_texture_pixel_get(texture_map, current_s, current_t);
 
         graphics_pixel_set(current_x, current_y, c);
 
@@ -584,7 +584,7 @@ void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x
     }
 }
 
-void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture) {
+void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
@@ -632,10 +632,10 @@ void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1,
                 float gamma = w2 * inverse_area;
 
                 // Calculate st coords
-                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * graphics_texture_width_get(texture);
-                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * graphics_texture_height_get(texture);
+                int s = (uv0[0] * alpha + uv1[0] * beta + uv2[0] * gamma) * graphics_texture_width_get(texture_map);
+                int t = (uv0[1] * alpha + uv1[1] * beta + uv2[1] * gamma) * graphics_texture_height_get(texture_map);
 
-                color_t c = graphics_texture_pixel_get(texture, s, t);
+                color_t c = graphics_texture_pixel_get(texture_map, s, t);
 
                 graphics_pixel_set(x, y, c);
             }
