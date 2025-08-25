@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "graphics/draw.h"
 #include "graphics/texture.h"
 #include "graphics/types.h"
 

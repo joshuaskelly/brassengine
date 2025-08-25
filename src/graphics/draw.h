@@ -1,7 +1,7 @@
 #ifndef RENDERERS_DRAW_H
 #define RENDERERS_DRAW_H
 
-#include "../graphics.h"
+#include "types.h"
 
 /**
  * Draw line from x0, y0 to x1, y1.

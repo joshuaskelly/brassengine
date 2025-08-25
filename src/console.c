@@ -13,8 +13,6 @@
 #include "time.h"
 #include "collections/circular_buffer.h"
 
-#include "graphics/draw.h"
-
 #define COMMAND_MAX_LENGTH 2048
 static char command[COMMAND_MAX_LENGTH + 1] = "";
 
