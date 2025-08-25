@@ -14,7 +14,6 @@
 #include "../configuration.h"
 #include "../assets.h"
 #include "../graphics.h"
-#include "../graphics/texture.h"
 #include "../platform.h"
 
 /**

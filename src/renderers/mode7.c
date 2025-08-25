@@ -4,7 +4,6 @@
 #include <mathc/mathc.h>
 
 #include "../graphics.h"
-#include "../graphics/texture.h"
 #include "../math.h"
 
 #include "mode7.h"

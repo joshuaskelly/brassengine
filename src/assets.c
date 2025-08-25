@@ -11,7 +11,6 @@
 #include "assets.h"
 #include "files.h"
 #include "graphics.h"
-#include "graphics/texture.h"
 #include "log.h"
 #include "sounds.h"
 

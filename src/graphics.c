@@ -5,7 +5,6 @@
 #include "configuration.h"
 #include "event.h"
 #include "graphics.h"
-#include "graphics/texture.h"
 #include "log.h"
 
 static texture_t* render_texture = NULL;

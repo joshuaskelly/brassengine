@@ -13,7 +13,6 @@
 
 #include "../assets.h"
 #include "../graphics.h"
-#include "../graphics/texture.h"
 
 texture_t* luaL_checktexture(lua_State* L, int index) {
     texture_t** handle = NULL;

@@ -9,7 +9,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "graphics/texture.h"
 #include "graphics/types.h"
+
 
 /**
  * Initialize graphics system.

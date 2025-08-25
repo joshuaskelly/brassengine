@@ -12,7 +12,6 @@
 #include "../assets.h"
 #include "../graphics.h"
 #include "../graphics/draw.h"
-#include "../graphics/texture.h"
 
 /**
  * Draw a pixel at given position and color.
