@@ -1,22 +1,34 @@
-#ifndef RENDERERS_DRAW_H
-#define RENDERERS_DRAW_H
+#ifndef GRAPHICS_DRAW_H
+#define GRAPHICS_DRAW_H
 
 #include "types.h"
 
 /**
+ * Draw pixel at x, y with given color
+ *
+ * @param texture Texture to draw to
+ * @param x Pixel x-coordinate
+ * @param y Pixel y-coordinate
+ * @param color Pixel color
+ */
+void graphics_draw_pixel(texture_t* texture, int x, int y, color_t color);
+
+/**
  * Draw line from x0, y0 to x1, y1.
  *
+ * @param texture Texture to draw to
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
  * @param x1 End x-coordinate
  * @param y1 End y-coordinate
  * @param color Line color
  */
-void graphics_draw_line(int x0, int y0, int x1, int y1, color_t color);
+void graphics_draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color);
 
 /**
  * Draw line from x0, y0 to x1, y1 with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
  * @param x1 End x-coordinate
@@ -25,11 +37,12 @@ void graphics_draw_line(int x0, int y0, int x1, int y1, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_line(texture_t* texture, int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw line using affine texture mapping.
  *
+ * @param texture Texture to draw to
  * @param x0 Start x-coordinate
  * @param y0 Start y-coordinate
  * @param u0 Start 0 u-coordinate
@@ -40,11 +53,12 @@ void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* patte
  * @param v1 End v-coordinate
  * @param texture_map Texture to map
  */
-void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map);
+void graphics_draw_textured_line(texture_t* texture, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map);
 
 /**
  * Draw bezier curve
  *
+ * @param texture Texture to draw to
  * @param x0 Start anchor point x-coordinate
  * @param y0 Start anchor point y-coordinate
  * @param x1 Start control point x-coordinate
@@ -55,11 +69,12 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
  * @param y3 End anchor point y-coordinate
  * @param color Cuve color
  */
-void graphics_draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+void graphics_draw_bezier(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
 
 /**
  * Draw bezier curve
  *
+ * @param texture Texture to draw to
  * @param x0 Start anchor point x-coordinate
  * @param y0 Start anchor point y-coordinate
  * @param x1 Start control point x-coordinate
@@ -72,22 +87,24 @@ void graphics_draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_bezier(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw rectangle.
  *
+ * @param texture Texture to draw to
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
  * @param height Rect height
  * @param color Line color
  */
-void graphics_draw_rectangle(int x, int y, int width, int height, color_t color);
+void graphics_draw_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color);
 
 /**
  * Draw rectangle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
@@ -96,22 +113,24 @@ void graphics_draw_rectangle(int x, int y, int width, int height, color_t color)
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_rectangle(texture_t* texture, int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled rectangle.
  *
+ * @param texture Texture to draw to
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
  * @param height Rect height
  * @param color Fill color
  */
-void graphics_draw_filled_rectangle(int x, int y, int width, int height, color_t color);
+void graphics_draw_filled_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color);
 
 /**
  * Draw filled rectangle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x Rect top left x-coordinate
  * @param y Rect top left y-coordinate
  * @param width Rect width
@@ -120,21 +139,23 @@ void graphics_draw_filled_rectangle(int x, int y, int width, int height, color_t
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_rectangle(texture_t* texture, int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw circle.
  *
+ * @param texture Texture to draw to
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
  * @param color Line color
  */
-void graphics_draw_circle(int x, int y, int radius, color_t color);
+void graphics_draw_circle(texture_t* texture, int x, int y, int radius, color_t color);
 
 /**
  * Draw circle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
@@ -142,21 +163,23 @@ void graphics_draw_circle(int x, int y, int radius, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_circle(texture_t* texture, int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled circle.
  *
+ * @param texture Texture to draw to
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
  * @param color Fill color
  */
-void graphics_draw_filled_circle(int x, int y, int radius, color_t color);
+void graphics_draw_filled_circle(texture_t* texture, int x, int y, int radius, color_t color);
 
 /**
  * Draw filled circle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x Circle center x-coordinate
  * @param y Circle center y-coordinate
  * @param radius Circle radius
@@ -164,20 +187,22 @@ void graphics_draw_filled_circle(int x, int y, int radius, color_t color);
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_circle(texture_t* texture, int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw text.
  *
+ * @param texture Texture to draw to
  * @param message Text to draw
  * @param x Text top-left x-coordinate
  * @param y Text top-left y-coordinate
  */
-void graphics_draw_text(const char* message, int x, int y);
+void graphics_draw_text(texture_t* texture, const char* message, int x, int y);
 
 /**
  * Draw triangle.
  *
+ * @param texture Texture to draw to
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
  * @param x1 Vertex 1 x-coordinate
@@ -186,11 +211,12 @@ void graphics_draw_text(const char* message, int x, int y);
  * @param y2 Vertex 2 y-coordinate
  * @param color Line color
  */
-void graphics_draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
+void graphics_draw_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
 
 /**
  * Draw triangle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
  * @param x1 Vertex 1 x-coordinate
@@ -201,11 +227,12 @@ void graphics_draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, colo
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_pattern_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw filled triangle.
  *
+ * @param texture Texture to draw to
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
  * @param x1 Vertex 1 x-coordinate
@@ -214,11 +241,12 @@ void graphics_draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int 
  * @param y2 Vertex 2 y-coordinate
  * @param color_t Fill color
  */
-void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
+void graphics_draw_filled_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, color_t color);
 
 /**
  * Draw filled triangle with given pattern.
  *
+ * @param texture Texture to draw to
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
  * @param x1 Vertex 1 x-coordinate
@@ -229,11 +257,12 @@ void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y
  * @param offset_x Pattern x-axis offset
  * @param offset_y Pattern y-axis offset
  */
-void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+void graphics_draw_filled_pattern_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
 /**
  * Draw textured triangle using affine texture mapping.
  *
+ * @param texture Texture to draw to
  * @param x0 Vertex 0 x-coordinate
  * @param y0 Vertex 0 y-coordinate
  * @param u0 UV 0 u-coordinate
@@ -248,6 +277,6 @@ void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x
  * @param v2 UV 2 v-coordinate
  * @param texture_map Texture to
  */
-void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
+void graphics_draw_textured_triangle(texture_t* texture, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
 
 #endif

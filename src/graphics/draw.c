@@ -12,7 +12,13 @@
 #include "../log.h"
 #include "../math.h"
 
-static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, int offset_y) {
+void graphics_draw_pixel(texture_t* texture, int x, int y, color_t color) {
+    if (color == graphics_transparent_color_get()) return;
+
+    graphics_texture_pixel_set(texture, x, y, color);
+}
+
+static void pattern_pixel_set(texture_t* texture, int x, int y, texture_t* pattern, int offset_x, int offset_y) {
     if (!pattern) return;
 
     int sx = modulo(x - offset_x, graphics_texture_width_get(pattern));
@@ -22,10 +28,10 @@ static void pattern_pixel_set(int x, int y, texture_t* pattern, int offset_x, in
     color_t* draw_palette = graphics_draw_palette_get();
     pixel = draw_palette[pixel];
 
-    graphics_pixel_set(x, y, pixel);
+    graphics_draw_pixel(texture, x, y, pixel);
 }
 
-void graphics_draw_line(int x0, int y0, int x1, int y1, color_t color) {
+void graphics_draw_line(texture_t* texture, int x0, int y0, int x1, int y1, color_t color) {
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
@@ -38,13 +44,13 @@ void graphics_draw_line(int x0, int y0, int x1, int y1, color_t color) {
     float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        graphics_pixel_set(current_x, current_y, color);
+        graphics_draw_pixel(texture, current_x, current_y, color);
         current_x += x_inc;
         current_y += y_inc;
     }
 }
 
-void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_pattern_line(texture_t* texture, int x0, int y0, int x1, int y1, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
@@ -57,13 +63,13 @@ void graphics_draw_pattern_line(int x0, int y0, int x1, int y1, texture_t* patte
     float current_y = y0 + 0.5f;
 
     for (int i = 0; i <= longest_side; i++) {
-        pattern_pixel_set(current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
+        pattern_pixel_set(texture, current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
         current_x += x_inc;
         current_y += y_inc;
     }
 }
 
-void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map) {
+void graphics_draw_textured_line(texture_t* texture, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map) {
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
@@ -95,7 +101,7 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
     for (int i = 0; i <= longest_side; i++) {
         color_t c = graphics_texture_pixel_get(texture_map, current_s, current_t);
 
-        graphics_pixel_set(current_x, current_y, c);
+        graphics_draw_pixel(texture, current_x, current_y, c);
 
         current_x += x_inc;
         current_y += y_inc;
@@ -104,7 +110,7 @@ void graphics_draw_textured_line(int x0, int y0, float u0, float v0, int x1, int
     }
 }
 
-void graphics_draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+void graphics_draw_bezier(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
     mfloat_t a[VEC2_SIZE] = {x0, y0};
     mfloat_t b[VEC2_SIZE] = {x1, y1};
     mfloat_t c[VEC2_SIZE] = {x2, y2};
@@ -140,13 +146,13 @@ void graphics_draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3
 
         vec2_lerp(next, abbc, bccd, t);
 
-        graphics_draw_line(first[0], first[1], next[0], next[1], color);
+        graphics_draw_line(texture, first[0], first[1], next[0], next[1], color);
 
         vec2_assign(first, next);
     }
 }
 
-void graphics_draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_pattern_bezier(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     mfloat_t a[VEC2_SIZE] = {x0, y0};
     mfloat_t b[VEC2_SIZE] = {x1, y1};
     mfloat_t c[VEC2_SIZE] = {x2, y2};
@@ -182,55 +188,55 @@ void graphics_draw_pattern_bezier(int x0, int y0, int x1, int y1, int x2, int y2
 
         vec2_lerp(next, abbc, bccd, t);
 
-        graphics_draw_pattern_line(first[0], first[1], next[0], next[1], pattern, pattern_offset_x, pattern_offset_y);
+        graphics_draw_pattern_line(texture, first[0], first[1], next[0], next[1], pattern, pattern_offset_x, pattern_offset_y);
 
         vec2_assign(first, next);
     }
 }
 
-void graphics_draw_rectangle(int x, int y, int width, int height, color_t color) {
+void graphics_draw_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int y0 = y;
     int x1 = x + width - 1;
     int y1 = y + height - 1;
 
-    graphics_draw_line(x0, y0, x1, y0, color);
-    graphics_draw_line(x1, y0, x1, y1, color);
-    graphics_draw_line(x1, y1, x0, y1, color);
-    graphics_draw_line(x0, y1, x0, y0, color);
+    graphics_draw_line(texture, x0, y0, x1, y0, color);
+    graphics_draw_line(texture, x1, y0, x1, y1, color);
+    graphics_draw_line(texture, x1, y1, x0, y1, color);
+    graphics_draw_line(texture, x0, y1, x0, y0, color);
 }
 
-void graphics_draw_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_pattern_rectangle(texture_t* texture, int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     int x0 = x;
     int y0 = y;
     int x1 = x + width - 1;
     int y1 = y + height - 1;
 
-    graphics_draw_pattern_line(x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line(x1, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line(x1, y1, x0, y1, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line(x0, y1, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x1, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x1, y1, x0, y1, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x0, y1, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
 }
 
-void graphics_draw_filled_rectangle(int x, int y, int width, int height, color_t color) {
+void graphics_draw_filled_rectangle(texture_t* texture, int x, int y, int width, int height, color_t color) {
     int x0 = x;
     int x1 = x + width - 1;
     int y0 = y;
 
     for (int i = 0; i < height; i++) {
         y0 = y + i;
-        graphics_draw_line(x0, y0, x1, y0, color);
+        graphics_draw_line(texture, x0, y0, x1, y0, color);
     }
 }
 
-void graphics_draw_filled_pattern_rectangle(int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_filled_pattern_rectangle(texture_t* texture, int x, int y, int width, int height, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     int x0 = x;
     int x1 = x + width - 1;
     int y0 = y;
 
     for (int i = 0; i < height; i++) {
         y0 = y + i;
-        graphics_draw_pattern_line(x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
+        graphics_draw_pattern_line(texture, x0, y0, x1, y0, pattern, pattern_offset_x, pattern_offset_y);
     }
 }
 
@@ -243,15 +249,15 @@ void graphics_draw_filled_pattern_rectangle(int x, int y, int width, int height,
  * @param offset_y Y-coordinate offset
  * @param color Line color
  */
-static void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
-    graphics_pixel_set( x + offset_x,  y + offset_y, color);
-    graphics_pixel_set( y + offset_x,  x + offset_y, color);
-    graphics_pixel_set(-x + offset_x,  y + offset_y, color);
-    graphics_pixel_set(-y + offset_x,  x + offset_y, color);
-    graphics_pixel_set( x + offset_x, -y + offset_y, color);
-    graphics_pixel_set( y + offset_x, -x + offset_y, color);
-    graphics_pixel_set(-x + offset_x, -y + offset_y, color);
-    graphics_pixel_set(-y + offset_x, -x + offset_y, color);
+static void draw_pixel_octave_symmetry(texture_t* texture, int x, int y, int offset_x, int offset_y, color_t color) {
+    graphics_draw_pixel(texture,  x + offset_x,  y + offset_y, color);
+    graphics_draw_pixel(texture,  y + offset_x,  x + offset_y, color);
+    graphics_draw_pixel(texture, -x + offset_x,  y + offset_y, color);
+    graphics_draw_pixel(texture, -y + offset_x,  x + offset_y, color);
+    graphics_draw_pixel(texture,  x + offset_x, -y + offset_y, color);
+    graphics_draw_pixel(texture,  y + offset_x, -x + offset_y, color);
+    graphics_draw_pixel(texture, -x + offset_x, -y + offset_y, color);
+    graphics_draw_pixel(texture, -y + offset_x, -x + offset_y, color);
 }
 
 /**
@@ -263,11 +269,11 @@ static void draw_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y,
  * @param offset_y Y-coordinate offset
  * @param color Fill color
  */
-static void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y, color_t color) {
-    graphics_draw_line( x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, color);
-    graphics_draw_line( y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, color);
-    graphics_draw_line( x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, color);
-    graphics_draw_line( y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, color);
+static void fill_pixel_octave_symmetry(texture_t* texture, int x, int y, int offset_x, int offset_y, color_t color) {
+    graphics_draw_line(texture, x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, color);
+    graphics_draw_line(texture, y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, color);
+    graphics_draw_line(texture, x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, color);
+    graphics_draw_line(texture, y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, color);
 }
 
 /**
@@ -278,7 +284,7 @@ static void fill_pixel_octave_symmetry(int x, int y, int offset_x, int offset_y,
  * @param radius Circle radius
  * @param color Line color
  */
-void graphics_draw_circle(int x, int y, int radius, color_t color) {
+void graphics_draw_circle(texture_t* texture, int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;
 
@@ -286,7 +292,7 @@ void graphics_draw_circle(int x, int y, int radius, color_t color) {
     int _y = radius;
     int midpoint_criteria = 1 - radius;
 
-    draw_pixel_octave_symmetry(_x, _y, x, y, color);
+    draw_pixel_octave_symmetry(texture, _x, _y, x, y, color);
 
     while (_x < _y) {
         // Mid-point on or inside radius
@@ -299,22 +305,22 @@ void graphics_draw_circle(int x, int y, int radius, color_t color) {
             _y -= 1;
         }
         _x++;
-        draw_pixel_octave_symmetry(_x, _y, x, y, color);
+        draw_pixel_octave_symmetry(texture, _x, _y, x, y, color);
     }
 }
 
-static void draw_pattern_octave_symmetry(int x, int y, int offset_x, int offset_y, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
-    pattern_pixel_set( x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set( y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set(-x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set(-y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set( x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set( y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set(-x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    pattern_pixel_set(-y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+static void draw_pattern_octave_symmetry(texture_t* texture, int x, int y, int offset_x, int offset_y, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    pattern_pixel_set(texture,  x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture,  y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture, -x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture, -y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture,  x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture,  y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture, -x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    pattern_pixel_set(texture, -y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
 }
 
-void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_pattern_circle(texture_t* texture, int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;
 
@@ -322,7 +328,7 @@ void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, 
     int _y = radius;
     int midpoint_criteria = 1 - radius;
 
-    draw_pattern_octave_symmetry(_x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
+    draw_pattern_octave_symmetry(texture, _x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
 
     while (_x < _y) {
         // Mid-point on or inside radius
@@ -335,7 +341,7 @@ void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, 
             _y -= 1;
         }
         _x++;
-        draw_pattern_octave_symmetry(_x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
+        draw_pattern_octave_symmetry(texture, _x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
     }
 }
 
@@ -347,7 +353,7 @@ void graphics_draw_pattern_circle(int x, int y, int radius, texture_t* pattern, 
  * @param radius Circle radius
  * @param color Fill color
  */
-void graphics_draw_filled_circle(int x, int y, int radius, color_t color) {
+void graphics_draw_filled_circle(texture_t* texture, int x, int y, int radius, color_t color) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;
 
@@ -355,7 +361,7 @@ void graphics_draw_filled_circle(int x, int y, int radius, color_t color) {
     int _y = radius;
     int midpoint_criteria = 1 - radius;
 
-    fill_pixel_octave_symmetry(_x, _y, x, y, color);
+    fill_pixel_octave_symmetry(texture, _x, _y, x, y, color);
 
     while (_x < _y) {
         // Mid-point on or inside radius
@@ -368,18 +374,18 @@ void graphics_draw_filled_circle(int x, int y, int radius, color_t color) {
             _y -= 1;
         }
         _x++;
-        fill_pixel_octave_symmetry(_x, _y, x, y, color);
+        fill_pixel_octave_symmetry(texture, _x, _y, x, y, color);
     }
 }
 
-static void fill_pattern_octave_symmetry(int x, int y, int offset_x, int offset_y, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
-    graphics_draw_pattern_line( x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line( y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line( x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line( y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+static void fill_pattern_octave_symmetry(texture_t* texture, int x, int y, int offset_x, int offset_y, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    graphics_draw_pattern_line(texture, x + offset_x,  y + offset_y, -x + offset_x,  y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, y + offset_x,  x + offset_y, -y + offset_x,  x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x + offset_x, -y + offset_y, -x + offset_x, -y + offset_y, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, y + offset_x, -x + offset_y, -y + offset_x, -x + offset_y, pattern, pattern_offset_x, pattern_offset_y);
 }
 
-void graphics_draw_filled_pattern_circle(int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_filled_pattern_circle(texture_t* texture, int x, int y, int radius, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     // Bresenham's circle algorithm
     if (radius <= 0) return;
 
@@ -387,7 +393,7 @@ void graphics_draw_filled_pattern_circle(int x, int y, int radius, texture_t* pa
     int _y = radius;
     int midpoint_criteria = 1 - radius;
 
-    fill_pattern_octave_symmetry(_x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
+    fill_pattern_octave_symmetry(texture, _x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
 
     while (_x < _y) {
         // Mid-point on or inside radius
@@ -400,11 +406,11 @@ void graphics_draw_filled_pattern_circle(int x, int y, int radius, texture_t* pa
             _y -= 1;
         }
         _x++;
-        fill_pattern_octave_symmetry(_x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
+        fill_pattern_octave_symmetry(texture, _x, _y, x, y, pattern, pattern_offset_x, pattern_offset_y);
     }
 }
 
-void graphics_draw_text(const char* message, int x, int y) {
+void graphics_draw_text(texture_t* texture, const char* message, int x, int y) {
     texture_t* font_texture = assets_texture_get("font.gif", 0);
     if (!font_texture) {
         log_fatal("Missing font.gif asset");
@@ -440,7 +446,7 @@ void graphics_draw_text(const char* message, int x, int y) {
 
         graphics_blit(
             font_texture,
-            NULL,
+            texture,
             &source_rect,
             &dest_rect,
             NULL
@@ -448,16 +454,16 @@ void graphics_draw_text(const char* message, int x, int y) {
     }
 }
 
-void graphics_draw_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
-    graphics_draw_line(x0, y0, x1, y1, color);
-    graphics_draw_line(x1, y1, x2, y2, color);
-    graphics_draw_line(x2, y2, x0, y0, color);
+void graphics_draw_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+    graphics_draw_line(texture, x0, y0, x1, y1, color);
+    graphics_draw_line(texture, x1, y1, x2, y2, color);
+    graphics_draw_line(texture, x2, y2, x0, y0, color);
 }
 
-void graphics_draw_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
-    graphics_draw_pattern_line(x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line(x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
-    graphics_draw_pattern_line(x2, y2, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+void graphics_draw_pattern_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    graphics_draw_pattern_line(texture, x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(texture, x2, y2, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
 }
 
 static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1) {
@@ -484,7 +490,7 @@ static bool is_top_left(mfloat_t* a, mfloat_t* b) {
     return is_top || is_left;
 }
 
-void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
+void graphics_draw_filled_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
@@ -520,7 +526,7 @@ void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y
         for (int x = x_min; x <= x_max; x++) {
             // Check if inside the triangle
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                graphics_pixel_set(x, y, color);
+                graphics_draw_pixel(texture, x, y, color);
             }
 
             w0 += delta_w0_col;
@@ -534,7 +540,7 @@ void graphics_draw_filled_triangle(int x0, int y0, int x1, int y1, int x2, int y
     }
 }
 
-void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+void graphics_draw_filled_pattern_triangle(texture_t* texture, int x0, int y0, int x1, int y1, int x2, int y2, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
@@ -570,7 +576,7 @@ void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x
         for (int x = x_min; x <= x_max; x++) {
             // Check if inside the triangle
             if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
-                pattern_pixel_set(x, y, pattern, pattern_offset_x, pattern_offset_y);
+                pattern_pixel_set(texture, x, y, pattern, pattern_offset_x, pattern_offset_y);
             }
 
             w0 += delta_w0_col;
@@ -584,7 +590,7 @@ void graphics_draw_filled_pattern_triangle(int x0, int y0, int x1, int y1, int x
     }
 }
 
-void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map) {
+void graphics_draw_textured_triangle(texture_t* texture, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
     mfloat_t vertex2[VEC2_SIZE] = {x2, y2};
@@ -637,7 +643,7 @@ void graphics_draw_textured_triangle(int x0, int y0, float u0, float v0, int x1,
 
                 color_t c = graphics_texture_pixel_get(texture_map, s, t);
 
-                graphics_pixel_set(x, y, c);
+                graphics_draw_pixel(texture, x, y, c);
             }
 
             w0 += delta_w0_col;
