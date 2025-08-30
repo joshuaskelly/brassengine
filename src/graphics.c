@@ -9,7 +9,6 @@
 
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
-static color_t draw_palette[256];
 static color_t transparent_color = 0;
 
 static rect_t clip_rect;
@@ -32,9 +31,7 @@ void graphics_init(void) {
     clip_rect.width = config->resolution.width;
     clip_rect.height = config->resolution.height;
 
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
+    graphics_draw_palette_reset();
 }
 
 void graphics_destroy(void) {
@@ -42,9 +39,7 @@ void graphics_destroy(void) {
 }
 
 void graphics_reload(void) {
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
+    graphics_draw_palette_reset();
 }
 
 texture_t* graphics_render_texture_get(void) {
@@ -61,18 +56,6 @@ void graphics_palette_set(uint32_t* new_palette) {
 
 void graphics_palette_clear(void) {
     memset(palette, 0, sizeof(palette));
-}
-
-color_t* graphics_draw_palette_get(void) {
-    return draw_palette;
-}
-
-void graphics_draw_palette_set(uint32_t* new_palette) {
-    memmove(draw_palette, new_palette, sizeof(draw_palette));
-}
-
-void graphics_draw_palette_clear(void) {
-    memset(draw_palette, 0, sizeof(draw_palette));
 }
 
 void graphics_transparent_color_set(int color) {
@@ -93,7 +76,6 @@ void graphics_pixel_set(int x, int y, color_t color) {
 
 static void default_blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    pixel = draw_palette[pixel];
 
     graphics_pixel_set(dx, dy, pixel);
 }

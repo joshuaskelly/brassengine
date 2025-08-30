@@ -127,6 +127,11 @@ function draw.textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, 
 --- @param height integer?  Texture height
 function draw.texture(texture, x, y, width, height) end
 
+--- Set color for draw palette.
+--- @param index integer  Palette index to change.
+--- @param color integer  New color to set.
+function draw.set_palette_color(index, color) end
+
 --- Get current render texture for drawing
 --- @return  texture.texture Current drawing render texture
 function draw.get_render_texture() end

@@ -476,6 +476,22 @@ static void draw_render_texture_set(texture_t* texture) {
 }
 
 /**
+ * Set color for draw palette.
+ * @function set_palette_color
+ * @tparam integer index Palette index to change.
+ * @tparam integer color New color to set.
+ */
+static int modules_draw_palette_color_set(lua_State* L) {
+    int index = (int)luaL_checknumber(L, 1);
+    int color = (int)luaL_checknumber(L, 2);
+
+    color_t* palette = graphics_draw_palette_get();
+    palette[index] = color;
+
+    return 0;
+}
+
+/**
  * Get current render texture for drawing
  * @function get_render_texture
  * @return texture.texture Current drawing render texture
@@ -519,6 +535,7 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"filled_triangle", modules_draw_filled_triangle},
     {"textured_triangle", modules_draw_textured_triangle},
     {"texture", modules_draw_texture},
+    {"set_palette_color", modules_draw_palette_color_set},
     {"get_render_texture", modules_draw_render_texture_get},
     {"set_render_texture", modules_draw_render_texture_set},
     {NULL, NULL}

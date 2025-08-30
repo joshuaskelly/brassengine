@@ -4,6 +4,25 @@
 #include "types.h"
 
 /**
+ * Get draw palette.
+ *
+ * @return Palette as a 256 color array.
+ */
+color_t* graphics_draw_palette_get(void);
+
+/**
+ * Set draw palette.
+ *
+ * @param palette 256 color array.
+ */
+void graphics_draw_palette_set(uint32_t* palette);
+
+/**
+ * Reset all draw palette values.
+ */
+void graphics_draw_palette_reset(void);
+
+/**
  * Draw pixel at x, y with given color
  *
  * @param destination Texture to draw to

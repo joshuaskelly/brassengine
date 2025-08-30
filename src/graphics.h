@@ -55,25 +55,6 @@ void graphics_palette_set(uint32_t* palette);
 void graphics_palette_clear(void);
 
 /**
- * Get draw palette.
- *
- * @return Palette as a 256 color array.
- */
-color_t* graphics_draw_palette_get(void);
-
-/**
- * Set draw palette.
- *
- * @param palette 256 color array.
- */
-void graphics_draw_palette_set(uint32_t* palette);
-
-/**
- * Reset all draw palette values.
- */
-void graphics_draw_palette_clear(void);
-
-/**
  * Set transparent color.
  *
  * @param color Color to set as transparent. A value of -1 is no transparency.

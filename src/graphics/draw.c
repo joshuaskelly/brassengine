@@ -12,6 +12,22 @@
 #include "../log.h"
 #include "../math.h"
 
+static color_t draw_palette[256];
+
+color_t* graphics_draw_palette_get(void) {
+    return draw_palette;
+}
+
+void graphics_draw_palette_set(uint32_t* new_palette) {
+    memmove(draw_palette, new_palette, sizeof(draw_palette));
+}
+
+void graphics_draw_palette_reset(void) {
+    for (int i = 0; i < 256; i++) {
+        draw_palette[i] = i;
+    }
+}
+
 void graphics_draw_pixel(texture_t* destination, int x, int y, color_t color) {
     if (color == graphics_transparent_color_get()) return;
 
