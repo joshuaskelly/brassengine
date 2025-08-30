@@ -487,7 +487,8 @@ static int modules_draw_render_texture_get(lua_State* L) {
 
 /**
  * Set render texture for drawing
- * @tparam ?texture.texture Texture to set as render texture. Calling with no
+ * @function set_render_texture
+ * @tparam ?texture.texture texture Texture to set as render texture. Calling with no
  * param will reset drawing back to graphics render texture.
  */
 static int modules_draw_render_texture_set(lua_State* L) {

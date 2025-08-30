@@ -79,7 +79,9 @@ function draw.clear(color) end
 --- @param message string  Text to draw
 --- @param x integer  Text top-left x-coordinate
 --- @param y integer  Text top-left y-coordinate
-function draw.text(message, x, y) end
+--- @param foreground integer?  Foreground color
+--- @param background integer?  Background color
+function draw.text(message, x, y, foreground, background) end
 
 --- Draw triangle.
 --- @param x0 integer  Vertex 0 x-coordinate
@@ -116,5 +118,21 @@ function draw.filled_triangle(x0, y0, x1, y1, x2, y2, color) end
 --- @param v2 number  UV 2 v-coordinate
 --- @param texture texture  Texture to map
 function draw.textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture) end
+
+--- Draw texture
+--- @param texture texture  Texture to draw
+--- @param x integer  Texture x-coordinate
+--- @param y integer  Texture y-coordinate
+--- @param width integer?  Texture width
+--- @param height integer?  Texture height
+function draw.texture(texture, x, y, width, height) end
+
+--- Get current render texture for drawing
+--- @return  texture.texture Current drawing render texture
+function draw.get_render_texture() end
+
+--- Set render texture for drawing
+--- @param texture texture?  Texture to set as render texture. Calling with no param will reset drawing back to graphics render texture.
+function draw.set_render_texture(texture) end
 
 return draw
