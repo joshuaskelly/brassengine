@@ -434,6 +434,34 @@ static int modules_draw_textured_triangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw texture
+ * @function texture
+ * @tparam texture.texture texture Texture to draw
+ * @tparam integer x Texture x-coordinate
+ * @tparam integer y Texture y-coordinate
+ * @tparam ?integer width Texture width
+ * @tparam ?integer height Texture height
+ */
+static int modules_draw_texture(lua_State* L) {
+    texture_t* texture = luaL_checktexture(L, 1);
+    int x = (int)luaL_checknumber(L, 2);
+    int y = (int)luaL_checknumber(L, 3);
+    int width = (int)luaL_optnumber(L, 4, graphics_texture_width_get(texture));
+    int height = (int)luaL_optnumber(L, 5, graphics_texture_height_get(texture));
+
+    graphics_draw_texture(
+        draw_render_texture_get(),
+        texture,
+        x,
+        y,
+        width,
+        height
+    );
+
+    return 0;
+}
+
 static texture_t* render_texture = NULL;
 static texture_t* draw_render_texture_get(void) {
     if (!render_texture) {
@@ -489,6 +517,7 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"triangle", modules_draw_triangle},
     {"filled_triangle", modules_draw_filled_triangle},
     {"textured_triangle", modules_draw_textured_triangle},
+    {"texture", modules_draw_texture},
     {"get_render_texture", modules_draw_render_texture_get},
     {"set_render_texture", modules_draw_render_texture_set},
     {NULL, NULL}

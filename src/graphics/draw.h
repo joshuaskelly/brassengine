@@ -279,4 +279,16 @@ void graphics_draw_filled_pattern_triangle(texture_t* texture, int x0, int y0, i
  */
 void graphics_draw_textured_triangle(texture_t* texture, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
 
+/**
+ * Draw texture
+ *
+ * @param destination Texture to draw to
+ * @param source Texture to draw
+ * @param x Source x-coordinate on destination
+ * @param y Source y-coordinate on destination
+ * @param width Source width
+ * @param height Source height
+ */
+void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height);
+
 #endif

@@ -664,3 +664,15 @@ void graphics_draw_textured_triangle(texture_t* texture, int x0, int y0, float u
         w2_row += delta_w2_row;
     }
 }
+
+void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height) {
+    rect_t dest_rect = {x, y, width, height};
+
+    graphics_blit(
+        source,
+        destination,
+        NULL,
+        &dest_rect,
+        draw_blit_func
+    );
+}
