@@ -12,6 +12,9 @@
 #include "../assets.h"
 #include "../graphics.h"
 
+static texture_t* draw_render_texture_get(void);
+static void draw_render_texture_set(texture_t* texture);
+
 /**
  * Draw a pixel at given position and color.
  * @function pixel
@@ -26,7 +29,7 @@ static int modules_draw_pixel(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
     graphics_draw_pixel(render_texture, x, y, color);
 
     return 0;
@@ -47,7 +50,7 @@ static int modules_draw_line(lua_State* L) {
     int x1 = (int)luaL_checknumber(L, 3);
     int y1 = (int)luaL_checknumber(L, 4);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
@@ -91,7 +94,7 @@ static int modules_draw_textured_line(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
     graphics_draw_textured_line(render_texture, x0, y0, u0, v0, x1, y1, u1, v1, texture);
 
     return 0;
@@ -120,7 +123,7 @@ static int modules_draw_bezier(lua_State* L) {
     int x3 = (int)luaL_checknumber(L, 7);
     int y3 = (int)luaL_checknumber(L, 8);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 9)) {
         int color = (int)luaL_checknumber(L, 9);
@@ -153,7 +156,7 @@ static int modules_draw_rectangle(lua_State* L) {
     int width = (int)luaL_checknumber(L, 3);
     int height = (int)luaL_checknumber(L, 4);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
@@ -186,7 +189,7 @@ static int modules_draw_filled_rectangle(lua_State* L) {
     int width = (int)luaL_checknumber(L, 3);
     int height = (int)luaL_checknumber(L, 4);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 5)) {
         int color = (int)luaL_checknumber(L, 5);
@@ -217,7 +220,7 @@ static int modules_draw_circle(lua_State* L) {
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 4)) {
         int color = (int)luaL_checknumber(L, 4);
@@ -248,7 +251,7 @@ static int modules_draw_filled_circle(lua_State* L) {
     int y = (int)luaL_checknumber(L, 2);
     int radius = (int)luaL_checknumber(L, 3);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 4)) {
         int color = (int)luaL_checknumber(L, 4);
@@ -276,7 +279,7 @@ static int modules_clear_screen(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
     graphics_texture_clear(render_texture, color);
 
     return 0;
@@ -308,7 +311,7 @@ static int modules_draw_text(lua_State* L) {
     palette[0] = bg;
     palette[1] = fg;
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
     graphics_draw_text(render_texture, message, x, y);
 
     palette[0] = bg_old;
@@ -336,7 +339,7 @@ static int modules_draw_triangle(lua_State* L) {
     int x2 = (int)luaL_checknumber(L, 5);
     int y2 = (int)luaL_checknumber(L, 6);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 7)) {
         int color = (int)luaL_checknumber(L, 7);
@@ -373,7 +376,7 @@ static int modules_draw_filled_triangle(lua_State* L) {
     int x2 = (int)luaL_checknumber(L, 5);
     int y2 = (int)luaL_checknumber(L, 6);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
 
     if (lua_isnumber(L, 7)) {
         int color = (int)luaL_checknumber(L, 7);
@@ -425,11 +428,52 @@ static int modules_draw_textured_triangle(lua_State* L) {
 
     lua_settop(L, 0);
 
-    texture_t* render_texture = graphics_render_texture_get();
+    texture_t* render_texture = draw_render_texture_get();
     graphics_draw_textured_triangle(render_texture, x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
 
     return 0;
 }
+
+static texture_t* render_texture = NULL;
+static texture_t* draw_render_texture_get(void) {
+    if (!render_texture) {
+        return graphics_render_texture_get();
+    }
+
+    return render_texture;
+}
+
+static void draw_render_texture_set(texture_t* texture) {
+    render_texture = texture;
+}
+
+/**
+ * Get current render texture for drawing
+ * @function get_render_texture
+ * @return texture.texture Current drawing render texture
+ */
+static int modules_draw_render_texture_get(lua_State* L) {
+    lua_pushtexture(L, draw_render_texture_get());
+    return 1;
+}
+
+/**
+ * Set render texture for drawing
+ * @tparam ?texture.texture Texture to set as render texture. Calling with no
+ * param will reset drawing back to graphics render texture.
+ */
+static int modules_draw_render_texture_set(lua_State* L) {
+    if (lua_gettop(L) == 0 || lua_isnil(L, 1)) {
+        draw_render_texture_set(NULL);
+        return 0;
+    }
+
+    texture_t* texture = luaL_checktexture(L, 1);
+    draw_render_texture_set(texture);
+
+    return 0;
+}
+
 
 static const struct luaL_Reg modules_draw_functions[] = {
     {"pixel", modules_draw_pixel},
@@ -445,6 +489,8 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"triangle", modules_draw_triangle},
     {"filled_triangle", modules_draw_filled_triangle},
     {"textured_triangle", modules_draw_textured_triangle},
+    {"get_render_texture", modules_draw_render_texture_get},
+    {"set_render_texture", modules_draw_render_texture_set},
     {NULL, NULL}
 };
 

@@ -410,6 +410,14 @@ void graphics_draw_filled_pattern_circle(texture_t* texture, int x, int y, int r
     }
 }
 
+static void draw_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
+    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
+    color_t* draw_palette = graphics_draw_palette_get();
+    pixel = draw_palette[pixel];
+
+    graphics_draw_pixel(destination_texture, dx, dy, pixel);
+}
+
 void graphics_draw_text(texture_t* texture, const char* message, int x, int y) {
     texture_t* font_texture = assets_texture_get("font.gif", 0);
     if (!font_texture) {
@@ -449,7 +457,7 @@ void graphics_draw_text(texture_t* texture, const char* message, int x, int y) {
             texture,
             &source_rect,
             &dest_rect,
-            NULL
+            draw_blit_func
         );
     }
 }
