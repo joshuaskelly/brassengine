@@ -13,7 +13,6 @@
 #include "graphics/texture.h"
 #include "graphics/types.h"
 
-
 /**
  * Initialize graphics system.
  */
