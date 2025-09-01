@@ -663,10 +663,6 @@ static float sprite_depth = FLT_MAX;
  * @param dy Destination y-coordinate
  */
 static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    rect_t* clip_rect = graphics_clipping_rectangle_get();
-    if (dx < clip_rect->x || dx >= clip_rect->x + clip_rect->width) return;
-    if (dy < clip_rect->y || dy >= clip_rect->y + clip_rect->height) return;
-
     float depth = sprite_depth;
     float d = renderer_depth_buffer_pixel_get(active_renderer, dx, dy);
     if (d <= depth) return;

@@ -4,39 +4,6 @@
 #include "types.h"
 
 /**
- * Get draw palette.
- *
- * @return Palette as a 256 color array.
- */
-color_t* graphics_draw_palette_get(void);
-
-/**
- * Set draw palette.
- *
- * @param palette 256 color array.
- */
-void graphics_draw_palette_set(uint32_t* palette);
-
-/**
- * Reset all draw palette values.
- */
-void graphics_draw_palette_reset(void);
-
-/**
- * Set transparent color.
- *
- * @param color Color to set as transparent. A value of -1 is no transparency.
- */
-void graphics_draw_transparent_color_set(int color);
-
-/**
- * Get transparent color.
- *
- * @return int Transparent color. A value of -1 is no transparency.
- */
-int graphics_draw_transparent_color_get(void);
-
-/**
  * Draw pixel at x, y with given color
  *
  * @param destination Texture to draw to
@@ -323,5 +290,55 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
  * @param height Source height
  */
 void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height);
+
+/**
+ * Get draw palette.
+ *
+ * @return Palette as a 256 color array.
+ */
+color_t* graphics_draw_palette_get(void);
+
+/**
+ * Set draw palette.
+ *
+ * @param palette 256 color array.
+ */
+void graphics_draw_palette_set(uint32_t* palette);
+
+/**
+ * Reset all draw palette values.
+ */
+void graphics_draw_palette_reset(void);
+
+/**
+ * Set transparent color.
+ *
+ * @param color Color to set as transparent. A value of -1 is no transparency.
+ */
+void graphics_draw_transparent_color_set(int color);
+
+/**
+ * Get transparent color.
+ *
+ * @return int Transparent color. A value of -1 is no transparency.
+ */
+int graphics_draw_transparent_color_get(void);
+
+/**
+ * Sets clipping rectangle which defines drawable area.
+ *
+ * @param x Rect top left x-coordinate
+ * @param y Rect top left y-coordinate
+ * @param width Rect width
+ * @param height Rect height
+ */
+void graphics_draw_clipping_rectangle_set(rect_t* rect);
+
+/**
+ * Gets clipping rectangle which defines the drawable area.
+ *
+ * @return rect_t Clipping rectangle
+ */
+rect_t* graphics_draw_clipping_rectangle_get(void);
 
 #endif

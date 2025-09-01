@@ -14,31 +14,15 @@
 
 static color_t draw_palette[256];
 static color_t transparent_color = 0;
-
-color_t* graphics_draw_palette_get(void) {
-    return draw_palette;
-}
-
-void graphics_draw_palette_set(uint32_t* new_palette) {
-    memmove(draw_palette, new_palette, sizeof(draw_palette));
-}
-
-void graphics_draw_palette_reset(void) {
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
-}
-
-void graphics_draw_transparent_color_set(int color) {
-    transparent_color = color;
-}
-
-int graphics_draw_transparent_color_get(void) {
-    return transparent_color;
-}
+static rect_t clip_rect;
 
 void graphics_draw_pixel(texture_t* destination, int x, int y, color_t color) {
+    // Don't draw if transparent
     if (color == transparent_color) return;
+
+    // Don't draw if outside clipping rectangle
+    if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
+    if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
 
     graphics_texture_pixel_set(destination, x, y, color);
 }
@@ -700,4 +684,47 @@ void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int
         &dest_rect,
         draw_blit_func
     );
+}
+
+color_t* graphics_draw_palette_get(void) {
+    return draw_palette;
+}
+
+void graphics_draw_palette_set(uint32_t* new_palette) {
+    memmove(draw_palette, new_palette, sizeof(draw_palette));
+}
+
+void graphics_draw_palette_reset(void) {
+    for (int i = 0; i < 256; i++) {
+        draw_palette[i] = i;
+    }
+}
+
+void graphics_draw_transparent_color_set(int color) {
+    transparent_color = color;
+}
+
+int graphics_draw_transparent_color_get(void) {
+    return transparent_color;
+}
+
+void graphics_draw_clipping_rectangle_set(rect_t* rect) {
+    texture_t* render_texture = graphics_render_texture_get();
+
+    rect_t default_rect = {
+        0,
+        0,
+        graphics_texture_width_get(render_texture),
+        graphics_texture_height_get(render_texture)
+    };
+
+    if (!rect) {
+        rect = &default_rect;
+    }
+
+    clip_rect = *rect;
+}
+
+rect_t* graphics_draw_clipping_rectangle_get(void) {
+    return &clip_rect;
 }

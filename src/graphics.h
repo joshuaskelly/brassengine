@@ -107,21 +107,4 @@ void graphics_resolution_set(int width, int height);
  */
 void graphics_resolution_get(int* width, int* height);
 
-/**
- * Sets clipping rectangle which defines drawable area.
- *
- * @param x Rect top left x-coordinate
- * @param y Rect top left y-coordinate
- * @param width Rect width
- * @param height Rect height
- */
-void graphics_clipping_rectangle_set(rect_t* rect);
-
-/**
- * Gets clipping rectangle which defines the drawable area.
- *
- * @return rect_t Clipping rectangle
- */
-rect_t* graphics_clipping_rectangle_get(void);
-
 #endif
