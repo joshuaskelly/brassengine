@@ -15,28 +15,6 @@
 static color_t draw_palette[256];
 static color_t transparent_color = 0;
 
-color_t* graphics_draw_palette_get(void) {
-    return draw_palette;
-}
-
-void graphics_draw_palette_set(uint32_t* new_palette) {
-    memmove(draw_palette, new_palette, sizeof(draw_palette));
-}
-
-void graphics_draw_palette_reset(void) {
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
-}
-
-void graphics_draw_transparent_color_set(int color) {
-    transparent_color = color;
-}
-
-int graphics_draw_transparent_color_get(void) {
-    return transparent_color;
-}
-
 void graphics_draw_pixel(texture_t* destination, int x, int y, color_t color) {
     if (color == transparent_color) return;
 
@@ -700,4 +678,26 @@ void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int
         &dest_rect,
         draw_blit_func
     );
+}
+
+color_t* graphics_draw_palette_get(void) {
+    return draw_palette;
+}
+
+void graphics_draw_palette_set(uint32_t* new_palette) {
+    memmove(draw_palette, new_palette, sizeof(draw_palette));
+}
+
+void graphics_draw_palette_reset(void) {
+    for (int i = 0; i < 256; i++) {
+        draw_palette[i] = i;
+    }
+}
+
+void graphics_draw_transparent_color_set(int color) {
+    transparent_color = color;
+}
+
+int graphics_draw_transparent_color_get(void) {
+    return transparent_color;
 }
