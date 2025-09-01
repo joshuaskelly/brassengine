@@ -15,7 +15,7 @@ function graphics.set_pixel(x, y, color) end
 --- @param dy integer  Destination y-offset
 function graphics.blit(texture, dx, dy) end
 
---- Blit given texture to render texture.
+--- Copy pixels from given texture to render texture.
 --- @param texture texture  Source texture to blit
 --- @param sx integer  Source x-offset
 --- @param sy integer  Source y-offset
@@ -37,15 +37,6 @@ function graphics.set_clipping_rectangle(x, y, width, height) end
 --- Gets render texture.
 --- @return texture Render texture userdata.
 function graphics.get_render_texture() end
-
---- Set color for draw palette.
---- @param index integer  Palette index to change.
---- @param color integer  New color to set.
-function graphics.set_palette_color(index, color) end
-
---- Sets transparent color.
---- @param color integer  Color set set as transparent.
-function graphics.set_transparent_color(color) end
 
 --- Set color for graphics palette.
 --- @param index integer  Index of color to set

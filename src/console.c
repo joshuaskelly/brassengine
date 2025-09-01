@@ -13,8 +13,6 @@
 #include "time.h"
 #include "collections/circular_buffer.h"
 
-#include "renderers/draw.h"
-
 #define COMMAND_MAX_LENGTH 2048
 static char command[COMMAND_MAX_LENGTH + 1] = "";
 
@@ -384,12 +382,12 @@ void console_draw(void) {
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
     color_t foreground = palette[1];
-    color_t transparent_color = graphics_transparent_color_get();
+    color_t transparent_color = graphics_draw_transparent_color_get();
 
     // Set palette + transparent color
     palette[0] = config->console.colors.background;
     palette[1] = config->console.colors.foreground;
-    graphics_transparent_color_set(config->console.colors.transparent);
+    graphics_draw_transparent_color_set(config->console.colors.transparent);
 
     int width;
     int height;
@@ -402,7 +400,10 @@ void console_draw(void) {
         (height / 2) / 8 * 8
     };
 
-    draw_filled_rectangle(
+    texture_t* render_texture = graphics_render_texture_get();
+
+    graphics_draw_filled_rectangle(
+        render_texture,
         console_rect.x,
         console_rect.y,
         console_rect.width,
@@ -423,29 +424,29 @@ void console_draw(void) {
         const int history_end = output->count + output_buffer_offset;
         for (int i = history_begin; i < history_end; i++)  {
             char* s = circular_buffer_get(output, i);
-            draw_text(s, 0, line * 8);
+            graphics_draw_text(render_texture, s, 0, line * 8);
             line++;
         }
     }
 
     // Draw prompt
     int prompt_length = strlen(config->console.prompt);
-    draw_text(config->console.prompt, 0, line * 8);
+    graphics_draw_text(render_texture, config->console.prompt, 0, line * 8);
 
     // Draw input string
-    draw_text(command, prompt_length * 8, line * 8);
+    graphics_draw_text(render_texture, command, prompt_length * 8, line * 8);
 
     // Draw cursor
     palette[1] = config->console.colors.cursor;
     bool show_cursor = (int)time_since_init() % 500 > 250;
     if (show_cursor) {
-        draw_text("\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
+        graphics_draw_text(render_texture, "\xdb", (strlen(command) + prompt_length + cursor_offset) * 8, line * 8);
     }
 
     // Restore palette + transparent color
     palette[0] = background;
     palette[1] = foreground;
-    graphics_transparent_color_set(transparent_color);
+    graphics_draw_transparent_color_set(transparent_color);
 
     graphics_clipping_rectangle_set(NULL);
 }

@@ -17,7 +17,12 @@ PLATFORMS=desktop web desktop-opengl web-opengl
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
 BIN:=$(BIN_DIR)/$(BIN)
-SRCS=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/renderers/*.c) $(wildcard $(SRC_DIR)/modules/*.c) $(wildcard $(SRC_DIR)/collections/*.c) $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
+SRCS=$(wildcard $(SRC_DIR)/*.c) \
+$(wildcard $(SRC_DIR)/collections/*.c) \
+$(wildcard $(SRC_DIR)/graphics/*.c) \
+$(wildcard $(SRC_DIR)/modules/*.c) \
+$(wildcard $(SRC_DIR)/renderers/*.c) \
+$(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 INC=-Ilibs `sdl2-config --cflags`
@@ -123,6 +128,7 @@ clean: ## Deletes all auto generated files
 	mkdir $(BUILD_DIR)/bin
 	mkdir $(OBJ_DIR)
 	mkdir $(OBJ_DIR)/collections
+	mkdir $(OBJ_DIR)/graphics
 	mkdir $(OBJ_DIR)/modules
 	mkdir $(OBJ_DIR)/platforms
 	mkdir $(OBJ_DIR)/renderers

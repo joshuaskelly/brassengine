@@ -45,7 +45,7 @@ static int modules_graphics_pixel_set(lua_State* L) {
  */
 
 /**
- * Blit given texture to render texture.
+ * Copy pixels from given texture to render texture.
  * @function blit
  * @tparam texture.texture texture Source texture to blit
  * @tparam integer sx Source x-offset
@@ -140,36 +140,6 @@ static int modules_graphics_render_texture_get(lua_State* L) {
 }
 
 /**
- * Set color for draw palette.
- * @function set_palette_color
- * @tparam integer index Palette index to change.
- * @tparam integer color New color to set.
- */
-static int modules_graphics_draw_palette_color_set(lua_State* L) {
-    int index = (int)luaL_checknumber(L, 1);
-    int color = (int)luaL_checknumber(L, 2);
-
-    color_t* palette = graphics_draw_palette_get();
-    palette[index] = color;
-
-    return 0;
-}
-
-/**
- * Sets transparent color.
- * @function set_transparent_color
- * @tparam integer color Color set set as transparent.
- */
-static int modules_graphics_transparent_color_set(lua_State* L) {
-    int color = luaL_optinteger(L, 1, -1);
-    graphics_transparent_color_set(color);
-
-    lua_pop(L, -1);
-
-    return 0;
-}
-
-/**
  * Set color for graphics palette.
  * @function set_global_palette_color
  * @tparam integer index Index of color to set
@@ -235,8 +205,6 @@ static const struct luaL_Reg modules_graphics_functions[] = {
     {"blit", modules_graphics_blit},
     {"set_clipping_rectangle", modules_graphics_clipping_rectangle_set},
     {"get_render_texture", modules_graphics_render_texture_get},
-    {"set_palette_color", modules_graphics_draw_palette_color_set},
-    {"set_transparent_color", modules_graphics_transparent_color_set},
     {"set_global_palette_color", modules_graphics_palette_color_set},
     {"set_resolution", modules_graphics_resolution_set},
     {"get_resolution", modules_graphics_resolution_get},

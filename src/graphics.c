@@ -9,130 +9,8 @@
 
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
-static color_t draw_palette[256];
-static color_t transparent_color = 0;
 
 static rect_t clip_rect;
-
-texture_t* graphics_texture_new(int width, int height, const color_t* pixels) {
-    texture_t* texture = (texture_t*)malloc(sizeof(texture_t));
-
-    if (!texture) {
-        log_error("Failed to create texture");
-        return NULL;
-    }
-
-    texture->pixels = (color_t*)malloc(width * height * sizeof(color_t));
-
-    if (!texture->pixels) {
-        log_error("Failed to create texture pixels");
-        return NULL;
-    }
-
-    texture->width = width;
-    texture->height = height;
-    texture->stride = width;
-    texture->is_subtexture = false;
-    memset(texture->pixels, 0, width * height);
-
-    if (pixels) {
-        size_t size = width * height * sizeof(color_t);
-        memmove(texture->pixels, pixels, size);
-    }
-
-    return texture;
-}
-
-void graphics_texture_free(texture_t* texture) {
-    if (!texture->is_subtexture) {
-        free(texture->pixels);
-        texture->pixels = NULL;
-    }
-
-    free(texture);
-    texture = NULL;
-}
-
-texture_t* graphics_texture_copy(texture_t* texture) {
-    texture_t* copy = graphics_texture_new(
-        texture->width,
-        texture->height,
-        NULL
-    );
-
-    size_t size = copy->width * sizeof(color_t);
-    for (int i = 0; i < copy->height; i++) {
-        memmove(
-            copy->pixels + i * copy->stride,
-            texture->pixels + i * texture->stride,
-            size
-        );
-    }
-
-    return copy;
-}
-
-void graphics_texture_clear(texture_t* texture, color_t color) {
-    size_t size = texture->width * sizeof(color_t);
-    for (int i = 0; i < texture->height; i++) {
-        memset(texture->pixels + i * texture->stride, color, size);
-    }
-}
-
-texture_t* graphics_texture_sub(texture_t* texture, rect_t* rect) {
-    if (
-        rect->x < 0 ||
-        rect->y < 0 ||
-        rect->x + rect->width > texture->width ||
-        rect->y + rect->height > texture->height
-        ) {
-        log_error("Subtexture rect outside source texture bounds");
-        return NULL;
-    }
-
-    texture_t* sub_texture = (texture_t*)malloc(sizeof(texture_t));
-
-    if (!sub_texture) {
-        log_error("Failed to create texture");
-        return NULL;
-    }
-
-    sub_texture->width = rect->width;
-    sub_texture->height = rect->height;
-    sub_texture->stride = texture->stride;
-    sub_texture->is_subtexture = true;
-
-    size_t offset = rect->x + rect->y * texture->stride;
-
-    sub_texture->pixels = texture->pixels + offset;
-
-    return sub_texture;
-}
-
-void graphics_texture_pixel_set(texture_t* texture, int x, int y, color_t color) {
-    if (x < 0 || x >= texture->width) return;
-    if (y < 0 || y >= texture->height) return;
-
-    texture->pixels[y * texture->stride + x] = color;
-}
-
-color_t graphics_texture_pixel_get(texture_t* texture, int x, int y) {
-    if (x < 0 || x >= texture->width) return transparent_color;
-    if (y < 0 || y >= texture->height) return transparent_color;
-
-    return texture->pixels[y * texture->stride + x];
-}
-
-static void texture_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
-    color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    if (pixel == transparent_color) return;
-
-    graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
-}
-
-void graphics_texture_blit(texture_t* source_texture, texture_t* destination_texture, rect_t* source_rect, rect_t* destination_rect) {
-    graphics_blit(source_texture, destination_texture, source_rect, destination_rect, texture_blit_func);
-}
 
 void graphics_init(void) {
     log_info("graphics init");
@@ -152,9 +30,7 @@ void graphics_init(void) {
     clip_rect.width = config->resolution.width;
     clip_rect.height = config->resolution.height;
 
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
+    graphics_draw_palette_reset();
 }
 
 void graphics_destroy(void) {
@@ -162,9 +38,7 @@ void graphics_destroy(void) {
 }
 
 void graphics_reload(void) {
-    for (int i = 0; i < 256; i++) {
-        draw_palette[i] = i;
-    }
+    graphics_draw_palette_reset();
 }
 
 texture_t* graphics_render_texture_get(void) {
@@ -183,37 +57,15 @@ void graphics_palette_clear(void) {
     memset(palette, 0, sizeof(palette));
 }
 
-color_t* graphics_draw_palette_get(void) {
-    return draw_palette;
-}
-
-void graphics_draw_palette_set(uint32_t* new_palette) {
-    memmove(draw_palette, new_palette, sizeof(draw_palette));
-}
-
-void graphics_draw_palette_clear(void) {
-    memset(draw_palette, 0, sizeof(draw_palette));
-}
-
-void graphics_transparent_color_set(int color) {
-    transparent_color = color;
-}
-
-int graphics_transparent_color_get(void) {
-    return transparent_color;
-}
-
 void graphics_pixel_set(int x, int y, color_t color) {
     if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
     if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
-    if (color == transparent_color) return;
 
     graphics_texture_pixel_set(render_texture, x, y, color);
 }
 
 static void default_blit_func(texture_t* source_texture, texture_t* _, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    pixel = draw_palette[pixel];
 
     graphics_pixel_set(dx, dy, pixel);
 }
@@ -227,12 +79,22 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
         func = default_blit_func;
     }
 
-    rect_t default_source_rect = {0, 0, source_texture->width, source_texture->height};
+    rect_t default_source_rect = {
+        0,
+        0,
+        graphics_texture_width_get(source_texture),
+        graphics_texture_height_get(source_texture)
+    };
     if (!source_rect) {
         source_rect = &default_source_rect;
     }
 
-    rect_t default_destination_rect = {0, 0, destination_texture->width, destination_texture->height};
+    rect_t default_destination_rect = {
+        0,
+        0,
+        graphics_texture_width_get(destination_texture),
+        graphics_texture_height_get(destination_texture)
+    };
     if (!destination_rect) {
         destination_rect = &default_destination_rect;
     }
@@ -267,12 +129,12 @@ void graphics_blit(texture_t* source_texture, texture_t* destination_texture, re
     s_top += 0.5f * y_step;
     s_left += 0.5f * x_step;
 
-    if (bottom > destination_texture->height) {
-        bottom = destination_texture->height;
+    if (bottom > graphics_texture_height_get(destination_texture)) {
+        bottom = graphics_texture_height_get(destination_texture);
     }
 
-    if (right > destination_texture->width) {
-        right = destination_texture->width;
+    if (right > graphics_texture_width_get(destination_texture)) {
+        right = graphics_texture_width_get(destination_texture);
     }
 
     for (dy = top, sy = s_top; dy < bottom; dy++, sy += y_step) {
@@ -305,16 +167,21 @@ void graphics_resolution_set(int width, int height) {
 
 void graphics_resolution_get(int* width, int* height) {
     if (width) {
-        *width = render_texture->width;
+        *width = graphics_texture_width_get(render_texture);
     }
 
     if (height) {
-        *height = render_texture->height;
+        *height = graphics_texture_height_get(render_texture);
     }
 }
 
 void graphics_clipping_rectangle_set(rect_t* rect) {
-    rect_t default_rect = {0, 0, render_texture->width, render_texture->height};
+    rect_t default_rect = {
+        0,
+        0,
+        graphics_texture_width_get(render_texture),
+        graphics_texture_height_get(render_texture)
+    };
 
     if (!rect) {
         rect = &default_rect;

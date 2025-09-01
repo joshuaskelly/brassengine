@@ -5,7 +5,7 @@ local sound = {}
 
 --- Create new sound.
 --- @param frame_count integer  Total number of PCM frames.
---- @return sound 
+--- @return sound
 function sound.new(frame_count) end
 
 --- @class sound
@@ -17,8 +17,17 @@ sound.sound = {}
 --- @param channel integer  Channel to play sound on. (optional)
 function sound.sound:play(channel) end
 
+--- Stops sound.
+--- @param channel integer  Channel to stop playing. If omitted all sounds will be stopped. (optional)
+function sound.sound:stop(channel) end
+
+--- Sets volume.
+--- @param channel integer  Channel to set volume for.
+--- @param volume number  Volume level to set. Range 0.0 to 1.0
+function sound.sound:volume(channel, volume) end
+
 --- Returns a copy of this sound.
---- @return sound 
+--- @return sound
 function sound.sound:copy() end
 
 --- Sets PCM data for given frame.
