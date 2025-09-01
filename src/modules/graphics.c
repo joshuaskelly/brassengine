@@ -45,7 +45,7 @@ static int modules_graphics_pixel_set(lua_State* L) {
  */
 
 /**
- * Blit given texture to render texture.
+ * Copy pixels from given texture to render texture.
  * @function blit
  * @tparam texture.texture texture Source texture to blit
  * @tparam integer sx Source x-offset

@@ -15,7 +15,7 @@ function graphics.set_pixel(x, y, color) end
 --- @param dy integer  Destination y-offset
 function graphics.blit(texture, dx, dy) end
 
---- Blit given texture to render texture.
+--- Copy pixels from given texture to render texture.
 --- @param texture texture  Source texture to blit
 --- @param sx integer  Source x-offset
 --- @param sy integer  Source y-offset
