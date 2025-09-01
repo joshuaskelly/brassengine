@@ -132,6 +132,10 @@ function draw.texture(texture, x, y, width, height) end
 --- @param color integer  New color to set.
 function draw.set_palette_color(index, color) end
 
+--- Sets transparent color.
+--- @param color integer  Color set set as transparent.
+function draw.set_transparent_color(color) end
+
 --- Get current render texture for drawing
 --- @return  texture.texture Current drawing render texture
 function draw.get_render_texture() end

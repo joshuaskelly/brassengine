@@ -38,10 +38,6 @@ function graphics.set_clipping_rectangle(x, y, width, height) end
 --- @return texture Render texture userdata.
 function graphics.get_render_texture() end
 
---- Sets transparent color.
---- @param color integer  Color set set as transparent.
-function graphics.set_transparent_color(color) end
-
 --- Set color for graphics palette.
 --- @param index integer  Index of color to set
 --- @param r integer  Red value. [0, 255]
