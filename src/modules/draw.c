@@ -506,6 +506,36 @@ static int modules_draw_transparent_color_set(lua_State* L) {
 }
 
 /**
+ * Sets clipping rectangle which defines drawable area.
+ * @function set_clipping_rectangle
+ * @tparam integer x Rect top left x-coordinate
+ * @tparam integer y Rect top left y-coordinate
+ * @tparam integer width Rect width
+ * @tparam integer height Rect height
+ */
+static int modules_draw_clipping_rectangle_set(lua_State* L) {
+    int arg_count = lua_gettop(L);
+
+    if (arg_count == 0) {
+        graphics_draw_clipping_rectangle_set(NULL);
+        return 0;
+    }
+
+    int x = (int)luaL_checknumber(L, 1);
+    int y = (int)luaL_checknumber(L, 2);
+    int width = (int)luaL_checknumber(L, 3);
+    int height = (int)luaL_checknumber(L, 4);
+
+    lua_pop(L, -1);
+
+    rect_t clip_rect = {x, y, width, height};
+
+    graphics_draw_clipping_rectangle_set(&clip_rect);
+
+    return 0;
+}
+
+/**
  * Get current render texture for drawing
  * @function get_render_texture
  * @return texture.texture Current drawing render texture
@@ -551,6 +581,7 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"texture", modules_draw_texture},
     {"set_palette_color", modules_draw_palette_color_set},
     {"set_transparent_color", modules_draw_transparent_color_set},
+    {"set_clipping_rectangle", modules_draw_clipping_rectangle_set},
     {"get_render_texture", modules_draw_render_texture_get},
     {"set_render_texture", modules_draw_render_texture_set},
     {NULL, NULL}

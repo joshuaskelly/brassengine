@@ -10,8 +10,6 @@
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
 
-static rect_t clip_rect;
-
 void graphics_init(void) {
     log_info("graphics init");
 
@@ -25,12 +23,8 @@ void graphics_init(void) {
         log_fatal("Failed to create frame buffer");
     }
 
-    clip_rect.x = 0;
-    clip_rect.y = 0;
-    clip_rect.width = config->resolution.width;
-    clip_rect.height = config->resolution.height;
-
     graphics_draw_palette_reset();
+    graphics_draw_clipping_rectangle_set(NULL);
 }
 
 void graphics_destroy(void) {
@@ -58,9 +52,6 @@ void graphics_palette_clear(void) {
 }
 
 void graphics_pixel_set(int x, int y, color_t color) {
-    if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
-    if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
-
     graphics_texture_pixel_set(render_texture, x, y, color);
 }
 
@@ -159,10 +150,7 @@ void graphics_resolution_set(int width, int height) {
     event.graphics_resolution_change.height = height;
     event_post(&event);
 
-    clip_rect.x = 0;
-    clip_rect.y = 0;
-    clip_rect.width = width;
-    clip_rect.height = height;
+    graphics_draw_clipping_rectangle_set(NULL);
 }
 
 void graphics_resolution_get(int* width, int* height) {
@@ -173,23 +161,4 @@ void graphics_resolution_get(int* width, int* height) {
     if (height) {
         *height = graphics_texture_height_get(render_texture);
     }
-}
-
-void graphics_clipping_rectangle_set(rect_t* rect) {
-    rect_t default_rect = {
-        0,
-        0,
-        graphics_texture_width_get(render_texture),
-        graphics_texture_height_get(render_texture)
-    };
-
-    if (!rect) {
-        rect = &default_rect;
-    }
-
-    clip_rect = *rect;
-}
-
-rect_t* graphics_clipping_rectangle_get(void) {
-    return &clip_rect;
 }

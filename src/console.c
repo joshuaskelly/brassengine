@@ -411,7 +411,7 @@ void console_draw(void) {
         config->console.colors.background
     );
 
-    graphics_clipping_rectangle_set(&console_rect);
+    graphics_draw_clipping_rectangle_set(&console_rect);
 
     int line = 0;
     const int max_lines = (console_rect.height / 8) - 1;
@@ -448,7 +448,7 @@ void console_draw(void) {
     palette[1] = foreground;
     graphics_draw_transparent_color_set(transparent_color);
 
-    graphics_clipping_rectangle_set(NULL);
+    graphics_draw_clipping_rectangle_set(NULL);
 }
 
 void console_buffer_write(const char* line) {

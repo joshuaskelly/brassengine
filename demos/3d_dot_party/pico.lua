@@ -30,7 +30,7 @@ function circfill(x, y, r, col)
 end
 
 function clip(x, y, w, h)
-    graphics.set_clipping_rectangle(x, y, w, h)
+    draw.set_clipping_rectangle(x, y, w, h)
 end
 
 --- clear screen; col = clear color

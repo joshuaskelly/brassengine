@@ -100,36 +100,6 @@ static int modules_graphics_blit(lua_State* L) {
 }
 
 /**
- * Sets clipping rectangle which defines drawable area.
- * @function set_clipping_rectangle
- * @tparam integer x Rect top left x-coordinate
- * @tparam integer y Rect top left y-coordinate
- * @tparam integer width Rect width
- * @tparam integer height Rect height
- */
-static int modules_graphics_clipping_rectangle_set(lua_State* L) {
-    int arg_count = lua_gettop(L);
-
-    if (arg_count == 0) {
-        graphics_clipping_rectangle_set(NULL);
-        return 0;
-    }
-
-    int x = (int)luaL_checknumber(L, 1);
-    int y = (int)luaL_checknumber(L, 2);
-    int width = (int)luaL_checknumber(L, 3);
-    int height = (int)luaL_checknumber(L, 4);
-
-    lua_pop(L, -1);
-
-    rect_t clip_rect = {x, y, width, height};
-
-    graphics_clipping_rectangle_set(&clip_rect);
-
-    return 0;
-}
-
-/**
  * Gets render texture.
  * @function get_render_texture
  * @treturn texture.texture Render texture userdata.
@@ -203,7 +173,6 @@ static int modules_graphics_resolution_get(lua_State* L) {
 static const struct luaL_Reg modules_graphics_functions[] = {
     {"set_pixel", modules_graphics_pixel_set},
     {"blit", modules_graphics_blit},
-    {"set_clipping_rectangle", modules_graphics_clipping_rectangle_set},
     {"get_render_texture", modules_graphics_render_texture_get},
     {"set_global_palette_color", modules_graphics_palette_color_set},
     {"set_resolution", modules_graphics_resolution_set},
