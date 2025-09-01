@@ -19,7 +19,7 @@ local points = {
 local active = nil
 
 function _init()
-    graphics.set_transparent_color(7)
+    draw.set_transparent_color(7)
 end
 
 function _update()
@@ -96,7 +96,7 @@ function _draw()
     )
 
     -- Cursor
-    graphics.blit(cursor, x, y)
+    draw.texture(cursor, x, y)
 end
 
 function dist(x0, y0, x1, y1)

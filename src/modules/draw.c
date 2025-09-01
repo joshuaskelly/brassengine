@@ -492,6 +492,20 @@ static int modules_draw_palette_color_set(lua_State* L) {
 }
 
 /**
+ * Sets transparent color.
+ * @function set_transparent_color
+ * @tparam integer color Color set set as transparent.
+ */
+static int modules_draw_transparent_color_set(lua_State* L) {
+    int color = luaL_optinteger(L, 1, -1);
+    graphics_draw_transparent_color_set(color);
+
+    lua_pop(L, -1);
+
+    return 0;
+}
+
+/**
  * Get current render texture for drawing
  * @function get_render_texture
  * @return texture.texture Current drawing render texture
@@ -536,6 +550,7 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"textured_triangle", modules_draw_textured_triangle},
     {"texture", modules_draw_texture},
     {"set_palette_color", modules_draw_palette_color_set},
+    {"set_transparent_color", modules_draw_transparent_color_set},
     {"get_render_texture", modules_draw_render_texture_get},
     {"set_render_texture", modules_draw_render_texture_set},
     {NULL, NULL}

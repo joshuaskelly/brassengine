@@ -23,6 +23,20 @@ void graphics_draw_palette_set(uint32_t* palette);
 void graphics_draw_palette_reset(void);
 
 /**
+ * Set transparent color.
+ *
+ * @param color Color to set as transparent. A value of -1 is no transparency.
+ */
+void graphics_draw_transparent_color_set(int color);
+
+/**
+ * Get transparent color.
+ *
+ * @return int Transparent color. A value of -1 is no transparency.
+ */
+int graphics_draw_transparent_color_get(void);
+
+/**
  * Draw pixel at x, y with given color
  *
  * @param destination Texture to draw to

@@ -366,7 +366,7 @@ static void renderer_draw_wall_strip(raycaster_renderer_t* renderer, texture_t* 
 
         color_t c = graphics_texture_pixel_get(wall_texture, s, t + 0.0001f);
         t += t_step;
-        if (c == graphics_transparent_color_get()) continue;
+        if (c == graphics_draw_transparent_color_get()) continue;
 
         float d = renderer_depth_buffer_pixel_get(renderer, x, y);
         if (d <= depth) continue;
@@ -672,7 +672,7 @@ static void sprite_depth_blit_func(texture_t* source_texture, texture_t* destina
     if (d <= depth) return;
 
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    if (pixel == graphics_transparent_color_get()) return;
+    if (pixel == graphics_draw_transparent_color_get()) return;
 
     renderer_depth_buffer_pixel_set(active_renderer, dx, dy, depth);
 

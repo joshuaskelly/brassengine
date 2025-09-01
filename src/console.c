@@ -382,12 +382,12 @@ void console_draw(void) {
     color_t* palette = graphics_draw_palette_get();
     color_t background = palette[0];
     color_t foreground = palette[1];
-    color_t transparent_color = graphics_transparent_color_get();
+    color_t transparent_color = graphics_draw_transparent_color_get();
 
     // Set palette + transparent color
     palette[0] = config->console.colors.background;
     palette[1] = config->console.colors.foreground;
-    graphics_transparent_color_set(config->console.colors.transparent);
+    graphics_draw_transparent_color_set(config->console.colors.transparent);
 
     int width;
     int height;
@@ -446,7 +446,7 @@ void console_draw(void) {
     // Restore palette + transparent color
     palette[0] = background;
     palette[1] = foreground;
-    graphics_transparent_color_set(transparent_color);
+    graphics_draw_transparent_color_set(transparent_color);
 
     graphics_clipping_rectangle_set(NULL);
 }

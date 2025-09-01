@@ -31,5 +31,5 @@ end
 
 function _draw()
     draw.clear(0)
-    graphics.blit(t, 0, 0)
+    draw.texture(t, 0, 0)
 end

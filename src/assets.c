@@ -685,7 +685,7 @@ static gif_t* load_gif_internal(GifFileType* gif_file) {
         if (block->Function == GRAPHICS_EXT_FUNC_CODE) {
             GraphicsControlBlock* gcb = NULL;
             DGifExtensionToGCB(block->ByteCount, block->Bytes, gcb);
-            graphics_transparent_color_set(gcb->TransparentColor);
+            graphics_draw_transparent_color_set(gcb->TransparentColor);
         }
     }
 

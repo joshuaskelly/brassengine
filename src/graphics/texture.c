@@ -127,15 +127,15 @@ void graphics_texture_pixel_set(texture_t* texture, int x, int y, color_t color)
 }
 
 color_t graphics_texture_pixel_get(texture_t* texture, int x, int y) {
-    if (x < 0 || x >= texture->width) return graphics_transparent_color_get();
-    if (y < 0 || y >= texture->height) return graphics_transparent_color_get();
+    if (x < 0 || x >= texture->width) return graphics_draw_transparent_color_get();
+    if (y < 0 || y >= texture->height) return graphics_draw_transparent_color_get();
 
     return texture->pixels[y * texture->stride + x];
 }
 
 static void texture_blit_func(texture_t* source_texture, texture_t* destination_texture, int sx, int sy, int dx, int dy) {
     color_t pixel = graphics_texture_pixel_get(source_texture, sx, sy);
-    if (pixel == graphics_transparent_color_get()) return;
+    if (pixel == graphics_draw_transparent_color_get()) return;
 
     graphics_texture_pixel_set(destination_texture, dx, dy, pixel);
 }

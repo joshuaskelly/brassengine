@@ -13,6 +13,7 @@
 #include "../math.h"
 
 static color_t draw_palette[256];
+static color_t transparent_color = 0;
 
 color_t* graphics_draw_palette_get(void) {
     return draw_palette;
@@ -28,8 +29,16 @@ void graphics_draw_palette_reset(void) {
     }
 }
 
+void graphics_draw_transparent_color_set(int color) {
+    transparent_color = color;
+}
+
+int graphics_draw_transparent_color_get(void) {
+    return transparent_color;
+}
+
 void graphics_draw_pixel(texture_t* destination, int x, int y, color_t color) {
-    if (color == graphics_transparent_color_get()) return;
+    if (color == transparent_color) return;
 
     graphics_texture_pixel_set(destination, x, y, color);
 }

@@ -9,7 +9,6 @@
 
 static texture_t* render_texture = NULL;
 static uint32_t palette[256];
-static color_t transparent_color = 0;
 
 static rect_t clip_rect;
 
@@ -58,18 +57,9 @@ void graphics_palette_clear(void) {
     memset(palette, 0, sizeof(palette));
 }
 
-void graphics_transparent_color_set(int color) {
-    transparent_color = color;
-}
-
-int graphics_transparent_color_get(void) {
-    return transparent_color;
-}
-
 void graphics_pixel_set(int x, int y, color_t color) {
     if (x < clip_rect.x || x >= clip_rect.x + clip_rect.width) return;
     if (y < clip_rect.y || y >= clip_rect.y + clip_rect.height) return;
-    if (color == transparent_color) return;
 
     graphics_texture_pixel_set(render_texture, x, y, color);
 }
