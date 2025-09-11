@@ -26,12 +26,19 @@ end
 -- Called once per frame
 function _draw()
     draw.clear(0)
+    
+    local connected = gamecontroller.connected()
+    if #connected == 0 then
+        draw.text("no controllers detected", 68, 92)
+        return
+    end
+
     draw.text("controller: "..id, 0, 0)
     draw.text(" buttons", 0, 8)
 
     local y = 16
 
-    for _, i in ipairs(gamecontroller.connected()) do
+    for _, i in ipairs(connected) do
         if any_input(i) then id = i end
     end
 
