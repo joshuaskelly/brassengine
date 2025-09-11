@@ -9,6 +9,7 @@ Underlying platform is abstracted out to support many OSes and graphics APIs.
 Embedded Lua.
 1. Hot reload.
 2. Interactive dev console REPL.
+3. LuaRocks support
 
 ## 3. Open Standards
 Uses open and durable formats for assets.
@@ -19,3 +20,4 @@ Uses open and durable formats for assets.
 ## 4. Software Rendering
 Engine uses software rendering and presents an easy to understand immediate mode style API. Several additional renderers come built-in.
 1. Raycaster renderer
+2. Mode 7 renderer
