@@ -49,8 +49,8 @@ void graphics_draw_line(texture_t* destination, int x0, int y0, int x1, int y1, 
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
         graphics_draw_pixel(destination, current_x, current_y, color);
@@ -68,8 +68,8 @@ void graphics_draw_pattern_line(texture_t* destination, int x0, int y0, int x1, 
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
         pattern_pixel_set(destination, current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
@@ -87,8 +87,8 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
     float s0 = u0 * graphics_texture_width_get(texture_map);
     float t0 = v0 * graphics_texture_height_get(texture_map);
