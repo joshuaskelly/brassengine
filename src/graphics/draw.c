@@ -119,9 +119,13 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
     float current_t = t0 + scaled_pixel_center;
 
     for (int i = 0; i <= xy_longest_side; i++) {
-        color_t c = graphics_texture_pixel_get(texture_map, current_s, current_t);
+        if (current_s >= 0 && current_t >= 0) {
+            int s = floor(current_s);
+            int t = floor(current_t);
+            color_t c = graphics_texture_pixel_get(texture_map, s, t);
 
-        graphics_draw_pixel(destination, current_x, current_y, c);
+            graphics_draw_pixel(destination, current_x, current_y, c);
+        }
 
         current_x += x_inc;
         current_y += y_inc;
