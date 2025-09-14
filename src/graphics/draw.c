@@ -49,8 +49,8 @@ void graphics_draw_line(texture_t* destination, int x0, int y0, int x1, int y1, 
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
         graphics_draw_pixel(destination, current_x, current_y, color);
@@ -68,8 +68,8 @@ void graphics_draw_pattern_line(texture_t* destination, int x0, int y0, int x1, 
     float x_inc = delta_x / (float)longest_side;
     float y_inc = delta_y / (float)longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
     for (int i = 0; i <= longest_side; i++) {
         pattern_pixel_set(destination, current_x, current_y, pattern, pattern_offset_x, pattern_offset_y);
@@ -82,32 +82,43 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
     // DDA based line drawing algorithm
     int delta_x = x1 - x0;
     int delta_y = y1 - y0;
-    int longest_side = fmax(abs(delta_x), abs(delta_y));
+    int xy_longest_side = fmax(abs(delta_x), abs(delta_y));
 
-    float x_inc = delta_x / (float)longest_side;
-    float y_inc = delta_y / (float)longest_side;
+    float x_inc = delta_x / (float)xy_longest_side;
+    float y_inc = delta_y / (float)xy_longest_side;
 
-    float current_x = x0 + 0.5f;
-    float current_y = y0 + 0.5f;
+    float current_x = x0;
+    float current_y = y0;
 
-    float s0 = u0 * graphics_texture_width_get(texture_map);
-    float t0 = v0 * graphics_texture_height_get(texture_map);
-    float s1 = u1 * graphics_texture_width_get(texture_map);
-    float t1 = v1 * graphics_texture_height_get(texture_map);
+    float texture_width = graphics_texture_width_get(texture_map);
+    float texture_height = graphics_texture_height_get(texture_map);
+
+    // Convert uv-coordinates to st-coordinates
+    float s0 = u0 * texture_width;
+    float t0 = v0 * texture_height;
+    float s1 = u1 * texture_width;
+    float t1 = v1 * texture_height;
 
     float delta_s = s1 - s0;
     float delta_t = t1 - t0;
     float st_longest_side = fmax(fabs(delta_s), fabs(delta_t));
 
-    float r = st_longest_side / longest_side;
+    // Length of longest side in terms of pixels.
+    float st_distance_pixels = st_longest_side + 1;
+    float xy_distance_pixels = xy_longest_side + 1;
 
-    float s_inc = delta_s / st_longest_side * r;
-    float t_inc = delta_t / st_longest_side * r;
+    // Calculate ratio of st-coordinates to xy-coordinates.
+    float ratio = st_distance_pixels / xy_distance_pixels;
 
-    float current_s = s0 + 0.5f;
-    float current_t = t0 + 0.5f;
+    float s_inc = delta_s / st_longest_side * ratio;
+    float t_inc = delta_t / st_longest_side * ratio;
 
-    for (int i = 0; i <= longest_side; i++) {
+    // Sample texture at pixel centers
+    float scaled_pixel_center = 0.5f * ratio;
+    float current_s = s0 + scaled_pixel_center;
+    float current_t = t0 + scaled_pixel_center;
+
+    for (int i = 0; i <= xy_longest_side; i++) {
         color_t c = graphics_texture_pixel_get(texture_map, current_s, current_t);
 
         graphics_draw_pixel(destination, current_x, current_y, c);
