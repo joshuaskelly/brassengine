@@ -120,8 +120,8 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
 
     for (int i = 0; i <= xy_longest_side; i++) {
         if (current_s >= 0 && current_t >= 0) {
-            int s = (int)floor(current_s);
-            int t = (int)floor(current_t);
+            int s = floor(current_s);
+            int t = floor(current_t);
             color_t c = graphics_texture_pixel_get(texture_map, s, t);
 
             graphics_draw_pixel(destination, current_x, current_y, c);
