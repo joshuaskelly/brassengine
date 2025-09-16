@@ -1,6 +1,8 @@
 #ifndef GRAPHICS_DRAW_H
 #define GRAPHICS_DRAW_H
 
+#include <mathc/mathc.h>
+
 #include "types.h"
 
 /**
@@ -290,6 +292,15 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
  * @param height Source height
  */
 void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height);
+
+/**
+ * Draw source texture to destination texture using given matrix.
+ *
+ * @param destination Texture to draw to
+ * @param source Texture to draw
+ * @param matrix Affine transformation to apply to texture when drawing
+ */
+void graphics_draw_affine_texture(texture_t* destination, texture_t* source, mfloat_t* matrix);
 
 /**
  * Get draw palette.

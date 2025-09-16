@@ -8,6 +8,7 @@
 #include <lua/lualib.h>
 
 #include "draw.h"
+#include "matrix3.h"
 #include "texture.h"
 #include "../assets.h"
 #include "../graphics.h"
@@ -445,6 +446,19 @@ static int modules_draw_textured_triangle(lua_State* L) {
  */
 static int modules_draw_texture(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
+
+    if (lua_gettop(L) == 2) {
+        mfloat_t* matrix = luaL_checkmatrix3(L, 2);
+
+        graphics_draw_affine_texture(
+            draw_render_texture_get(),
+            texture,
+            matrix
+        );
+
+        return 0;
+    }
+
     int x = (int)luaL_checknumber(L, 2);
     int y = (int)luaL_checknumber(L, 3);
     int width = (int)luaL_optnumber(L, 4, graphics_texture_width_get(texture));
