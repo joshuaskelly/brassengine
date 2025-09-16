@@ -90,8 +90,8 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
     float current_x = x0;
     float current_y = y0;
 
-    float texture_width = graphics_texture_width_get(texture_map);
-    float texture_height = graphics_texture_height_get(texture_map);
+    float texture_width = graphics_texture_width_get(texture_map) - 1;
+    float texture_height = graphics_texture_height_get(texture_map) - 1;
 
     // Convert uv-coordinates to st-coordinates
     float s0 = u0 * texture_width;
@@ -114,9 +114,10 @@ void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u
     float t_inc = delta_t / st_longest_side * ratio;
 
     // Sample texture at pixel centers
-    float scaled_pixel_center = 0.5f * ratio;
-    float current_s = s0 + scaled_pixel_center;
-    float current_t = t0 + scaled_pixel_center;
+    float s_scaled_pixel_center = delta_s == 0 ? 0.5f : 0.5f * ratio;
+    float t_scaled_pixel_center = delta_t == 0 ? 0.5f : 0.5f * ratio;
+    float current_s = s0 + s_scaled_pixel_center;
+    float current_t = t0 + t_scaled_pixel_center;
 
     for (int i = 0; i <= xy_longest_side; i++) {
         if (current_s >= 0 && current_t >= 0) {
