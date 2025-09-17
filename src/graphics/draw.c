@@ -702,6 +702,128 @@ void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int
     );
 }
 
+void graphics_draw_affine_texture(texture_t* destination, texture_t* source, mfloat_t* matrix) {
+    /**
+     * Rendering a texture with an affine transformation:
+     *
+     * 1. Transform bounding points of 0-1 UV space to screen space.
+     *
+     * 2. Determine bounds of transformed points.
+     *
+     * 3. Calculate first scanline UV coords by multipling by inverse matrix.
+     *
+     * 4. Calculate UV increment vector.
+     *
+     * 5. Render bounds as a series of scanlines.
+     *
+     *    a. Clip current scanline & UVs to screen.
+     *
+     *    b. Render clipped scanline using graphics_draw_textured_line.
+     *
+     *    c. Update current UV coords by UV increment vector.
+     */
+
+    // 1. Transform UV space bounds to screen space
+    mfloat_t p0[VEC3_SIZE] = {0, 0, 1};
+    mfloat_t p1[VEC3_SIZE] = {0, 1, 1};
+    mfloat_t p2[VEC3_SIZE] = {1, 1, 1};
+    mfloat_t p3[VEC3_SIZE] = {1, 0, 1};
+
+    vec3_multiply_mat3(p0, p0, matrix);
+    vec3_multiply_mat3(p1, p1, matrix);
+    vec3_multiply_mat3(p2, p2, matrix);
+    vec3_multiply_mat3(p3, p3, matrix);
+
+    // 2. Determine screen space bounds
+    mfloat_t min[VEC3_SIZE];
+    mfloat_t max[VEC3_SIZE];
+    vec3_assign(min, p0);
+    vec3_assign(max, p0);
+
+    vec3_min(min, min, p1);
+    vec3_min(min, min, p2);
+    vec3_min(min, min, p3);
+
+    vec3_max(max, max, p1);
+    vec3_max(max, max, p2);
+    vec3_max(max, max, p3);
+
+    vec3_floor(min, min);
+    vec3_floor(max, max);
+
+    // Get screen to UV transformation
+    mfloat_t inverse[MAT3_SIZE];
+    mat3_inverse(inverse, matrix);
+
+    // 3. Calculate UV coordinates for first scanline
+    mfloat_t uv0[VEC3_SIZE];
+    mfloat_t uv1[VEC3_SIZE];
+    vec3(uv0, min[0], min[1], 1);
+    vec3(uv1, max[0] + 1, min[1], 1);
+    vec3_multiply_mat3(uv0, uv0, inverse);
+    vec3_multiply_mat3(uv1, uv1, inverse);
+
+    // 4. Calculate UV increment vector
+    mfloat_t inc[VEC3_SIZE];
+    float one_pixel_vertical = 1.0f / graphics_texture_height_get(source);
+    vec3(inc, 0, 1.0f + one_pixel_vertical, 0);
+    vec3_multiply_mat3(inc, inc, inverse);
+
+    int max_height = graphics_texture_height_get(destination);
+    int max_width = graphics_texture_width_get(destination);
+
+    // 5. Render scanlines
+    for (int y = min[1]; y < max[1]; y++) {
+        if (y >= max_height) break;
+
+        if (y >= 0) {
+            // Clip scanline to screen
+            mfloat_t d[VEC3_SIZE];
+            vec3_subtract(d, uv1, uv0);
+
+            float x0 = min[0];
+            float x1 = max[0];
+            float u0 = uv0[0];
+            float v0 = uv0[1];
+            float u1 = uv1[0];
+            float v1 = uv1[1];
+
+            // 5a. Clip scanline
+
+            // Clip left
+            if (x0 < 0) {
+                float t = x0 / (x1 - x0);
+                x0 = 0;
+                u0 = u0 - d[0] * t;
+                v0 = v0 - d[1] * t;
+            }
+
+            // Clip right
+            float w = max_width - 1;
+            if (x1 > w) {
+                float t = (x1 - w) / (x1 - x0);
+                x1 = w;
+                u1 = u1 - d[0] * t;
+                v1 = v1 - d[1] * t;
+            }
+
+            // 5b. Draw scanline
+            graphics_draw_textured_line(
+                destination,
+                x0, y,
+                u0, v0,
+                x1, y,
+                u1, v1,
+                source
+            );
+        }
+
+        // 5c. Increment UV coords
+        vec3_add(uv0, uv0, inc);
+        vec3_add(uv1, uv1, inc);
+    }
+}
+
 color_t* graphics_draw_palette_get(void) {
     return draw_palette;
 }
