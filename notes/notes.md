@@ -23,6 +23,12 @@
 - [Drawing Thick Lines](http://kt8216.unixcab.org/murphy/index.html)
 - [The Beauty of Bresenham's Algorithm](https://zingl.github.io/bresenham.html)
 
+## Quadrilateral Rendering
+- [inverse bilinear interpolation - 2010](https://iquilezles.org/articles/ibilinear/)
+- [A Quadrilateral Rendering Primitive](https://vcgdata.isti.cnr.it/Publications/2004/HT04/quadrendering.pdf)
+- [Barycentric Quad Rasterization](https://jcgt.org/published/0011/03/04/paper-lowres.pdf)
+- [Quadrilateral Interpolation Part 2](https://www.reedbeta.com/blog/quadrilateral-interpolation-part-2/)
+
 ## Audio Production
 - Ensure the following for Audacity
   - Project rate 11025Hz
