@@ -759,7 +759,7 @@ void graphics_draw_affine_texture(texture_t* destination, texture_t* source, mfl
     mfloat_t uv0[VEC3_SIZE];
     mfloat_t uv1[VEC3_SIZE];
     vec3(uv0, min[0], min[1], 1);
-    vec3(uv1, max[0], min[1], 1);
+    vec3(uv1, max[0] + 1, min[1], 1);
     vec3_multiply_mat3(uv0, uv0, inverse);
     vec3_multiply_mat3(uv1, uv1, inverse);
 
@@ -812,7 +812,7 @@ void graphics_draw_affine_texture(texture_t* destination, texture_t* source, mfl
                 destination,
                 x0, y,
                 u0, v0,
-                x1 - 1, y,
+                x1, y,
                 u1, v1,
                 source
             );
