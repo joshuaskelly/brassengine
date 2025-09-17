@@ -119,7 +119,12 @@ function draw.filled_triangle(x0, y0, x1, y1, x2, y2, color) end
 --- @param texture texture  Texture to map
 function draw.textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture) end
 
---- Draw texture
+--- Draw texture with affine transformation.
+--- @param texture texture  Texture to draw
+--- @param matrix matrix3  Affine transformation to use when drawing
+function draw.texture(texture, matrix) end
+
+--- Draw texture.
 --- @param texture texture  Texture to draw
 --- @param x integer  Texture x-coordinate
 --- @param y integer  Texture y-coordinate
@@ -135,6 +140,13 @@ function draw.set_palette_color(index, color) end
 --- Sets transparent color.
 --- @param color integer  Color set set as transparent.
 function draw.set_transparent_color(color) end
+
+--- Sets clipping rectangle which defines drawable area.
+--- @param x integer  Rect top left x-coordinate
+--- @param y integer  Rect top left y-coordinate
+--- @param width integer  Rect width
+--- @param height integer  Rect height
+function draw.set_clipping_rectangle(x, y, width, height) end
 
 --- Get current render texture for drawing
 --- @return  texture.texture Current drawing render texture

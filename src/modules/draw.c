@@ -436,7 +436,14 @@ static int modules_draw_textured_triangle(lua_State* L) {
 }
 
 /**
- * Draw texture
+ * Draw texture with affine transformation.
+ * @function texture
+ * @tparam texture.texture texture Texture to draw
+ * @tparam matrix3.matrix3 matrix Affine transformation to use when drawing
+ */
+
+/**
+ * Draw texture.
  * @function texture
  * @tparam texture.texture texture Texture to draw
  * @tparam integer x Texture x-coordinate
