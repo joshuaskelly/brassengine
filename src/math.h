@@ -1,6 +1,8 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <stdbool.h>
+
 /**
  * Clamps given value to specified minimum and maximum range.
  *
@@ -80,5 +82,14 @@ int modulo(int a, int b);
  * @return float
  */
 float modulof(float a, float b);
+
+/**
+ * Returns if a and b are similar in value.
+ *
+ * @param a
+ * @param b
+ * @return bool true if approximately equal, false otherwise
+ */
+bool approximately(float a, float b);
 
 #endif

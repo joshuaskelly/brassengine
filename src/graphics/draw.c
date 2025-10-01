@@ -690,6 +690,253 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
     }
 }
 
+void graphics_draw_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    graphics_draw_line(destination, x0, y0, x1, y1, color);
+    graphics_draw_line(destination, x1, y1, x2, y2, color);
+    graphics_draw_line(destination, x2, y2, x3, y3, color);
+    graphics_draw_line(destination, x3, y3, x0, y0, color);
+}
+
+void graphics_draw_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    graphics_draw_pattern_line(destination, x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x2, y2, x3, y3, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x3, y3, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+}
+
+static int compare_floats(const void* a, const void* b) {
+    return *(const float*)a > *(const float*)b;
+}
+
+void graphics_draw_filled_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    float intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            // Don't intersect horizontal lines
+            if (approximately(a[1], b[1])) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count] = x;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(float), compare_floats);
+
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i]);
+            float x1 = floorf(intersections[i + 1]);
+
+            graphics_draw_line(destination, x0, y, x1, y, color);
+        }
+    }
+}
+
+void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    float intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            // Don't intersect horizontal lines
+            if (approximately(a[1], b[1])) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count] = x;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(float), compare_floats);
+
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i]);
+            float x1 = floorf(intersections[i + 1]);
+
+            graphics_draw_pattern_line(
+                destination,
+                x0, y,
+                x1, y,
+                pattern,
+                pattern_offset_x,
+                pattern_offset_y
+            );
+        }
+    }
+}
+
+static float cross(mfloat_t* a, mfloat_t* b) {
+    return a[0] * b[1] - a[1] * b[0];
+}
+
+static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
+    mfloat_t e[VEC2_SIZE];
+    mfloat_t f[VEC2_SIZE];
+    mfloat_t g[VEC2_SIZE];
+    mfloat_t h[VEC2_SIZE];
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t cd[VEC2_SIZE];
+
+    vec2_subtract(e, b, a);
+    vec2_subtract(f, d, a);
+
+    vec2_subtract(ab, a, b);
+    vec2_subtract(cd, c, d);
+    vec2_add(g, ab, cd);
+
+    vec2_subtract(h, p, a);
+
+    float k2 = cross(g, f);
+    float k1 = cross(e, f) + cross(h, g);
+    float k0 = cross(h, e);
+
+    if (fabsf(k2) < 0.0001f) {
+        vec2(result, (h[0] * k1 + f[0] * k0) / (e[0] * k1 - g[0] * k0), -k0 / k1);
+        return;
+    }
+
+    float w = k1 * k1 + 4.0f * k0 * k2;
+    if (w < 0.0f) {
+        vec2(result, -1.0f, 0.0f);
+        return;
+    }
+
+    w = sqrtf(w);
+
+    float ik2 = 0.5f / k2;
+    float v = (-k1 - w) * ik2;
+    float u = (h[0] - f[0] * v) / (e[0] + g[0] * v);
+
+    vec2(result, u, v);
+}
+
+void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    float intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count] = x;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(float), compare_floats);
+
+        mfloat_t uv[VEC2_SIZE];
+        mfloat_t st[VEC2_SIZE];
+        mfloat_t p[VEC2_SIZE];
+
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i]);
+            float x1 = floorf(intersections[i + 1]);
+
+            // Draw scanline
+            for (int x = x0; x <= x1; x++) {
+                vec2(p, x, y);
+                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3]);
+                vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
+                vec2_floor(st, st);
+
+                color_t color = graphics_texture_pixel_get(texture_map, st[0], st[1]);
+                graphics_draw_pixel(destination, x, y, color);
+            }
+        }
+    }
+}
+
 void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height) {
     rect_t dest_rect = {x, y, width, height};
 

@@ -281,6 +281,16 @@ void graphics_draw_filled_pattern_triangle(texture_t* destination, int x0, int y
  */
 void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
 
+void graphics_draw_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+
+void graphics_draw_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+
+void graphics_draw_filled_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
+
+void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
+
+void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map);
+
 /**
  * Draw source texture to destination texture.
  *
