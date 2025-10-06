@@ -3,7 +3,6 @@
 - [ ] Keyboard pressed/released api?
 - [ ] Simplify web html wrapper
 - [ ] Polygon rasterization for draw module
-- [ ] Sprite drawing with affine transformation
 - [ ] Move to SDL3?
 - [ ] MIDI music
 - [ ] Event based input?
@@ -16,6 +15,7 @@
 - [ ] Fix web-opengl platform
 - [ ] Scripted assets? Would support custom file types obj, wad, etc
 - [ ] Is the clip rect still needed now with subtextures?
+- [x] Sprite drawing with affine transformation
 - [x] Fix "BAD!" errors
 - [x] Gamepad input
 - [x] Add foreground/background color as optional args to draw text.
