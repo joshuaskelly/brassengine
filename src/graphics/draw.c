@@ -871,6 +871,49 @@ static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_
     vec2(result, u, v);
 }
 
+// Adapted from: https://www.reedbeta.com/blog/quadrilateral-interpolation-part-2/
+static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
+    mfloat_t q[VEC2_SIZE];
+    mfloat_t b1[VEC2_SIZE];
+    mfloat_t b2[VEC2_SIZE];
+    mfloat_t b3[VEC2_SIZE];
+
+    mfloat_t ab[VEC2_SIZE];
+    mfloat_t dc[VEC2_SIZE];
+
+    vec2_subtract(q, p, a);
+    vec2_subtract(b1, b, a);
+    vec2_subtract(b2, d, a);
+
+    vec2_subtract(ab, a, b);
+    vec2_add(dc, d, c);
+    vec2_subtract(b3, ab, dc);
+
+    float A = cross(b2, b3);
+    float B = cross(b3, q) - cross(b1, b2);
+    float C = cross(b1, q);
+
+    if (fabsf(A) < 0.0001f) {
+        result[1] = -C / B;
+    }
+    else {
+        float discrim = B * B - 4.0 * A * C;
+        result[1] = 0.5 * (-B + sqrt(discrim)) / A;
+    }
+
+    mfloat_t denom[VEC2_SIZE];
+    mfloat_t bb3[VEC2_SIZE];
+    vec2_multiply_f(bb3, b3, result[1]);
+    vec_add(denom, b1, bb3);
+
+    if (fabsf(denom[0]) > fabsf(denom[1])) {
+        result[0] = (q[0] - b2[0] * result[1]) / denom[0];
+    }
+    else {
+        result[0] = (q[1] - b2[1] * result[1]) / denom[1];
+    }
+}
+
 void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map) {
     int min_y = y0;
     min_y = fminf(min_y, y1);
