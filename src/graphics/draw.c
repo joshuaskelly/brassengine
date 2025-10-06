@@ -904,7 +904,7 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     mfloat_t denom[VEC2_SIZE];
     mfloat_t bb3[VEC2_SIZE];
     vec2_multiply_f(bb3, b3, result[1]);
-    vec_add(denom, b1, bb3);
+    vec2_add(denom, b1, bb3);
 
     if (fabsf(denom[0]) > fabsf(denom[1])) {
         result[0] = (q[0] - b2[0] * result[1]) / denom[0];
