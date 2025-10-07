@@ -825,10 +825,6 @@ void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, i
     }
 }
 
-static float cross(mfloat_t* a, mfloat_t* b) {
-    return a[0] * b[1] - a[1] * b[0];
-}
-
 static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
     mfloat_t e[VEC2_SIZE];
     mfloat_t f[VEC2_SIZE];
@@ -847,9 +843,9 @@ static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_
 
     vec2_subtract(h, p, a);
 
-    float k2 = cross(g, f);
-    float k1 = cross(e, f) + cross(h, g);
-    float k0 = cross(h, e);
+    float k2 = vec2_cross(g, f);
+    float k1 = vec2_cross(e, f) + vec2_cross(h, g);
+    float k0 = vec2_cross(h, e);
 
     if (fabsf(k2) < 0.0001f) {
         vec2(result, (h[0] * k1 + f[0] * k0) / (e[0] * k1 - g[0] * k0), -k0 / k1);
@@ -887,9 +883,9 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     vec2_subtract(b3, b3, d);
     vec2_add(b3, b3, c);
 
-    float A = cross(b2, b3);
-    float B = cross(b3, q) - cross(b1, b2);
-    float C = cross(b1, q);
+    float A = vec2_cross(b2, b3);
+    float B = vec2_cross(b3, q) - vec2_cross(b1, b2);
+    float C = vec2_cross(b1, q);
 
     if (fabsf(A) < 0.0001f) {
         result[1] = -C / B;
