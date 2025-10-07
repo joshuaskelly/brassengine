@@ -396,6 +396,7 @@ static void sdl_handle_events(void) {
 
     float aspect_width = width / (float)display_rect.w;
     float aspect_height = height / (float)display_rect.h;
+    float ratio = SDL_GetWindowPixelScale(window);
 
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
@@ -423,10 +424,10 @@ static void sdl_handle_events(void) {
             case SDL_MOUSEMOTION:
                 event.type = EVENT_MOUSEMOTION;
                 event.motion.type = EVENT_MOUSEMOTION;
-                event.motion.x = (sdl_event.motion.x - display_rect.x) * aspect_width;
-                event.motion.y = (sdl_event.motion.y - display_rect.y) * aspect_height;
-                event.motion.motion_x = (sdl_event.motion.xrel) * aspect_width;
-                event.motion.motion_y = (sdl_event.motion.yrel) * aspect_height;
+                event.motion.x = (sdl_event.motion.x / ratio - display_rect.x) * aspect_width;
+                event.motion.y = (sdl_event.motion.y / ratio - display_rect.y) * aspect_height;
+                event.motion.motion_x = (sdl_event.motion.xrel / ratio) * aspect_width;
+                event.motion.motion_y = (sdl_event.motion.yrel / ratio) * aspect_height;
 
                 event.motion.x = clamp(event.motion.x, 0, width - 1);
                 event.motion.y = clamp(event.motion.y, 0, height - 1);

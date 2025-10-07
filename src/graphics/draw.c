@@ -895,20 +895,20 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
         result[1] = -C / B;
     }
     else {
-        float discrim = B * B - 4.0 * A * C;
-        result[1] = 0.5 * (-B + sqrt(discrim)) / A;
+        float discriminant = B * B - 4.0f * A * C;
+        result[1] = 0.5f * (-B + sqrt(discriminant)) / A;
     }
 
-    mfloat_t denom[VEC2_SIZE];
+    mfloat_t denominator[VEC2_SIZE];
     mfloat_t bb3[VEC2_SIZE];
     vec2_multiply_f(bb3, b3, result[1]);
-    vec2_add(denom, b1, bb3);
+    vec2_add(denominator, b1, bb3);
 
-    if (fabsf(denom[0]) > fabsf(denom[1])) {
-        result[0] = (q[0] - b2[0] * result[1]) / denom[0];
+    if (fabsf(denominator[0]) > fabsf(denominator[1])) {
+        result[0] = (q[0] - b2[0] * result[1]) / denominator[0];
     }
     else {
-        result[0] = (q[1] - b2[1] * result[1]) / denom[1];
+        result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
     }
 }
 
