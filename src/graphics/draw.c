@@ -825,50 +825,8 @@ void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, i
     }
 }
 
-static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
-    mfloat_t e[VEC2_SIZE];
-    mfloat_t f[VEC2_SIZE];
-    mfloat_t g[VEC2_SIZE];
-    mfloat_t h[VEC2_SIZE];
-
-    mfloat_t ab[VEC2_SIZE];
-    mfloat_t cd[VEC2_SIZE];
-
-    vec2_subtract(e, b, a);
-    vec2_subtract(f, d, a);
-
-    vec2_subtract(ab, a, b);
-    vec2_subtract(cd, c, d);
-    vec2_add(g, ab, cd);
-
-    vec2_subtract(h, p, a);
-
-    float k2 = vec2_cross(g, f);
-    float k1 = vec2_cross(e, f) + vec2_cross(h, g);
-    float k0 = vec2_cross(h, e);
-
-    if (fabsf(k2) < 0.0001f) {
-        vec2(result, (h[0] * k1 + f[0] * k0) / (e[0] * k1 - g[0] * k0), -k0 / k1);
-        return;
-    }
-
-    float w = k1 * k1 + 4.0f * k0 * k2;
-    if (w < 0.0f) {
-        vec2(result, -1.0f, 0.0f);
-        return;
-    }
-
-    w = sqrtf(w);
-
-    float ik2 = 0.5f / k2;
-    float v = (-k1 - w) * ik2;
-    float u = (h[0] - f[0] * v) / (e[0] + g[0] * v);
-
-    vec2(result, u, v);
-}
-
 // Adapted from: https://www.reedbeta.com/blog/quadrilateral-interpolation-part-2/
-static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
+static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
     mfloat_t q[VEC2_SIZE];
     mfloat_t b1[VEC2_SIZE];
     mfloat_t b2[VEC2_SIZE];
@@ -887,12 +845,16 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     float B = vec2_cross(b3, q) - vec2_cross(b1, b2);
     float C = vec2_cross(b1, q);
 
+    float discriminant = 0.0f;
+    float sqrd = 0.0f;
+
     if (fabsf(A) < 0.0001f) {
         result[1] = -C / B;
     }
     else {
-        float discriminant = B * B - 4.0f * A * C;
-        result[1] = 0.5f * (-B - sqrt(discriminant)) / A;
+        discriminant = B * B - 4.0f * A * C;
+        sqrd = sqrtf(discriminant);
+        result[1] = 0.5f * (-B - sqrd) / A;
     }
 
     mfloat_t denominator[VEC2_SIZE];
@@ -905,6 +867,21 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     }
     else {
         result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
+    }
+
+    // Redo calculation using other quadratic root
+    // TODO: Find better solution
+    if (result[0] < 0 || result[0] > 1 || result[1] < 0 || result[1] > 1) {
+        result[1] =  0.5f * (-B + sqrd) / A;
+        vec2_multiply_f(bb3, b3, result[1]);
+        vec2_add(denominator, b1, bb3);
+
+        if (fabsf(denominator[0]) > fabsf(denominator[1])) {
+            result[0] = (q[0] - b2[0] * result[1]) / denominator[0];
+        }
+        else {
+            result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
+        }
     }
 }
 
@@ -964,7 +941,7 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
             // Draw scanline
             for (int x = x0; x <= x1; x++) {
                 vec2(p, x, y);
-                inverse_bilinear2(uv, p, points[0], points[1], points[2], points[3]);
+                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3]);
                 vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
                 vec2_floor(st, st);
 
