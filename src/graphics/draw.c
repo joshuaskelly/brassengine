@@ -885,9 +885,10 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     vec2_subtract(b1, b, a);
     vec2_subtract(b2, d, a);
 
-    vec2_subtract(ab, a, b);
-    vec2_add(dc, d, c);
-    vec2_subtract(b3, ab, dc);
+    // a - b - d + c
+    vec2_subtract(b3, a, b);
+    vec2_subtract(b3, b3, d);
+    vec2_add(b3, b3, c);
 
     float A = cross(b2, b3);
     float B = cross(b3, q) - cross(b1, b2);
