@@ -878,9 +878,6 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     mfloat_t b2[VEC2_SIZE];
     mfloat_t b3[VEC2_SIZE];
 
-    mfloat_t ab[VEC2_SIZE];
-    mfloat_t dc[VEC2_SIZE];
-
     vec2_subtract(q, p, a);
     vec2_subtract(b1, b, a);
     vec2_subtract(b2, d, a);
