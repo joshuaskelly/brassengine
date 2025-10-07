@@ -896,7 +896,7 @@ static void inverse_bilinear2(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat
     }
     else {
         float discriminant = B * B - 4.0f * A * C;
-        result[1] = 0.5f * (-B + sqrt(discriminant)) / A;
+        result[1] = 0.5f * (-B - sqrt(discriminant)) / A;
     }
 
     mfloat_t denominator[VEC2_SIZE];
@@ -936,6 +936,7 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
     for (int y = min_y; y <= max_y; y++) {
         count = 0;
 
+        // Intersect scanline with edges
         for (int i = 0; i < 4; i++) {
             mfloat_t* a = points[i];
             mfloat_t* b = points[(i + 1) % 4];
@@ -967,7 +968,7 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
             // Draw scanline
             for (int x = x0; x <= x1; x++) {
                 vec2(p, x, y);
-                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3]);
+                inverse_bilinear2(uv, p, points[0], points[1], points[2], points[3]);
                 vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
                 vec2_floor(st, st);
 
