@@ -26,7 +26,7 @@ function draw.line(x0, y0, x1, y1, color) end
 --- @param y1 integer  End y-coordinate
 --- @param u1 number  End u-coordinate
 --- @param v1 number  End v-coordinate
---- @param texture texture  Texture to map
+--- @param texture texture  Texture to map onto line
 function draw.textured_line(x0, y0, u0, v0, x1, y1, u1, v1, texture) end
 
 --- Draw a bezier curve with the given anchor and control points, and color.
@@ -116,8 +116,52 @@ function draw.filled_triangle(x0, y0, x1, y1, x2, y2, color) end
 --- @param y2 integer  Vertex 2 y-coordinate
 --- @param u2 number  UV 2 u-coordinate
 --- @param v2 number  UV 2 v-coordinate
---- @param texture texture  Texture to map
+--- @param texture texture  Texture to map on triangle
 function draw.textured_triangle(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture) end
+
+--- Draw quad.
+--- @param x0 integer  Vertex 0 x-coordinate
+--- @param y0 integer  Vertex 0 y-coordinate
+--- @param x1 integer  Vertex 1 x-coordinate
+--- @param y1 integer  Vertex 1 y-coordinate
+--- @param x2 integer  Vertex 2 x-coordinate
+--- @param y2 integer  Vertex 2 y-coordinate
+--- @param x3 integer  Vertex 3 x-coordinate
+--- @param y3 integer  Vertex 3 y-coordinate
+--- @param color integer  Line color
+function draw.quad(x0, y0, x1, y1, x2, y2, x3, y3, color) end
+
+--- Draw filled quad.
+--- @param x0 integer  Vertex 0 x-coordinate
+--- @param y0 integer  Vertex 0 y-coordinate
+--- @param x1 integer  Vertex 1 x-coordinate
+--- @param y1 integer  Vertex 1 y-coordinate
+--- @param x2 integer  Vertex 2 x-coordinate
+--- @param y2 integer  Vertex 2 y-coordinate
+--- @param x3 integer  Vertex 3 x-coordinate
+--- @param y3 integer  Vertex 3 y-coordinate
+--- @param color integer  Fill color
+function draw.filled_quad(x0, y0, x1, y1, x2, y2, x3, y3, color) end
+
+--- Draw quad using affine texture mapping.
+--- @param x0 integer  Vertex 0 x-coordinate
+--- @param y0 integer  Vertex 0 y-coordinate
+--- @param u0 number  UV 0 u-coordinate
+--- @param v0 number  UV 0 v-coordinate
+--- @param x1 integer  Vertex 1 x-coordinate
+--- @param y1 integer  Vertex 1 y-coordinate
+--- @param u1 number  UV 1 u-coordinate
+--- @param v1 number  UV 1 v-coordinate
+--- @param x2 integer  Vertex 2 x-coordinate
+--- @param y2 integer  Vertex 2 y-coordinate
+--- @param u2 number  UV 2 u-coordinate
+--- @param v2 number  UV 2 v-coordinate
+--- @param x3 integer  Vertex 3 x-coordinate
+--- @param y3 integer  Vertex 3 y-coordinate
+--- @param u3 number  UV 3 u-coordinate
+--- @param v3 number  UV 3 v-coordinate
+--- @param texture texture  Texture to map onto quad
+function draw.textured_quad(x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, texture) end
 
 --- Draw texture with affine transformation.
 --- @param texture texture  Texture to draw

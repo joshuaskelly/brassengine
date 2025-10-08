@@ -80,7 +80,7 @@ static int modules_draw_line(lua_State* L) {
  * @tparam integer y1 End y-coordinate
  * @tparam number u1 End u-coordinate
  * @tparam number v1 End v-coordinate
- * @tparam texture.texture texture Texture to map
+ * @tparam texture.texture texture Texture to map onto line
  */
 static int modules_draw_textured_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -410,7 +410,7 @@ static int modules_draw_filled_triangle(lua_State* L) {
  * @tparam integer y2 Vertex 2 y-coordinate
  * @tparam number u2 UV 2 u-coordinate
  * @tparam number v2 UV 2 v-coordinate
- * @tparam texture.texture texture Texture to map
+ * @tparam texture.texture texture Texture to map on triangle
  */
 static int modules_draw_textured_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -435,6 +435,19 @@ static int modules_draw_textured_triangle(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw quad.
+ * @function quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam integer color Line color
+ */
 static int modules_draw_quad(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
@@ -463,6 +476,19 @@ static int modules_draw_quad(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw filled quad.
+ * @function filled_quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam integer color Fill color
+ */
 static int modules_draw_filled_quad(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
@@ -491,6 +517,27 @@ static int modules_draw_filled_quad(lua_State* L) {
     return 0;
 }
 
+/**
+ * Draw quad using affine texture mapping.
+ * @function textured_quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam number u0 UV 0 u-coordinate
+ * @tparam number v0 UV 0 v-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam number u1 UV 1 u-coordinate
+ * @tparam number v1 UV 1 v-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam number u2 UV 2 u-coordinate
+ * @tparam number v2 UV 2 v-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam number u3 UV 3 u-coordinate
+ * @tparam number v3 UV 3 v-coordinate
+ * @tparam texture.texture texture Texture to map onto quad
+ */
 static int modules_draw_textured_quad(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
     int y0 = (int)luaL_checknumber(L, 2);
