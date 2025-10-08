@@ -971,9 +971,18 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
             // Draw scanline segment
             for (int x = x0; x <= x1; x++) {
                 vec2(p, x, y);
+
+                // Get mapping in quad space
                 inverse_bilinear(uv, p, points[0], points[1], points[2], points[3], flip);
+
+                // Map quad space to UV space
                 vec2_bilinear(uv, uvs[0], uvs[1], uvs[3], uvs[2], uv[0], uv[1]);
-                vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
+
+                int w = graphics_texture_width_get(texture_map);
+                int h = graphics_texture_height_get(texture_map);
+
+                // Texture repeat
+                vec2(st, frac(uv[0]) * w, frac(uv[1]) * h);
                 vec2_floor(st, st);
 
                 color_t color = graphics_texture_pixel_get(texture_map, st[0], st[1]);
