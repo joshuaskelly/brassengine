@@ -53,7 +53,7 @@ void graphics_draw_pattern_line(texture_t* destination, int x0, int y0, int x1, 
  * @param y1 End y-coordinate
  * @param u1 End u-coordinate
  * @param v1 End v-coordinate
- * @param texture_map Texture to map
+ * @param texture_map Texture to map onto line
  */
 void graphics_draw_textured_line(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, texture_t* texture_map);
 
@@ -277,18 +277,100 @@ void graphics_draw_filled_pattern_triangle(texture_t* destination, int x0, int y
  * @param y2 Vertex 2 y-coordinate
  * @param u2 UV 2 u-coordinate
  * @param v2 UV 2 v-coordinate
- * @param texture_map Texture to
+ * @param texture_map Texture to map onto triangle
  */
 void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, texture_t* texture_map);
 
+/**
+ * Draw quad.
+ *
+ * @param destination Texture to draw to
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param x3 Vertex 3 x-coordinate
+ * @param y3 Vertex 3 y-coordinate
+ * @param color Fill color
+ */
 void graphics_draw_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
 
+/**
+ * Draw quad with given pattern.
+ *
+ * @param destination Texture to draw to
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param x3 Vertex 3 x-coordinate
+ * @param y3 Vertex 3 y-coordinate
+ * @param pattern Texture to use as a pattern
+ * @param offset_x Pattern x-axis offset
+ * @param offset_y Pattern y-axis offset
+ */
 void graphics_draw_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
+/**
+ * Draw filled quad.
+ *
+ * @param destination Texture to draw to
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param x3 Vertex 3 x-coordinate
+ * @param y3 Vertex 3 y-coordinate
+ * @param color Fill color
+ */
 void graphics_draw_filled_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color);
 
+/**
+ * Draw filled quad with given pattern.
+ *
+ * @param destination Texture to draw to
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param x3 Vertex 3 x-coordinate
+ * @param y3 Vertex 3 y-coordinate
+ * @param pattern Texture to use as a pattern
+ * @param offset_x Pattern x-axis offset
+ * @param offset_y Pattern y-axis offset
+ */
 void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y);
 
+/**
+ * Draw filled quad.
+ *
+ * @param destination Texture to draw to
+ * @param x0 Vertex 0 x-coordinate
+ * @param y0 Vertex 0 y-coordinate
+ * @param u0 UV 0 u-coordinate
+ * @param v0 UV 0 v-coordinate
+ * @param x1 Vertex 1 x-coordinate
+ * @param y1 Vertex 1 y-coordinate
+ * @param u1 UV 1 u-coordinate
+ * @param v1 UV 1 v-coordinate
+ * @param x2 Vertex 2 x-coordinate
+ * @param y2 Vertex 2 y-coordinate
+ * @param u2 UV 2 u-coordinate
+ * @param v2 UV 2 v-coordinate
+ * @param x3 Vertex 3 x-coordinate
+ * @param y3 Vertex 3 y-coordinate
+ * @param u3 UV 3 u-coordinate
+ * @param v3 UV 3 v-coordinate
+ * @param texture_map Texture to map onto quad
+ */
 void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map);
 
 /**
