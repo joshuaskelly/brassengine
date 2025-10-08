@@ -826,7 +826,7 @@ void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, i
 }
 
 // Adapted from: https://www.reedbeta.com/blog/quadrilateral-interpolation-part-2/
-static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d) {
+static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d, bool flip) {
     mfloat_t q[VEC2_SIZE];
     mfloat_t b1[VEC2_SIZE];
     mfloat_t b2[VEC2_SIZE];
@@ -854,7 +854,13 @@ static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_
     else {
         discriminant = B * B - 4.0f * A * C;
         sqrd = sqrtf(discriminant);
-        result[1] = 0.5f * (-B - sqrd) / A;
+
+        if (flip) {
+            result[1] = 0.5f * (-B + sqrd) / A;
+        }
+        else {
+            result[1] = 0.5f * (-B - sqrd) / A;
+        }
     }
 
     mfloat_t denominator[VEC2_SIZE];
@@ -868,21 +874,18 @@ static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_
     else {
         result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
     }
+}
 
-    // Redo calculation using other quadratic root
-    // TODO: Find better solution
-    if (result[0] < 0 || result[0] > 1 || result[1] < 0 || result[1] > 1) {
-        result[1] =  0.5f * (-B + sqrd) / A;
-        vec2_multiply_f(bb3, b3, result[1]);
-        vec2_add(denominator, b1, bb3);
+typedef struct intersection {
+    float x;
+    int index;
+} intersection_t;
 
-        if (fabsf(denominator[0]) > fabsf(denominator[1])) {
-            result[0] = (q[0] - b2[0] * result[1]) / denominator[0];
-        }
-        else {
-            result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
-        }
-    }
+static int compare_intersections(const void* a, const void* b) {
+    intersection_t* A = (intersection_t*)a;
+    intersection_t* B = (intersection_t*)b;
+
+    return A->x > B->x;
 }
 
 void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map) {
@@ -903,7 +906,13 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
         {x3, y3}
     };
 
-    float intersections[4];
+    mfloat_t edge_vectors[4][VEC2_SIZE];
+    vec2_subtract(edge_vectors[0], points[1], points[0]);
+    vec2_subtract(edge_vectors[1], points[2], points[1]);
+    vec2_subtract(edge_vectors[2], points[3], points[2]);
+    vec2_subtract(edge_vectors[3], points[0], points[3]);
+
+    intersection_t intersections[4];
     int count = 0;
 
     for (int y = min_y; y <= max_y; y++) {
@@ -922,26 +931,40 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
 
             float x = b[0] - (b[1] - y) / d[1] * d[0];
 
-            intersections[count] = x;
+            intersections[count].x = x;
+            intersections[count].index = i;
             count++;
         }
 
         if (count == 0) continue;
 
-        qsort(intersections, count, sizeof(float), compare_floats);
+        qsort(intersections, count, sizeof(intersection_t), compare_intersections);
 
         mfloat_t uv[VEC2_SIZE];
         mfloat_t st[VEC2_SIZE];
         mfloat_t p[VEC2_SIZE];
+        mfloat_t r[VEC2_SIZE];
 
+        // Draw all scanline segments
         for (int i = 0; i < count; i += 2) {
-            float x0 = floorf(intersections[i]);
-            float x1 = floorf(intersections[i + 1]);
+            float x0 = floorf(intersections[i].x);
+            float x1 = floorf(intersections[i + 1].x);
 
-            // Draw scanline
+            int j = intersections[i].index;
+
+            // Vector from edge tail to tip
+            mfloat_t* e = edge_vectors[j];
+
+            // Vector from edge tail to scanline midpoint
+            vec2(r, (x1 + x0) / 2.0f, y);
+            vec2_subtract(r, points[j], r);
+
+            bool flip = vec2_cross(e, r) > 0;
+
+            // Draw scanline segment
             for (int x = x0; x <= x1; x++) {
                 vec2(p, x, y);
-                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3]);
+                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3], flip);
                 vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
                 vec2_floor(st, st);
 
