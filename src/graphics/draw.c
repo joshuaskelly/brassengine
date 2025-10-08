@@ -906,6 +906,13 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
         {x3, y3}
     };
 
+    mfloat_t uvs[4][VEC2_SIZE] = {
+        {u0, v0},
+        {u1, v1},
+        {u2, v2},
+        {u3, v3}
+    };
+
     mfloat_t edge_vectors[4][VEC2_SIZE];
     vec2_subtract(edge_vectors[0], points[1], points[0]);
     vec2_subtract(edge_vectors[1], points[2], points[1]);
@@ -965,6 +972,7 @@ void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u
             for (int x = x0; x <= x1; x++) {
                 vec2(p, x, y);
                 inverse_bilinear(uv, p, points[0], points[1], points[2], points[3], flip);
+                vec2_bilinear(uv, uvs[0], uvs[1], uvs[3], uvs[2], uv[0], uv[1]);
                 vec2(st, uv[0] * graphics_texture_width_get(texture_map), uv[1] * graphics_texture_height_get(texture_map));
                 vec2_floor(st, st);
 
