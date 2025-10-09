@@ -12,9 +12,9 @@
 - [ ] DOS platform?!
 - [ ] Dreamcast platform?!
 - [ ] Threaded rendering
-- [ ] Fix web-opengl platform
 - [ ] Scripted assets? Would support custom file types obj, wad, etc
 - [ ] Is the clip rect still needed now with subtextures?
+- [x] Fix web-opengl platform
 - [x] Sprite drawing with affine transformation
 - [x] Fix "BAD!" errors
 - [x] Gamepad input
