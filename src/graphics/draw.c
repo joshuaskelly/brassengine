@@ -690,6 +690,308 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
     }
 }
 
+void graphics_draw_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    graphics_draw_line(destination, x0, y0, x1, y1, color);
+    graphics_draw_line(destination, x1, y1, x2, y2, color);
+    graphics_draw_line(destination, x2, y2, x3, y3, color);
+    graphics_draw_line(destination, x3, y3, x0, y0, color);
+}
+
+void graphics_draw_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    graphics_draw_pattern_line(destination, x0, y0, x1, y1, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x1, y1, x2, y2, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x2, y2, x3, y3, pattern, pattern_offset_x, pattern_offset_y);
+    graphics_draw_pattern_line(destination, x3, y3, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
+}
+
+static int compare_floats(const void* a, const void* b) {
+    return *(const float*)a > *(const float*)b;
+}
+
+void graphics_draw_filled_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, color_t color) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    float intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            // Don't intersect horizontal lines
+            if (approximately(a[1], b[1])) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count] = x;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(float), compare_floats);
+
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i]);
+            float x1 = floorf(intersections[i + 1]);
+
+            graphics_draw_line(destination, x0, y, x1, y, color);
+        }
+    }
+}
+
+void graphics_draw_filled_pattern_quad(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, texture_t* pattern, int pattern_offset_x, int pattern_offset_y) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    float intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            // Don't intersect horizontal lines
+            if (approximately(a[1], b[1])) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count] = x;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(float), compare_floats);
+
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i]);
+            float x1 = floorf(intersections[i + 1]);
+
+            graphics_draw_pattern_line(
+                destination,
+                x0, y,
+                x1, y,
+                pattern,
+                pattern_offset_x,
+                pattern_offset_y
+            );
+        }
+    }
+}
+
+// Adapted from: https://www.reedbeta.com/blog/quadrilateral-interpolation-part-2/
+static void inverse_bilinear(mfloat_t* result, mfloat_t* p, mfloat_t* a, mfloat_t* b, mfloat_t* c, mfloat_t* d, bool flip) {
+    mfloat_t q[VEC2_SIZE];
+    mfloat_t b1[VEC2_SIZE];
+    mfloat_t b2[VEC2_SIZE];
+    mfloat_t b3[VEC2_SIZE];
+
+    vec2_subtract(q, p, a);
+    vec2_subtract(b1, b, a);
+    vec2_subtract(b2, d, a);
+
+    // a - b - d + c
+    vec2_subtract(b3, a, b);
+    vec2_subtract(b3, b3, d);
+    vec2_add(b3, b3, c);
+
+    float A = vec2_cross(b2, b3);
+    float B = vec2_cross(b3, q) - vec2_cross(b1, b2);
+    float C = vec2_cross(b1, q);
+
+    float discriminant = 0.0f;
+    float sqrd = 0.0f;
+
+    if (fabsf(A) < 0.0001f) {
+        result[1] = -C / B;
+    }
+    else {
+        discriminant = B * B - 4.0f * A * C;
+        sqrd = sqrtf(discriminant);
+
+        if (flip) {
+            result[1] = 0.5f * (-B + sqrd) / A;
+        }
+        else {
+            result[1] = 0.5f * (-B - sqrd) / A;
+        }
+    }
+
+    mfloat_t denominator[VEC2_SIZE];
+    mfloat_t bb3[VEC2_SIZE];
+    vec2_multiply_f(bb3, b3, result[1]);
+    vec2_add(denominator, b1, bb3);
+
+    if (fabsf(denominator[0]) > fabsf(denominator[1])) {
+        result[0] = (q[0] - b2[0] * result[1]) / denominator[0];
+    }
+    else {
+        result[0] = (q[1] - b2[1] * result[1]) / denominator[1];
+    }
+}
+
+typedef struct intersection {
+    float x;
+    int index;
+} intersection_t;
+
+static int compare_intersections(const void* a, const void* b) {
+    intersection_t* A = (intersection_t*)a;
+    intersection_t* B = (intersection_t*)b;
+
+    return A->x > B->x;
+}
+
+void graphics_draw_textured_quad(texture_t* destination, int x0, int y0, float u0, float v0, int x1, int y1, float u1, float v1, int x2, int y2, float u2, float v2, int x3, int y3, float u3, float v3, texture_t* texture_map) {
+    int min_y = y0;
+    min_y = fminf(min_y, y1);
+    min_y = fminf(min_y, y2);
+    min_y = fminf(min_y, y3);
+
+    int max_y = y0;
+    max_y = fmaxf(max_y, y1);
+    max_y = fmaxf(max_y, y2);
+    max_y = fmaxf(max_y, y3);
+
+    mfloat_t points[4][VEC2_SIZE] = {
+        {x0, y0},
+        {x1, y1},
+        {x2, y2},
+        {x3, y3}
+    };
+
+    mfloat_t uvs[4][VEC2_SIZE] = {
+        {u0, v0},
+        {u1, v1},
+        {u2, v2},
+        {u3, v3}
+    };
+
+    mfloat_t edge_vectors[4][VEC2_SIZE];
+    vec2_subtract(edge_vectors[0], points[1], points[0]);
+    vec2_subtract(edge_vectors[1], points[2], points[1]);
+    vec2_subtract(edge_vectors[2], points[3], points[2]);
+    vec2_subtract(edge_vectors[3], points[0], points[3]);
+
+    intersection_t intersections[4];
+    int count = 0;
+
+    for (int y = min_y; y <= max_y; y++) {
+        count = 0;
+
+        // Intersect scanline with edges
+        for (int i = 0; i < 4; i++) {
+            mfloat_t* a = points[i];
+            mfloat_t* b = points[(i + 1) % 4];
+
+            if (y <= a[1] && y <= b[1]) continue;
+            if (y > a[1] && y > b[1]) continue;
+
+            mfloat_t d[VEC2_SIZE];
+            vec2_subtract(d, b, a);
+
+            float x = b[0] - (b[1] - y) / d[1] * d[0];
+
+            intersections[count].x = x;
+            intersections[count].index = i;
+            count++;
+        }
+
+        if (count == 0) continue;
+
+        qsort(intersections, count, sizeof(intersection_t), compare_intersections);
+
+        mfloat_t uv[VEC2_SIZE];
+        mfloat_t st[VEC2_SIZE];
+        mfloat_t p[VEC2_SIZE];
+        mfloat_t r[VEC2_SIZE];
+
+        // Draw all scanline segments
+        for (int i = 0; i < count; i += 2) {
+            float x0 = floorf(intersections[i].x);
+            float x1 = floorf(intersections[i + 1].x);
+
+            int j = intersections[i].index;
+
+            // Vector from edge tail to tip
+            mfloat_t* e = edge_vectors[j];
+
+            // Vector from edge tail to scanline midpoint
+            vec2(r, (x1 + x0) / 2.0f, y);
+            vec2_subtract(r, points[j], r);
+
+            bool flip = vec2_cross(e, r) > 0;
+
+            // Draw scanline segment
+            for (int x = x0; x <= x1; x++) {
+                vec2(p, x, y);
+
+                // Get mapping in quad space
+                inverse_bilinear(uv, p, points[0], points[1], points[2], points[3], flip);
+
+                // Map quad space to UV space
+                vec2_bilinear(uv, uvs[0], uvs[1], uvs[3], uvs[2], uv[0], uv[1]);
+
+                int w = graphics_texture_width_get(texture_map);
+                int h = graphics_texture_height_get(texture_map);
+
+                // Texture repeat
+                vec2(st, frac(uv[0]) * w, frac(uv[1]) * h);
+                vec2_floor(st, st);
+
+                color_t color = graphics_texture_pixel_get(texture_map, st[0], st[1]);
+                graphics_draw_pixel(destination, x, y, color);
+            }
+        }
+    }
+}
+
 void graphics_draw_texture(texture_t* destination, texture_t* source, int x, int y, int width, int height) {
     rect_t dest_rect = {x, y, width, height};
 

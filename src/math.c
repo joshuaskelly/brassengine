@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdbool.h>
 
 #include "math.h"
 
@@ -140,4 +141,8 @@ int modulo(int a, int b) {
 
 float modulof(float a, float b) {
     return a - floor(a / b) * b;
+}
+
+bool approximately(float a, float b) {
+    return fabsf(a - b) < __FLT_EPSILON__;
 }

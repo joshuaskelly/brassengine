@@ -80,7 +80,7 @@ static int modules_draw_line(lua_State* L) {
  * @tparam integer y1 End y-coordinate
  * @tparam number u1 End u-coordinate
  * @tparam number v1 End v-coordinate
- * @tparam texture.texture texture Texture to map
+ * @tparam texture.texture texture Texture to map onto line
  */
 static int modules_draw_textured_line(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -410,7 +410,7 @@ static int modules_draw_filled_triangle(lua_State* L) {
  * @tparam integer y2 Vertex 2 y-coordinate
  * @tparam number u2 UV 2 u-coordinate
  * @tparam number v2 UV 2 v-coordinate
- * @tparam texture.texture texture Texture to map
+ * @tparam texture.texture texture Texture to map on triangle
  */
 static int modules_draw_textured_triangle(lua_State* L) {
     int x0 = (int)luaL_checknumber(L, 1);
@@ -431,6 +431,136 @@ static int modules_draw_textured_triangle(lua_State* L) {
 
     texture_t* render_texture = draw_render_texture_get();
     graphics_draw_textured_triangle(render_texture, x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, texture);
+
+    return 0;
+}
+
+/**
+ * Draw quad.
+ * @function quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam integer color Line color
+ */
+static int modules_draw_quad(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int x2 = (int)luaL_checknumber(L, 5);
+    int y2 = (int)luaL_checknumber(L, 6);
+    int x3 = (int)luaL_checknumber(L, 7);
+    int y3 = (int)luaL_checknumber(L, 8);
+
+    texture_t* render_texture = draw_render_texture_get();
+
+    if (lua_isnumber(L, 9)) {
+        int color = (int)luaL_checknumber(L, 9);
+        graphics_draw_quad(render_texture, x0, y0, x1, y1, x2, y2, x3, y3, color);
+    }
+    else {
+        texture_t* pattern = luaL_checktexture(L, 9);
+        int offset_x = (int)luaL_optnumber(L, 10, 0);
+        int offset_y = (int)luaL_optnumber(L, 11, 0);
+        graphics_draw_pattern_quad(render_texture, x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
+    }
+
+    lua_settop(L, 0);
+
+    return 0;
+}
+
+/**
+ * Draw filled quad.
+ * @function filled_quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam integer color Fill color
+ */
+static int modules_draw_filled_quad(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    int x1 = (int)luaL_checknumber(L, 3);
+    int y1 = (int)luaL_checknumber(L, 4);
+    int x2 = (int)luaL_checknumber(L, 5);
+    int y2 = (int)luaL_checknumber(L, 6);
+    int x3 = (int)luaL_checknumber(L, 7);
+    int y3 = (int)luaL_checknumber(L, 8);
+
+    texture_t* render_texture = draw_render_texture_get();
+
+    if (lua_isnumber(L, 9)) {
+        int color = (int)luaL_checknumber(L, 9);
+        graphics_draw_filled_quad(render_texture, x0, y0, x1, y1, x2, y2, x3, y3, color);
+    }
+    else {
+        texture_t* pattern = luaL_checktexture(L, 9);
+        int offset_x = (int)luaL_optnumber(L, 10, 0);
+        int offset_y = (int)luaL_optnumber(L, 11, 0);
+        graphics_draw_filled_pattern_quad(render_texture, x0, y0, x1, y1, x2, y2, x3, y3, pattern, offset_x, offset_y);
+    }
+
+    lua_settop(L, 0);
+
+    return 0;
+}
+
+/**
+ * Draw quad using affine texture mapping.
+ * @function textured_quad
+ * @tparam integer x0 Vertex 0 x-coordinate
+ * @tparam integer y0 Vertex 0 y-coordinate
+ * @tparam number u0 UV 0 u-coordinate
+ * @tparam number v0 UV 0 v-coordinate
+ * @tparam integer x1 Vertex 1 x-coordinate
+ * @tparam integer y1 Vertex 1 y-coordinate
+ * @tparam number u1 UV 1 u-coordinate
+ * @tparam number v1 UV 1 v-coordinate
+ * @tparam integer x2 Vertex 2 x-coordinate
+ * @tparam integer y2 Vertex 2 y-coordinate
+ * @tparam number u2 UV 2 u-coordinate
+ * @tparam number v2 UV 2 v-coordinate
+ * @tparam integer x3 Vertex 3 x-coordinate
+ * @tparam integer y3 Vertex 3 y-coordinate
+ * @tparam number u3 UV 3 u-coordinate
+ * @tparam number v3 UV 3 v-coordinate
+ * @tparam texture.texture texture Texture to map onto quad
+ */
+static int modules_draw_textured_quad(lua_State* L) {
+    int x0 = (int)luaL_checknumber(L, 1);
+    int y0 = (int)luaL_checknumber(L, 2);
+    float u0 = luaL_checknumber(L, 3);
+    float v0 = luaL_checknumber(L, 4);
+    int x1 = (int)luaL_checknumber(L, 5);
+    int y1 = (int)luaL_checknumber(L, 6);
+    float u1 = luaL_checknumber(L, 7);
+    float v1 = luaL_checknumber(L, 8);
+    int x2 = (int)luaL_checknumber(L, 9);
+    int y2 = (int)luaL_checknumber(L, 10);
+    float u2 = luaL_checknumber(L, 11);
+    float v2 = luaL_checknumber(L, 12);
+    int x3 = (int)luaL_checknumber(L, 13);
+    int y3 = (int)luaL_checknumber(L, 14);
+    float u3 = luaL_checknumber(L, 15);
+    float v3 = luaL_checknumber(L, 16);
+    texture_t* texture = luaL_checktexture(L, 17);
+
+    lua_settop(L, 0);
+
+    texture_t* render_texture = draw_render_texture_get();
+    graphics_draw_textured_quad(render_texture, x0, y0, u0, v0, x1, y1, u1, v1, x2, y2, u2, v2, x3, y3, u3, v3, texture);
 
     return 0;
 }
@@ -599,6 +729,9 @@ static const struct luaL_Reg modules_draw_functions[] = {
     {"triangle", modules_draw_triangle},
     {"filled_triangle", modules_draw_filled_triangle},
     {"textured_triangle", modules_draw_textured_triangle},
+    {"quad", modules_draw_quad},
+    {"filled_quad", modules_draw_filled_quad},
+    {"textured_quad", modules_draw_textured_quad},
     {"texture", modules_draw_texture},
     {"set_palette_color", modules_draw_palette_color_set},
     {"set_transparent_color", modules_draw_transparent_color_set},
