@@ -6,6 +6,7 @@
 - [ ] Move to SDL3?
 - [ ] MIDI music
 - [ ] Event based input?
+- [ ] Move file handling to platform
 - [ ] Override io.lines() to sandbox/support zips.
 - [ ] Default palette?
 - [ ] iOS platform
