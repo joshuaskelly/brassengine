@@ -37,7 +37,7 @@ static SDL_Rect display_rect;
 static char* fragment_shader_source = NULL;
 
 #define OPENGL_VERSION_MAJOR 2
-#define OPENGL_VERSION_MINOR 0
+#define OPENGL_VERSION_MINOR 1
 
 static GLuint shader_program;
 static GLint position = -1;
@@ -380,10 +380,9 @@ static void sdl_init(void) {
     // Create OpenGL context
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
     if (!SDL_GL_CreateContext(window)) {
-        log_fatal("Error creating OpenGL context");
+        log_fatal("Error creating OpenGL context\n%s", SDL_GetError());
     }
 
     sdl_pixels_resize(width, height);
@@ -765,7 +764,7 @@ static void log_platform_info(void) {
     snprintf(
         buffer,
         sizeof(buffer),
-        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i, SDL Mixer %i.%i.%i, %s)",
+        "platform init (Emscripten %i.%i.%i, SDL %i.%i.%i, SDL Mixer %i.%i.%i, OpenGL %s)",
         __EMSCRIPTEN_major__, __EMSCRIPTEN_minor__, __EMSCRIPTEN_tiny__,
         version.major, version.minor, version.patch,
         mix_version->major, mix_version->minor, mix_version->patch,
