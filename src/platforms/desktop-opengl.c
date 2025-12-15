@@ -387,8 +387,8 @@ static void sdl_init(void) {
     }
 
     // Create OpenGL context
-     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
-     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
 
     if (!SDL_GL_CreateContext(window)) {
         log_fatal("Error creating OpenGL context\n%s", SDL_GetError());
