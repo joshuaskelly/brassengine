@@ -32,6 +32,29 @@ float frac(float f);
 float lerp(float a, float b, float t);
 
 /**
+ * Linearly interpolate between a and b by t.
+ *
+ * @param a Start value
+ * @param b End value
+ * @param v Value in range [a, b]
+ * @return Value where v is between a and b in range [0, 1].
+ */
+float inverse_lerp(float a, float b, float v);
+
+/**
+ * Linearly map given value from source range [a, b] to corresponding value in
+ * dest range [c, d].
+ *
+ * @param a Source range start value
+ * @param b Source range end value
+ * @param c Destination range start value
+ * @param d Destination range end value
+ * @param v Value in start range
+ * @return Corresponding value in range [c, d]
+ */
+float remap(float a, float b, float c, float d, float v);
+
+/**
  * Returns a Perlin noise value.
  *
  * The returned value might be outside the [-1, 1] range. If x, y, and z are
