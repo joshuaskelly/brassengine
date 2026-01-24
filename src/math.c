@@ -17,6 +17,15 @@ float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }
 
+float inverse_lerp(float a, float b, float v) {
+    return (v - a) / (b - a);
+}
+
+float remap(float a, float b, float c, float d, float v) {
+    float t = inverse_lerp(a, b, v);
+    return lerp(c, d, t);
+}
+
 static float fade(float t);
 static float grad(int hash, float x, float y, float z);
 

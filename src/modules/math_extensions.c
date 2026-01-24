@@ -56,6 +56,49 @@ static int modules_math_lerp(lua_State* L) {
 }
 
 /**
+ * Linearly interpolate between a and b by t.
+ *
+ * @function inverse_lerp
+ * @tparam number a Start value
+ * @tparam number b End value
+ * @tparam number v Value in range [a, b]
+ * @treturn number Value where v is between a and b in range [0, 1].
+ */
+static int modules_math_inverse_lerp(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+    float b = luaL_checknumber(L, 2);
+    float v = luaL_checknumber(L, 3);
+
+    lua_pushnumber(L, inverse_lerp(a, b, v));
+
+    return 1;
+}
+
+/**
+ * Linearly map given value from source range [a, b] to corresponding value in
+ * dest range [c, d].
+ *
+ * @function remap
+ * @tparam a number Source range start value
+ * @tparam b number Source range end value
+ * @tparam c number Destination range start value
+ * @tparam d number Destination range end value
+ * @tparam v number Value in start range
+ * @treturn number Corresponding value in range [c, d]
+ */
+static int modules_math_remap(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+    float b = luaL_checknumber(L, 2);
+    float c = luaL_checknumber(L, 3);
+    float d = luaL_checknumber(L, 4);
+    float v = luaL_checknumber(L, 5);
+
+    lua_pushnumber(L, remap(a, b, c, d, v));
+
+    return 1;
+}
+
+/**
  * Returns a Perlin noise value.
  *
  * The returned value might be outside the [-1, 1] range. If x, y, and z are
@@ -117,6 +160,8 @@ static int modules_math_sign(lua_State* L) {
 static const struct luaL_Reg modules_math_functions[] = {
     {"clamp", modules_math_clamp},
     {"lerp", modules_math_lerp},
+    {"inverselerp", modules_math_inverse_lerp},
+    {"remap", modules_math_remap},
     {"noise", modules_math_noise},
     {"smoothstep", modules_math_smoothstep},
     {"sign", modules_math_sign},
