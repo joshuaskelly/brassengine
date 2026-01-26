@@ -492,6 +492,22 @@ static int modules_vector4_normalize(lua_State* L) {
 }
 
 /**
+ * Dot product of two vectors.
+ * @function dot
+ * @tparam vector4 v0
+ * @tparam vector4 v1
+ * @treturn number float
+ */
+static int modules_vector4_dot(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector4(L, 1);
+    mfloat_t* v1 = luaL_checkvector4(L, 2);
+
+    lua_pushnumber(L, vec4_dot(v0, v1));
+
+    return 1;
+}
+
+/**
  * Linearly interpolate between v0 and v1.
  * @function lerp
  * @tparam vector4 v0
@@ -567,6 +583,7 @@ static const struct luaL_Reg modules_vector4_functions[] = {
     {"min", modules_vector4_min},
     {"clamp", modules_vector4_clamp},
     {"normalize", modules_vector4_normalize},
+    {"dot", modules_vector4_dot},
     {"lerp", modules_vector4_lerp},
     {"set", modules_vector4_set},
     {NULL, NULL}
