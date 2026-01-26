@@ -4,9 +4,9 @@
 local math = {}
 
 --- Clamps given value to specified minimum and maximum range.
---- @param value number 
---- @param min number 
---- @param max number 
+--- @param value number
+--- @param min number
+--- @param max number
 --- @return number Clamped value between min and max.
 function math.clamp(value, min, max) end
 
@@ -16,6 +16,22 @@ function math.clamp(value, min, max) end
 --- @param t number  Interpolation value
 --- @return number Interpolated value between a and b.
 function math.lerp(a, b, t) end
+
+--- Linearly interpolate between a and b by t.
+--- @param a number  Start value
+--- @param b number  End value
+--- @param v number  Value in range [a, b]
+--- @return number Value where v is between a and b in range [0, 1].
+function math.inverse_lerp(a, b, v) end
+
+--- Linearly map given value from source range [a, b] to corresponding value in dest range [c, d].
+--- @param number v  Value in start range
+--- @param number v  Value in start range
+--- @param number v  Value in start range
+--- @param number v  Value in start range
+--- @param number v  Value in start range
+--- @return number Corresponding value in range [c, d]
+function math.remap(number, number, number, number, number) end
 
 --- Returns a Perlin noise value.
 --- @param x number  X-coordinate of sample point.
@@ -32,7 +48,7 @@ function math.noise(x, y, z) end
 function math.smoothstep(a, b, t) end
 
 --- Return sign of given number.
---- @param f number 
+--- @param f number
 --- @return  number float
 function math.sign(f) end
 
