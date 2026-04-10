@@ -421,8 +421,14 @@ void script_complete(char* expression) {
         partial = expression + dot_position;
 
         // Load expression as buffer
-        char buffer[2048];
-        sprintf(buffer, "return %s;", root);
+        const int max_buffer_length = 2057;
+        char buffer[max_buffer_length];
+        int length = snprintf(buffer, max_buffer_length, "return %s;", root);
+        if (length <0 || length >= max_buffer_length) {
+            log_error("Failed to load script buffer");
+            goto done;
+        }
+
         buffer[strlen(buffer)] = '\0';
         int status = luaL_loadbuffer(L, buffer, strlen(buffer), NULL);
         if (status != LUA_OK) goto done;
