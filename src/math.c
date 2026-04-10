@@ -13,6 +13,10 @@ float frac(float f) {
     return f - (int)f;
 }
 
+float snap(float f, float t) {
+    return floor(f / t) * t;
+}
+
 float lerp(float a, float b, float t) {
     return a + (b - a) * t;
 }

@@ -22,6 +22,15 @@ float clamp(float f, float min, float max);
 float frac(float f);
 
 /**
+ * Returns multiple of t nearest to f.
+ *
+ * @param f Float value
+ * @param t Step value
+ * @return float Nearest multiple of t to f
+ */
+float snap(float f, float t);
+
+/**
  * Linearly interpolate between a and b by t.
  *
  * @param a Start value

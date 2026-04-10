@@ -37,6 +37,38 @@ static int modules_math_clamp(lua_State* L) {
 }
 
 /**
+ * Returns fractional part of float.
+ *
+ * @function frac
+ * @tparam number value
+ * @treturn number Fractional part of float.
+ */
+static int modules_math_frac(lua_State* L) {
+    float f = luaL_checknumber(L, 1);
+
+    lua_pushnumber(L, frac(f));
+
+    return 1;
+}
+
+/**
+ * Returns multiple of t nearest to value.
+ *
+ * @function snap
+ * @tparam number value
+ * @tparam number t Value to snap to
+ * @treturn number Multiple of t nearest to given value
+ */
+static int modules_math_snap(lua_State* L) {
+    float f = luaL_checknumber(L, 1);
+    float t = luaL_checknumber(L, 2);
+
+    lua_pushnumber(L, snap(f, t));
+
+    return 1;
+}
+
+/**
  * Linearly interpolate between a and b by t.
  *
  * @function lerp
@@ -79,11 +111,11 @@ static int modules_math_inverse_lerp(lua_State* L) {
  * dest range [c, d].
  *
  * @function remap
- * @tparam a number Source range start value
- * @tparam b number Source range end value
- * @tparam c number Destination range start value
- * @tparam d number Destination range end value
- * @tparam v number Value in start range
+ * @tparam number a Source range start value
+ * @tparam number b Source range end value
+ * @tparam number c Destination range start value
+ * @tparam number d Destination range end value
+ * @tparam number v Value in start range
  * @treturn number Corresponding value in range [c, d]
  */
 static int modules_math_remap(lua_State* L) {
@@ -142,6 +174,23 @@ static int modules_math_smoothstep(lua_State* L) {
 }
 
 /**
+ * Returns if a and b are similar in value.
+ *
+ * @function approximately
+ * @tparam number a
+ * @tparam number b
+ * @treturn boolean
+ */
+static int modules_math_approximately(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+    float b = luaL_checknumber(L, 2);
+
+    lua_pushboolean(L, approximately(a, b));
+
+    return 1;
+}
+
+/**
  * Return sign of given number. 1 if greater than zero, -1 if less than zero, and
  * 0 if equal to zero.
  *
@@ -159,12 +208,15 @@ static int modules_math_sign(lua_State* L) {
 
 static const struct luaL_Reg modules_math_functions[] = {
     {"clamp", modules_math_clamp},
+    {"frac", modules_math_frac},
+    {"snap", modules_math_snap},
     {"lerp", modules_math_lerp},
     {"inverselerp", modules_math_inverse_lerp},
     {"remap", modules_math_remap},
     {"noise", modules_math_noise},
     {"smoothstep", modules_math_smoothstep},
     {"sign", modules_math_sign},
+    {"approximately", modules_math_approximately},
     {NULL, NULL}
 };
 

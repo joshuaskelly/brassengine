@@ -10,6 +10,17 @@ local math = {}
 --- @return number Clamped value between min and max.
 function math.clamp(value, min, max) end
 
+--- Returns fractional part of float.
+--- @param value number
+--- @return number Fractional part of float.
+function math.frac(value) end
+
+--- Returns multiple of t nearest to value.
+--- @param value number
+--- @param t number  Value to snap to
+--- @return number Multiple of t nearest to given value
+function math.snap(value, t) end
+
 --- Linearly interpolate between a and b by t.
 --- @param a number  Start value
 --- @param b number  End value
@@ -25,13 +36,13 @@ function math.lerp(a, b, t) end
 function math.inverse_lerp(a, b, v) end
 
 --- Linearly map given value from source range [a, b] to corresponding value in dest range [c, d].
---- @param number v  Value in start range
---- @param number v  Value in start range
---- @param number v  Value in start range
---- @param number v  Value in start range
---- @param number v  Value in start range
+--- @param a number  Source range start value
+--- @param b number  Source range end value
+--- @param c number  Destination range start value
+--- @param d number  Destination range end value
+--- @param v number  Value in start range
 --- @return number Corresponding value in range [c, d]
-function math.remap(number, number, number, number, number) end
+function math.remap(a, b, c, d, v) end
 
 --- Returns a Perlin noise value.
 --- @param x number  X-coordinate of sample point.
@@ -46,6 +57,12 @@ function math.noise(x, y, z) end
 --- @param t number  Interpolation value
 --- @return number float
 function math.smoothstep(a, b, t) end
+
+--- Returns if a and b are similar in value.
+--- @param a number
+--- @param b number
+--- @return boolean
+function math.approximately(a, b) end
 
 --- Return sign of given number.
 --- @param f number

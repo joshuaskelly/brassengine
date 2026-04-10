@@ -27,13 +27,6 @@ function graphics.blit(texture, dx, dy) end
 --- @param dh integer  Destination height
 function graphics.blit(texture, sx, sy, sw, sh, dx, dy, dw, dh) end
 
---- Sets clipping rectangle which defines drawable area.
---- @param x integer  Rect top left x-coordinate
---- @param y integer  Rect top left y-coordinate
---- @param width integer  Rect width
---- @param height integer  Rect height
-function graphics.set_clipping_rectangle(x, y, width, height) end
-
 --- Gets render texture.
 --- @return texture Render texture userdata.
 function graphics.get_render_texture() end
