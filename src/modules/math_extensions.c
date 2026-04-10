@@ -36,6 +36,13 @@ static int modules_math_clamp(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns fractional part of float.
+ *
+ * @function frac
+ * @tparam number value
+ * @treturn number Fractional part of float.
+ */
 static int modules_math_frac(lua_State* L) {
     float f = luaL_checknumber(L, 1);
 
@@ -44,6 +51,14 @@ static int modules_math_frac(lua_State* L) {
     return 1;
 }
 
+/**
+ * Returns multiple of t nearest to value.
+ *
+ * @function snap
+ * @tparam number value
+ * @tparam number t Value to snap to
+ * @treturn number Multiple of t nearest to given value
+ */
 static int modules_math_snap(lua_State* L) {
     float f = luaL_checknumber(L, 1);
     float t = luaL_checknumber(L, 2);
@@ -96,11 +111,11 @@ static int modules_math_inverse_lerp(lua_State* L) {
  * dest range [c, d].
  *
  * @function remap
- * @tparam a number Source range start value
- * @tparam b number Source range end value
- * @tparam c number Destination range start value
- * @tparam d number Destination range end value
- * @tparam v number Value in start range
+ * @tparam number a Source range start value
+ * @tparam number b Source range end value
+ * @tparam number c Destination range start value
+ * @tparam number d Destination range end value
+ * @tparam number v Value in start range
  * @treturn number Corresponding value in range [c, d]
  */
 static int modules_math_remap(lua_State* L) {
@@ -164,7 +179,7 @@ static int modules_math_smoothstep(lua_State* L) {
  * @function approximately
  * @tparam number a
  * @tparam number b
- * @treturn bool
+ * @treturn boolean
  */
 static int modules_math_approximately(lua_State* L) {
     float a = luaL_checknumber(L, 1);
