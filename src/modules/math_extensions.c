@@ -36,6 +36,23 @@ static int modules_math_clamp(lua_State* L) {
     return 1;
 }
 
+static int modules_math_frac(lua_State* L) {
+    float f = luaL_checknumber(L, 1);
+
+    lua_pushnumber(L, frac(f));
+
+    return 1;
+}
+
+static int modules_math_snap(lua_State* L) {
+    float f = luaL_checknumber(L, 1);
+    float t = luaL_checknumber(L, 2);
+
+    lua_pushnumber(L, snap(f, t));
+
+    return 1;
+}
+
 /**
  * Linearly interpolate between a and b by t.
  *
@@ -142,6 +159,23 @@ static int modules_math_smoothstep(lua_State* L) {
 }
 
 /**
+ * Returns if a and b are similar in value.
+ *
+ * @function approximately
+ * @tparam number a
+ * @tparam number b
+ * @treturn bool
+ */
+static int modules_math_approximately(lua_State* L) {
+    float a = luaL_checknumber(L, 1);
+    float b = luaL_checknumber(L, 2);
+
+    lua_pushboolean(L, approximately(a, b));
+
+    return 1;
+}
+
+/**
  * Return sign of given number. 1 if greater than zero, -1 if less than zero, and
  * 0 if equal to zero.
  *
@@ -159,12 +193,15 @@ static int modules_math_sign(lua_State* L) {
 
 static const struct luaL_Reg modules_math_functions[] = {
     {"clamp", modules_math_clamp},
+    {"frac", modules_math_frac},
+    {"snap", modules_math_snap},
     {"lerp", modules_math_lerp},
     {"inverselerp", modules_math_inverse_lerp},
     {"remap", modules_math_remap},
     {"noise", modules_math_noise},
     {"smoothstep", modules_math_smoothstep},
     {"sign", modules_math_sign},
+    {"approximately", modules_math_approximately},
     {NULL, NULL}
 };
 
