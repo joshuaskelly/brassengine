@@ -13,6 +13,8 @@
 
 #include "vector2.h"
 
+#include "../log.h"
+
 bool lua_isvector2(lua_State*L, int index) {
     void* p = luaL_testudata(L, index, "vector2");
     if (p == NULL) {
@@ -804,9 +806,31 @@ static int modules_vector2_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_vector2_meta_tostring(lua_State* L) {
+    mfloat_t* vector = luaL_checkvector2(L, 1);
+
+    const char* format = "vector2(x=%g, y=%g)";
+    const int max_float_length = 9;
+    const int max_buffer_length = (strlen(format)) + max_float_length * 2;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(buffer, max_buffer_length, format, vector[0], vector[1]);
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_vector2_meta_functions[] = {
     {"__index", modules_vector2_meta_index},
     {"__newindex", modules_vector2_meta_newindex},
+    {"__tostring", modules_vector2_meta_tostring},
     {"__add", modules_vector2_add},
     {"__sub", modules_vector2_subtract},
     {"__mul", modules_vector2_multiply},

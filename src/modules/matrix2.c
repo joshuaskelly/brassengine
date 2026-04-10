@@ -14,6 +14,8 @@
 #include "matrix2.h"
 #include "vector2.h"
 
+#include "../log.h"
+
 bool lua_ismatrix2(lua_State*L, int index) {
     void* p = luaL_testudata(L, index, "matrix2");
     if (p == NULL) {
@@ -476,9 +478,39 @@ static int modules_matrix2_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_matrix2_meta_tostring(lua_State* L) {
+    mfloat_t* matrix = luaL_checkmatrix2(L, 1);
+
+    const char* format = "matrix2(m11=%g, m21=%g, m12=%g, m22=%g)";
+    const int max_float_length = 9;
+    const int max_buffer_length = (strlen(format)) + max_float_length * 4;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(
+        buffer,
+        max_buffer_length,
+        format,
+        matrix[0],
+        matrix[1],
+        matrix[2],
+        matrix[3]
+    );
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_matrix2_meta_functions[] = {
     {"__index", modules_matrix2_meta_index},
     {"__newindex", modules_matrix2_meta_newindex},
+    {"__tostring", modules_matrix2_meta_tostring},
     {"__mul", modules_matrix2_multiply},
     {"__unm", modules_matrix2_negative},
     {NULL, NULL}
