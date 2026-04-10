@@ -15,6 +15,8 @@
 #include "quaternion.h"
 #include "vector3.h"
 
+#include "../log.h"
+
 bool lua_ismatrix3(lua_State*L, int index) {
     void* p = luaL_testudata(L, index, "matrix3");
     if (p == NULL) {
@@ -610,9 +612,44 @@ static int modules_matrix3_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_matrix3_meta_tostring(lua_State* L) {
+    mfloat_t* matrix = luaL_checkmatrix3(L, 1);
+
+    const char* format = "matrix3(m11=%g, m21=%g, m31=%g, m12=%g, m22=%g, m32=%g, m13=%g, m23=%g, m33=%g)";
+    const int max_float_length = 9;
+    const int max_buffer_length = (strlen(format)) + max_float_length * 9;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(
+        buffer,
+        max_buffer_length,
+        format,
+        matrix[0],
+        matrix[1],
+        matrix[2],
+        matrix[3],
+        matrix[4],
+        matrix[5],
+        matrix[6],
+        matrix[7],
+        matrix[8]
+    );
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_matrix3_meta_functions[] = {
     {"__index", modules_matrix3_meta_index},
     {"__newindex", modules_matrix3_meta_newindex},
+    {"__tostring", modules_matrix3_meta_tostring},
     {"__mul", modules_matrix3_multiply},
     {"__unm", modules_matrix3_negative},
     {NULL, NULL}

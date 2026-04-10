@@ -14,6 +14,8 @@
 
 #include "vector3.h"
 
+#include "../log.h"
+
 bool lua_isvector3(lua_State*L, int index) {
     void* p = luaL_testudata(L, index, "vector3");
     if (p == NULL) {
@@ -877,9 +879,38 @@ static int modules_vector3_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_vector3_meta_tostring(lua_State* L) {
+    mfloat_t* vector = luaL_checkvector3(L, 1);
+
+    const char* format = "vector3(x=%g, y=%g, z=%g)";
+    const int max_float_length = 9;
+    const int max_buffer_length = (strlen(format)) + max_float_length * 3;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(
+        buffer,
+        max_buffer_length,
+        format,
+        vector[0],
+        vector[1],
+        vector[2]
+    );
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_vector3_meta_functions[] = {
     {"__index", modules_vector3_meta_index},
     {"__newindex", modules_vector3_meta_newindex},
+    {"__tostring", modules_vector3_meta_tostring},
     {"__add", modules_vector3_add},
     {"__sub", modules_vector3_subtract},
     {"__mul", modules_vector3_multiply},

@@ -11,6 +11,7 @@
 
 #include "sound.h"
 
+#include "../log.h"
 #include "../sounds.h"
 
 sound_t* luaL_checksound(lua_State* L, int index) {
@@ -108,9 +109,31 @@ static int modules_sound_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_sound_meta_tostring(lua_State* L) {
+    sound_t* sound = luaL_checksound(L, 1);
+
+    const char* format = "sound(frames=%d)";
+    const int max_int_length = (3 * sizeof(int) + 2);
+    const int max_buffer_length = (strlen(format)) + max_int_length;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(buffer, max_buffer_length, format, sound->frame_count);
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_sound_meta_functions[] = {
     {"__index", modules_sound_meta_index},
     {"__newindex", modules_sound_meta_newindex},
+    {"__tostring", modules_sound_meta_tostring},
     {NULL, NULL}
 };
 

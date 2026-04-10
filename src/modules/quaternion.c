@@ -15,6 +15,8 @@
 #include "quaternion.h"
 #include "vector3.h"
 
+#include "../log.h"
+
 mfloat_t* luaL_checkquaternion(lua_State* L, int index) {
     mfloat_t** handle = NULL;
     luaL_checktype(L, index, LUA_TUSERDATA);
@@ -662,9 +664,39 @@ static int modules_quaternion_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_quaternion_meta_tostring(lua_State* L) {
+    mfloat_t* quaternion = luaL_checkquaternion(L, 1);
+
+    const char* format = "quaternion(x=%g, y=%g, z=%g, w=%g)";
+    const int max_float_length = 9;
+    const int max_buffer_length = (strlen(format)) + max_float_length * 4;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(
+        buffer,
+        max_buffer_length,
+        format,
+        quaternion[0],
+        quaternion[1],
+        quaternion[2],
+        quaternion[3]
+    );
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_quaternion_meta_functions[] = {
     {"__index", modules_quaternion_meta_index},
     {"__newindex", modules_quaternion_meta_newindex},
+    {"__tostring", modules_quaternion_meta_tostring},
     {"__mul", modules_quaternion_multiply},
     {"__div", modules_quaternion_divide},
     {"__unm", modules_quaternion_negative},

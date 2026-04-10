@@ -13,6 +13,7 @@
 
 #include "../assets.h"
 #include "../graphics.h"
+#include "../log.h"
 
 texture_t* luaL_checktexture(lua_State* L, int index) {
     texture_t** handle = NULL;
@@ -145,9 +146,37 @@ static int modules_texture_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static int modules_texture_meta_tostring(lua_State* L) {
+    texture_t* texture = luaL_checktexture(L, 1);
+
+    const char* format = "texture(width=%i, height=%i)";
+    const int max_int_length = (3 * sizeof(int) + 2);
+    const int max_buffer_length = (strlen(format)) + max_int_length * 2;
+    char buffer[max_buffer_length];
+    int length;
+
+    length = snprintf(
+        buffer,
+        max_buffer_length,
+        format,
+        texture->width,
+        texture->height
+    );
+
+    if (length < 0 || length >= max_buffer_length) {
+        log_error("Failed to get string representation");
+        return 0;
+    }
+
+    lua_pushstring(L, buffer);
+
+    return 1;
+}
+
 static const struct luaL_Reg modules_texture_meta_functions[] = {
     {"__index", modules_texture_meta_index},
     {"__newindex", modules_texture_meta_newindex},
+    {"__tostring", modules_texture_meta_tostring},
     {NULL, NULL}
 };
 
