@@ -283,6 +283,38 @@ static int modules_vector3_divide(lua_State* L) {
     return 1;
 }
 
+static int modules_vector3_floor_divide(lua_State* L) {
+    mfloat_t* v0 = luaL_checkvector3(L, 1);
+
+    // Scalar division
+    if (lua_isnumber(L, 2)) {
+        float f = luaL_checknumber(L, 2);
+
+        lua_settop(L, 0);
+
+        mfloat_t result[VEC3_SIZE];
+        vec3_divide_f(result, v0, f);
+        vec3_floor(result, result);
+
+        lua_newvector3(L, result[0], result[1], result[2]);
+
+        return 1;
+    }
+
+    // Component-wise division
+    mfloat_t* v1 = luaL_checkvector3(L, 2);
+
+    lua_settop(L, 0);
+
+    mfloat_t result[VEC3_SIZE];
+    vec3_divide(result, v0, v1);
+    vec3_floor(result, result);
+
+    lua_newvector3(L, result[0], result[1], result[2]);
+
+    return 1;
+}
+
 /**
  * Returns a vector made from snapping the components to given resolution.
  * @function snap
@@ -915,6 +947,7 @@ static const struct luaL_Reg modules_vector3_meta_functions[] = {
     {"__sub", modules_vector3_subtract},
     {"__mul", modules_vector3_multiply},
     {"__div", modules_vector3_divide},
+    {"__idiv", modules_vector3_floor_divide},
     {"__unm", modules_vector3_negative},
     {"__eq", modules_vector3_equal},
     {NULL, NULL}
