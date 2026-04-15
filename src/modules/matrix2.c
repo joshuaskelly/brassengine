@@ -11,6 +11,7 @@
 
 #include <mathc/mathc.h>
 
+#include "luautils.h"
 #include "matrix2.h"
 #include "vector2.h"
 
@@ -507,6 +508,14 @@ static int modules_matrix2_meta_tostring(lua_State* L) {
     return 1;
 }
 
+static const char* modules_matrix2_fields[] = {
+    "m11",
+    "m21",
+    "m12",
+    "m22",
+    NULL
+};
+
 static const struct luaL_Reg modules_matrix2_meta_functions[] = {
     {"__index", modules_matrix2_meta_index},
     {"__newindex", modules_matrix2_meta_newindex},
@@ -521,6 +530,7 @@ int luaopen_matrix2(lua_State* L) {
 
     luaL_newmetatable(L, "matrix2");
     luaL_setfuncs(L, modules_matrix2_meta_functions, 0);
+    lua_setdummyfields(L, modules_matrix2_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, modules_matrix2_gc);
@@ -530,6 +540,7 @@ int luaopen_matrix2(lua_State* L) {
 
     luaL_newmetatable(L, "matrix2_nogc");
     luaL_setfuncs(L, modules_matrix2_meta_functions, 0);
+    lua_setdummyfields(L, modules_matrix2_fields);
 
     lua_pop(L, 1);
 

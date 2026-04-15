@@ -44,6 +44,7 @@
 
 #include <mathc/mathc.h>
 
+#include "luautils.h"
 #include "raycaster.h"
 #include "texture.h"
 #include "vector2.h"
@@ -493,9 +494,31 @@ static int modules_raycaster_map_new(lua_State* L) {
  * @tfield {integer,...} ceilings Array of integers
  */
 
+static const char* modules_raycaster_map_fields[] = {
+    "walls",
+    "floors",
+    "ceilings",
+    NULL
+};
+
 static const struct luaL_Reg modules_raycaster_map_functions[] = {
     {"new", modules_raycaster_map_new},
     {NULL, NULL}
+};
+
+static const struct luaL_Reg modules_raycaster_map_meta_functions[] = {
+    {"__index", modules_raycaster_map_meta_index},
+    {"__newindex", modules_raycaster_map_meta_newindex},
+    {"__gc", modules_raycaster_map_meta_gc},
+    {NULL, NULL}
+};
+
+static const char* modules_raycaster_renderer_fields[] = {
+    "clear",
+    "render",
+    "camera",
+    "feature",
+    NULL
 };
 
 static const struct luaL_Reg modules_raycaster_renderer_functions[] = {
@@ -513,13 +536,6 @@ static const struct luaL_Reg modules_raycaster_renderer_meta_functions[] = {
     {NULL, NULL}
 };
 
-static const struct luaL_Reg modules_raycaster_map_meta_functions[] = {
-    {"__index", modules_raycaster_map_meta_index},
-    {"__newindex", modules_raycaster_map_meta_newindex},
-    {"__gc", modules_raycaster_map_meta_gc},
-    {NULL, NULL}
-};
-
 int luaopen_raycaster(lua_State* L) {
     lua_newtable(L);
 
@@ -529,6 +545,7 @@ int luaopen_raycaster(lua_State* L) {
 
     luaL_newmetatable(L, "raycaster_renderer");
     luaL_setfuncs(L, modules_raycaster_renderer_meta_functions, 0);
+    lua_setdummyfields(L, modules_raycaster_renderer_fields);
     lua_pop(L, 1);
 
     lua_pushstring(L, "Map");
@@ -537,6 +554,7 @@ int luaopen_raycaster(lua_State* L) {
 
     luaL_newmetatable(L, "raycaster_map");
     luaL_setfuncs(L, modules_raycaster_map_meta_functions, 0);
+    lua_setdummyfields(L, modules_raycaster_map_fields);
     lua_pop(L, 1);
 
     return 1;

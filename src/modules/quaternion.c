@@ -11,6 +11,7 @@
 
 #include <mathc/mathc.h>
 
+#include "luautils.h"
 #include "matrix4.h"
 #include "quaternion.h"
 #include "vector3.h"
@@ -693,6 +694,14 @@ static int modules_quaternion_meta_tostring(lua_State* L) {
     return 1;
 }
 
+static const char* modules_quaternion_fields[] = {
+    "x",
+    "y",
+    "z",
+    "w",
+    NULL
+};
+
 static const struct luaL_Reg modules_quaternion_meta_functions[] = {
     {"__index", modules_quaternion_meta_index},
     {"__newindex", modules_quaternion_meta_newindex},
@@ -710,6 +719,7 @@ int luaopen_quaternion(lua_State* L) {
 
     luaL_newmetatable(L, "quaternion");
     luaL_setfuncs(L, modules_quaternion_meta_functions, 0);
+    lua_setdummyfields(L, modules_quaternion_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, modules_quaternion_gc);
@@ -719,6 +729,7 @@ int luaopen_quaternion(lua_State* L) {
 
     luaL_newmetatable(L, "quaternion_nogc");
     luaL_setfuncs(L, modules_quaternion_meta_functions, 0);
+    lua_setdummyfields(L, modules_quaternion_fields);
 
     lua_pop(L, 1);
 
