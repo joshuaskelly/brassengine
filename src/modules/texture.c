@@ -9,6 +9,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "luautils.h"
 #include "texture.h"
 
 #include "../assets.h"
@@ -172,13 +173,6 @@ static int modules_texture_meta_tostring(lua_State* L) {
 
     return 1;
 }
-
-static const struct luaL_Reg modules_texture_meta_functions[] = {
-    {"__index", modules_texture_meta_index},
-    {"__newindex", modules_texture_meta_newindex},
-    {"__tostring", modules_texture_meta_tostring},
-    {NULL, NULL}
-};
 
 /**
  * Create new texture.
@@ -408,6 +402,18 @@ static int modules_texture_blit(lua_State* L) {
  * @tfield integer height (read-only)
  */
 
+static const char* modules_texture_fields[] = {
+    "copy",
+    "sub",
+    "clear",
+    "clear",
+    "blit",
+    "pixels",
+    "width",
+    "height",
+    NULL
+};
+
 static const struct luaL_Reg modules_texture_functions[] = {
     {"new", modules_texture_new},
     {"copy", modules_texture_copy},
@@ -419,12 +425,20 @@ static const struct luaL_Reg modules_texture_functions[] = {
     {NULL, NULL}
 };
 
+static const struct luaL_Reg modules_texture_meta_functions[] = {
+    {"__index", modules_texture_meta_index},
+    {"__newindex", modules_texture_meta_newindex},
+    {"__tostring", modules_texture_meta_tostring},
+    {NULL, NULL}
+};
+
 int luaopen_texture(lua_State* L) {
     luaL_newlib(L, modules_texture_functions);
 
     // Push texture userdata metatable
     luaL_newmetatable(L, "texture");
     luaL_setfuncs(L, modules_texture_meta_functions, 0);
+    lua_setdummyfields(L, modules_texture_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, texture_gc);
@@ -435,6 +449,7 @@ int luaopen_texture(lua_State* L) {
     // Push texture_nogc userdata metatable
     luaL_newmetatable(L, "texture_nogc");
     luaL_setfuncs(L, modules_texture_meta_functions, 0);
+    lua_setdummyfields(L, modules_texture_fields);
 
     lua_pop(L, 1);
 

@@ -12,6 +12,7 @@
 
 #include <mathc/mathc.h>
 
+#include "luautils.h"
 #include "vector4.h"
 
 #include "../log.h"
@@ -713,6 +714,14 @@ static int modules_vector4_meta_tostring(lua_State* L) {
     return 1;
 }
 
+static const char* modules_vector4_fields[] = {
+    "x",
+    "y",
+    "z",
+    "w",
+    NULL
+};
+
 static const struct luaL_Reg modules_vector4_meta_functions[] = {
     {"__index", modules_vector4_meta_index},
     {"__newindex", modules_vector4_meta_newindex},
@@ -732,6 +741,7 @@ int luaopen_vector4(lua_State* L) {
 
     luaL_newmetatable(L, "vector4");
     luaL_setfuncs(L, modules_vector4_meta_functions, 0);
+    lua_setdummyfields(L, modules_vector4_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, vector4_gc);
@@ -741,6 +751,7 @@ int luaopen_vector4(lua_State* L) {
 
     luaL_newmetatable(L, "vector4_nogc");
     luaL_setfuncs(L, modules_vector4_meta_functions, 0);
+    lua_setdummyfields(L, modules_vector4_fields);
 
     lua_pop(L, 1);
 

@@ -9,6 +9,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "luautils.h"
 #include "sound.h"
 
 #include "../log.h"
@@ -129,13 +130,6 @@ static int modules_sound_meta_tostring(lua_State* L) {
 
     return 1;
 }
-
-static const struct luaL_Reg modules_sound_meta_functions[] = {
-    {"__index", modules_sound_meta_index},
-    {"__newindex", modules_sound_meta_newindex},
-    {"__tostring", modules_sound_meta_tostring},
-    {NULL, NULL}
-};
 
 /**
  * Create new sound.
@@ -281,6 +275,13 @@ static int modules_sound_frame_get(lua_State* L) {
  * @tfield integer frame_count (read-only)
  */
 
+static const char* modules_sound_fields[] = {
+    "play",
+    "copy",
+    "pcm",
+    NULL
+};
+
 static const struct luaL_Reg modules_sound_functions[] = {
     {"new", modules_sound_new},
     {"copy", modules_sound_copy},
@@ -292,12 +293,20 @@ static const struct luaL_Reg modules_sound_functions[] = {
     {NULL, NULL}
 };
 
+static const struct luaL_Reg modules_sound_meta_functions[] = {
+    {"__index", modules_sound_meta_index},
+    {"__newindex", modules_sound_meta_newindex},
+    {"__tostring", modules_sound_meta_tostring},
+    {NULL, NULL}
+};
+
 int luaopen_sound(lua_State* L) {
     luaL_newlib(L, modules_sound_functions);
 
     // Push sound userdata metatable
     luaL_newmetatable(L, "sound");
     luaL_setfuncs(L, modules_sound_meta_functions, 0);
+    lua_setdummyfields(L, modules_sound_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, modules_sound_gc);
@@ -308,6 +317,7 @@ int luaopen_sound(lua_State* L) {
     // Push sound userdata metatable
     luaL_newmetatable(L, "sound_nogc");
     luaL_setfuncs(L, modules_sound_meta_functions, 0);
+    lua_setdummyfields(L, modules_sound_fields);
 
     lua_pop(L, 1);
 

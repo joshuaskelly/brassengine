@@ -11,6 +11,7 @@
 
 #include <mathc/mathc.h>
 
+#include "luautils.h"
 #include "matrix3.h"
 #include "quaternion.h"
 #include "vector3.h"
@@ -646,6 +647,19 @@ static int modules_matrix3_meta_tostring(lua_State* L) {
     return 1;
 }
 
+static const char* modules_matrix3_fields[] = {
+    "m11",
+    "m21",
+    "m31",
+    "m12",
+    "m22",
+    "m32",
+    "m13",
+    "m23",
+    "m33",
+    NULL
+};
+
 static const struct luaL_Reg modules_matrix3_meta_functions[] = {
     {"__index", modules_matrix3_meta_index},
     {"__newindex", modules_matrix3_meta_newindex},
@@ -660,6 +674,7 @@ int luaopen_matrix3(lua_State* L) {
 
     luaL_newmetatable(L, "matrix3");
     luaL_setfuncs(L, modules_matrix3_meta_functions, 0);
+    lua_setdummyfields(L, modules_matrix3_fields);
 
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, modules_matrix3_gc);
@@ -669,6 +684,7 @@ int luaopen_matrix3(lua_State* L) {
 
     luaL_newmetatable(L, "matrix3_nogc");
     luaL_setfuncs(L, modules_matrix3_meta_functions, 0);
+    lua_setdummyfields(L, modules_matrix3_fields);
 
     lua_pop(L, 1);
 

@@ -12,6 +12,7 @@
 #include <lua/lauxlib.h>
 #include <lua/lualib.h>
 
+#include "luautils.h"
 #include "matrix3.h"
 #include "texture.h"
 #include "vector3.h"
@@ -287,6 +288,13 @@ static int modules_mode7_renderer_meta_index(lua_State* L) {
     return 1;
 }
 
+static const char* modules_mode7_renderer_fields[] = {
+    "clear",
+    "render",
+    "feature",
+    NULL
+};
+
 static const struct luaL_Reg modules_mode7_renderer_functions[] = {
     {"new", modules_mode7_renderer_new},
     {"clear", modules_mode7_renderer_clear},
@@ -450,6 +458,16 @@ static int modules_mode7_camera_meta_newindex(lua_State* L) {
     return 0;
 }
 
+static const char* modules_mode7_camera_fields[] = {
+    "position",
+    "pitch",
+    "yaw",
+    "fov",
+    "near",
+    "far",
+    NULL
+};
+
 static const struct luaL_Reg modules_mode7_camera_functions[] = {
     {"new", modules_mode7_camera_new},
     {NULL, NULL}
@@ -471,6 +489,7 @@ int luaopen_mode7(lua_State* L) {
 
     luaL_newmetatable(L, "mode7_renderer");
     luaL_setfuncs(L, modules_mode7_renderer_meta_functions, 0);
+    lua_setdummyfields(L, modules_mode7_renderer_fields);
     lua_pop(L, 1);
 
     lua_pushstring(L, "Camera");
@@ -479,6 +498,7 @@ int luaopen_mode7(lua_State* L) {
 
     luaL_newmetatable(L, "mode7_camera");
     luaL_setfuncs(L, modules_mode7_camera_meta_functions, 0);
+    lua_setdummyfields(L, modules_mode7_camera_fields);
     lua_pop(L, 1);
 
     return 1;

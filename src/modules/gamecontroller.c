@@ -197,40 +197,6 @@ static int gamecontroller_button_axes(lua_State*L) {
     return 1;
 }
 
-static int error_readonly(lua_State* L) {
-    luaL_error(L, "attempt to update a read-only table");
-    return 0;
-}
-
-static int make_readonly(lua_State* L) {
-    int base = lua_gettop(L);
-
-    // Given table to make read-only
-    luaL_checktype(L, base, LUA_TTABLE); // table
-
-    // Proxy table
-    lua_newtable(L);
-
-    // Metatable
-    lua_newtable(L);
-
-    // Set __index field of metatable to given table
-    lua_pushvalue(L, base);
-    lua_setfield(L, -2, "__index");
-
-    // Set __newindex field of metatable to error function
-    lua_pushcfunction(L, error_readonly);
-    lua_setfield(L, -2, "__newindex");
-
-    // Set proxy table metatable to metatable
-    lua_setmetatable(L, -2);
-
-    // Remove given table leaving proxy on top
-    lua_remove(L, base);
-
-    return 1;
-}
-
 static const struct luaL_Reg modules_gamecontroller_functions[] = {
     {"button", modules_gamecontroller_button_get},
     {"axis", modules_gamecontroller_axis_get},
