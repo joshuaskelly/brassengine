@@ -121,6 +121,8 @@ mode7_camera_t* mode7_camera_new(mode7_renderer_t* renderer) {
     camera->fov = 72.0f;
     camera->near = 0.0f;
     camera->far = 10000.0f;
+    camera->pitch = 0.0f;
+    camera->yaw = 0.0f;
 
     camera->renderer = renderer;
 
