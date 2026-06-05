@@ -69,10 +69,12 @@ endif
 desktop-run: ## Run desktop build
 	./$(BIN)
 
+web: ## Build web platform
+
+web-opengl: ## Build web OpenGL ES 2.0 platform
+
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
-
-web-opengl:web ## Build web OpenGL ES 2.0 platform
 
 $(BIN): $(OBJS) | $(BIN_DIR) $(LIBS)
 	$(CC) $(CFLAGS) $(INC) $^ $(LDLIBS) -o $@
