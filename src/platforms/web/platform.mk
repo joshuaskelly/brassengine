@@ -1,0 +1,7 @@
+CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1 -s FULL_ES2=1 -s EXPORTED_FUNCTIONS=_main,_free
+AR='emar rcu'
+RANLIB=emranlib
+LIBS=$(LIBLUA) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
+
+web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
+	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --embed-file assets

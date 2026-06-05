@@ -22,7 +22,7 @@ $(wildcard $(SRC_DIR)/collections/*.c) \
 $(wildcard $(SRC_DIR)/graphics/*.c) \
 $(wildcard $(SRC_DIR)/modules/*.c) \
 $(wildcard $(SRC_DIR)/renderers/*.c) \
-$(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM).c,)
+$(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM)/platform.c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 INC=-Ilibs `sdl2-config --cflags`
@@ -41,14 +41,6 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 
 MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
-
-ifeq ($(PLATFORM),desktop-opengl)
-ifeq ($(OS),Windows_NT)
-XLIBS=-lglew32 -lopengl32
-else
-XLIBS=-lGLEW -lGL
-endif
-endif
 
 ifeq ($(OS),Windows_NT)
 DLIBS=-mconsole
@@ -70,15 +62,12 @@ debug:CFLAGS=$(DFLAGS)
 debug:LDLIBS=$(DLDLIBS)
 debug:all
 
+ifneq ($(PLATFORM),)
+-include $(PLATFORM_DIR)/$(PLATFORM)/platform.mk # Optionally include platform makefile
+endif
+
 desktop-run: ## Run desktop build
 	./$(BIN)
-
-web:CC=emcc -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_GIFLIB=1 -s FULL_ES2=1 -s EXPORTED_FUNCTIONS=_main,_free
-web:AR='emar rcu'
-web:RANLIB=emranlib
-web:LIBS=$(LIBLUA) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-web: $(OBJS) | $(BIN_DIR) $(LIBS) ## Build web platform
-	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --embed-file assets
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
@@ -131,6 +120,10 @@ clean: ## Deletes all auto generated files
 	mkdir $(OBJ_DIR)/graphics
 	mkdir $(OBJ_DIR)/modules
 	mkdir $(OBJ_DIR)/platforms
+	mkdir $(OBJ_DIR)/platforms/desktop
+	mkdir $(OBJ_DIR)/platforms/desktop-opengl
+	mkdir $(OBJ_DIR)/platforms/web
+	mkdir $(OBJ_DIR)/platforms/web-opengl
 	mkdir $(OBJ_DIR)/renderers
 	mkdir $(BUILD_DIR)/web
 	cd $(LUA_DIR) && make clean
