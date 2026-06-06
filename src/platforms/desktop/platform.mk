@@ -1,13 +1,6 @@
-# SDl2 + OpenGL specific variables and targets
+# SDl2 specific variables and targets
 
 LDLIBS+=`sdl2-config --libs` -lSDL2_mixer
-
-# OpenGL libs
-ifeq ($(OS),Windows_NT)
-LDLIBS+=-lglew32 -lopengl32
-else
-LDLIBS+=-lGLEW -lGL
-endif
 
 # Platform specific platform.o target
 $(OBJ_DIR)/platform.o: $(SRC_DIR)/platform.c | $(OBJ_DIR)

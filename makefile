@@ -1,21 +1,29 @@
+# Tools
 CC=gcc
 AR='ar rcs'
 RANLIB=ranlib
+
+# Executable
 BIN=brass
 
+# Flags
 CFLAGS=-Wall -std=c99 -O3
-DFLAGS=-Wall -std=c99 -DDEBUG -g
 
+# Directories
 SRC_DIR=src
 BUILD_DIR=build
-OBJ_DIR:=$(BUILD_DIR)/obj
-BIN_DIR:=$(BUILD_DIR)/bin
-WEB_DIR:=$(BUILD_DIR)/web
+OBJ_DIR=$(BUILD_DIR)/obj
+BIN_DIR=$(BUILD_DIR)/bin
+WEB_DIR=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
+# List of valid platforms
 PLATFORMS=desktop web desktop-opengl web-opengl
+
+# Get targeted platform
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
 
+# Source files
 BIN:=$(BIN_DIR)/$(BIN)
 SRCS=$(wildcard $(SRC_DIR)/*.c) \
 $(wildcard $(SRC_DIR)/collections/*.c) \
@@ -25,7 +33,9 @@ $(wildcard $(SRC_DIR)/renderers/*.c) \
 $(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM)/platform.c,)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-INC=-Ilibs `sdl2-config --cflags`
+
+# Libraries
+INC=-Ilibs
 
 LUA_DIR=libs/lua
 LIBLUA=$(LUA_DIR)/liblua.a
@@ -42,14 +52,20 @@ LIBCJSON=$(CJSON_DIR)/libcjson.a
 MATHC_DIR=libs/mathc
 LIBMATHC=$(MATHC_DIR)/libmathc.a
 
-ifeq ($(OS),Windows_NT)
-DLIBS=-mconsole
+LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
+LDLIBS=$(LIBS) -lm
+
+# Debug specific makefile
+ifdef DEBUG
+include debug.mk
 endif
 
-LIBS=$(LIBLUA) $(LIBGIF) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
-LDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS)
-DLDLIBS=$(LIBS) `sdl2-config --libs` -lSDL2_mixer -lm $(XLIBS) $(DLIBS)
+# Platform specific makefile. Optional.
+ifneq ($(PLATFORM),)
+-include $(PLATFORM_DIR)/$(PLATFORM)/platform.mk
+endif
 
+# Targets
 default:help
 
 all:$(BIN)
@@ -57,14 +73,6 @@ all:$(BIN)
 desktop:all ## Build desktop platform
 
 desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
-
-debug:CFLAGS=$(DFLAGS)
-debug:LDLIBS=$(DLDLIBS)
-debug:all
-
-ifneq ($(PLATFORM),)
--include $(PLATFORM_DIR)/$(PLATFORM)/platform.mk # Optionally include platform makefile
-endif
 
 desktop-run: ## Run desktop build
 	./$(BIN)
