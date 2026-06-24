@@ -31,6 +31,7 @@
 #include "modules/matrix3.h"
 #include "modules/matrix4.h"
 #include "modules/math_extensions.h"
+#include "modules/mesh.h"
 #include "modules/mode7.h"
 #include "modules/mouse.h"
 #include "modules/quaternion.h"
@@ -67,6 +68,7 @@ static const luaL_Reg modules[] = {
     {"matrix2", luaopen_matrix2},
     {"matrix3", luaopen_matrix3},
     {"matrix4", luaopen_matrix4},
+    {"mesh", luaopen_mesh},
     {"mode7", luaopen_mode7},
     {"mouse", luaopen_mouse},
     {"quaternion", luaopen_quaternion},
