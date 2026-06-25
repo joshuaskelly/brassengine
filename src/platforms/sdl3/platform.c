@@ -208,8 +208,8 @@ void platform_sound_play(sound_t* sound, int channel, bool looping) {
     MIX_Track* track = tracks[channel];
 
     MIX_SetTrackAudio(track, audio);
-    MIX_SetTrackLoops(track, loops);
     MIX_PlayTrack(track, 0);
+    MIX_SetTrackLoops(track, loops);
 }
 
 void platform_sound_stop(int channel) {
@@ -572,6 +572,14 @@ static void mixer_init(void) {
 
 static void mixer_destroy(void) {
     MIX_StopAllTracks(mixer, 0);
+
+    for (int i = 0; i < MIX_CHANNELS; i++) {
+        MIX_DestroyTrack(tracks[i]);
+        tracks[i] = NULL;
+    }
+
+    MIX_DestroyMixer(mixer);
+
     MIX_Quit();
 }
 
