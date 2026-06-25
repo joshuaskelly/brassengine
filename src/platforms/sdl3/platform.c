@@ -478,7 +478,7 @@ static void sdl_handle_events(void) {
                 break;
 
             case SDL_EVENT_GAMEPAD_REMOVED:
-                input_controller_disconnect(sdl_event.cdevice.which);
+                input_controller_disconnect(sdl_event.gdevice.which);
                 SDL_CloseGamepad(SDL_GetGamepadFromID(sdl_event.gdevice.which));
                 break;
 
