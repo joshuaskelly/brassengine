@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - features/platforms/sdl3
     tags:
       - '**'
     paths-ignore:
@@ -53,6 +52,7 @@ jobs:
           git
           make
           mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-pkg-config
           mingw-w64-x86_64-sdl3
           mingw-w64-x86_64-sdl3-mixer
     - name: Setup env
