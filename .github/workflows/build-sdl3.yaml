@@ -56,7 +56,7 @@ jobs:
           mingw-w64-x86_64-sdl3
           mingw-w64-x86_64-sdl3-mixer
     - name: Setup env
-      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
+      run: echo "engine_ver=brassengine-windows64-sdl3-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Checkout submodules
@@ -83,7 +83,7 @@ jobs:
     - name: Copy demos
       run: cp -r demos ./dist/${{ env.engine_ver }}
     - name: Copy dlls
-      run: cp /mingw64/bin/SDL3.dll /mingw64/bin/SDL3_mixer.dll /mingw64/bin/libstdc++-6.dll /mingw64/bin/libgcc_s_seh-1.dll /mingw64/bin/libwinpthread-1.dll ./dist/${{ env.engine_ver }}
+      run: cp /mingw64/bin/SDL3.dll /mingw64/bin/SDL3_mixer.dll /mingw64/bin/libwinpthread-1.dll ./dist/${{ env.engine_ver }}
     - name: Copy docs
       run: cp -r docs ./dist/${{ env.engine_ver }}
     - name: Package artifacts
