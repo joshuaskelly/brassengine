@@ -53,8 +53,8 @@ jobs:
           git
           make
           mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-SDL3
-          mingw-w64-x86_64-SDL3_mixer
+          mingw-w64-x86_64-sdl3
+          mingw-w64-x86_64-sdl3-mixer
     - name: Setup env
       run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
     - name: Checkout repository
