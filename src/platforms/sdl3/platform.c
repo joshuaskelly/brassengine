@@ -538,6 +538,14 @@ static void sdl_pixels_resize(int width, int height) {
 }
 
 static void mixer_init(void) {
+    // Validate SDL version
+    const int sdl_version = SDL_GetVersion();
+    const int version_major = SDL_VERSIONNUM_MAJOR(sdl_version);
+    const int version_minor = SDL_VERSIONNUM_MINOR(sdl_version);
+    if (version_major != 3 && version_minor < 4) {
+        log_fatal("SDL_mixer 3 requires SDL 3.4.0 or later");
+    }
+
     if (!MIX_Init()) {
         log_error("Error intializing SDL Mixer");
         log_error(SDL_GetError());

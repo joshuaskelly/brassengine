@@ -209,7 +209,7 @@ static int modules_desktop_window_icon_set(lua_State* L) {
     SDL_SetPaletteColors(pal, colors, 0, 256);
     SDL_SetSurfacePalette(icon, pal);
 
-    bool success = SDL_SetWindowIcon(window_, icon);
+    SDL_SetWindowIcon(window_, icon);
 
     SDL_DestroySurface(icon);
 
