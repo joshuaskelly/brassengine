@@ -243,7 +243,7 @@ bool platform_mouse_grabbed_get(void) {
 }
 
 void platform_open_module(void* arg) {
-    open_desktop_platform_module(arg, window);
+    open_sdl3_platform_module(arg, window);
 }
 
 struct thread {

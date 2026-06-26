@@ -121,8 +121,7 @@ defsclean: ## Delete generated language server definition files
 	mkdir library
 
 mostlyclean: ## Deletes project auto generated files
-	find ./build/ -maxdepth 3 -type f -delete
-
+	find ./build/ -maxdepth 8 -type f -delete
 clean: ## Deletes all auto generated files
 	rm -rf $(BUILD_DIR)
 	mkdir $(BUILD_DIR)

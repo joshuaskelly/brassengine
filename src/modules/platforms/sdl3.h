@@ -184,17 +184,15 @@ static int modules_desktop_window_aspect_get(lua_State* L) {
  * @function window.set_icon
  * @tparam texture.texture icon Window icon
  */
-/*
 static int modules_desktop_window_icon_set(lua_State* L) {
     texture_t* texture = luaL_checktexture(L, 1);
 
-    SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(
-        texture->pixels,
+    SDL_Surface* icon = SDL_CreateSurfaceFrom(
         texture->width,
         texture->height,
-        8,
-        texture->width,
-        0, 0, 0, 0
+        SDL_PIXELFORMAT_INDEX8,
+        texture->pixels,
+        texture->stride
     );
 
     uint32_t* palette = graphics_palette_get();
@@ -207,15 +205,16 @@ static int modules_desktop_window_icon_set(lua_State* L) {
         colors[i].a = 255;
     }
 
-    SDL_SetPaletteColors(icon->format->palette, colors, 0, 256);
+    SDL_Palette* pal = SDL_CreatePalette(256);
+    SDL_SetPaletteColors(pal, colors, 0, 256);
+    SDL_SetSurfacePalette(icon, pal);
 
-    SDL_SetWindowIcon(window_, icon);
+    bool success = SDL_SetWindowIcon(window_, icon);
 
-    SDL_FreeSurface(icon);
+    SDL_DestroySurface(icon);
 
     return 0;
 }
-//*/
 
 static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"set_position", modules_desktop_window_position_set},
@@ -228,7 +227,7 @@ static const struct luaL_Reg modules_desktop_window_functions[] = {
     {"get_fullscreen", modules_desktop_window_fullscreen_get},
     {"set_aspect", modules_desktop_window_aspect_set},
     {"get_aspect", modules_desktop_window_aspect_get},
-    //{"set_icon", modules_desktop_window_icon_set},
+    {"set_icon", modules_desktop_window_icon_set},
     {NULL, NULL}
 };
 
@@ -240,13 +239,13 @@ static int luaopen_platform(lua_State* L) {
     lua_settable(L, -3);
 
     lua_pushstring(L, "name");
-    lua_pushstring(L, "desktop");
+    lua_pushstring(L, "sdl3");
     lua_settable(L, -3);
 
     return 1;
 }
 
-void open_desktop_platform_module(void* arg, SDL_Window* w) {
+void open_sdl3_platform_module(void* arg, SDL_Window* w) {
     window_ = w;
     lua_State* L = (lua_State*)arg;
 
