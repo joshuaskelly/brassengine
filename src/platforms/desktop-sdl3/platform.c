@@ -1,3 +1,8 @@
+
+/**
+ * SDL3 platform implementation
+ */
+
 #include <stdbool.h>
 #include <stdio.h>
 

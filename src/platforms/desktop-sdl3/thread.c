@@ -1,3 +1,7 @@
+/**
+ * Pthread platform thread implementation
+ */
+
 #include <pthread.h>
 
 #include "../../threads.h"

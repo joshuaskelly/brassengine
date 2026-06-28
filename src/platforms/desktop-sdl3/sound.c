@@ -1,3 +1,7 @@
+/**
+ * SDL3_mixer platform sound implementation
+ */
+
 #include <stdbool.h>
 #include <stdio.h>
 
