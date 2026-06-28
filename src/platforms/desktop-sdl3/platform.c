@@ -1,4 +1,3 @@
-
 /**
  * SDL3 platform implementation
  */
