@@ -169,9 +169,6 @@ void platform_open_module(void* arg) {
 }
 
 static void sdl_init(void) {
-    // TODO: Investigate if still needed
-    //SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS , "permonitorv2");
-
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) {
         log_fatal("Error initializing SDL");
     }
