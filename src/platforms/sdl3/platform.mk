@@ -1,4 +1,4 @@
-# SDl2 specific variables and targets
+# SDl3 specific variables and targets
 
 LDLIBS+=`pkg-config sdl3 --libs` -lSDL3_mixer
 
