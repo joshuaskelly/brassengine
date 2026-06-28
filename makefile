@@ -30,7 +30,7 @@ $(wildcard $(SRC_DIR)/collections/*.c) \
 $(wildcard $(SRC_DIR)/graphics/*.c) \
 $(wildcard $(SRC_DIR)/modules/*.c) \
 $(wildcard $(SRC_DIR)/renderers/*.c) \
-$(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM)/platform.c,)
+$(if $(PLATFORM), $(wildcard $(PLATFORM_DIR)/$(PLATFORM)/*.c),)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
