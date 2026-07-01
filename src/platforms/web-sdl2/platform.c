@@ -19,7 +19,7 @@
 #include "../../platform.h"
 #include "../../sounds.h"
 
-#include "../../modules/platforms/web.h"
+#include "../../modules/platforms/web_sdl2.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)

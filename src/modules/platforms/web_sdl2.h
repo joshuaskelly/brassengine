@@ -262,7 +262,7 @@ static int luaopen_platform(lua_State* L) {
     lua_settable(L, -3);
 
     lua_pushstring(L, "name");
-    lua_pushstring(L, "web");
+    lua_pushstring(L, "web-sdl2");
     lua_settable(L, -3);
 
     return 1;
