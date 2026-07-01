@@ -21,7 +21,7 @@
 #include "../../math.h"
 #include "../../platform.h"
 
-#include "../../modules/platforms/sdl3.h"
+#include "../../modules/platforms/desktop_sdl3.h"
 
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)

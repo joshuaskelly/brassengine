@@ -239,7 +239,7 @@ static int luaopen_platform(lua_State* L) {
     lua_settable(L, -3);
 
     lua_pushstring(L, "name");
-    lua_pushstring(L, "sdl3");
+    lua_pushstring(L, "desktop-sdl3");
     lua_settable(L, -3);
 
     return 1;
