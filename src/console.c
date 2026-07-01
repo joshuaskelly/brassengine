@@ -34,11 +34,11 @@ static void complete(void);
 static bool initialized = false;
 
 void console_init(void) {
-    if (!initialized) {
-        output = circular_buffer_new(80);
-        input = circular_buffer_new(20);
-        initialized = true;
-    }
+    if (initialized) return;
+
+    output = circular_buffer_new(80);
+    input = circular_buffer_new(20);
+    initialized = true;
 }
 
 void console_destroy(void) {
