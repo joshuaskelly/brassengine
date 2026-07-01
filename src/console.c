@@ -31,9 +31,14 @@ static void execute(void);
 static void clear_input(void);
 static void complete(void);
 
+static bool initialized = false;
+
 void console_init(void) {
-    output = circular_buffer_new(80);
-    input = circular_buffer_new(20);
+    if (!initialized) {
+        output = circular_buffer_new(80);
+        input = circular_buffer_new(20);
+        initialized = true;
+    }
 }
 
 void console_destroy(void) {
@@ -346,6 +351,8 @@ static bool handle_key_up(event_t* event) {
 }
 
 bool console_handle_event(event_t* event) {
+    if (!initialized) return false;
+
     // Toggle console
     if (event->type == EVENT_KEYDOWN && event->key.code == KEYCODE_GRAVE) {
         console_buffer_toggle();
@@ -376,6 +383,7 @@ void console_update(void) {
 }
 
 void console_draw(void) {
+    if (!initialized) return;
     if (!visible) return;
 
     // Preserve palette + transparent color
@@ -452,6 +460,8 @@ void console_draw(void) {
 }
 
 void console_buffer_write(const char* line) {
+    if (!initialized) return;
+
     // Copy line because
     char* s = (char*)malloc(sizeof(char) * strlen(line) + 1);
     strcpy(s, line);
@@ -472,6 +482,8 @@ void console_buffer_write(const char* line) {
 }
 
 void console_buffer_clear(void) {
+    if (!initialized) return;
+
     circular_buffer_clear(output);
     output_buffer_offset = 0;
 }
