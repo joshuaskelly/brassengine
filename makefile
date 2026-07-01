@@ -19,7 +19,7 @@ PLATFORM_DIR=$(SRC_DIR)/platforms
 
 # List of valid platforms
 PLATFORMS=\
-desktop-opengl \
+desktop-sdl2-opengl \
 desktop-sdl2 \
 desktop-sdl3 \
 web \
@@ -77,7 +77,7 @@ all:$(BIN)
 
 desktop-sdl2:all ## Build desktop platform
 
-desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
+desktop-sdl2-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
 desktop-run: ## Run desktop build
 	./$(BIN)
@@ -136,7 +136,7 @@ clean: ## Deletes all auto generated files
 	mkdir $(OBJ_DIR)/graphics
 	mkdir $(OBJ_DIR)/modules
 	mkdir $(OBJ_DIR)/platforms
-	mkdir $(OBJ_DIR)/platforms/desktop-opengl
+	mkdir $(OBJ_DIR)/platforms/desktop-sdl2-opengl
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl2
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl3
 	mkdir $(OBJ_DIR)/platforms/web
