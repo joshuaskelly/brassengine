@@ -22,8 +22,9 @@ PLATFORMS=\
 desktop-sdl2-opengl \
 desktop-sdl2 \
 desktop-sdl3 \
-web-sdl2 \
 web-sdl2-opengl \
+web-sdl2 \
+web-sdl3 \
 
 # Get targeted platform
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
@@ -88,6 +89,8 @@ web-sdl2: ## Build web platform
 
 web-sdl2-opengl: ## Build web OpenGL ES 2.0 platform
 
+web-sdl3: ## Build web platform
+
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
 
@@ -139,11 +142,13 @@ clean: ## Deletes all auto generated files
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl2-opengl
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl2
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl3
-	mkdir $(OBJ_DIR)/platforms/web-sdl2
 	mkdir $(OBJ_DIR)/platforms/web-sdl2-opengl
+	mkdir $(OBJ_DIR)/platforms/web-sdl2
+	mkdir $(OBJ_DIR)/platforms/web-sdl3
 	mkdir $(OBJ_DIR)/renderers
-	mkdir $(BUILD_DIR)/web-sdl2
 	mkdir $(BUILD_DIR)/web-sdl2-opengl
+	mkdir $(BUILD_DIR)/web-sdl2
+	mkdir $(BUILD_DIR)/web-sdl3
 	cd $(LUA_DIR) && make clean
 	cd $(GIFLIB_DIR) && make clean
 	cd $(ZIP_DIR) && make clean
