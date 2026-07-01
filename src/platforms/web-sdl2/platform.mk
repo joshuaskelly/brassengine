@@ -8,5 +8,5 @@ RANLIB=emranlib
 # Special case libs because Emscripten has giflib builtin
 LIBS=$(LIBLUA) $(LIBZIP) $(LIBCJSON) $(LIBMATHC)
 
-web: $(OBJS) | $(BIN_DIR) $(LIBS)
+web-sdl2: $(OBJS) | $(BIN_DIR) $(LIBS)
 	$(CC) $^ $(LIBS) -o $(WEB_DIR)/index.html --embed-file assets
