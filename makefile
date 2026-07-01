@@ -18,7 +18,13 @@ WEB_DIR=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
 # List of valid platforms
-PLATFORMS=desktop web desktop-opengl web-opengl
+PLATFORMS=\
+desktop-sdl2-opengl \
+desktop-sdl2 \
+desktop-sdl3 \
+web-sdl2-opengl \
+web-sdl2 \
+web-sdl3 \
 
 # Get targeted platform
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
@@ -30,7 +36,7 @@ $(wildcard $(SRC_DIR)/collections/*.c) \
 $(wildcard $(SRC_DIR)/graphics/*.c) \
 $(wildcard $(SRC_DIR)/modules/*.c) \
 $(wildcard $(SRC_DIR)/renderers/*.c) \
-$(if $(PLATFORM), $(PLATFORM_DIR)/$(PLATFORM)/platform.c,)
+$(if $(PLATFORM), $(wildcard $(PLATFORM_DIR)/$(PLATFORM)/*.c),)
 
 OBJS= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
@@ -70,16 +76,20 @@ default:help
 
 all:$(BIN)
 
-desktop:all ## Build desktop platform
+desktop-sdl2:all ## Build desktop platform
 
-desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
+desktop-sdl2-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
 desktop-run: ## Run desktop build
 	./$(BIN)
 
-web: ## Build web platform
+desktop-sdl3:all ## Build sdl3 desktop platform
 
-web-opengl: ## Build web OpenGL ES 2.0 platform
+web-sdl2: ## Build web platform
+
+web-sdl2-opengl: ## Build web OpenGL ES 2.0 platform
+
+web-sdl3: ## Build web platform
 
 web-run: ## Run web build
 	emrun $(WEB_DIR)/index.html
@@ -119,8 +129,7 @@ defsclean: ## Delete generated language server definition files
 	mkdir library
 
 mostlyclean: ## Deletes project auto generated files
-	find ./build/ -maxdepth 3 -type f -delete
-
+	find ./build/ -maxdepth 8 -type f -delete
 clean: ## Deletes all auto generated files
 	rm -rf $(BUILD_DIR)
 	mkdir $(BUILD_DIR)
@@ -130,12 +139,16 @@ clean: ## Deletes all auto generated files
 	mkdir $(OBJ_DIR)/graphics
 	mkdir $(OBJ_DIR)/modules
 	mkdir $(OBJ_DIR)/platforms
-	mkdir $(OBJ_DIR)/platforms/desktop
-	mkdir $(OBJ_DIR)/platforms/desktop-opengl
-	mkdir $(OBJ_DIR)/platforms/web
-	mkdir $(OBJ_DIR)/platforms/web-opengl
+	mkdir $(OBJ_DIR)/platforms/desktop-sdl2-opengl
+	mkdir $(OBJ_DIR)/platforms/desktop-sdl2
+	mkdir $(OBJ_DIR)/platforms/desktop-sdl3
+	mkdir $(OBJ_DIR)/platforms/web-sdl2-opengl
+	mkdir $(OBJ_DIR)/platforms/web-sdl2
+	mkdir $(OBJ_DIR)/platforms/web-sdl3
 	mkdir $(OBJ_DIR)/renderers
-	mkdir $(BUILD_DIR)/web
+	mkdir $(BUILD_DIR)/web-sdl2-opengl
+	mkdir $(BUILD_DIR)/web-sdl2
+	mkdir $(BUILD_DIR)/web-sdl3
 	cd $(LUA_DIR) && make clean
 	cd $(GIFLIB_DIR) && make clean
 	cd $(ZIP_DIR) && make clean

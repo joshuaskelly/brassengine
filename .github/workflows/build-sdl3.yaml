@@ -1,4 +1,4 @@
-name: Build Brass Engine
+name: Build Brass Engine - SDL3
 
 on:
   workflow_dispatch:
@@ -52,11 +52,11 @@ jobs:
           git
           make
           mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-glew
-          mingw-w64-x86_64-SDL2
-          mingw-w64-x86_64-SDL2_mixer
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-sdl3
+          mingw-w64-x86_64-sdl3-mixer
     - name: Setup env
-      run: echo "engine_ver=brassengine-windows64-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
+      run: echo "engine_ver=brassengine-windows64-sdl3-${{ github.ref_name }}" | sed -e "s/\//-/g" >> "$GITHUB_ENV"
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Checkout submodules
@@ -66,7 +66,7 @@ jobs:
     - name: make lua
       run: cd ./libs/lua && make a CFLAGS+=-DLUA_USE_LONGJUMP
     - name: make
-      run: make desktop-sdl2-opengl
+      run: make desktop-sdl3
     - name: make docsclean
       run: make docsclean
     - name: Download docs
@@ -83,7 +83,7 @@ jobs:
     - name: Copy demos
       run: cp -r demos ./dist/${{ env.engine_ver }}
     - name: Copy dlls
-      run: cp /mingw64/bin/SDL2.dll /mingw64/bin/SDL2_mixer.dll /mingw64/bin/glew32.dll /mingw64/bin/libmpg123-0.dll /mingw64/bin/libopusfile-0.dll /mingw64/bin/libogg-0.dll /mingw64/bin/libopus-0.dll /mingw64/bin/libstdc++-6.dll /mingw64/bin/libgcc_s_seh-1.dll /mingw64/bin/libwinpthread-1.dll /mingw64/bin/libvorbis-0.dll /mingw64/bin/libvorbisfile-3.dll /mingw64/bin/libFLAC.dll /mingw64/bin/libwavpack-1.dll /mingw64/bin/libxmp.dll ./dist/${{ env.engine_ver }}
+      run: cp /mingw64/bin/SDL3.dll /mingw64/bin/SDL3_mixer.dll /mingw64/bin/libwinpthread-1.dll ./dist/${{ env.engine_ver }}
     - name: Copy docs
       run: cp -r docs ./dist/${{ env.engine_ver }}
     - name: Package artifacts
