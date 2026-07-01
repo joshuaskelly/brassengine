@@ -290,7 +290,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         1.0f
     );
 
-    mfloat_t height = renderer->render_texture->height;
+    mfloat_t height = renderer->render_texture->height - 1;
 
     // Screen space
     for (triangle_t* triangle = first; triangle < last; triangle++) {
