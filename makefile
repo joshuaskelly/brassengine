@@ -18,7 +18,12 @@ WEB_DIR=$(BUILD_DIR)/web
 PLATFORM_DIR=$(SRC_DIR)/platforms
 
 # List of valid platforms
-PLATFORMS=desktop web desktop-opengl web-opengl desktop-sdl3
+PLATFORMS=\
+desktop-opengl \
+desktop-sdl2 \
+desktop-sdl3 \
+web \
+web-opengl \
 
 # Get targeted platform
 PLATFORM=$(filter $(PLATFORMS), $(MAKECMDGOALS))
@@ -70,7 +75,7 @@ default:help
 
 all:$(BIN)
 
-desktop:all ## Build desktop platform
+desktop-sdl2:all ## Build desktop platform
 
 desktop-opengl:all ## Build desktop OpenGL ES 2.0 platform
 
@@ -131,8 +136,8 @@ clean: ## Deletes all auto generated files
 	mkdir $(OBJ_DIR)/graphics
 	mkdir $(OBJ_DIR)/modules
 	mkdir $(OBJ_DIR)/platforms
-	mkdir $(OBJ_DIR)/platforms/desktop
 	mkdir $(OBJ_DIR)/platforms/desktop-opengl
+	mkdir $(OBJ_DIR)/platforms/desktop-sdl2
 	mkdir $(OBJ_DIR)/platforms/desktop-sdl3
 	mkdir $(OBJ_DIR)/platforms/web
 	mkdir $(OBJ_DIR)/platforms/web-opengl
