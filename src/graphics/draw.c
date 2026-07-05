@@ -499,10 +499,6 @@ void graphics_draw_pattern_triangle(texture_t* destination, int x0, int y0, int 
     graphics_draw_pattern_line(destination, x2, y2, x0, y0, pattern, pattern_offset_x, pattern_offset_y);
 }
 
-static mfloat_t vec2_cross(mfloat_t* v0, mfloat_t* v1) {
-    return v0[0] * v1[1] - v0[1] * v1[0];
-}
-
 static int edge_function(mfloat_t* a, mfloat_t* b, mfloat_t* p) {
     mfloat_t ab[VEC2_SIZE];
     vec2_subtract(ab, b, a);
