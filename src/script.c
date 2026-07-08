@@ -377,8 +377,17 @@ void script_complete(char* expression) {
     if (strchr(expression, ')')) return;
     if (strchr(expression, '{')) return;
     if (strchr(expression, '}')) return;
-    // Don't evalute assigments
-    if (strchr(expression, '=')) return;
+
+    // If an assignment operator is present, consider the right hand side to
+    // be the expression.
+    char* last_equals = strrchr(expression, '=');
+    if (last_equals) {
+        // Only allow a single equals character
+        char* first_equals = strchr(expression, '=');
+        if (first_equals != last_equals) goto done;
+
+        expression = last_equals + 1;
+    }
 
     /*
      * Attempt to decompose given expression into a root and a partial. The
@@ -397,8 +406,7 @@ void script_complete(char* expression) {
      *   |--partial--|
      */
 
-    char root[2048];
-    memset(root, 0, sizeof(root));
+    char root[2048] = {'\0'};
     char* partial = expression;
 
     char* last_dot = strrchr(expression, '.');
