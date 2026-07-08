@@ -459,11 +459,20 @@ void script_complete(char* expression) {
         // Iterate table key/value pairs
         lua_pushnil(L);
         while (lua_next(L, base) != 0) {
-            const char* key = luaL_checkstring(L, -2);
+            // Check type first because calling lua_tolstring inside lua_next
+            // can crash if the key on the stack is not actually a string.
+            //
+            // See:
+            //   https://www.lua.org/manual/5.4/manual.html#lua_next
+
+            char* key = NULL;
+            if (lua_type(L, -2) == LUA_TSTRING) {
+                key = luaL_checkstring(L, -2);
+            }
             lua_pop(L, 1);
 
             // Check if we have a partial match
-            if (strncmp(partial, key, size) == 0) {
+            if (key && strncmp(partial, key, size) == 0) {
                 // Don't add duplicates
                 bool duplicate_found = false;
                 for (int i = 0; i < suggestion_count; i++) {
