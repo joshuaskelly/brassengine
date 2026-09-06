@@ -236,12 +236,12 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     mat4_inverse(normal_transform, normal_transform);
     mat4_transpose(normal_transform, normal_transform);
 
-    // Transform triangles
+    // View space transformation
     for (triangle_t* triangle = first; triangle < last; triangle++) {
         // Transform position
-        vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, matrix);
-        vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, matrix);
-        vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, matrix);
+        vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, model_view);
+        vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, model_view);
+        vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, model_view);
 
         // Transform normal
         mfloat_t* normal = &triangle->normal;
@@ -255,23 +255,24 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
 
     mfloat_t dir[VEC3_SIZE] = {};
 
-    mfloat_t forward[VEC4_SIZE] = {0, 0, -1.0f, 0};
-    vec4_multiply_mat4(forward, forward, model_view);
-    vec4_normalize(forward, forward);
-
-    // Back face culling
+    // Back-face culling
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        //vec3_normalize(dir, &triangle->v0.position);
-        //if (vec3_dot(triangle->normal, forward) > 0.0f) continue;
+        vec3_normalize(dir, &triangle->v0.position);
+        if (vec3_dot(triangle->normal, dir) > 0.0f) continue;
 
         t2[t2_count] = *triangle;
         t2_count++;
     }
 
-    //log_info("trianges culled: %i", mesh->triangle_count - t2_count);
-
     first = t2;
     last = &t2[t2_count];
+
+    // Projection transformation
+    for (triangle_t* triangle = first; triangle < last; triangle++) {
+        vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, projection);
+        vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, projection);
+        vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, projection);
+    }
 
     triangle_t t3[10000];
     uint32_t t3_count = 0;
@@ -299,6 +300,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         triangle->depth = (triangle->v0.position[3] + triangle->v1.position[3] + triangle->v2.position[3]) / 3.0f;
     }
 
+    // Sort by depth (Painter's Algorithm)
     qsort(t3, t3_count, sizeof(triangle_t), compare);
 
     mfloat_t half_window[VEC4_SIZE];
