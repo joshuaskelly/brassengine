@@ -509,16 +509,6 @@ static int edge_function(mfloat_t* a, mfloat_t* b, mfloat_t* p) {
     return vec2_cross(ab, ap);
 }
 
-static bool is_top_left(mfloat_t* a, mfloat_t* b) {
-    mfloat_t edge[VEC2_SIZE];
-    vec2_subtract(edge, b, a);
-
-    bool is_top = edge[1] == 0 && edge[0] > 0;
-    bool is_left = edge[1] < 0;
-
-    return is_top || is_left;
-}
-
 void graphics_draw_filled_triangle(texture_t* destination, int x0, int y0, int x1, int y1, int x2, int y2, color_t color) {
     mfloat_t vertex0[VEC2_SIZE] = {x0, y0};
     mfloat_t vertex1[VEC2_SIZE] = {x1, y1};
@@ -530,11 +520,6 @@ void graphics_draw_filled_triangle(texture_t* destination, int x0, int y0, int x
     int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
     int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
-    // Biases for fill rule
-    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
-    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
-    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
-
     float delta_w0_col = vertex1[1] - vertex2[1];
     float delta_w1_col = vertex2[1] - vertex0[1];
     float delta_w2_col = vertex0[1] - vertex1[1];
@@ -543,9 +528,9 @@ void graphics_draw_filled_triangle(texture_t* destination, int x0, int y0, int x
     float delta_w2_row = vertex1[0] - vertex0[0];
 
     mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
-    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
-    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
-    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+    float w0_row = edge_function(vertex1, vertex2, p);
+    float w1_row = edge_function(vertex2, vertex0, p);
+    float w2_row = edge_function(vertex0, vertex1, p);
 
     for (int y = y_min; y <= y_max; y++) {
         float w0 = w0_row;
@@ -580,11 +565,6 @@ void graphics_draw_filled_pattern_triangle(texture_t* destination, int x0, int y
     int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
     int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
-    // Biases for fill rule
-    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
-    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
-    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
-
     float delta_w0_col = vertex1[1] - vertex2[1];
     float delta_w1_col = vertex2[1] - vertex0[1];
     float delta_w2_col = vertex0[1] - vertex1[1];
@@ -593,9 +573,9 @@ void graphics_draw_filled_pattern_triangle(texture_t* destination, int x0, int y
     float delta_w2_row = vertex1[0] - vertex0[0];
 
     mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
-    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
-    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
-    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+    float w0_row = edge_function(vertex1, vertex2, p);
+    float w1_row = edge_function(vertex2, vertex0, p);
+    float w2_row = edge_function(vertex0, vertex1, p);
 
     for (int y = y_min; y <= y_max; y++) {
         float w0 = w0_row;
@@ -633,11 +613,6 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
     int x_max = fmaxf(fmaxf(vertex0[0], vertex1[0]), vertex2[0]);
     int y_max = fmaxf(fmaxf(vertex0[1], vertex1[1]), vertex2[1]);
 
-    // Biases for fill rule
-    float bias0 = is_top_left(vertex1, vertex2) ? 0.0f : -0.001f;
-    float bias1 = is_top_left(vertex2, vertex0) ? 0.0f : -0.001f;
-    float bias2 = is_top_left(vertex0, vertex1) ? 0.0f : -0.001f;
-
     float delta_w0_col = vertex1[1] - vertex2[1];
     float delta_w1_col = vertex2[1] - vertex0[1];
     float delta_w2_col = vertex0[1] - vertex1[1];
@@ -649,9 +624,9 @@ void graphics_draw_textured_triangle(texture_t* destination, int x0, int y0, flo
     float inverse_area = 1.0f / area;
 
     mfloat_t p[2] = { x_min + 0.5f, y_min + 0.5f };
-    float w0_row = edge_function(vertex1, vertex2, p) + bias0;
-    float w1_row = edge_function(vertex2, vertex0, p) + bias1;
-    float w2_row = edge_function(vertex0, vertex1, p) + bias2;
+    float w0_row = edge_function(vertex1, vertex2, p);
+    float w1_row = edge_function(vertex2, vertex0, p);
+    float w2_row = edge_function(vertex0, vertex1, p);
 
     for (int y = y_min; y <= y_max; y++) {
         float w0 = w0_row;
