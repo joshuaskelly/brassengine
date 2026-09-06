@@ -30,7 +30,7 @@ mesh_renderer_t* mesh_renderer_new(texture_t* render_texture);
 
 void mesh_renderer_free(mesh_renderer_t* renderer);
 
-void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t* matrix);
+void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t* model_view, mfloat_t* projection);
 
 void mesh_renderer_camera(mesh_renderer_t* renderer, mfloat_t* view, mfloat_t* projection);
 

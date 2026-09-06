@@ -6,6 +6,7 @@
 
 #include "../graphics.h"
 #include "../log.h"
+#include "../math.h"
 
 #include "mesh.h"
 
@@ -92,23 +93,31 @@ typedef struct {
     vertex_t v2;
     mfloat_t normal[VEC4_SIZE];
     color_t color;
+    float depth;
 } triangle_t;
+
+static int compare(const void* a, const void* b) {
+    triangle_t* t0 = (triangle_t*)a;
+    triangle_t* t1 = (triangle_t*)b;
+
+    float d0 = t0->depth;
+    float d1 = t1->depth;
+
+    if (d0 > d1) {
+        return -1;
+    }
+    else if(d1 > d0) {
+        return 1;
+    }
+
+    return 0;
+}
 
 static void triangle_transform(triangle_t* triangle, mfloat_t* matrix) {
     vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, matrix);
     vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, matrix);
     vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, matrix);
     vec4_multiply_mat4(triangle->normal, triangle->normal, matrix);
-}
-
-static void triangle_calculate_normal(triangle_t* triangle) {
-    mfloat_t a[VEC4_SIZE];
-    mfloat_t b[VEC4_SIZE];
-
-    vec4_subtract(a, triangle->v1.position, triangle->v0.position);
-    vec4_subtract(b, triangle->v2.position, triangle->v0.position);
-    vec3_cross(triangle->normal, a, b);
-    triangle->normal[3] = 0.0f;
 }
 
 static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) {
@@ -187,7 +196,7 @@ static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) 
         result[*count].v2 = input[i];
 
         result[*count].color = triangle->color;
-        vec4_assign(result[*count].normal,triangle->normal);
+        vec4_assign(result[*count].normal, triangle->normal);
 
         ++(*count);
     }
@@ -196,7 +205,7 @@ static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) 
 typedef uint32_t indices_t[3];
 typedef mfloat_t mfloat3_t[VEC3_SIZE];
 
-void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t* matrix) {
+void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t* model_view, mfloat_t* projection) {
     indices_t* indices = (indices_t*)mesh->indices;
     mfloat3_t* vertices = (mfloat3_t*)mesh->vertices;
     mfloat3_t* normals = (mfloat3_t*)mesh->normals;
@@ -226,28 +235,52 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     triangle_t* first = triangles;
     triangle_t* last = &triangles[mesh->triangle_count];
 
+    mfloat_t matrix[MAT4_SIZE];
+    mat4_multiply(matrix, projection, model_view);
+
+    mfloat_t normal_transform[MAT4_SIZE];
+    mat4_transpose(normal_transform, model_view);
+    mat4_inverse(normal_transform, normal_transform);
+
+    uint32_t t1_count = 0;
+
     // Transform triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
         triangle_transform(triangle, matrix);
+
+        // Transform normal
+        mfloat_t* normal = &triangle->normal;
+        vec4_negative(normal, normal);
+        vec4_multiply_mat4(normal, normal, normal_transform);
+        normal[3] = 0;
+        vec4_normalize(normal, normal);
+
+        t1_count++;
     }
 
     triangle_t t2[10000];
     uint32_t t2_count = 0;
 
+    mfloat_t dir[VEC3_SIZE] = {};
+
+    mfloat_t forward[VEC4_SIZE] = {0, 0, -1.0f, 0};
+    vec4_multiply_mat4(forward, forward, model_view);
+    vec4_normalize(forward, forward);
+
     // Back face culling
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        if (vec3_dot(triangle->normal, triangle->v0.position) > 0.0f) continue;
+        //vec3_normalize(dir, &triangle->v0.position);
+        //if (vec3_dot(triangle->normal, forward) > 0.0f) continue;
 
         t2[t2_count] = *triangle;
         t2_count++;
     }
 
-    //log_info("visible tris: %i", t2_count);
+    //log_info("trianges culled: %i", t1_count - t2_count);
 
     first = t2;
     last = &t2[t2_count];
 
-    //*
     triangle_t t3[10000];
     uint32_t t3_count = 0;
 
@@ -264,22 +297,17 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
 
     first = t3;
     last = &t3[t3_count];
-    //*/
 
     // Perspective divide
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        float w = triangle->v0.position[3];
-        vec4_divide_f(triangle->v0.position, triangle->v0.position, w);
-        triangle->v0.position[3] = w;
+        vec3_divide_f(triangle->v0.position, triangle->v0.position, triangle->v0.position[3]);
+        vec3_divide_f(triangle->v1.position, triangle->v1.position, triangle->v1.position[3]);
+        vec3_divide_f(triangle->v2.position, triangle->v2.position, triangle->v2.position[3]);
 
-        w = triangle->v1.position[3];
-        vec4_divide_f(triangle->v1.position, triangle->v1.position, w);
-        triangle->v1.position[3] = w;
-
-        w = triangle->v2.position[3];
-        vec4_divide_f(triangle->v2.position, triangle->v2.position, w);
-        triangle->v2.position[3] = w;
+        triangle->depth = (triangle->v0.position[3] + triangle->v1.position[3] + triangle->v2.position[3]) / 3.0f;
     }
+
+    qsort(t3, t3_count, sizeof(triangle_t), compare);
 
     mfloat_t half_window[VEC4_SIZE];
     vec4(
@@ -307,15 +335,22 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         triangle->v2.position[1] = height - triangle->v2.position[1];
     }
 
+    mfloat_t light[VEC4_SIZE] = {0, 0, 1, 0};
+    vec4_multiply_mat4(light, light, model_view);
+    vec4_normalize(light, light);
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        graphics_draw_triangle(
+        float f = vec3_dot(triangle->normal, light);
+        f = clamp(f, 0, 1);
+        int color = remap(0.0f, 1.0f, 0, 15, f);
+
+        graphics_draw_filled_triangle(
             renderer->render_texture,
             triangle->v0.position[0], triangle->v0.position[1],
             triangle->v1.position[0], triangle->v1.position[1],
             triangle->v2.position[0], triangle->v2.position[1],
-            triangle->color
+            color
         );
     }
 }

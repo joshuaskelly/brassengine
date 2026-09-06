@@ -301,12 +301,14 @@ static int modules_mesh_renderer_clear(lua_State* L) {
 static int modules_mesh_renderer_render(lua_State* L) {
     mesh_renderer_t* renderer = luaL_checkmeshrenderer(L, 1);
     mesh_mesh_t* mesh = luaL_checkmeshmesh(L, 2);
-    mfloat_t* matrix = luaL_checkmatrix4(L, 3);
+    mfloat_t* model_view = luaL_checkmatrix4(L, 3);
+    mfloat_t* projection = luaL_checkmatrix4(L, 4);
 
     mesh_renderer_render(
         renderer,
         mesh,
-        matrix
+        model_view,
+        projection
     );
 
     return 0;
