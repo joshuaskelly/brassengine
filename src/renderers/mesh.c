@@ -113,13 +113,6 @@ static int compare(const void* a, const void* b) {
     return 0;
 }
 
-static void triangle_transform(triangle_t* triangle, mfloat_t* matrix) {
-    vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, matrix);
-    vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, matrix);
-    vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, matrix);
-    vec4_multiply_mat4(triangle->normal, triangle->normal, matrix);
-}
-
 static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) {
     const int plane_count = 4;
     mfloat_t planes[VEC4_SIZE][plane_count] = {
@@ -239,23 +232,22 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     mat4_multiply(matrix, projection, model_view);
 
     mfloat_t normal_transform[MAT4_SIZE];
-    mat4_transpose(normal_transform, model_view);
+    mat4_assign(normal_transform, model_view);
     mat4_inverse(normal_transform, normal_transform);
-
-    uint32_t t1_count = 0;
+    mat4_transpose(normal_transform, normal_transform);
 
     // Transform triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        triangle_transform(triangle, matrix);
+        // Transform position
+        vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, matrix);
+        vec4_multiply_mat4(triangle->v1.position, triangle->v1.position, matrix);
+        vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, matrix);
 
         // Transform normal
         mfloat_t* normal = &triangle->normal;
-        vec4_negative(normal, normal);
         vec4_multiply_mat4(normal, normal, normal_transform);
         normal[3] = 0;
         vec4_normalize(normal, normal);
-
-        t1_count++;
     }
 
     triangle_t t2[10000];
@@ -276,7 +268,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         t2_count++;
     }
 
-    //log_info("trianges culled: %i", t1_count - t2_count);
+    //log_info("trianges culled: %i", mesh->triangle_count - t2_count);
 
     first = t2;
     last = &t2[t2_count];
@@ -336,8 +328,6 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     }
 
     mfloat_t light[VEC4_SIZE] = {0, 0, 1, 0};
-    vec4_multiply_mat4(light, light, model_view);
-    vec4_normalize(light, light);
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
