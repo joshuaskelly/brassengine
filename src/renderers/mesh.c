@@ -267,6 +267,14 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     first = t2;
     last = &t2[t2_count];
 
+    // Lighting
+    mfloat_t light[VEC4_SIZE] = {0, 0, 1, 0};
+    for (triangle_t* triangle = first; triangle < last; triangle++) {
+        float f = vec3_dot(triangle->normal, light);
+        f = clamp(f, 0, 1);
+        triangle->color = remap(0.0f, 1.0f, 0, 15, f);
+    }
+
     // Projection transformation
     for (triangle_t* triangle = first; triangle < last; triangle++) {
         vec4_multiply_mat4(triangle->v0.position, triangle->v0.position, projection);
@@ -329,20 +337,15 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         triangle->v2.position[1] = height - triangle->v2.position[1];
     }
 
-    mfloat_t light[VEC4_SIZE] = {0, 0, 1, 0};
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        float f = vec3_dot(triangle->normal, light);
-        f = clamp(f, 0, 1);
-        int color = remap(0.0f, 1.0f, 0, 15, f);
-
         graphics_draw_filled_triangle(
             renderer->render_texture,
             triangle->v0.position[0], triangle->v0.position[1],
             triangle->v1.position[0], triangle->v1.position[1],
             triangle->v2.position[0], triangle->v2.position[1],
-            color
+            triangle->color
         );
     }
 }
