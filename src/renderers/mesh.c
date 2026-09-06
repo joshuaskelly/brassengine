@@ -337,7 +337,6 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         triangle->v2.position[1] = height - triangle->v2.position[1];
     }
 
-
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
         graphics_draw_filled_triangle(
