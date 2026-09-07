@@ -114,12 +114,14 @@ static int compare(const void* a, const void* b) {
 }
 
 static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) {
-    const int plane_count = 4;
+    const int plane_count = 6;
     mfloat_t planes[plane_count][VEC4_SIZE] = {
         { 1,  0,  0, -1},
         {-1,  0,  0, -1},
         { 0,  1,  0, -1},
         { 0, -1,  0, -1},
+        { 0,  0,  1, -1},
+        { 0,  0, -1, -1},
     };
 
     vertex_t v0[16] = {
@@ -147,8 +149,6 @@ static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) 
 
             float da = vec4_dot(a.position, plane);
             float db = vec4_dot(b.position, plane);
-
-            //log_info("db: %f", db);
 
             if (da > 0 && db < 0) {
                 float t = da / (da - db);
@@ -343,7 +343,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        graphics_draw_triangle(
+        graphics_draw_filled_triangle(
             renderer->render_texture,
             triangle->v0.position[0], triangle->v0.position[1],
             triangle->v1.position[0], triangle->v1.position[1],
