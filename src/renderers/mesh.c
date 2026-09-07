@@ -312,9 +312,6 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         triangle->depth = (triangle->v0.position[3] + triangle->v1.position[3] + triangle->v2.position[3]) / 3.0f;
     }
 
-    // Sort by depth (Painter's Algorithm)
-    qsort(t3, t3_count, sizeof(triangle_t), compare);
-
     mfloat_t half_window[VEC4_SIZE];
     vec4(
         half_window,
@@ -340,6 +337,9 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         vec4_multiply(triangle->v2.position, triangle->v2.position, half_window);
         triangle->v2.position[1] = height - triangle->v2.position[1];
     }
+
+    // Sort by depth (Painter's Algorithm)
+    qsort(t3, t3_count, sizeof(triangle_t), compare);
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
