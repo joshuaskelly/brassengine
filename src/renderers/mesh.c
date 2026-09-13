@@ -115,7 +115,7 @@ static int compare(const void* a, const void* b) {
 
 static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) {
     const int plane_count = 6;
-    mfloat_t planes[plane_count][VEC4_SIZE] = {
+    mfloat_t planes[][VEC4_SIZE] = {
         { 1,  0,  0, -1},
         {-1,  0,  0, -1},
         { 0,  1,  0, -1},
@@ -141,7 +141,7 @@ static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) 
     input = v0;
 
     for (int i = 0; i < plane_count; i++) {
-        mfloat_t* plane = &planes[i];
+        mfloat_t* plane = planes[i];
 
         for (int j = 0; j < length; j++) {
             vertex_t a = input[j];
@@ -246,7 +246,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
         vec4_multiply_mat4(triangle->v2.position, triangle->v2.position, model_view);
 
         // Transform normal
-        mfloat_t* normal = &triangle->normal;
+        mfloat_t* normal = triangle->normal;
         vec4_multiply_mat4(normal, normal, normal_transform);
         normal[3] = 0;
         vec4_normalize(normal, normal);
@@ -259,7 +259,7 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
 
     // Back-face culling
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        vec3_normalize(dir, &triangle->v0.position);
+        vec3_normalize(dir, triangle->v0.position);
         if (vec3_dot(triangle->normal, dir) > 0.0f) continue;
 
         t2[t2_count] = *triangle;
