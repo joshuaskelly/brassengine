@@ -14,6 +14,7 @@
 
 #include "matrix4.h"
 #include "texture.h"
+#include "vector3.h"
 
 #include "../renderers/mesh.h"
 
@@ -324,6 +325,25 @@ static int modules_mesh_renderer_camera(lua_State* L) {
     return 0;
 }
 
+static int modules_mesh_renderer_feature(lua_State* L) {
+    mesh_renderer_t* renderer = luaL_checkmeshrenderer(L, 1);
+    const char* key = luaL_checkstring(L, 2);
+    bool is_setter = lua_gettop(L) > 2;
+
+    if (strcmp(key, "light") == 0) {
+        if (is_setter) {
+            mfloat_t* light = luaL_checkvector3(L, 3);
+            vec3_assign(renderer->features.light, light);
+
+            return 0;
+        }
+
+        lua_pushvector3(L, renderer->features.light);
+
+        return 1;
+    }
+}
+
 static int modules_mesh_renderer_meta_index(lua_State* L) {
     luaL_checkmeshrenderer(L, 1);
     const char* key = luaL_checkstring(L, 2);
@@ -347,6 +367,7 @@ static const struct luaL_Reg modules_mesh_renderer_functions[] = {
     {"clear", modules_mesh_renderer_clear},
     {"render", modules_mesh_renderer_render},
     {"camera", modules_mesh_renderer_camera},
+    {"feature", modules_mesh_renderer_feature},
     {NULL, NULL}
 };
 

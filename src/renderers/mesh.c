@@ -61,6 +61,8 @@ mesh_renderer_t* mesh_renderer_new(texture_t* render_texture) {
     mat4_identity(renderer->view);
     mat4_identity(renderer->projection);
 
+    vec4(renderer->features.light, 0, -1, 0, 4);
+
     return renderer;
 }
 
@@ -200,6 +202,8 @@ static void triangle_clip(triangle_t* result, int* count, triangle_t* triangle) 
 typedef uint32_t indices_t[3];
 typedef mfloat_t mfloat3_t[VEC3_SIZE];
 
+static void draw_triangle(mesh_renderer_t* renderer, triangle_t* triangle);
+
 void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t* model_view, mfloat_t* projection) {
     indices_t* indices = (indices_t*)mesh->indices;
     mfloat3_t* vertices = (mfloat3_t*)mesh->vertices;
@@ -270,9 +274,14 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
     last = &t2[t2_count];
 
     // Lighting
-    mfloat_t light[VEC4_SIZE] = {0, 0, 1, 0};
+    mfloat_t light[VEC4_SIZE];
+    vec4_assign(light, renderer->features.light);
+    vec4_multiply_mat4(light, light, normal_transform);
+    light[3] = 0;
+    vec4_normalize(light, light);
+
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        float f = vec3_dot(triangle->normal, light);
+        float f = -vec3_dot(triangle->normal, light);
         f = clamp(f, 0, 1);
         triangle->color = remap(0.0f, 1.0f, 0, 15, f);
     }
@@ -343,14 +352,18 @@ void mesh_renderer_render(mesh_renderer_t* renderer, mesh_mesh_t* mesh, mfloat_t
 
     // Draw triangles
     for (triangle_t* triangle = first; triangle < last; triangle++) {
-        graphics_draw_filled_triangle(
-            renderer->render_texture,
-            triangle->v0.position[0], triangle->v0.position[1],
-            triangle->v1.position[0], triangle->v1.position[1],
-            triangle->v2.position[0], triangle->v2.position[1],
-            triangle->color
-        );
+        draw_triangle(renderer, triangle);
     }
+}
+
+static void draw_triangle(mesh_renderer_t* renderer, triangle_t* triangle) {
+    graphics_draw_filled_triangle(
+        renderer->render_texture,
+        triangle->v0.position[0], triangle->v0.position[1],
+        triangle->v1.position[0], triangle->v1.position[1],
+        triangle->v2.position[0], triangle->v2.position[1],
+        triangle->color
+    );
 }
 
 void mesh_renderer_camera(mesh_renderer_t* renderer, mfloat_t* view, mfloat_t* projection) {

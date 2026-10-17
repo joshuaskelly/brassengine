@@ -14,6 +14,7 @@ typedef struct {
     mfloat_t* vertices;
     mfloat_t* normals;
     color_t* colors;
+    // uvs?
 } mesh_mesh_t;
 
 mesh_mesh_t* mesh_mesh_new(void);
@@ -23,6 +24,11 @@ void mesh_mesh_free(mesh_mesh_t* mesh);
 typedef struct {
     mfloat_t view[MAT4_SIZE];
     mfloat_t projection[MAT4_SIZE];
+
+    struct {
+        mfloat_t light[VEC4_SIZE];
+    } features;
+
     texture_t* render_texture;
 } mesh_renderer_t;
 
